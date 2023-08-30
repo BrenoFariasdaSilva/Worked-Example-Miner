@@ -27,10 +27,13 @@ CK_CSV_FILE = CLASS_CSV_FILE if PROCESS_CLASSES else METHOD_CSV_FILE # The name 
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 OPPOSITE_CK_CSV_FILE = METHOD_CSV_FILE if PROCESS_CLASSES else CLASS_CSV_FILE # The name of the csv generated file from ck.
 DEFAULT_REPOSITORY_NAME = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
-DEFAULT_CLASS_IDS = {"org.apache.commons.lang.StringUtils": "class"} # The default ids to be analyzed. It stores the class:type or class:method
-DEFAULT_METHOD_IDS = {"org.apache.commons.lang3.AnnotationUtilsTest": "testBothArgsNull/0", "org.apache.commons.lang.LangTestSuite": "suite/0"} # The default ids to be analyzed. It stores the class:type or class:method
+DEFAULT_CLASS_IDS = {"org.apache.commons.lang.StringUtils": ["class"]} # The default ids to be analyzed. It stores the class:type
+DEFAULT_METHOD_IDS = { # The default ids to be analyzed. It stores the method:class
+   "org.apache.commons.lang3.AnnotationUtilsTest": ["testBothArgsNull/0"],
+   "org.apache.commons.lang.LangTestSuite": ["suite/0"]}
 DEFAULT_IDS = DEFAULT_CLASS_IDS if PROCESS_CLASSES else DEFAULT_METHOD_IDS # The default ids to be analyzed. It stores the class:type or method:class
 IMAGE_LABELS = [False, False]
+SORTED_CHANGES_CSV_FILENAME = f"sorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changes
  
 # Relative paths:
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path of the metrics_evolution directory
@@ -88,43 +91,35 @@ def create_directory(full_directory_path, relative_directory_path):
 # @return: id: Name of the class or method to be analyzed
 def get_user_ids_input(repository_name):
    ids = {} # Dictionary that stores the ids to be analyzed
-   name = ""
-   first_run = True
-   csv_file = CK_CSV_FILE.replace('.csv', '') # The name of the csv generated file from ck.
-   while name == "" and first_run:
-      first_run = False
-      # Ask for user input of the class or method name
-      name = input(f"{backgroundColors.GREEN}Enter the name of the {csv_file} {backgroundColors.RED}(String/*){backgroundColors.GREEN}: {Style.RESET_ALL}")
-      # if the CK_CSV_FILE is a class csv file, ask for the type of the class ('class' 'interface' 'innerclass' 'enum' 'anonymous')
-      if CK_CSV_FILE == CLASS_CSV_FILE:
-         value = input(f"{backgroundColors.GREEN}Enter the type of the {csv_file} {backgroundColors.CYAN}{ids}{backgroundColors.GREEN} to be analyzed {backgroundColors.RED}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
-      # if the CK_CSV_FILE is a method csv file, ask for the name of the class of the method
-      elif CK_CSV_FILE == METHOD_CSV_FILE:
-         value = input(f"{backgroundColors.GREEN}Enter the {csv_file} name of the {backgroundColors.CYAN}{ids}{backgroundColors.GREEN} to be analyzed {backgroundColors.RED}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
+   input_source = input(f"{backgroundColors.GREEN}Enter the {backgroundColors.CYAN}source of input{backgroundColors.GREEN} to get {backgroundColors.CYAN}IDS{backgroundColors.GREEN} {backgroundColors.RED}(default/all){backgroundColors.GREEN}: {Style.RESET_ALL}")
 
-      # add the name and value to the id dictionary
-      ids[name] = value
+   while input_source.lower() != "default" and input_source.lower() != "all": # While the input_source is not "default" or "all"
+      print(f"{backgroundColors.RED}Invalid input source!{Style.RESET_ALL}")
+      input_source = input(f"{backgroundColors.GREEN}Enter the {backgroundColors.CYAN}source of input{backgroundColors.GREEN} to get {backgroundColors.CYAN}IDS{backgroundColors.GREEN} {backgroundColors.RED}(default/all){backgroundColors.GREEN}: {Style.RESET_ALL}")
 
-   # If the name is "*", them do for every Class/Method in the Repository.
-   if name == "*" and not first_run:
+   # If the input_source is "all", them get every variable_attribute of each class.
+   if input_source.lower() == "all":
       variable_attribute = "Type" if PROCESS_CLASSES else "Method"
-      top_changes_csv_path = RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH[1:] + "/" + repository_name + "/" + CK_CSV_FILE.replace('.csv', '') + "-" + "sorted_changes.csv"
-      result_dict = {} # Create a dictionary with the class name as the key and the type or method as the value, but the "Changed" column must be at least 2.
-      with open(top_changes_csv_path, "r") as file:
-         csv_reader = csv.DictReader(file)
-         for row in csv_reader:
-            if int(row["Changed"]) > MINIMUM_CHANGES:
-               class_key = row["Class"]
-               variable_attribute_value = row[variable_attribute]
-               result_dict[class_key] = variable_attribute_value
-      return result_dict # Return the class or method name
+      top_changes_csv_path = RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH[1:] + "/" + repository_name + "/" + CK_CSV_FILE.replace('.csv', '') + "-" + SORTED_CHANGES_CSV_FILENAME
+      # Open the top changes csv file and get the class/method and variable attribute data
+      with open(top_changes_csv_path, "r") as file: 
+         csv_reader = csv.DictReader(file) # Read the csv file
+         for row in csv_reader: # Loop trough the csv file
+            if int(row["Changed"]) > MINIMUM_CHANGES: # If the number of changes is greater than the minimum number of changes
+               class_name = row["Class"] # Get the class name
+               variable_attribute_value = row[variable_attribute] # Get the variable attribute
+                
+               if class_name not in ids: # If the class is not in the dictionary
+                  ids[class_name] = [variable_attribute_value] # Initialize list for variable attributes
+               else: # If the class is in the dictionary
+                  ids[class_name].append(variable_attribute_value) # Append variable attribute to the existing list
 
-   # If the id dictionary is empty, get from the DEFAULT_IDS constant
-   if name == "" and not first_run:
+   # If the input_source is "default", them get the ids from the DEFAULT_IDS dictionary.
+   if input_source.lower() == "default":
       ids = DEFAULT_IDS
       print(f"{backgroundColors.GREEN}Using the default stored {CK_CSV_FILE.replace('.csv', '')} names: {backgroundColors.CYAN}{', '.join(ids.keys())}{backgroundColors.GREEN}.{Style.RESET_ALL}")
 
-   return ids # Return the class or method name
+   return ids # Return the IDs to be analyzed
 
 # @brief: This function validates if the ids are as the same type as the files to be analyzed defined in CK_CSV_FILE according to PROCESS_CLASSES
 # @param: ids: Dictionary containing the ids to be analyzed
@@ -132,16 +127,18 @@ def get_user_ids_input(repository_name):
 # @return: True if the ids are valid, False otherwise
 def validate_ids(ids, repository_name):
    # Get the path of the file containing the top changes of the classes
-   repo_top_changes_file_path = RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH[1:] + "/" + repository_name + "/" + CK_CSV_FILE.replace('.csv', '') + "-" + "sorted_changes.csv"
+   repo_top_changes_file_path = RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH[1:] + "/" + repository_name + "/" + CK_CSV_FILE.replace('.csv', '') + "-" + SORTED_CHANGES_CSV_FILENAME
 
-   classnames = pd.read_csv(repo_top_changes_file_path)["Class"].unique()
-   attribute = "Type" if PROCESS_CLASSES else "Method"
-   variable_attributes = pd.read_csv(repo_top_changes_file_path)[attribute].unique()
+   df = pd.read_csv(repo_top_changes_file_path)
+   variable_attribute = "Type" if PROCESS_CLASSES else "Method"
+
    # Verify if the ids are as the same type as the files to be analyzed defined in CK_CSV_FILE according to PROCESS_CLASSES
-   for key, value in ids.items():
-      if key not in classnames or value not in variable_attributes: # If the id is not a class or the value is not in the attribute field
-         return False # Return False because the id is not a class
-   return True # Return True because the ids are valid
+   for key, values in ids.items():
+      for value in values:
+         matching_row = df[(df["Class"] == key) & (df[variable_attribute] == value)] # Get the row that matches the class and variable attribute
+         if matching_row.empty:
+            return False # Return False if the id is not found in the CSV file
+   return True # Return True if all ids are valid (found in the CSV file)
 
 # @brief: This function receives an id and verify if it contains slashes, if so, it returns the id without the slashes
 # @param: id: ID of the class or method to be analyzed
@@ -159,18 +156,19 @@ def get_clean_id(id):
 # @return: True if all the metrics are already calculated, False otherwise
 def check_metrics_files(folder_path, repository_name, ids):
    print(f"{backgroundColors.GREEN}Checking if all the {backgroundColors.CYAN}{folder_path.rsplit('/', 1)[-1]}{backgroundColors.GREEN} are already created.{Style.RESET_ALL}")
-   # Change the current working directory to the repository folder
-   os.chdir(folder_path)
-   
-   # Now, for every ids.keys() in the ids dictionary, verify if there is a csv file with the name of the id
-   for id in ids.keys():
-      file_name = f"{id} {ids[id]}" if PROCESS_CLASSES else f"{id} {get_clean_id(ids[id])}"
-      evolution_file = f"{repository_name}/{CLASSES_OR_METHODS}/{file_name}.csv"
-      if not os.path.isfile(evolution_file): # If the file does not exist
-         print(f"{backgroundColors.YELLOW}The {backgroundColors.CYAN}{id}.csv{backgroundColors.YELLOW} file does not exist.{Style.RESET_ALL}")
-         os.chdir(PATH) # Change the current working directory to the original path
-         return False
-   os.chdir(PATH) # Change the current working directory to the original path
+   original_path = os.getcwd() # Store the original working directory
+   try:
+      os.chdir(folder_path) # Change the current working directory to the repository folder
+      for id, values in ids.items(): # Iterate through each class and its variable attributes
+         for value in values: # Iterate through each variable attribute of the class
+            file_name = f"{id} {value}" if PROCESS_CLASSES else f"{id} {get_clean_id(value)}"
+            evolution_file = os.path.join(repository_name, CLASSES_OR_METHODS, f"{file_name}.csv")
+            if not os.path.isfile(evolution_file):
+               print(f"{backgroundColors.YELLOW}The {backgroundColors.CYAN}{file_name}.csv{backgroundColors.YELLOW} file does not exist.{Style.RESET_ALL}")
+               return False
+   finally:
+      os.chdir(original_path) # Change the current working directory back to the original path
+
    return True
 
 # @brief: This function asks if the user wants labels in the data points of the graphic image. If so, ask which one
@@ -373,13 +371,14 @@ def main():
       print(f"{backgroundColors.RED}The metrics evolution for {backgroundColors.CYAN}{', '.join(ids.keys())}{backgroundColors.RED} in {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not created. Please run the {backgroundColors.CYAN}metrics_changes.py{backgroundColors.RED} file first.{Style.RESET_ALL}")
       return
    
-   number_of_ids = len(ids.keys())
-   # Make a for loop to run the create_metrics_evolution_graphic function for each id
-   for index, id in enumerate(ids): # Loop trough the ids items in the dictionary
-      print(f"{backgroundColors.GREEN}Generating Image {backgroundColors.CYAN}{index+1} of {number_of_ids}{backgroundColors.GREEN} for the {backgroundColors.CYAN}{id} {CK_CSV_FILE.replace('.csv', '')}{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository.{Style.RESET_ALL}")
+   # Get the number of ids to be analyzed
+   number_of_ids = sum(len(attributes) for attributes in ids.values())
 
-      # Create the metrics evolution graphs
-      create_metrics_evolution_graphic(repository_name, id, get_clean_id(ids[id]))
+   # Iterate through each class and its variable attributes
+   for index, (class_name, variable_attributes) in enumerate(ids.items()):
+      for attribute_index, attribute in enumerate(variable_attributes): # Iterate through each variable attribute of the class
+         print(f"{backgroundColors.GREEN}Generating Image {backgroundColors.CYAN}{index+attribute_index+1} of {number_of_ids}{backgroundColors.GREEN} for the {backgroundColors.CYAN}{attribute} {CK_CSV_FILE.replace('.csv', '')}{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository.{Style.RESET_ALL}")
+         create_metrics_evolution_graphic(repository_name, class_name, get_clean_id(attribute)) # Create the metrics evolution graphs
 
    print(f"{backgroundColors.CYAN}Successfully created the metrics evolution graphics{backgroundColors.GREEN} for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository inside the {backgroundColors.CYAN}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH[1:]}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 
