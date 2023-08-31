@@ -373,12 +373,14 @@ def main():
    
    # Get the number of ids to be analyzed
    number_of_ids = sum(len(attributes) for attributes in ids.values())
+   current_id = 1
 
    # Iterate through each class and its variable attributes
    for index, (class_name, variable_attributes) in enumerate(ids.items()):
       for attribute_index, attribute in enumerate(variable_attributes): # Iterate through each variable attribute of the class
-         print(f"{backgroundColors.GREEN}Generating Image {backgroundColors.CYAN}{index+attribute_index+1} of {number_of_ids}{backgroundColors.GREEN} for the {backgroundColors.CYAN}{attribute} {CK_CSV_FILE.replace('.csv', '')}{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository.{Style.RESET_ALL}")
+         print(f"{backgroundColors.GREEN}Generating Image {backgroundColors.CYAN}{current_id} of {number_of_ids}{backgroundColors.GREEN} for the {backgroundColors.CYAN}{attribute} {CK_CSV_FILE.replace('.csv', '')}{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository.{Style.RESET_ALL}")
          create_metrics_evolution_graphic(repository_name, class_name, get_clean_id(attribute)) # Create the metrics evolution graphs
+         current_id += 1
 
    print(f"{backgroundColors.CYAN}Successfully created the metrics evolution graphics{backgroundColors.GREEN} for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository inside the {backgroundColors.CYAN}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH[1:]}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 
