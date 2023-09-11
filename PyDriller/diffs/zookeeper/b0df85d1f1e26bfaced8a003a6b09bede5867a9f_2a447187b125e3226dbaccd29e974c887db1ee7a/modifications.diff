@@ -1,9 +1,0 @@
-diff --git a/zookeeper/c/ChangeLog b/zookeeper/c/ChangeLog
-index 0e0c0a059..0513e9ed0 100644
---- a/zookeeper/c/ChangeLog
-+++ b/zookeeper/c/ChangeLog
-@@ -1,3 +1,4 @@
-+Release 1.0.0
- 2007-11-27 Andrew Kornev <akornev@users.sourceforge.net>
- 
- 	* configure.ac and Makefile.am added support for GNU autotools
