@@ -302,6 +302,20 @@ def play_sound():
 	else: # if the sound file does not exist
 		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
+# @brief: This function sorts the commit hashes by commit date
+# @param: repository_name: Name of the repository to be analyzed
+# @return: None
+def sort_commit_hashes_by_commit_date(repository_name):
+   # Get the commit hashes file path
+   commit_hashes_file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commit_hashes{COMMIT_HASHES_FILE_EXTENSION}"
+   # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
+   commit_hashes = pd.read_csv(commit_hashes_file_path, sep=",", usecols=["commit hash", "commit date"], header=0)
+   # Sort the DataFrame by the "commit date" column
+   commit_hashes["commit date"] = pd.to_datetime(commit_hashes["commit date"])
+   commit_hashes = commit_hashes.sort_values(by="commit date")
+   # Overwrite the CSV file with the sorted DataFrame
+   commit_hashes.to_csv(commit_hashes_file_path, index=False)
+
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
@@ -344,6 +358,9 @@ def main():
 
    # Write the commit hashes to a csv file
    write_commit_hashes_to_csv(repository_name, commit_hashes)
+
+   # Sort commit hashes by commit date
+   sort_commit_hashes_by_commit_date(repository_name)
 
    # Checkout the main branch
    checkout_branch("main")
