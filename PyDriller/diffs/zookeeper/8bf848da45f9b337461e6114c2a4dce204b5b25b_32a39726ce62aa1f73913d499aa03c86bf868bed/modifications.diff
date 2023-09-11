@@ -1,0 +1,141 @@
+diff --git a/zookeeper/c/include/zookeeper.h b/zookeeper/c/include/zookeeper.h
+index 8c3aa75dc..049f273ac 100644
+--- a/zookeeper/c/include/zookeeper.h
++++ b/zookeeper/c/include/zookeeper.h
+@@ -264,9 +264,14 @@ ZOOAPI zhandle_t *zookeeper_init(const char *host, watcher_fn fn,
+  * After this call, the client session will no longer be valid. The function
+  * will flush any outstanding send requests before return. As a result it may 
+  * block.
++ *
++ * This method should only be called only once on a zookeeper handle. Calling
++ * twice will cause undefined (and probably undesirable behavior).
++ *
+  * \param zh the zookeeper handle obtained by a call to \ref zookeeper_init
+  * \return a result code. Regardless of the error code returned, the zhandle 
+  * will be destroyed and all resources freed. 
++ *
+  * ZOK - success
+  * ZBADARGUMENTS - invalid input parameters
+  * ZMARSHALLINGERROR - failed to marshall a request; possibly, out of memory
+diff --git a/zookeeper/c/src/cli.c b/zookeeper/c/src/cli.c
+index 2a1b9c6a0..1ec419f60 100644
+--- a/zookeeper/c/src/cli.c
++++ b/zookeeper/c/src/cli.c
+@@ -214,6 +214,8 @@ int startsWith(const char *line, const char *prefix)
+ 	return strncmp(line, prefix, len) == 0;
+ }
+ 
++static const char *hostPort;
++
+ void processline(char *line)
+ {
+ 	int rc;
+@@ -317,6 +319,9 @@ void processline(char *line)
+ 		}
+ 	} else if (strcmp(line, "myid") == 0) {
+ 		printf("session Id = %llx\n", _LL_CAST_ zoo_client_id(zh)->client_id);
++        } else if (strcmp(line, "reinit") == 0) {
++		zookeeper_close(zh);
++	        zh = zookeeper_init(hostPort, watcher, 10000, &myid);
+ 	} else if (startsWith(line, "quit")) {
+ 		fprintf(stderr, "Quitting...\n");
+ 		shutdownThisThing=1;
+@@ -370,7 +375,8 @@ int main(int argc, char **argv)
+ 	strcpy(p,"dummy");
+ #endif
+ 	zoo_deterministic_conn_order(1);  // enable deterministic order
+-	zh = zookeeper_init(argv[1], watcher, 10000, &myid);
++        hostPort = argv[1];
++	zh = zookeeper_init(hostPort, watcher, 10000, &myid);
+ 	if (!zh) {
+ 		return errno;
+ 	}
+diff --git a/zookeeper/c/src/mt_adaptor.c b/zookeeper/c/src/mt_adaptor.c
+index a3b4c5289..9fd356484 100755
+--- a/zookeeper/c/src/mt_adaptor.c
++++ b/zookeeper/c/src/mt_adaptor.c
+@@ -104,7 +104,9 @@ int adaptor_init(zhandle_t *zh)
+         return -1;
+     }
+     zh->adaptor_priv = adaptor_threads;
++    api_prolog(zh);
+     pthread_create(&adaptor_threads->io, 0, do_io, zh);
++    api_prolog(zh);
+     pthread_create(&adaptor_threads->completion, 0, do_completion, zh);
+     return 0;
+ }
+@@ -190,6 +192,7 @@ void *do_io(void *v)
+         }
+         result = zookeeper_process(zh, interest);
+     }
++    api_epilog(zh, 0);
+     return 0;
+ }
+ 
+@@ -204,6 +207,7 @@ void *do_completion(void *v)
+         pthread_mutex_unlock(&zh->completions_to_process.lock);
+         process_completions(zh);
+     }
++    api_epilog(zh, 0);
+     return 0;
+ }
+ 
+diff --git a/zookeeper/c/src/zk_adaptor.h b/zookeeper/c/src/zk_adaptor.h
+index fd77cb76f..9946a0e29 100644
+--- a/zookeeper/c/src/zk_adaptor.h
++++ b/zookeeper/c/src/zk_adaptor.h
+@@ -156,6 +156,8 @@ void notify_sync_completion(struct sync_completion *sc);
+ int adaptor_send_queue(zhandle_t *zh, int timeout);
+ int process_async(int outstanding_sync);
+ void process_completions(zhandle_t *zh);
++void api_prolog(zhandle_t* zh);
++int api_epilog(zhandle_t *zh, int rc);
+ #ifdef THREADED
+ #else
+ 
+diff --git a/zookeeper/c/src/zookeeper.c b/zookeeper/c/src/zookeeper.c
+index 8903f88eb..11f2785ba 100644
+--- a/zookeeper/c/src/zookeeper.c
++++ b/zookeeper/c/src/zookeeper.c
+@@ -148,8 +148,6 @@ static int add_completion(zhandle_t *zh, int xid, int completion_type,
+         const void *dc, const void *data, int add_to_front);
+ static void dispatch_events_till_ready(zhandle_t *zh, 
+ 	    struct blocking_retv *ready) __attribute__ ((unused));
+-static void api_prolog(zhandle_t* zh);
+-static int api_epilog(zhandle_t *zh, int rc);
+ int flush_send_queue(zhandle_t*zh, int timeout);
+ static int handle_socket_error_msg(zhandle_t *zh, int line, int rc,
+ 	const char* format,...);
+@@ -1123,12 +1121,12 @@ static int check_events(zhandle_t *zh, int events)
+ 	return ZOK;
+ }
+ 
+-static void api_prolog(zhandle_t* zh)
++void api_prolog(zhandle_t* zh)
+ {
+     inc_nesting_level(&zh->nesting,1); 
+ }
+ 
+-static int api_epilog(zhandle_t *zh,int rc)
++int api_epilog(zhandle_t *zh,int rc)
+ {
+ 	if(inc_nesting_level(&zh->nesting,-1)==0 && zh->close_requested!=0)
+ 		zookeeper_close(zh);
+@@ -1551,7 +1549,8 @@ int zookeeper_close(zhandle_t *zh)
+         return ZBADARGUMENTS;
+     
+     if (inc_nesting_level(&zh->nesting,0)!=0) {
+-		zh->close_requested=1;
++        zh->close_requested=1;
++    	adaptor_finish(zh);
+         return ZOK;
+     }
+     if (is_unrecoverable(zh)||zh->fd==-1){
+@@ -1579,7 +1578,6 @@ int zookeeper_close(zhandle_t *zh)
+      * (but reasonable) number of milliseconds since we want the call to block*/
+     rc=adaptor_send_queue(zh, 3000);
+ finish:
+-    adaptor_finish(zh);
+     destroy(zh);
+     return rc;
+ }

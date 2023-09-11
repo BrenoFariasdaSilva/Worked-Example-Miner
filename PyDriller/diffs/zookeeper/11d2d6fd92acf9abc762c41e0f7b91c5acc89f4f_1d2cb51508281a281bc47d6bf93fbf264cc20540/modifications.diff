@@ -1,0 +1,4 @@
+diff --git a/zookeeper/java/lib/junit-4.1.jar b/zookeeper/java/lib/junit-4.1.jar
+new file mode 100644
+index 000000000..2c46d67a2
+Binary files /dev/null and b/zookeeper/java/lib/junit-4.1.jar differ

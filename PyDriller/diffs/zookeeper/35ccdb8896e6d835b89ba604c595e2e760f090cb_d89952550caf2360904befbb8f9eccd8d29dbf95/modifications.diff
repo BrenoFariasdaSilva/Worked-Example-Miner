@@ -1,0 +1,67 @@
+diff --git a/zookeeper/c/include/zookeeper.h b/zookeeper/c/include/zookeeper.h
+index 4de8e3f1d..515a6719b 100644
+--- a/zookeeper/c/include/zookeeper.h
++++ b/zookeeper/c/include/zookeeper.h
+@@ -249,14 +249,15 @@ typedef void (*watcher_fn)(void *, int type, int state, const char *path);
+  *   session. If the session timed out or the id is invalid, a new
+  *   session will be automatically generated. Clients should check the actual
+  *   session id by calling \ref zoo_client_id. 
+- * \param passwd the password of a previously established session. Pass 0 if
+- *   reconnecting to a previous session. 
++ * \param context the context object that will be passed to the watcher callback
++ *   function. The object is not used by zookeeper internally and can be null.
++ * \param flags reserved for future use. Should be set to zero.
+  * \return a pointer to the opaque zhandle structure. If it fails to create 
+  * a new zhandle the function returns NULL and the errno variable 
+  * indicates the reason.
+  */
+ ZOOAPI zhandle_t *zookeeper_init(const char *host, watcher_fn fn,
+-  int recv_timeout, const clientid_t *clientid);
++  int recv_timeout, const clientid_t *clientid, void *context, int flags);
+ 
+ /**
+  * \brief close the zookeeper handle and free up any resources.
+diff --git a/zookeeper/c/src/cli.c b/zookeeper/c/src/cli.c
+index fc60e8810..2e12eaf0a 100644
+--- a/zookeeper/c/src/cli.c
++++ b/zookeeper/c/src/cli.c
+@@ -331,7 +331,7 @@ void processline(char *line)
+ 		printf("session Id = %llx\n", _LL_CAST_ zoo_client_id(zh)->client_id);
+         } else if (strcmp(line, "reinit") == 0) {
+ 		zookeeper_close(zh);
+-	        zh = zookeeper_init(hostPort, watcher, 10000, &myid);
++	        zh = zookeeper_init(hostPort, watcher, 10000, &myid, 0, 0);
+ 	} else if (startsWith(line, "quit")) {
+ 		fprintf(stderr, "Quitting...\n");
+ 		shutdownThisThing=1;
+@@ -387,7 +387,7 @@ int main(int argc, char **argv)
+ 	//zoo_set_debug_level(LOG_LEVEL_DEBUG);
+ 	zoo_deterministic_conn_order(1);  // enable deterministic order
+     hostPort = argv[1];
+-	zh = zookeeper_init(hostPort, watcher, 10000, &myid);
++	zh = zookeeper_init(hostPort, watcher, 10000, &myid, 0, 0);
+ 	if (!zh) {
+ 		return errno;
+ 	}
+diff --git a/zookeeper/c/src/zookeeper.c b/zookeeper/c/src/zookeeper.c
+index a4e5992cf..2dc8c006e 100644
+--- a/zookeeper/c/src/zookeeper.c
++++ b/zookeeper/c/src/zookeeper.c
+@@ -398,7 +398,7 @@ watcher_fn zoo_set_watcher(zhandle_t *zh,watcher_fn newFn)
+  * Create a zookeeper handle associated with the given host and port.
+  */
+ zhandle_t *zookeeper_init(const char *host, watcher_fn watcher,
+-  int recv_timeout, const clientid_t *clientid)
++  int recv_timeout, const clientid_t *clientid, void *context, int flags)
+ {
+     int errnosave;
+ 	zhandle_t *zh = calloc(1, sizeof(*zh));
+@@ -407,7 +407,7 @@ zhandle_t *zookeeper_init(const char *host, watcher_fn watcher,
+ 	}
+ 	zh->fd = -1;
+     zh->state = 0;
+-    zh->context = NULL;
++    zh->context = context;
+     zh->recv_timeout = recv_timeout;
+     if (watcher) {
+ 	   zh->watcher = watcher;

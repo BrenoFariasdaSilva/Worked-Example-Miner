@@ -1,0 +1,17 @@
+diff --git a/zookeeper/java/src/com/yahoo/zookeeper/ClientCnxn.java b/zookeeper/java/src/com/yahoo/zookeeper/ClientCnxn.java
+index 1a9f9f397..69ef8b8dc 100755
+--- a/zookeeper/java/src/com/yahoo/zookeeper/ClientCnxn.java
++++ b/zookeeper/java/src/com/yahoo/zookeeper/ClientCnxn.java
+@@ -741,6 +741,12 @@ private void cleanup() {
+                 }
+                 pendingQueue.clear();
+             }
++            synchronized (outgoingQueue) {
++                for (Packet p : outgoingQueue) {
++                    conLossPacket(p);
++                }
++                outgoingQueue.clear();
++            }
+         }
+ 
+         public void close() {

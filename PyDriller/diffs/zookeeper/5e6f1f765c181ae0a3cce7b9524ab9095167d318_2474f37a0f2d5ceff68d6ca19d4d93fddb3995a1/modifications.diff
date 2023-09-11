@@ -1,0 +1,368 @@
+diff --git a/zookeeper/c/tests/LibCMocks.cc b/zookeeper/c/tests/LibCMocks.cc
+index 4503d6f60..dde691128 100644
+--- a/zookeeper/c/tests/LibCMocks.cc
++++ b/zookeeper/c/tests/LibCMocks.cc
+@@ -285,6 +285,16 @@ int select(int nfds,fd_set *rfds,fd_set *wfds,fd_set *efds,struct timeval *timeo
+ 
+ Mock_select* Mock_select::mock_=0;
+ 
++// *****************************************************************************
++// poll
++Mock_poll* Mock_poll::mock_=0;
++int poll(struct pollfd *fds, nfds_t nfds, int timeout){
++    if (!Mock_poll::mock_)
++        return LIBC_SYMBOLS.poll(fds,nfds,timeout);
++    return Mock_poll::mock_->call(fds,nfds,timeout);        
++    
++}
++
+ // *****************************************************************************
+ // gettimeofday
+ int gettimeofday(struct timeval *tp, GETTIMEOFDAY_ARG2_TYPE tzp){
+diff --git a/zookeeper/c/tests/LibCMocks.h b/zookeeper/c/tests/LibCMocks.h
+index e58f95314..77301ff53 100644
+--- a/zookeeper/c/tests/LibCMocks.h
++++ b/zookeeper/c/tests/LibCMocks.h
+@@ -290,6 +290,49 @@ public:
+     static Mock_select* mock_;
+ };
+ 
++// *****************************************************************************
++// poll
++// the last element of the pollfd array is expected to be test FD
++class Mock_poll: public Mock
++{
++public:
++    Mock_poll(Mock_socket* s,int fd):sock(s),
++        callReturns(1),myFD(fd),timeout(50)
++    {
++        mock_=this;
++    }
++    ~Mock_poll(){mock_=0;}
++    
++    Mock_socket* sock;
++    int callReturns;
++    int myFD;
++    int timeout; //in millis
++    virtual int call(struct pollfd *fds, nfds_t nfds, int to) {
++        pollfd* myPoll=0;
++        if(fds[nfds-1].fd==myFD)
++            myPoll=&fds[nfds-1];
++        bool isWritableRequested=false;
++        if(myPoll!=0){
++            isWritableRequested=myPoll->events&POLLOUT;
++            nfds--;
++        }
++        LIBC_SYMBOLS.poll(fds,nfds,(!isWritableRequested&&!isFDReadable())?timeout:0);
++        if(myPoll!=0){
++            // myFD is always writable if requested
++            myPoll->revents=isWritableRequested?POLLOUT:0;
++            // myFD is only readable if the socket has anything to read
++            myPoll->revents|=isFDReadable()?POLLIN:0;
++        }
++        return callReturns;
++    }
++
++    virtual bool isFDReadable() const {
++        return sock->hasMoreRecv();
++    }
++    
++    static Mock_poll* mock_;
++};
++
+ // *****************************************************************************
+ // gettimeofday
+ class Mock_gettimeofday: public Mock
+diff --git a/zookeeper/c/tests/LibCSymTable.cc b/zookeeper/c/tests/LibCSymTable.cc
+index 950a15cbe..2e9fb0b2a 100644
+--- a/zookeeper/c/tests/LibCSymTable.cc
++++ b/zookeeper/c/tests/LibCSymTable.cc
+@@ -47,6 +47,7 @@ LibCSymTable::LibCSymTable()
+     LOAD_SYM(send);
+     LOAD_SYM(recv);
+     LOAD_SYM(select);
++    LOAD_SYM(poll);
+     LOAD_SYM(gettimeofday);
+ #ifdef THREADED
+     LOAD_SYM(pthread_create);
+diff --git a/zookeeper/c/tests/LibCSymTable.h b/zookeeper/c/tests/LibCSymTable.h
+index 78b916b6c..eb40059fc 100644
+--- a/zookeeper/c/tests/LibCSymTable.h
++++ b/zookeeper/c/tests/LibCSymTable.h
+@@ -23,6 +23,7 @@
+ #include <stddef.h>
+ #include <dlfcn.h>
+ #include <cassert>
++#include <poll.h>
+ 
+ #ifdef THREADED
+ #include <pthread.h>
+@@ -68,6 +69,7 @@ struct LibCSymTable
+     DECLARE_SYM(ssize_t,send,(int,const void*,size_t,int));
+     DECLARE_SYM(ssize_t,recv,(int,const void*,size_t,int));
+     DECLARE_SYM(int,select,(int,fd_set*,fd_set*,fd_set*,struct timeval*));
++    DECLARE_SYM(int,poll,(struct pollfd*,nfds_t,int));
+     DECLARE_SYM(int,gettimeofday,(struct timeval*,GETTIMEOFDAY_ARG2_TYPE));
+ #ifdef THREADED
+     DECLARE_SYM(int,pthread_create,(pthread_t *, const pthread_attr_t *,
+diff --git a/zookeeper/c/tests/TestOperations.cc b/zookeeper/c/tests/TestOperations.cc
+index 1da9f049d..815ae6a0e 100644
+--- a/zookeeper/c/tests/TestOperations.cc
++++ b/zookeeper/c/tests/TestOperations.cc
+@@ -31,8 +31,8 @@ using namespace std;
+ class Zookeeper_operations : public CPPUNIT_NS::TestFixture
+ {
+     CPPUNIT_TEST_SUITE(Zookeeper_operations);
++    CPPUNIT_TEST(testOperationsAndDisconnectConcurrently1);
+     CPPUNIT_TEST(testConcurrentOperations1);
+-    //CPPUNIT_TEST(testOperationsAndCloseConcurrently1);
+     CPPUNIT_TEST_SUITE_END();
+     zhandle_t *zh;
+ 
+@@ -55,7 +55,7 @@ public:
+     {
+         
+     }
+-    void testOperationsAndCloseConcurrently1()
++    void testOperationsAndDisconnectConcurrently1()
+     {
+         
+     }
+@@ -166,7 +166,7 @@ public:
+             for(i=0;i<REPS;i++){
+                 char buf;
+                 int size=sizeof(buf);
+-                svr_->addSendResponse(new ZooGetResponse("1",1));
++                svr_->addOperationResponse(new ZooGetResponse("1",1));
+                 rc_=zoo_get(zh_,"/x/y/z",0,&buf,&size,0);
+                 if(rc_!=ZOK){
+                     break;
+@@ -187,7 +187,7 @@ public:
+         Mock_gettimeofday timeMock;
+         
+         ZookeeperServer zkServer;
+-        Mock_select selMock(&zkServer,ZookeeperServer::FD);
++        Mock_poll pollMock(&zkServer,ZookeeperServer::FD);
+         // must call zookeeper_close() while all the mocks are in the scope!
+         CloseFinally guard(&zh);
+         
+@@ -235,17 +235,17 @@ public:
+         VALIDATE_JOB(j9);
+         VALIDATE_JOB(j10);
+     }
+-    class TestGetWithCloseJob: public TestJob{
++    class TestGetWithDisconnectJob: public TestJob{
+     public:
+         static const int REPS=3000;
+-        TestGetWithCloseJob(ZookeeperServer* svr,zhandle_t* zh)
++        TestGetWithDisconnectJob(ZookeeperServer* svr,zhandle_t* zh)
+             :svr_(svr),zh_(zh),rc_(ZAPIERROR){}
+         virtual void run(){
+             int i;
+             for(i=0;i<REPS;i++){
+                 char buf;
+                 int size=sizeof(buf);                
+-                svr_->addSendResponse(new ZooGetResponse("1",1));
++                svr_->addOperationResponse(new ZooGetResponse("1",1));
+                 rc_=zoo_get(zh_,"/x/y/z",0,&buf,&size,0);
+                 if(rc_!=ZOK){
+                     break;
+@@ -254,21 +254,21 @@ public:
+             //TEST_TRACE(("Finished %d iterations",i));
+         }
+         virtual void validate(const char* file, int line) const{
+-            CPPUNIT_ASSERT_EQUAL_MESSAGE_LOC("ZOK != rc",ZOK,rc_,file,line);
++            CPPUNIT_ASSERT_EQUAL_MESSAGE_LOC("ZOK != rc",ZCONNECTIONLOSS,rc_,file,line);
+         }
+         ZookeeperServer* svr_;
+         zhandle_t* zh_;
+         int rc_;
+     };
+ 
+-    void testOperationsAndCloseConcurrently1()
++    void testOperationsAndDisconnectConcurrently1()
+     {
+-        for(int counter=0; counter<1; counter++){
++        for(int counter=0; counter<500; counter++){
+             // frozen time -- no timeouts and no pings
+             Mock_gettimeofday timeMock;
+             
+             ZookeeperServer zkServer;
+-            Mock_select selMock(&zkServer,ZookeeperServer::FD);
++            Mock_poll pollMock(&zkServer,ZookeeperServer::FD);
+             // must call zookeeper_close() while all the mocks are in the scope!
+             CloseFinally guard(&zh);
+             
+@@ -278,8 +278,47 @@ public:
+             while(zh->state!=CONNECTED_STATE)
+                 millisleep(2);
+             
+-            TestGetWithCloseJob j1(&zkServer,zh);
++            const int THREAD_COUNT=10;
++            CountDownLatch startLatch(THREAD_COUNT);
++            CountDownLatch endLatch(THREAD_COUNT);
+ 
++            TestGetWithDisconnectJob j1(&zkServer,zh);
++            j1.start(0,&endLatch);
++            TestGetWithDisconnectJob j2(&zkServer,zh);
++            j2.start(0,&endLatch);
++            TestGetWithDisconnectJob j3(&zkServer,zh);
++            j3.start(0,&endLatch);
++            TestGetWithDisconnectJob j4(&zkServer,zh);
++            j4.start(0,&endLatch);
++            TestGetWithDisconnectJob j5(&zkServer,zh);
++            j5.start(0,&endLatch);
++            TestGetWithDisconnectJob j6(&zkServer,zh);
++            j6.start(0,&endLatch);
++            TestGetWithDisconnectJob j7(&zkServer,zh);
++            j7.start(0,&endLatch);
++            TestGetWithDisconnectJob j8(&zkServer,zh);
++            j8.start(0,&endLatch);
++            TestGetWithDisconnectJob j9(&zkServer,zh);
++            j9.start(0,&endLatch);
++            TestGetWithDisconnectJob j10(&zkServer,zh);
++            j10.start(0,&endLatch);
++            millisleep(5);
++            // reconnect attempts will start failing immediately
++            zkServer.setServerDown(0);
++            // next recv call will return 0
++            zkServer.setConnectionLost();
++            endLatch.await();
++            // validate test results
++            VALIDATE_JOB(j1);
++            VALIDATE_JOB(j2);
++            VALIDATE_JOB(j3);
++            VALIDATE_JOB(j4);
++            VALIDATE_JOB(j5);
++            VALIDATE_JOB(j6);
++            VALIDATE_JOB(j7);
++            VALIDATE_JOB(j8);
++            VALIDATE_JOB(j9);
++            VALIDATE_JOB(j10);
+         }
+         
+     }
+diff --git a/zookeeper/c/tests/TestZookeeperClose.cc b/zookeeper/c/tests/TestZookeeperClose.cc
+index 8929d0356..1ff981081 100644
+--- a/zookeeper/c/tests/TestZookeeperClose.cc
++++ b/zookeeper/c/tests/TestZookeeperClose.cc
+@@ -109,8 +109,7 @@ public:
+         CPPUNIT_ASSERT(zh!=0);
+ 
+         Mock_socket sockMock;
+-        const int MY_FD=100;
+-        sockMock.socketReturns=MY_FD;
++        sockMock.socketReturns=ZookeeperServer::FD;
+         sockMock.connectReturns=-1;
+         sockMock.connectErrno=EWOULDBLOCK;
+         
+@@ -191,6 +190,7 @@ public:
+     }
+     void testCloseUnconnected1()
+     {
++        //zoo_set_debug_level(LOG_LEVEL_DEBUG);
+         for(int i=0; i<100;i++){
+             zh=zookeeper_init("localhost:2121",watcher,10000,0,0,0); 
+             CPPUNIT_ASSERT(zh!=0);
+@@ -208,7 +208,7 @@ public:
+ 
+         for(int i=0;i<500;i++){
+             ZookeeperServer zkServer;
+-            Mock_select selMock(&zkServer,ZookeeperServer::FD);
++            Mock_poll pollMock(&zkServer,ZookeeperServer::FD);
+             // use a checked version of pthread calls
+             CheckedPthread threadMock;
+             // do not actually free the memory while in zookeeper_close()
+@@ -272,12 +272,12 @@ public:
+         // frozen time -- no timeouts and no pings
+         Mock_gettimeofday timeMock;
+         
+-        for(int i=0;i<500;i++){
++        for(int i=0;i<100;i++){
+             ZookeeperServer zkServer;
+             // make the server return a non-matching session id
+             zkServer.returnSessionExpired();
+             
+-            Mock_select selMock(&zkServer,ZookeeperServer::FD);
++            Mock_poll pollMock(&zkServer,ZookeeperServer::FD);
+             // use a checked version of pthread calls
+             CheckedPthread threadMock;
+             // do not actually free the memory while in zookeeper_close()
+diff --git a/zookeeper/c/tests/ZKMocks.cc b/zookeeper/c/tests/ZKMocks.cc
+index 10cb13424..46fcf3690 100644
+--- a/zookeeper/c/tests/ZKMocks.cc
++++ b/zookeeper/c/tests/ZKMocks.cc
+@@ -130,9 +130,14 @@ string ZooGetResponse::toString() const{
+ // Zookeeper server simulator
+ // 
+ ssize_t ZookeeperServer::callRecv(int s,void *buf,size_t len,int flags){
++    if(connectionLost){
++        recvReturnBuffer.erase();
++        return 0;
++    }
+     // done transmitting the current buffer?
+     if(recvReturnBuffer.size()==0){
+         synchronized(recvQMx);
++        if(recvQueue.empty()) assert("Invalid recv call (empty recv queue)"&&false);
+         Element& el=recvQueue.front();
+         if(el.first!=0){
+             recvReturnBuffer=el.first->toString();
+@@ -170,8 +175,8 @@ void ZookeeperServer::notifyBufferSent(const std::string& buffer){
+         synchronized(respQMx);
+         if(respQueue.empty())
+             return;
+-       e=respQueue.front();
+-       respQueue.pop_front();
++        e=respQueue.front();
++        respQueue.pop_front();
+     }
+     e.first->setXID(rh.xid);
+     addRecvResponse(e);
+diff --git a/zookeeper/c/tests/ZKMocks.h b/zookeeper/c/tests/ZKMocks.h
+index 970a61264..0531f13c1 100644
+--- a/zookeeper/c/tests/ZKMocks.h
++++ b/zookeeper/c/tests/ZKMocks.h
+@@ -163,7 +163,9 @@ private:
+ class ZookeeperServer: public Mock_socket
+ {
+ public:
+-    ZookeeperServer():serverDownSkipCount_(-1),sessionExpired(false){
++    ZookeeperServer():
++        serverDownSkipCount_(-1),sessionExpired(false),connectionLost(false)
++    {
+         connectReturns=-1;
+         connectErrno=EWOULDBLOCK;        
+     }
+@@ -181,8 +183,9 @@ public:
+     // connection handling
+     // what to do when the handshake request comes in?
+     int serverDownSkipCount_;
+-    // this will cause getsockopt(zh->fd,SOL_SOCKET,SO_ERROR,&error,&len) call fail
+-    // after skipCount dropped to zero
++    // this will cause getsockopt(zh->fd,SOL_SOCKET,SO_ERROR,&error,&len) return 
++    // a failure after skipCount dropped to zero, thus simulating a server down 
++    // condition
+     // passing skipCount==-1 will make every connect attempt succeed
+     void setServerDown(int skipCount=0){ 
+         serverDownSkipCount_=skipCount;
+@@ -204,6 +207,11 @@ public:
+     bool sessionExpired;
+     void returnSessionExpired(){ sessionExpired=true; }
+     
++    // this is a trigger that gets reset back to false
++    // next recv call will return 0 length, thus simulating a connecton loss
++    bool connectionLost;
++    void setConnectionLost() {connectionLost=true;}
++    
+     // recv
+     typedef std::pair<Response*,int> Element;
+     typedef std::deque<Element> ResponseList;
+@@ -239,7 +247,7 @@ public:
+     // send operation doesn't try to match request to the response
+     ResponseList respQueue;
+     mutable Mutex respQMx;
+-    ZookeeperServer& addSendResponse(Response* resp, int errnum=0){
++    ZookeeperServer& addOperationResponse(Response* resp, int errnum=0){
+         synchronized(respQMx);
+         respQueue.push_back(Element(resp,errnum));
+         return *this;

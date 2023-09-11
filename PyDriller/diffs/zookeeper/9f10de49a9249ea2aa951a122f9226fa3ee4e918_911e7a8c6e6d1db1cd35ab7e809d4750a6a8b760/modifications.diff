@@ -1,0 +1,264 @@
+diff --git a/zookeeper/c/ChangeLog b/zookeeper/c/ChangeLog
+index 0513e9ed0..de5338200 100644
+--- a/zookeeper/c/ChangeLog
++++ b/zookeeper/c/ChangeLog
+@@ -1,9 +1,70 @@
++Release 1.1.2
++2008-01-24 Andrew Kornev <akornev@users.sourceforge.net>
++
++    * fixed a race condition caused by the code in zookeeper_process()
++      and free_completions() setting sc->complete to 1 without proper
++      synchronization;
++
++    * fixed zoo_get() not updating buffer_len value with the actual
++      buffer length on return; added missing enter_critical/leave_critical
++      calls to the async ZK operations.
++
++    * Replaced select() with poll() to fix the problem with the FD_SET
++      macro causing stack corruption for FDs higher than 1024
++
++    * Added zoo_set_log_stream() to the public API. The function allows
++      applications to specify a different log file.
++
++    * Removed unused declarations from zookeeper.h (ACL related)
++
++    * changed zoo_get() signature to take a pointer to buffer length.
++      The function sets the parameter to the actual data length upon return.
++
++    * the watcher callback now takes the zhandle as its first parameter. This
++      is to avoid a race condition in the multi-threaded client when a watcher
++      is called before zookeeper_init() has returned.
++
++    * fixed zookeeper_close() resource leaks and race conditions,
++      fixed the race condition causing xid mismatch.
++
++    * added support for cppunit, added new targets: "check" and "run-check"
++      to build and run unit tests.
++
++    * Changed the signature of zookeeper_init(): it now takes a context pointer
++      as a parameter. This is to avoid a race condition in the multi-threaded client.
++
++    * Using a self-pipe rather than SIGUSR1 to wake up select() in the I/O thread
++
++    * Added the doxygen target to the autoconf scripts
++
++    * Pulled out the logging functionality from zookeeper.c to zk_log.c/.h.
++      Fixed a minor issue with PING responses being unnecessarily put on
++      the completion queue rather than simply dropped. Make use of DLL_EXPORT
++      symbol for building shared lib on cygwin.
++
++    * Implemented new Zookeeper operation sync() to flush the leader channel
++      to ensure that all updates have reached the followers.
++
++    * Synchronous methods not being handled properly on disconnect
++
++    * breed: fixed an incorrect parameter passed to zookeeper API by
++      the Sync API wrapper functions
++
++    * breed: the set and delete commands now support both Sync and Async API.
++      Prefix the command name with an 'a' to call the Async API: aset, adelete
++
++    * Make sure mutexes and condition variables are properly initialized
++      and destroyed
++
++    * Fixed zookeeper_close() causing core dumps with mt_adaptor
++
++
+ Release 1.0.0
+ 2007-11-27 Andrew Kornev <akornev@users.sourceforge.net>
+ 
+-	* configure.ac and Makefile.am added support for GNU autotools
+-	
+-	* recordio.c/.h updated jute IO routines to use bit-explicit integer types
+-	  (int32_t vs. int, and int64_t vs. long long)
+-	  
+-	* README rough draft
+\ No newline at end of file
++    * configure.ac and Makefile.am added support for GNU autotools
++
++    * recordio.c/.h updated jute IO routines to use bit-explicit integer types
++      (int32_t vs. int, and int64_t vs. long long)
++
++    * README rough draft
+\ No newline at end of file
+diff --git a/zookeeper/c/README b/zookeeper/c/README
+index 9a30b15b0..9ff1b0192 100644
+--- a/zookeeper/c/README
++++ b/zookeeper/c/README
+@@ -45,10 +45,15 @@ downloaded from Source Forge please skip to step 3.
+                       enabled by default
+    --disable-static   do not build static libraries, enabled by default
+    --disable-shared   do not build shared libraries, enabled by default
+-5) do a "make" or "make install" to build the libraries and install them.
++5) do a "make" or "make install" to build the libraries and install them. 
++   Alternatively, you can also build and run a unit test suite (and you probably should). 
++   Please make sure you have cppunit-1.10.x or higher installed before you execute step 4. 
++   Once ./configure has finished, do a "make run-check". It will build the libraries, 
++   build the tests and run them.
+ 6) to generate doxygen documentation do a "make doxygen-doc". All documentations will be 
+    placed to a new subfolder named docs. By default only HTML documentation is generated.
+    For information on other document formats please use "./configure --help"
++   
+ 
+ 
+ USING THE CLIENT
+diff --git a/zookeeper/c/configure.ac b/zookeeper/c/configure.ac
+index 6bd421db4..7e295b5e8 100644
+--- a/zookeeper/c/configure.ac
++++ b/zookeeper/c/configure.ac
+@@ -36,7 +36,7 @@ AC_PROG_LIBTOOL
+ 
+ AC_ARG_ENABLE([debug],
+  [AS_HELP_STRING([--enable-debug],[enable debug build [default=no]])],
+- [CFLAGS="-ggdb -O0";CXXFLAGS="-ggdb -O0"],[CFLAGS="-O2";CXXFLAGS="-O2"])
++ [CFLAGS="-g -O0";CXXFLAGS="-g -O0"],[CFLAGS="-g -O2";CXXFLAGS="-g -O2"])
+  
+ AC_ARG_WITH([syncapi],
+  [AS_HELP_STRING([--with-syncapi],[build with support for SyncAPI [default=yes]])],
+@@ -64,15 +64,14 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h stdlib.h string.h sys
+ # Checks for typedefs, structures, and compiler characteristics.
+ AC_C_CONST
+ AC_C_INLINE
+-AC_TYPE_PID_T
+ AC_HEADER_TIME
++AC_CHECK_TYPE([nfds_t],
++	[AC_DEFINE([POLL_NFDS_TYPE],[nfds_t],[poll() second argument type])],
++	[AC_DEFINE([POLL_NFDS_TYPE],[unsigned int],[poll() second argument type])],
++	[#include <poll.h>])
+ 
+ # Checks for library functions.
+-AC_FUNC_MALLOC
+-AC_FUNC_REALLOC
+-AC_FUNC_SELECT_ARGTYPES
+-AC_TYPE_SIGNAL
+-AC_CHECK_FUNCS([gethostbyname gettimeofday memmove memset select socket strchr strdup strerror strtol])
++AC_CHECK_FUNCS([gethostbyname gettimeofday memmove memset poll socket strchr strdup strerror strtol])
+ 
+ AC_CONFIG_FILES([Makefile])
+ AC_OUTPUT
+diff --git a/zookeeper/c/src/cli.c b/zookeeper/c/src/cli.c
+index f9f564f83..5ce07578e 100644
+--- a/zookeeper/c/src/cli.c
++++ b/zookeeper/c/src/cli.c
+@@ -277,10 +277,12 @@ void processline(char *line) {
+             return;
+         }
+         fprintf(stderr, "Creating [%s] node\n", line);
+-        struct ACL _CREATE_ONLY_ACL_ACL[] = {{PERM_CREATE, ANYONE_ID_UNSAFE}};
+-        struct ACL_vector CREATE_ONLY_ACL = {1,_CREATE_ONLY_ACL_ACL};
+-        rc = zoo_acreate(zh, line, "new", 3, &CREATE_ONLY_ACL, flags,
+-                my_string_completion, strdup(line));
++        {
++            struct ACL _CREATE_ONLY_ACL_ACL[] = {{PERM_CREATE, ANYONE_ID_UNSAFE}};
++            struct ACL_vector CREATE_ONLY_ACL = {1,_CREATE_ONLY_ACL_ACL};
++            rc = zoo_acreate(zh, line, "new", 3, &CREATE_ONLY_ACL, flags,
++                    my_string_completion, strdup(line));
++        }
+ //        rc = zoo_acreate(zh, line, "new", 3, &OPEN_ACL_UNSAFE, flags,
+ //                my_string_completion, strdup(line));
+         if (rc) {
+diff --git a/zookeeper/c/tests/LibCMocks.cc b/zookeeper/c/tests/LibCMocks.cc
+index 38cbed84f..62188986b 100644
+--- a/zookeeper/c/tests/LibCMocks.cc
++++ b/zookeeper/c/tests/LibCMocks.cc
+@@ -301,7 +301,7 @@ Mock_select* Mock_select::mock_=0;
+ // *****************************************************************************
+ // poll
+ Mock_poll* Mock_poll::mock_=0;
+-int poll(struct pollfd *fds, nfds_t nfds, int timeout){
++int poll(struct pollfd *fds, POLL_NFDS_TYPE nfds, int timeout){
+     if (!Mock_poll::mock_)
+         return LIBC_SYMBOLS.poll(fds,nfds,timeout);
+     return Mock_poll::mock_->call(fds,nfds,timeout);        
+diff --git a/zookeeper/c/tests/LibCMocks.h b/zookeeper/c/tests/LibCMocks.h
+index 87e2c37f3..e4d010881 100644
+--- a/zookeeper/c/tests/LibCMocks.h
++++ b/zookeeper/c/tests/LibCMocks.h
+@@ -307,7 +307,7 @@ public:
+     int callReturns;
+     int myFD;
+     int timeout; //in millis
+-    virtual int call(struct pollfd *fds, nfds_t nfds, int to) {
++    virtual int call(struct pollfd *fds, POLL_NFDS_TYPE nfds, int to) {
+         pollfd* myPoll=0;
+         if(fds[nfds-1].fd==myFD)
+             myPoll=&fds[nfds-1];
+diff --git a/zookeeper/c/tests/LibCSymTable.h b/zookeeper/c/tests/LibCSymTable.h
+index eb40059fc..6096a6d8b 100644
+--- a/zookeeper/c/tests/LibCSymTable.h
++++ b/zookeeper/c/tests/LibCSymTable.h
+@@ -29,6 +29,9 @@
+ #include <pthread.h>
+ #endif
+ 
++#include "../config.h"
++
++// TODO: move all these macros to config.h (generated by autoconf) 
+ #ifdef __CYGWIN__
+ #define RANDOM_RET_TYPE int
+ #define GETTIMEOFDAY_ARG2_TYPE void*
+@@ -69,7 +72,7 @@ struct LibCSymTable
+     DECLARE_SYM(ssize_t,send,(int,const void*,size_t,int));
+     DECLARE_SYM(ssize_t,recv,(int,const void*,size_t,int));
+     DECLARE_SYM(int,select,(int,fd_set*,fd_set*,fd_set*,struct timeval*));
+-    DECLARE_SYM(int,poll,(struct pollfd*,nfds_t,int));
++    DECLARE_SYM(int,poll,(struct pollfd*,POLL_NFDS_TYPE,int));
+     DECLARE_SYM(int,gettimeofday,(struct timeval*,GETTIMEOFDAY_ARG2_TYPE));
+ #ifdef THREADED
+     DECLARE_SYM(int,pthread_create,(pthread_t *, const pthread_attr_t *,
+diff --git a/zookeeper/c/tests/TestOperations.cc b/zookeeper/c/tests/TestOperations.cc
+index 33848866b..c3e652387 100644
+--- a/zookeeper/c/tests/TestOperations.cc
++++ b/zookeeper/c/tests/TestOperations.cc
+@@ -235,7 +235,7 @@ public:
+ 
+     class TestConcurrentOpWithDisconnectJob: public TestGetDataJob{
+     public:
+-        static const int REPS=500;
++        static const int REPS=1000;
+         TestConcurrentOpWithDisconnectJob(ZookeeperServer* svr,zhandle_t* zh):
+             TestGetDataJob(svr,zh,REPS){}
+         virtual void validate(const char* file, int line) const{
+diff --git a/zookeeper/c/tests/TestZookeeperInit.cc b/zookeeper/c/tests/TestZookeeperInit.cc
+index f4142f4b9..aad364910 100644
+--- a/zookeeper/c/tests/TestZookeeperInit.cc
++++ b/zookeeper/c/tests/TestZookeeperInit.cc
+@@ -15,6 +15,7 @@
+  */
+ 
+ #include <cppunit/extensions/HelperMacros.h>
++#include <sys/types.h>
+ #include <netinet/in.h>
+ #include <errno.h>
+ 
+diff --git a/zookeeper/c/tests/ThreadingUtil.cc b/zookeeper/c/tests/ThreadingUtil.cc
+index 4e1373ad9..f3e74bdf5 100644
+--- a/zookeeper/c/tests/ThreadingUtil.cc
++++ b/zookeeper/c/tests/ThreadingUtil.cc
+@@ -14,7 +14,7 @@
+  * limitations under the License.
+  */
+ 
+-#include <stdint.h>
++#include <sys/types.h>
+ #include "ThreadingUtil.h"
+ #include "LibCSymTable.h"
+ 
+@@ -48,7 +48,7 @@ int32_t atomic_post_incr(volatile int32_t* operand, int32_t incr)
+     int32_t result;
+     __asm__ __volatile__(
+          "lock xaddl %0,%1\n"
+-         : "=r"(result), "=m"(*(int32_t *)operand)
++         : "=r"(result), "=m"(*operand)
+          : "0"(incr)
+          : "memory");
+    return result;
+@@ -57,7 +57,7 @@ int32_t atomic_fetch_store(volatile int32_t *ptr, int32_t value)
+ {
+     int32_t result;
+     __asm__ __volatile__("lock xchgl %0,%1\n"
+-                          : "=r"(result), "=m"(*(int32_t *)ptr)
++                          : "=r"(result), "=m"(*ptr)
+                           : "0"(value)
+                           : "memory");
+    return result; 

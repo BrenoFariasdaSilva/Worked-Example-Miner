@@ -1,0 +1,16 @@
+diff --git a/zookeeper/build.xml b/zookeeper/build.xml
+index 8fc5d7e88..0d78f8639 100644
+--- a/zookeeper/build.xml
++++ b/zookeeper/build.xml
+@@ -70,6 +70,11 @@
+               <include name="*.jar"/>
+            </fileset>
+          </classpath>
++         <classpath>
++           <fileset dir="${basedir}/java/lib">
++             <include name="*.jar"/>
++           </fileset>
++         </classpath>
+       </javac>
+     </target>
+ 

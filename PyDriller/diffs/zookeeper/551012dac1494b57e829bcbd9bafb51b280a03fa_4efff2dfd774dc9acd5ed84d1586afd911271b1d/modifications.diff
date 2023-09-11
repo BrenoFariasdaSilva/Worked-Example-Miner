@@ -1,0 +1,12 @@
+diff --git a/zookeeper/java/src/com/yahoo/zookeeper/server/PrepRequestProcessor.java b/zookeeper/java/src/com/yahoo/zookeeper/server/PrepRequestProcessor.java
+index e32943a55..c821aaaf8 100644
+--- a/zookeeper/java/src/com/yahoo/zookeeper/server/PrepRequestProcessor.java
++++ b/zookeeper/java/src/com/yahoo/zookeeper/server/PrepRequestProcessor.java
+@@ -313,6 +313,7 @@ protected void pRequest(Request request) {
+                 int to = request.request.getInt();
+                 txn = new CreateSessionTxn(to);
+                 request.request.rewind();
++                zks.sessionTracker.addSession(request.sessionId, to);
+                 break;
+             case OpCode.closeSession:
+                 txnHeader = new TxnHeader(request.sessionId, request.cxid, zks

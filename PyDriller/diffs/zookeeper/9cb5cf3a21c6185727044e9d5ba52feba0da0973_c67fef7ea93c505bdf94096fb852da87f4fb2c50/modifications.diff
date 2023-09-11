@@ -1,0 +1,13 @@
+diff --git a/zookeeper/c/Makefile b/zookeeper/c/Makefile
+index b822134d6..e142d598c 100644
+--- a/zookeeper/c/Makefile
++++ b/zookeeper/c/Makefile
+@@ -19,7 +19,7 @@ zookeeper_mt.o:	src/zookeeper.c Makefile include/*.h ${JUTE_C}/* src/*.h
+ zookeeper_st.o:	src/zookeeper.c Makefile include/*.h ${JUTE_C}/*
+ 	${cc} ${ldflags} -I${JUTE_C} -Iinclude/ -o $@ -c $<
+ 
+-zookeeper.jute.o: ../build/c/generated/*
++zookeeper.jute.o: ${JUTE_C}/*
+ 	${cc} ${ldflags} -I${JUTE_C} -Iinclude/ -o $@ -c $<
+ 
+ %.o:	src/%.c Makefile include/*.h

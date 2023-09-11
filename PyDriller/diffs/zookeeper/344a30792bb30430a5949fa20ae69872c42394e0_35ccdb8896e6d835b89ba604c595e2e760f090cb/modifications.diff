@@ -1,0 +1,12 @@
+diff --git a/zookeeper/java/src/com/yahoo/zookeeper/server/SessionTrackerImpl.java b/zookeeper/java/src/com/yahoo/zookeeper/server/SessionTrackerImpl.java
+index 5ed45d226..d9d0a4764 100644
+--- a/zookeeper/java/src/com/yahoo/zookeeper/server/SessionTrackerImpl.java
++++ b/zookeeper/java/src/com/yahoo/zookeeper/server/SessionTrackerImpl.java
+@@ -58,7 +58,6 @@ public static long initializeNextSession(long id) {
+     	long nextSid = 0;
+     	nextSid = (System.currentTimeMillis() << 24) >> 8;
+     	nextSid =  nextSid | (id <<56);
+-    	ZooLog.logWarn("printing the initiailzied next session with id " +  id + " next id " + Long.toHexString(nextSid));
+     	return nextSid;
+     }
+     

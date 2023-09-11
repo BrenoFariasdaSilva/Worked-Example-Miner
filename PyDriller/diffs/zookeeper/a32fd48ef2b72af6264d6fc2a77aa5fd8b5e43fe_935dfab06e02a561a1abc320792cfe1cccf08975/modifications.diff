@@ -1,0 +1,45 @@
+diff --git a/zookeeper/c/src/mt_adaptor.c b/zookeeper/c/src/mt_adaptor.c
+index 94ff0beee..0d218ad80 100644
+--- a/zookeeper/c/src/mt_adaptor.c
++++ b/zookeeper/c/src/mt_adaptor.c
+@@ -37,6 +37,7 @@
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <assert.h>
++#include <unistd.h>
+ 
+ void lock_buffer_list(buffer_head_t *l)
+ {
+@@ -98,6 +99,7 @@ int process_async(int outstanding_sync)
+ 
+ void *do_io(void *);
+ void *do_completion(void *);
++int wakeup_io_thread(zhandle_t *zh);
+ 
+ static int set_nonblock(int fd){
+     long l = fcntl(fd, F_GETFL);
+diff --git a/zookeeper/c/src/zk_adaptor.h b/zookeeper/c/src/zk_adaptor.h
+index d381e1e3a..241c2fe25 100644
+--- a/zookeeper/c/src/zk_adaptor.h
++++ b/zookeeper/c/src/zk_adaptor.h
+@@ -176,6 +176,8 @@ void notify_sync_completion(struct sync_completion *sc);
+ int adaptor_send_queue(zhandle_t *zh, int timeout);
+ int process_async(int outstanding_sync);
+ void process_completions(zhandle_t *zh);
++int flush_send_queue(zhandle_t*zh, int timeout);
++
+ // critical section guards
+ void enter_critical(zhandle_t* zh);
+ void leave_critical(zhandle_t* zh);
+diff --git a/zookeeper/c/src/zookeeper.c b/zookeeper/c/src/zookeeper.c
+index c948d31ba..c6118d00d 100644
+--- a/zookeeper/c/src/zookeeper.c
++++ b/zookeeper/c/src/zookeeper.c
+@@ -130,7 +130,6 @@ static const char* format_endpoint_info(const struct sockaddr* ep);
+ static const char* format_current_endpoint_info(zhandle_t* zh);
+ static int add_completion(zhandle_t *zh, int xid, int completion_type, 
+         const void *dc, const void *data, int add_to_front);
+-int flush_send_queue(zhandle_t*zh, int timeout);
+ static int handle_socket_error_msg(zhandle_t *zh, int line, int rc,
+     const char* format,...);
+ static void cleanup_bufs(zhandle_t *zh,int callCompletion,int rc);
