@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import git
+import subprocess
 from colorama import Style # For coloring the terminal
 
 # Import from the main.py file
@@ -43,13 +44,22 @@ else:
 
 		print(f"Diff index: {diff_index}")
 
-		# Generate a .diff file for each modified file
-		for diff_entry in diff_index:
-			file_path = os.path.join(diff_folder_path, diff_entry.a_path + ".diff")
-			print(f"File path: {file_path}")
-			with open(file_path, "w") as diff_file:
-				diff_file.write(diff_entry.diff.decode("utf-8"))
-				print(f"{backgroundColors.GREEN}Diff for {backgroundColors.CYAN}{diff_entry.a_path}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}")
+		# Run the git diff command in the terminal
+		diff_command = ["git", "diff", commit_hash1, commit_hash2]
+		diff_output = subprocess.check_output(diff_command, cwd=repository_path, universal_newlines=True)
+
+		# Generate a .diff file and save the diff output
+		file_path = os.path.join(diff_folder_path, f"{commit_hash1}_{commit_hash2}.diff")
+		with open(file_path, "w") as diff_file:
+			diff_file.write(diff_output)
+
+		# # Generate a .diff file for each modified file
+		# for diff_entry in diff_index:
+		# 	file_path = os.path.join(diff_folder_path, diff_entry.a_path + ".diff")
+		# 	print(f"File path: {file_path}")
+		# 	with open(file_path, "w") as diff_file:
+		# 		diff_file.write(diff_entry.diff.decode("utf-8"))
+		# 		print(f"{backgroundColors.GREEN}Diff for {backgroundColors.CYAN}{diff_entry.a_path}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}")
 
 		i += 1
 		print(f"{backgroundColors.GREEN}Diff {backgroundColors.CYAN}{i} of {len(df)-1}{backgroundColors.GREEN} for {backgroundColors.CYAN}{commit_hash1}{backgroundColors.GREEN} and {backgroundColors.CYAN}{commit_hash2}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}")
