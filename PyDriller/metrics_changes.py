@@ -61,6 +61,7 @@ def path_contains_whitespaces():
 # @return: None
 def loop_through_default_repository_names():
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
+		print(f"")
 		CURRENT_REPOSITORY_NAME = repository_name # Update the current repository name
 		process_repository() # Process the current repository
 		print(f"")
