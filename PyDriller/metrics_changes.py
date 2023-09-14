@@ -311,7 +311,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 		class_name = identifier.split(' ')[0] # Get the identifier which is currently the class name
 		variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 		filename = f"{class_name} {variable_attribute}" # The filename of the csv file without the file extension
-		with open(FULL_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + filename + CSV_FILE_EXTENSION, "w") as csvfile:
+		with open(FULL_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + class_name + "/" + variable_attribute + CSV_FILE_EXTENSION, "w") as csvfile:
 			writer = csv.writer(csvfile)
 			if PROCESS_CLASSES:
 				unique_identifier = class_name
