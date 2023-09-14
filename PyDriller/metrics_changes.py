@@ -19,8 +19,8 @@ PATH = os.getcwd() # Get the current working directory
 PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {backgroundColors.CYAN}class.csv{backgroundColors.GREEN} file {backgroundColors.RED}(True/False){backgroundColors.GREEN}? {Style.RESET_ALL}") == "True" # If True, then process the method.csv file. If False, then process the class.csv file
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 4 # The number of metrics
-DEFAULT_REPOSITORY_NAME = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
-CURRENT_REPOSITORY_NAME = DEFAULT_REPOSITORY_NAME[0] # The current repository name
+DEFAULT_REPOSITORY_NAMES = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
+CURRENT_REPOSITORY_NAME = DEFAULT_REPOSITORY_NAMES[0] # The current repository name
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 METRICS_POSITION = {"CBO": 0, "CBOModified": 1, "WMC": 2, "RFC": 3}
 
@@ -60,7 +60,7 @@ def path_contains_whitespaces():
 # @param: None
 # @return: None
 def loop_through_default_repository_names():
-	for repository_name in DEFAULT_REPOSITORY_NAME: # Loop through the DEFAULT_REPOSITORY_NAME list
+	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		CURRENT_REPOSITORY_NAME = repository_name # Update the current repository name
 		process_repository() # Process the current repository
 		print(f"")
@@ -510,8 +510,10 @@ def main():
 	process_all_repositories = input(f"{backgroundColors.GREEN}Do you want to process all the repositories? {backgroundColors.CYAN}(y/n){backgroundColors.GREEN}: {Style.RESET_ALL}")
 	# Verify if the user wants to process all the repositories
 	if process_all_repositories.lower() == "y" or process_all_repositories.lower() == "":
+		print(f"{backgroundColors.GREEN}Processing all the repositories: {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES}{Style.RESET_ALL}")
 		loop_through_default_repository_names() # Process all the repositories
 	else:
+		print(f"{backgroundColors.GREEN}Processing a single repository: {backgroundColors.CYAN}{CURRENT_REPOSITORY_NAME}{Style.RESET_ALL}")
 		process_repository() # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
 		
 # Directive to run the main function
