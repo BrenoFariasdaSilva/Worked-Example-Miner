@@ -26,8 +26,8 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 CK_CSV_FILE = CLASS_CSV_FILE if PROCESS_CLASSES else METHOD_CSV_FILE # The name of the csv generated file from ck.
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 OPPOSITE_CK_CSV_FILE = METHOD_CSV_FILE if PROCESS_CLASSES else CLASS_CSV_FILE # The name of the csv generated file from ck.
-DEFAULT_REPOSITORY_NAME = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
-CURRENT_REPOSITORY_NAME = DEFAULT_REPOSITORY_NAME[0] # The current repository name
+DEFAULT_REPOSITORY_NAMES = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
+CURRENT_REPOSITORY_NAME = DEFAULT_REPOSITORY_NAMES[0] # The current repository name
 DEFAULT_CLASS_IDS = {"org.apache.commons.lang.StringUtils": ["class"]} # The default ids to be analyzed. It stores the class:type
 DEFAULT_METHOD_IDS = { # The default ids to be analyzed. It stores the method:class
    "org.apache.commons.lang3.AnnotationUtilsTest": ["testBothArgsNull/0"],
@@ -59,7 +59,7 @@ def path_contains_whitespaces():
 # @param: None
 # @return: None
 def loop_through_default_repository_names():
-	for repository_name in DEFAULT_REPOSITORY_NAME: # Loop through the DEFAULT_REPOSITORY_NAME list
+	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		CURRENT_REPOSITORY_NAME = repository_name # Update the current repository name
 		process_repository() # Process the current repository
 		print(f"")
