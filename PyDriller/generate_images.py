@@ -27,6 +27,7 @@ CK_CSV_FILE = CLASS_CSV_FILE if PROCESS_CLASSES else METHOD_CSV_FILE # The name 
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 OPPOSITE_CK_CSV_FILE = METHOD_CSV_FILE if PROCESS_CLASSES else CLASS_CSV_FILE # The name of the csv generated file from ck.
 DEFAULT_REPOSITORY_NAME = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
+CURRENT_REPOSITORY_NAME = DEFAULT_REPOSITORY_NAME[0] # The current repository name
 DEFAULT_CLASS_IDS = {"org.apache.commons.lang.StringUtils": ["class"]} # The default ids to be analyzed. It stores the class:type
 DEFAULT_METHOD_IDS = { # The default ids to be analyzed. It stores the method:class
    "org.apache.commons.lang3.AnnotationUtilsTest": ["testBothArgsNull/0"],
@@ -53,24 +54,54 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
-# @brief: Verifiy if the attribute is empty. If so, set it to the default value
-# @param: attribute: The attribute to be checked
-# @param: default_attribute_value: The default value of the attribute
-# @return: The repository URL and the output directory
-def validate_attribute(attribute, default_attribute_value):
-   if not attribute: # Verify if the attribute is empty
-      print(f"{backgroundColors.YELLOW}The attribute is empty! Using the default value: {backgroundColors.CYAN}{default_attribute_value}{backgroundColors.YELLOW}.{Style.RESET_ALL}")
-      attribute = default_attribute_value # Set the attribute to the default value
-   return attribute # Return the attribute
-
-# @brief: This function asks for the user input of the repository name
+# @brief: This function loops through the DEFAULT_REPOSITORY_NAME list
 # @param: None
-# @return: repository_name: Name of the repository to be analyzed
-def get_repository_name_user():
-   # Ask for user input of the repository name
-   repository_name = input(f"{backgroundColors.GREEN}Enter the repository name {backgroundColors.RED}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
+# @return: None
+def loop_through_default_repository_names():
+	for repository_name in DEFAULT_REPOSITORY_NAME: # Loop through the DEFAULT_REPOSITORY_NAME list
+		CURRENT_REPOSITORY_NAME = repository_name # Update the current repository name
+		process_repository() # Process the current repository
+		print(f"")
+		print(f"------------------------------------------------------------")
+		print(f"")
 
-   return validate_attribute(repository_name, DEFAULT_REPOSITORY_NAME[0]) # Validate the repository name
+# @brief: This function call the procedures to process the specified repository
+# @param: None
+# @return: None
+def process_repository():
+   start_time = time.time() # Start the timer
+   # Get the name of the repository from the user
+   repository_name = CURRENT_REPOSITORY_NAME # The name of the repository to be processed
+
+   # Get the ids from the user
+   ids = get_user_ids_input(repository_name)
+
+   # Validate the ids, if is related to a class or method
+   if not validate_ids(ids, repository_name):
+      print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{', '.join(ids.keys())}{backgroundColors.RED} are {OPPOSITE_CK_CSV_FILE.replace('.csv', '')} instead of {CK_CSV_FILE.replace('.csv', '')} names. Please change them!{Style.RESET_ALL}")
+      return
+
+   # Verify if the metrics evolution were already calculated
+   if not check_metrics_files(FULL_METRICS_EVOLUTION_DIRECTORY_PATH, repository_name, ids):
+      print(f"{backgroundColors.RED}The metrics evolution for {backgroundColors.CYAN}{', '.join(ids.keys())}{backgroundColors.RED} in {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not created. Please run the {backgroundColors.CYAN}metrics_changes.py{backgroundColors.RED} file first.{Style.RESET_ALL}")
+      return
+
+   # Get the number of ids to be analyzed
+   number_of_ids = sum(len(attributes) for attributes in ids.values())
+   current_id = 1
+
+   # Iterate through each class and its variable attributes
+   for index, (class_name, variable_attributes) in enumerate(ids.items()):
+      for attribute_index, attribute in enumerate(variable_attributes): # Iterate through each variable attribute of the class
+         print(f"{backgroundColors.GREEN}Generating Image {backgroundColors.CYAN}{current_id} of {number_of_ids}{backgroundColors.GREEN} for the {backgroundColors.CYAN}{attribute} {CK_CSV_FILE.replace('.csv', '')}{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository.{Style.RESET_ALL}")
+         create_metrics_evolution_graphic(repository_name, class_name, get_clean_id(attribute)) # Create the metrics evolution graphs
+         current_id += 1
+
+   print(f"{backgroundColors.CYAN}Successfully created the metrics evolution graphics{backgroundColors.GREEN} for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository inside the {backgroundColors.CYAN}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH[1:]}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
+
+   elapsed_time = time.time() - start_time
+   elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}images{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+   output_time(elapsed_time_string, round(elapsed_time, 2))
 
 # @brief: Create a directory if it does not exist
 # @param: full_directory_path: Name of the directory to be created
@@ -345,8 +376,6 @@ def output_time(output_string, time):
 # @param: None
 # @return: None
 def main():
-   start_time = time.time() # Start the timer
-   
    # Verify if the path constant contains whitespaces
    if path_contains_whitespaces():
       print(f"{backgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
@@ -355,38 +384,13 @@ def main():
    print(f"{backgroundColors.GREEN}This script {backgroundColors.CYAN}generates the images{backgroundColors.GREEN} from the {backgroundColors.CYAN}metrics evolution{backgroundColors.GREEN} of the {CK_CSV_FILE.replace('.csv', '')} of a {backgroundColors.CYAN}specific repository{backgroundColors.GREEN}.{Style.RESET_ALL}")
    print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}source of the data{backgroundColors.GREEN} used to {backgroundColors.CYAN}generate the images{backgroundColors.GREEN} is the {backgroundColors.CYAN}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 
-   # Get the name of the repository from the user
-   repository_name = get_repository_name_user()
-
-   # Get the ids from the user
-   ids = get_user_ids_input(repository_name)
-
-   # Validate the ids, if is related to a class or method
-   if not validate_ids(ids, repository_name):
-      print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{', '.join(ids.keys())}{backgroundColors.RED} are {OPPOSITE_CK_CSV_FILE.replace('.csv', '')} instead of {CK_CSV_FILE.replace('.csv', '')} names. Please change them!{Style.RESET_ALL}")
-      return
-   
-   # Verify if the metrics evolution were already calculated
-   if not check_metrics_files(FULL_METRICS_EVOLUTION_DIRECTORY_PATH, repository_name, ids):
-      print(f"{backgroundColors.RED}The metrics evolution for {backgroundColors.CYAN}{', '.join(ids.keys())}{backgroundColors.RED} in {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not created. Please run the {backgroundColors.CYAN}metrics_changes.py{backgroundColors.RED} file first.{Style.RESET_ALL}")
-      return
-   
-   # Get the number of ids to be analyzed
-   number_of_ids = sum(len(attributes) for attributes in ids.values())
-   current_id = 1
-
-   # Iterate through each class and its variable attributes
-   for index, (class_name, variable_attributes) in enumerate(ids.items()):
-      for attribute_index, attribute in enumerate(variable_attributes): # Iterate through each variable attribute of the class
-         print(f"{backgroundColors.GREEN}Generating Image {backgroundColors.CYAN}{current_id} of {number_of_ids}{backgroundColors.GREEN} for the {backgroundColors.CYAN}{attribute} {CK_CSV_FILE.replace('.csv', '')}{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository.{Style.RESET_ALL}")
-         create_metrics_evolution_graphic(repository_name, class_name, get_clean_id(attribute)) # Create the metrics evolution graphs
-         current_id += 1
-
-   print(f"{backgroundColors.CYAN}Successfully created the metrics evolution graphics{backgroundColors.GREEN} for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository inside the {backgroundColors.CYAN}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH[1:]}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
-
-   elapsed_time = time.time() - start_time
-   elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}images{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
-   output_time(elapsed_time_string, round(elapsed_time, 2))
+   # Asks for user input if wants to process all the repositories or just one
+   process_all_repositories = input(f"{backgroundColors.GREEN}Do you want to process all the repositories? {backgroundColors.CYAN}(y/n){backgroundColors.GREEN}: {Style.RESET_ALL}")
+   # Verify if the user wants to process all the repositories
+   if process_all_repositories.lower() == "y" or process_all_repositories.lower() == "":
+      loop_through_default_repository_names() # Process all the repositories
+   else:
+      process_repository() # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
 
 # Directly run the main function if the script is executed
 if __name__ == '__main__':
