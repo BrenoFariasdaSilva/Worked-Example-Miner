@@ -62,19 +62,18 @@ def path_contains_whitespaces():
 def loop_through_default_repository_names():
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"")
-		CURRENT_REPOSITORY_NAME = repository_name # Update the current repository name
-		process_repository() # Process the current repository
+		process_repository(repository_name) # Process the current repository
 		print(f"")
 		print(f"------------------------------------------------------------")
 		print(f"")
 
 # @brief: This function call the procedures to process the specified repository
-# @param: None
+# @param: repository_name: The name of the repository to be analyzed 
 # @return: None
-def process_repository():
+def process_repository(repository_name):
 	start_time = time.time() # Start the timer
-	repository_name, directory_path = get_directory_path() # Get the directory path from user input of the repository name
-
+	directory_path = get_directory_path(repository_name) # Get the directory path from user input of the repository name
+	
 	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository will be analyzed.{Style.RESET_ALL}")
 	# Get the directory path from user input of the repository name
 
@@ -116,11 +115,9 @@ def validate_attribute(attribute, default_attribute_value):
    return attribute
 
 # @brief: Gets the user input for the repository name and returns the path to the directory
-# @param: None
-# @return: A tuple containing the repository name and the path to the directory
-def get_directory_path():
-	repository_name = CURRENT_REPOSITORY_NAME # The name of the repository to be analyzed
-	
+# @param: repository_name
+# @return: The path to the directory of the CK metrics related to the repository
+def get_directory_path(repository_name):
 	directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
 
 	# Verify if the directory does not exist
@@ -129,7 +126,7 @@ def get_directory_path():
 		repository_name = input(f"{backgroundColors.GREEN}Enter the repository name {backgroundColors.CYAN}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
 		directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
 
-	return repository_name, directory_path
+	return directory_path
 
 # @brief: This verifies if all the ck metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder
 # @param: repository_name: Name of the repository to be analyzed
@@ -515,7 +512,7 @@ def main():
 		loop_through_default_repository_names() # Process all the repositories
 	else:
 		print(f"{backgroundColors.GREEN}Processing a single repository: {backgroundColors.CYAN}{CURRENT_REPOSITORY_NAME}{Style.RESET_ALL}")
-		process_repository() # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
+		process_repository(CURRENT_REPOSITORY_NAME) # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
 		
 # Directive to run the main function
 if __name__ == "__main__":
