@@ -346,8 +346,10 @@ def main():
    process_all_repositories = input(f"{backgroundColors.GREEN}Do you want to process all the repositories? {backgroundColors.CYAN}(y/n){backgroundColors.GREEN}: {Style.RESET_ALL}")
    # Verify if the user wants to process all the repositories
    if process_all_repositories.lower() == "y" or process_all_repositories.lower() == "":
+      print(f"{backgroundColors.GREEN}Processing all the repositories: {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES}{Style.RESET_ALL}")
       loop_through_default_repository_names() # Process all the repositories
    else:
+      print(f"{backgroundColors.GREEN}Processing a single repository: {backgroundColors.CYAN}{CURRENT_REPOSITORY_NAME}{Style.RESET_ALL}")
       process_repository(CURRENT_REPOSITORY_NAME) # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
 
 # Directly run the main function if the script is executed
