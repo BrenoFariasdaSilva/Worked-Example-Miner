@@ -70,7 +70,7 @@ def validate_attribute(attribute, default_attribute_value):
 # @return: A tuple containing the repository name and the path to the directory
 def get_directory_path():
 	repository_name = input(f"{backgroundColors.GREEN}Enter the repository name {backgroundColors.CYAN}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
-	repository_name = validate_attribute(repository_name, DEFAULT_REPOSITORY_NAME[0]) # Validate the repository name
+	repository_name = validate_attribute(repository_name, DEFAULT_REPOSITORY_NAME[1]) # Validate the repository name
 	
 	directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
 
@@ -101,9 +101,12 @@ def verify_ck_metrics_folders(repository_name):
 	commit_hashes = pd.read_csv(commit_file_path)["commit hash"].tolist()
 
 	repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
+
 	# Verify if the repository exists
 	for commit_hash in commit_hashes:
-		folder_path = os.path.join(repo_path, commit_hash) # Join the repo path with the commit hash
+		if (str(commit_hash) == "nan"):
+			continue
+		folder_path = os.path.join(repo_path, str(commit_hash)) # Join the repo path with the commit hash
 
 		if not os.path.exists(folder_path): # Verify if the folder exists
 			print(f"{backgroundColors.RED}Folder {backgroundColors.CYAN}{commit_hash}{backgroundColors.RED} does not exist inside {backgroundColors.CYAN}{repo_path}{backgroundColors.RED}.{Style.RESET_ALL}")
@@ -311,6 +314,9 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 		class_name = identifier.split(' ')[0] # Get the identifier which is currently the class name
 		variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 		filename = f"{class_name} {variable_attribute}" # The filename of the csv file without the file extension
+		mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/"
+		if not os.path.exists(mkdir_path):
+			os.makedirs(mkdir_path)
 		with open(FULL_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + class_name + "/" + variable_attribute + CSV_FILE_EXTENSION, "w") as csvfile:
 			writer = csv.writer(csvfile)
 			if PROCESS_CLASSES:
