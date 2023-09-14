@@ -33,7 +33,8 @@ DEFAULT_METHOD_IDS = { # The default ids to be analyzed. It stores the method:cl
    "org.apache.commons.lang3.AnnotationUtilsTest": ["testBothArgsNull/0"],
    "org.apache.commons.lang.LangTestSuite": ["suite/0"]}
 DEFAULT_IDS = DEFAULT_CLASS_IDS if PROCESS_CLASSES else DEFAULT_METHOD_IDS # The default ids to be analyzed. It stores the class:type or method:class
-IMAGE_LABELS = [False, False]
+IMAGE_LABELS = [True, True]
+REPOSITORY_LABELS_TYPE = {"commons-lang": ["y*", 1], "jabref": ["y*", 1], "kafka": ["y*", 1], "zookeeper": ["y*", 1]} # The labels type for each repository
 SORTED_CHANGES_CSV_FILENAME = f"sorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changes
  
 # Relative paths:
@@ -202,41 +203,6 @@ def check_metrics_files(folder_path, repository_name, ids):
 
    return True
 
-# @brief: This function asks if the user wants labels in the data points of the graphic image. If so, ask which one
-# @param: None
-# @return: labels: The desired option (y/n) and the type of label to be added to the data points
-def insert_labels():
-   # Ask the user if he wants to add labels to the data points
-   labels = ["", ""] # The first position stores the desired option (y/n) and the second stores the type of label to be added to the data points
-   first_run = [True, True] # List to store the first run of the while loops
-   
-   while labels[0] != "y" and labels[0] != "n" and labels[0] != "y*" and labels[0] != "n*":
-      if not first_run[0]:
-         print(f"{backgroundColors.RED}Invalid option!{Style.RESET_ALL}")
-      first_run[0] = False
-      labels[0] = input(f"{backgroundColors.GREEN}Do you want to add labels to the data points {backgroundColors.RED}(y*/n*/y/n){backgroundColors.GREEN}? {Style.RESET_ALL}")
-
-   if labels[0] == "y*":
-      IMAGE_LABELS[0] = True
-      labels[0] = "y"
-   elif labels[0] == "n*":
-      IMAGE_LABELS[0] = False
-      labels[0] = "n"
-
-   if labels[0] == "y":
-      labels[0] = True 
-      while labels[1] != "1" and labels[1] != "2":
-         if not first_run[1]:
-            print(f"{backgroundColors.RED}Invalid option!{Style.RESET_ALL}")
-         first_run[1] = False
-         print(f"{backgroundColors.GREEN}Choose the type of label to be added to the data points: {Style.RESET_ALL}")
-         print(f"{backgroundColors.CYAN}   1. Sequence of numbers \n   2. Value of the data point (y axis value){Style.RESET_ALL}")
-         labels[1] = input(f"{backgroundColors.GREEN}Type the number of the label you want in your images plot {backgroundColors.RED}(1/2){backgroundColors.GREEN}: {Style.RESET_ALL}")
-         if IMAGE_LABELS[0]:
-            IMAGE_LABELS[1] = labels[1]
-      
-   return labels
-
 # @brief: Add the desired label type to the data points of the graphic image
 # @param: df: DataFrame containing the metrics data
 # @param: label_type: Type of label to be added to the data points of the graphic image
@@ -286,18 +252,13 @@ def create_metrics_evolution_graphic(repository_name, id, clean_id_key):
    # Plotting the graph
    plt.figure(figsize=(38.4, 21.6))
 
-   if not IMAGE_LABELS[0]:
-      labels = insert_labels() # Ask the user if he wants to add labels to the data points and which one
-   else:
-      labels = IMAGE_LABELS
-
    # Iterate over each metric and plot its evolution with a different color
    for i, metric in enumerate(metrics):
       metric_values = df[metric]
       plt.plot(commit_hashes, df[metric], marker="o", label=metric, linestyle=line_styles[i], markersize=marker_sizes[i], color=colors[i])
 
-      if labels[0]:
-         add_labels_to_plot(plt, labels[1], commit_hashes, metric_values)
+      if REPOSITORY_LABELS_TYPE[repository_name][0] == "y*":
+         add_labels_to_plot(plt, REPOSITORY_LABELS_TYPE[repository_name][1], commit_hashes, metric_values)
 
    # Set the graph title and labels according to the type of analysis (class or method)
    if PROCESS_CLASSES:
