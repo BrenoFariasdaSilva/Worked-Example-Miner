@@ -60,9 +60,9 @@ def path_contains_whitespaces():
 # @param: None
 # @return: None
 def loop_through_default_repository_names():
-	for repository_name in DEFAULT_REPOSITORY_NAME:
-		CURRENT_REPOSITORY_NAME = repository_name
-		process_repository()
+	for repository_name in DEFAULT_REPOSITORY_NAME: # Loop through the DEFAULT_REPOSITORY_NAME list
+		CURRENT_REPOSITORY_NAME = repository_name # Update the current repository name
+		process_repository() # Process the current repository
 		print(f"")
 		print(f"------------------------------------------------------------")
 		print(f"")
@@ -72,7 +72,7 @@ def loop_through_default_repository_names():
 # @return: None
 def process_repository():
 	start_time = time.time() # Start the timer
-	repository_name, directory_path = get_directory_path()
+	repository_name, directory_path = get_directory_path() # Get the directory path from user input of the repository name
 
 	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository will be analyzed.{Style.RESET_ALL}")
 	# Get the directory path from user input of the repository name
@@ -508,10 +508,11 @@ def main():
 
 	# Asks for user input if wants to process all the repositories or just one
 	process_all_repositories = input(f"{backgroundColors.GREEN}Do you want to process all the repositories? {backgroundColors.CYAN}(y/n){backgroundColors.GREEN}: {Style.RESET_ALL}")
-	if process_all_repositories.lower() == "y":
-		loop_through_default_repository_names()
+	# Verify if the user wants to process all the repositories
+	if process_all_repositories.lower() == "y" or process_all_repositories.lower() == "":
+		loop_through_default_repository_names() # Process all the repositories
 	else:
-		process_repository()
+		process_repository() # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
 		
 # Directive to run the main function
 if __name__ == "__main__":
