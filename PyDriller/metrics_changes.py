@@ -20,6 +20,7 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 4 # The number of metrics
 DEFAULT_REPOSITORY_NAME = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
+CURRENT_REPOSITORY_NAME = DEFAULT_REPOSITORY_NAME[0] # The current repository name
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 METRICS_POSITION = {"CBO": 0, "CBOModified": 1, "WMC": 2, "RFC": 3}
 
@@ -55,6 +56,54 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
+# @brief: This function loops through the DEFAULT_REPOSITORY_NAME list
+# @param: None
+# @return: None
+def loop_through_default_repository_names():
+	for repository_name in DEFAULT_REPOSITORY_NAME:
+		CURRENT_REPOSITORY_NAME = repository_name
+		process_repository()
+		print(f"")
+		print(f"------------------------------------------------------------")
+		print(f"")
+
+# @brief: This function call the procedures to process the specified repository
+# @param: None
+# @return: None
+def process_repository():
+	start_time = time.time() # Start the timer
+	repository_name, directory_path = get_directory_path()
+
+	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository will be analyzed.{Style.RESET_ALL}")
+	# Get the directory path from user input of the repository name
+
+	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(directory_path).
+	if not verify_ck_metrics_folders(repository_name):
+		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the ck_metrics.py file first{Style.RESET_ALL}")
+		return
+	
+	# Create the desired directory if it does not exist
+	create_directories(repository_name)
+
+	# Traverse the directory and get the method metrics
+	metrics_track_record = traverse_directory(directory_path)
+
+	# Write, for each identifier, the metrics evolution values to a csv file
+	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
+
+	# Process the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
+	process_metrics_track_record(repository_name, metrics_track_record)
+
+	# Sort the csv file by the number of changes
+	sort_csv_by_changes(repository_name)
+
+	# Remove the old csv file
+	os.remove(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + CHANGED_METHODS_CSV_FILENAME)
+
+	elapsed_time = time.time() - start_time
+	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics changes{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+	output_time(elapsed_time_string, round(elapsed_time, 2))
+
 # @brief: Verifiy if the attribute is empty. If so, set it to the default value
 # @param: attribute: The attribute to be checked
 # @param: default_attribute_value: The default value of the attribute
@@ -69,8 +118,7 @@ def validate_attribute(attribute, default_attribute_value):
 # @param: None
 # @return: A tuple containing the repository name and the path to the directory
 def get_directory_path():
-	repository_name = input(f"{backgroundColors.GREEN}Enter the repository name {backgroundColors.CYAN}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
-	repository_name = validate_attribute(repository_name, DEFAULT_REPOSITORY_NAME[1]) # Validate the repository name
+	repository_name = CURRENT_REPOSITORY_NAME # The name of the repository to be analyzed
 	
 	directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
 
@@ -409,21 +457,6 @@ def sort_csv_by_changes(repository_name):
 	data.to_csv(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + SORTED_CHANGED_METHODS_CSV_FILENAME, index=False)
 	print(f"{backgroundColors.CYAN}Successfully sorted{backgroundColors.GREEN} the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of times they changed{backgroundColors.GREEN} and {backgroundColors.CYAN}stored{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 
-# @brief: This function defines the command to play a sound when the program finishes
-# @param: None
-# @return: None
-def play_sound():
-	if os.path.exists(SOUND_FILE):
-		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
-			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
-		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
-	else: # if the sound file does not exist
-		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
-
-# Register the function to play a sound when the program finishes
-atexit.register(play_sound)
-
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
 # @param: time: Time to be outputted
@@ -445,12 +478,26 @@ def output_time(output_string, time):
    rounded_time = round(time_value, 2)
    print(f"{backgroundColors.GREEN}{output_string}{backgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
+# @brief: This function defines the command to play a sound when the program finishes
+# @param: None
+# @return: None
+def play_sound():
+	if os.path.exists(SOUND_FILE):
+		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
+			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
+		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
+			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+	else: # if the sound file does not exist
+		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+
+# Register the function to play a sound when the program finishes
+atexit.register(play_sound)
+
 # @brief: The main function
 # @param: None
 # @return: None
 def main():
-	start_time = time.time() # Start the timer
-	# check if the path constants contains whitespaces
+	# Check if the path constants contains whitespaces
 	if path_contains_whitespaces():
 		print(f"{backgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return
@@ -459,36 +506,13 @@ def main():
 	print(f"{backgroundColors.GREEN}This script {backgroundColors.CYAN}generates a csv file{backgroundColors.GREEN} with the {backgroundColors.CYAN}{CLASSES_OR_METHODS} sorted{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of times that the {CK_CSV_FILE.replace('.csv', '')} changed{backgroundColors.GREEN} and store it inside the {backgroundColors.CYAN}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}source of the metrics values{backgroundColors.GREEN} is the {backgroundColors.CYAN}{CK_CSV_FILE}{backgroundColors.GREEN} files.{Style.RESET_ALL}")
 
-	# Get the directory path from user input of the repository name
-	repository_name, directory_path = get_directory_path()
-
-	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(directory_path).
-	if not verify_ck_metrics_folders(repository_name):
-		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the ck_metrics.py file first{Style.RESET_ALL}")
-		return
-	
-	# Create the desired directory if it does not exist
-	create_directories(repository_name)
-
-	# Traverse the directory and get the method metrics
-	metrics_track_record = traverse_directory(directory_path)
-
-	# Write, for each identifier, the metrics evolution values to a csv file
-	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
-
-	# Process the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
-	process_metrics_track_record(repository_name, metrics_track_record)
-
-	# Sort the csv file by the number of changes
-	sort_csv_by_changes(repository_name)
-
-	# Remove the old csv file
-	os.remove(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + CHANGED_METHODS_CSV_FILENAME)
-
-	elapsed_time = time.time() - start_time
-	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics changes{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
-	output_time(elapsed_time_string, round(elapsed_time, 2))
-
+	# Asks for user input if wants to process all the repositories or just one
+	process_all_repositories = input(f"{backgroundColors.GREEN}Do you want to process all the repositories? {backgroundColors.CYAN}(y/n){backgroundColors.GREEN}: {Style.RESET_ALL}")
+	if process_all_repositories.lower() == "y":
+		loop_through_default_repository_names()
+	else:
+		process_repository()
+		
 # Directive to run the main function
 if __name__ == "__main__":
 	main() # Call the main function
