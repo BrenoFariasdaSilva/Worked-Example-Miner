@@ -60,19 +60,16 @@ def path_contains_whitespaces():
 # @return: None
 def loop_through_default_repository_names():
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
-		CURRENT_REPOSITORY_NAME = repository_name # Update the current repository name
-		process_repository() # Process the current repository
+		process_repository(repository_name) # Process the current repository
 		print(f"")
 		print(f"------------------------------------------------------------")
 		print(f"")
 
 # @brief: This function call the procedures to process the specified repository
-# @param: None
+# @param: repository_name: Name of the repository to be analyzed
 # @return: None
-def process_repository():
-   start_time = time.time() # Start the timer
-   # Get the name of the repository from the user
-   repository_name = CURRENT_REPOSITORY_NAME # The name of the repository to be processed
+def process_repository(repository_name):
+   start_time = time.time(repository_name) # Start the timer
 
    # Get the ids from the user
    ids = get_user_ids_input(repository_name)
@@ -351,7 +348,7 @@ def main():
    if process_all_repositories.lower() == "y" or process_all_repositories.lower() == "":
       loop_through_default_repository_names() # Process all the repositories
    else:
-      process_repository() # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
+      process_repository(CURRENT_REPOSITORY_NAME) # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
 
 # Directly run the main function if the script is executed
 if __name__ == '__main__':
