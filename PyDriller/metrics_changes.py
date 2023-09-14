@@ -65,7 +65,6 @@ def loop_through_default_repository_names():
 		process_repository(repository_name) # Process the current repository
 		print(f"")
 		print(f"------------------------------------------------------------")
-		print(f"")
 
 # @brief: This function call the procedures to process the specified repository
 # @param: repository_name: The name of the repository to be analyzed 
