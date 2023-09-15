@@ -190,6 +190,7 @@ def get_clean_id(id):
 # @return: True if all the metrics are already calculated, False otherwise
 def check_metrics_files(folder_path, repository_name, ids):
    print(f"{backgroundColors.GREEN}Checking if all the {backgroundColors.CYAN}{folder_path.rsplit('/', 1)[-1]}{backgroundColors.GREEN} are already created.{Style.RESET_ALL}")
+   answer = True
    original_path = os.getcwd() # Store the original working directory
    try:
       os.chdir(folder_path) # Change the current working directory to the repository folder
@@ -199,11 +200,14 @@ def check_metrics_files(folder_path, repository_name, ids):
             evolution_file = os.path.join(repository_name, CLASSES_OR_METHODS, f"{file_name}.csv")
             if not os.path.isfile(evolution_file):
                print(f"{backgroundColors.YELLOW}The {backgroundColors.CYAN}{file_name}.csv{backgroundColors.YELLOW} file does not exist.{Style.RESET_ALL}")
-               return False
+               # write that evolution file to a log file
+               with open("generate_images_log.txt", "a") as log_file:
+                  log_file.write(f"{file_name}.csv not found\n")
+               # answer = False
    finally:
       os.chdir(original_path) # Change the current working directory back to the original path
 
-   return True
+   return answer
 
 # @brief: Add the desired label type to the data points of the graphic image
 # @param: df: DataFrame containing the metrics data
@@ -240,7 +244,7 @@ def add_first_and_last_values_to_plot(plt, df):
 # @return: None
 def create_metrics_evolution_graphic(repository_name, id, clean_id_key):
    # Load the generated CSV files into a dataframe and save a plot of the evolution of the CBO, CBO Modified, WMC and RFC metrics
-   df = pd.read_csv(PATH + RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + id + " " + clean_id_key + ".csv")
+   df = pd.read_csv(PATH + RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + id + "" + clean_id_key + ".csv")
 
    # Extract the metrics and commit hashes from the DataFrame
    commit_hashes = df["Commit Hash"]
