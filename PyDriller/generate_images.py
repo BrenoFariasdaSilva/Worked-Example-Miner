@@ -74,7 +74,7 @@ def loop_through_default_repository_names():
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def process_repository(repository_name):
-   start_time = time.time(repository_name) # Start the timer
+   start_time = time.time() # Start the timer
 
    # Get the ids from the user
    ids = get_user_ids_input(repository_name)
