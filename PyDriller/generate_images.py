@@ -35,6 +35,7 @@ DEFAULT_METHOD_IDS = { # The default ids to be analyzed. It stores the method:cl
 DEFAULT_IDS = DEFAULT_CLASS_IDS if PROCESS_CLASSES else DEFAULT_METHOD_IDS # The default ids to be analyzed. It stores the class:type or method:class
 IMAGE_LABELS = [True, True]
 REPOSITORY_LABELS_TYPE = {"commons-lang": ["y*", 1], "jabref": ["y*", 1], "kafka": ["y*", 1], "zookeeper": ["y*", 1]} # The labels type for each repository
+REPOSITORY_INPUT_SOURCE = {"commons-lang": "all", "jabref": "all", "kafka": "all", "zookeeper": "all"} # The input source for each repository
 SORTED_CHANGES_CSV_FILENAME = f"sorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changes
  
 # Relative paths:
@@ -125,11 +126,8 @@ def create_directory(full_directory_path, relative_directory_path):
 # @return: id: Name of the class or method to be analyzed
 def get_user_ids_input(repository_name):
    ids = {} # Dictionary that stores the ids to be analyzed
-   input_source = input(f"{backgroundColors.GREEN}Enter the {backgroundColors.CYAN}source of input{backgroundColors.GREEN} to get {backgroundColors.CYAN}IDS{backgroundColors.GREEN} {backgroundColors.RED}(default/all){backgroundColors.GREEN}: {Style.RESET_ALL}")
-
-   while input_source.lower() != "default" and input_source.lower() != "all": # While the input_source is not "default" or "all"
-      print(f"{backgroundColors.RED}Invalid input source!{Style.RESET_ALL}")
-      input_source = input(f"{backgroundColors.GREEN}Enter the {backgroundColors.CYAN}source of input{backgroundColors.GREEN} to get {backgroundColors.CYAN}IDS{backgroundColors.GREEN} {backgroundColors.RED}(default/all){backgroundColors.GREEN}: {Style.RESET_ALL}")
+   input_source = REPOSITORY_INPUT_SOURCE[repository_name] # Get the input source for the current repository
+   print(f"{backgroundColors.GREEN}The input source for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository is {backgroundColors.CYAN}{input_source}{backgroundColors.GREEN}.{Style.RESET_ALL}")
 
    # If the input_source is "all", them get every variable_attribute of each class.
    if input_source.lower() == "all":
