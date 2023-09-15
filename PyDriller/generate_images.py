@@ -197,7 +197,6 @@ def check_metrics_files(folder_path, repository_name, ids):
          for value in values: # Iterate through each variable attribute of the class
             file_name = f"{id}/{value}" if PROCESS_CLASSES else f"{id}/{get_clean_id(value)}"
             evolution_file = os.path.join(repository_name, CLASSES_OR_METHODS, f"{file_name}.csv")
-            print(evolution_file)
             if not os.path.isfile(evolution_file):
                print(f"{backgroundColors.YELLOW}The {backgroundColors.CYAN}{file_name}.csv{backgroundColors.YELLOW} file does not exist.{Style.RESET_ALL}")
                return False
