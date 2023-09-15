@@ -244,7 +244,7 @@ def add_first_and_last_values_to_plot(plt, df):
 # @return: None
 def create_metrics_evolution_graphic(repository_name, id, clean_id_key):
    # Load the generated CSV files into a dataframe and save a plot of the evolution of the CBO, CBO Modified, WMC and RFC metrics
-   df = pd.read_csv(PATH + RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + id + "" + clean_id_key + ".csv")
+   df = pd.read_csv(PATH + RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + id + "/" + clean_id_key + ".csv")
 
    # Extract the metrics and commit hashes from the DataFrame
    commit_hashes = df["Commit Hash"]
