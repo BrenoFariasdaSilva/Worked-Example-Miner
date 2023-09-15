@@ -64,9 +64,8 @@ def loop_through_default_repository_names():
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"")
 		process_repository(repository_name) # Process the current repository
-		print(f"")
 		print(f"------------------------------------------------------------")
-	print(f"")
+		print(f"")
 	elapsed_time = time.time() - loop_start_time
 	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics changes{backgroundColors.GREEN} for the {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES} {CLASSES_OR_METHODS}{backgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2))

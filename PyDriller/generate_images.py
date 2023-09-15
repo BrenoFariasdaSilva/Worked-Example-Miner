@@ -66,7 +66,6 @@ def loop_through_default_repository_names():
       print(f"")
       print(f"------------------------------------------------------------")
       print(f"")
-   print(f"")
    elapsed_time = time.time() - loop_start_time
    elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}images{backgroundColors.GREEN} for the {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES} {CLASSES_OR_METHODS}{backgroundColors.GREEN}: "
    output_time(elapsed_time_string, round(elapsed_time, 2))
