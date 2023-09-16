@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import subprocess
+# import unicode
 from colorama import Style
 from ck_metrics import backgroundColors
 
@@ -32,13 +33,16 @@ for i in range(len(DEFAULT_REPOSITORY_NAME)):
 
 			# Run the git diff command in the terminal
 			diff_command = ["git", "diff", commit_hash1, commit_hash2]
+			print(f"DIFF COMMAND: {diff_command}")
 			try:
-				diff_output = subprocess.check_output(diff_command, cwd=repository_path, stderr=subprocess.STDOUT, universal_newlines=True)
+				diff_output = subprocess.check_output(diff_command, cwd=repository_path, stderr=subprocess.STDOUT)
 			except subprocess.CalledProcessError as e:
 				diff_output = e.output
+			lines = diff_output.splitlines()
+			print(lines)
 
 			# Split the diff into individual file diffs
-			diff_parts = diff_output.split("diff --git")
+			diff_parts = lines.split("diff --git")
 
 			for j, diff_part in enumerate(diff_parts):
 				if j == 0:
