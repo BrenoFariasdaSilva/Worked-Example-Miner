@@ -8,7 +8,7 @@
 repositories=("commons-lang" "jabref" "kafka" "zookeeper")
 
 # Define the list of subfolders
-subfolders=("ck_metrics" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
+subfolders=("ck_metrics" "diff" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
 
 # List of the folder to zip
 folders_list=("")
