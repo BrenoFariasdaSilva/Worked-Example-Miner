@@ -5,7 +5,7 @@
 # ./generateZipFiles.sh
 
 # Define the list of repositories
-repositories=("commons-lang")
+repositories=("commons-lang" "jabref" "kafka" "zookeeper")
 
 # Define the list of subfolders
 subfolders=("ck_metrics" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
