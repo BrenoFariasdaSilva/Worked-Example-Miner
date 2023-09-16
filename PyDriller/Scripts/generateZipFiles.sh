@@ -28,7 +28,7 @@ if [[ "${current_dir}" == *"Scripts" && ! -d "../compressed/" ]]; then
    echo "Creating the compressed directory in parent path..."
    mkdir -p "../compressed" # Create the directory
 fi
-if [[ "${current_dir}" == *"PyDriller" && ! -d "../compressed/" ]]; then
+if [[ "${current_dir}" == *"PyDriller" && ! -d "/compressed/" ]]; then
    echo "Creating the compressed directory in current path..."
    mkdir -p "compressed" # Create the directory
 fi
