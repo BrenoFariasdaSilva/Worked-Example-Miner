@@ -13,14 +13,23 @@ subfolders=("ck_metrics" "graphics" "metrics_evolution" "metrics_predictions" "m
 # List of the folder to zip
 folders_list=("")
 
+# Get the current directory
+current_dir="$(pwd)"
+
+echo "Current directory: ${current_dir}"
+
 # Loop through the repositories
 for repo_name in "${repositories[@]}"; do
    # Clean the folders_list variable
    folders_list=("")
    for folder in "${subfolders[@]}"; do
-      # Create a list and append the repository name to the subfolders
-      folders_list+=("../${folder}/${repo_name}/")
-      # echo "${folders_list[@]}"
+      if [[ "$current_dir" == *"Scripts" ]]; then
+         # Change the directory to the repository
+         folders_list+=("../${folder}/${repo_name}/")
+      else
+         # Change the directory to the repository
+         folders_list+=("${folder}/${repo_name}/")
+      fi
    done
    echo "${folders_list[@]}"
    # Create a zip file for the repository
