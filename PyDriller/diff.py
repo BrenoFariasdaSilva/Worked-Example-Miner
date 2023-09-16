@@ -1,68 +1,41 @@
-import os
-import pandas as pd
-import subprocess
-# import unicode
-from colorama import Style
-from ck_metrics import backgroundColors
+import os # The OS module in Python provides functions for interacting with the operating system.
+from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
+from tqdm import tqdm # TQDM is a progress bar library with good support for nested loops and Jupyter/IPython notebooks.
+from colorama import Style # Colorama is a Python library for printing colored text and stylizing terminal output.
+from ck_metrics import backgroundColors # Import the background colors from the ck_metrics module
 
 # Current working directory
 cwd = os.getcwd()
 
-# Define the repository name and CSV file path
-DEFAULT_REPOSITORY_NAME = ["commons-lang", "jabref", "kafka", "zookeeper"]
+# Define the default repository names and URLs
+DEFAULT_REPOSITORY_NAMES = {"commons-lang":"https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"}
 
-for i in range(len(DEFAULT_REPOSITORY_NAME)):
-	repository_name = DEFAULT_REPOSITORY_NAME[i]
-	repository_path = os.path.join(cwd, "repositories", repository_name)
-	csv_file_path = os.path.join(cwd, "ck_metrics", f"{repository_name}-commit_hashes.csv")
+# Generate the diffs for each repository
+for repository_name, repository_url in DEFAULT_REPOSITORY_NAMES.items():
+	# Get the commits generator and list for the repository
+	commits_generator = (commit for commit in Repository(repository_url).traverse_commits())
+	commits = list(commit for commit in Repository(repository_url).traverse_commits())
 
-	# Read the CSV file into a DataFrame
-	df = pd.read_csv(f"{csv_file_path}")
+	print(f"len(commits): {len(commits)}")
 
-	# Get the first two commit hashes
-	if len(df) < 2:
-		print(f"{backgroundColors.RED}There are not enough commits in the CSV file to generate a diff.{Style.RESET_ALL}")
-	else:
-		for i in range(len(df) - 1):
-			commit_hash1 = df.iloc[i]["commit hash"]
-			commit_hash2 = df.iloc[i + 1]["commit hash"]
+	# Validate if there are enough commits to generate a diff
+	if len(commits) < 2:
+		print(f"{backgroundColors.RED}There are not enough commits in the {repository_name} repository to generate a diff.{Style.RESET_ALL}")
+		continue
 
-			# Create the diff folder if it doesn't exist
-			diff_folder_path = os.path.join(cwd, "diffs", repository_name, f"{commit_hash1}_{commit_hash2}")
-			os.makedirs(diff_folder_path, exist_ok=True)
+	# Loop through the commits of the repository and generate the diffs files
+	for i, commit in enumerate(tqdm(commits_generator, desc=f"{backgroundColors.GREEN}Processing {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}")):
+		# Loop through the modified files of the commit
+		for modified_file in commit.modified_files:
+			file_diff = modified_file.diff # Get the diff of the modified file
+			diff_file_directory = f"{cwd}/diffs/{repository_name}/{i} - {commit.hash}/" # Define the directory to save the diff file
 
-			# Run the git diff command in the terminal
-			diff_command = ["git", "diff", commit_hash1, commit_hash2]
-			print(f"DIFF COMMAND: {diff_command}")
-			try:
-				diff_output = subprocess.check_output(diff_command, cwd=repository_path, stderr=subprocess.STDOUT)
-			except subprocess.CalledProcessError as e:
-				diff_output = e.output
-			lines = diff_output.splitlines()
-			print(lines)
+			# Validate if the directory exists, if not, create it
+			if not os.path.exists(diff_file_directory):
+				os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
+			# Save the diff file
+			with open(f"{diff_file_directory}{modified_file.filename}", "w", encoding="utf-8", errors="ignore") as diff_file:
+				diff_file.write(file_diff) # Write the diff to the file
 
-			# Split the diff into individual file diffs
-			diff_parts = lines.split("diff --git")
-
-			for j, diff_part in enumerate(diff_parts):
-				if j == 0:
-					continue # Skip the first empty part
-
-				print(f"j: {j} of {len(diff_parts)-1}")
-				# print(f"diff_part: {diff_part}")
-
-				file_diff = "diff --git" + diff_part  # Re-add the "diff --git" part
-
-				# Extract the file path from the diff
-				file_path_start = file_diff.find(" a/") + 3
-				file_path_end = file_diff.find(" b/")
-				file_path = file_diff[file_path_start:file_path_end]
-
-				# Generate a .diff file for each modified file
-				file_path = os.path.join(diff_folder_path, f"{file_path.replace('/', '_')}.diff")
-				with open(file_path, "w", encoding="utf-8", errors="ignore") as diff_file:
-					diff_file.write(file_diff)
-
-				print(f"{Style.RESET_ALL}{backgroundColors.GREEN}Diff {backgroundColors.CYAN}{i+1} of {len(df)-1}{backgroundColors.GREEN} for {backgroundColors.CYAN}{commit_hash1}{backgroundColors.GREEN} and {backgroundColors.CYAN}{commit_hash2}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}")
-
-	print(f"{backgroundColors.GREEN}All diffs generated and saved.{Style.RESET_ALL}")
+	print(f"{backgroundColors.GREEN}All diffs for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}\n")
+print(f"{backgroundColors.GREEN}All diffs for {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES.keys())}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}")
