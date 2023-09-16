@@ -16,7 +16,19 @@ folders_list=("")
 # Get the current directory
 current_dir="$(pwd)"
 
-echo "Current directory: ${current_dir}"
+# If the current_dir doesn't end with "PyDriller" or "Scripts", then exit
+if [[ "$current_dir" != *"Scripts" ]] && [[ "$current_dir" != *"PyDriller" ]]; then
+   echo "Please run the script from the /PyDriller or PyDriller/Scripts directory."
+   exit
+fi
+
+# Create a "Compressed" directory if it does not exist
+if [[ "$current_dir" == *"Scripts" ]] && [[ ! -d "../Compressed/" ]]; then
+   mkdir -p "../Compressed/" # Create the directory
+fi
+if [[ "$current_dir" == *"PyDriller" ]] && [[ ! -d "../Compressed/" ]]; then
+   mkdir -p "/Compressed/" # Create the directory
+fi
 
 # Loop through the repositories
 for repo_name in "${repositories[@]}"; do
@@ -26,12 +38,14 @@ for repo_name in "${repositories[@]}"; do
       if [[ "$current_dir" == *"Scripts" ]]; then
          # Change the directory to the repository
          folders_list+=("../${folder}/${repo_name}/")
-      else
+      fi
+      if [[ "$current_dir" == *"PyDriller" ]]; then
          # Change the directory to the repository
          folders_list+=("${folder}/${repo_name}/")
       fi
    done
    echo "${folders_list[@]}"
+
    # Create a zip file for the repository
    zip -r "${repo_name}.zip" "${folders_list[@]}"
 done
