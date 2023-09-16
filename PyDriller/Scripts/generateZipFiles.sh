@@ -23,10 +23,10 @@ if [[ "$current_dir" != *"Scripts" ]] && [[ "$current_dir" != *"PyDriller" ]]; t
 fi
 
 # Create a "Compressed" directory if it does not exist
-if [[ "$current_dir" == *"Scripts" ]] && [[ ! -d "../Compressed/" ]]; then
+if [[ "$current_dir" == *"Scripts" ]] && [[ ! -d "../compressed/" ]]; then
    mkdir -p "../Compressed/" # Create the directory
 fi
-if [[ "$current_dir" == *"PyDriller" ]] && [[ ! -d "../Compressed/" ]]; then
+if [[ "$current_dir" == *"PyDriller" ]] && [[ ! -d "../compressed/" ]]; then
    mkdir -p "/Compressed/" # Create the directory
 fi
 
