@@ -16,8 +16,6 @@ for repository_name, repository_url in DEFAULT_REPOSITORY_NAMES.items():
 	commits_generator = (commit for commit in Repository(repository_url).traverse_commits())
 	commits = list(commit for commit in Repository(repository_url).traverse_commits())
 
-	print(f"len(commits): {len(commits)}")
-
 	# Validate if there are enough commits to generate a diff
 	if len(commits) < 2:
 		print(f"{backgroundColors.RED}There are not enough commits in the {repository_name} repository to generate a diff.{Style.RESET_ALL}")
