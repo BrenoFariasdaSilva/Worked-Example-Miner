@@ -23,6 +23,7 @@ subfolders=("ck_metrics" "diffs" "graphics" "metrics_evolution" "metrics_predict
 # List of the folder to zip
 folders_list=("")
 
+# Define the save path prefix
 save_path_prefix=""
 
 # Create a "Compressed" directory if it does not exist
@@ -40,11 +41,10 @@ if [[ "${current_dir}" == *"PyDriller" ]]; then
    fi
 fi
 
-# Loop through the repositories
+# Loop through the repositories names
 for repo_name in "${repositories[@]}"; do
-   # Clean the folders_list variable
-   folders_list=("")
-   for folder in "${subfolders[@]}"; do
+   folders_list=("") # Clean the folders_list variable
+   for folder in "${subfolders[@]}"; do # Loop through the subfolders
       folders_list+=("${save_path_prefix}${folder}/${repo_name}/") # Add the folder to the list
    done
 
