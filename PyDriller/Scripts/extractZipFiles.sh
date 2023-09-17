@@ -7,6 +7,9 @@
 # Get the current directory
 current_dir="$(pwd)"
 
+# Define the compressed directory
+compressed_dir="" 
+
 # Check if the current directory ends with "/Scripts" or "/PyDriller"
 if [[ "$current_dir" == *"/Scripts" ]]; then
    compressed_dir="../compressed"
