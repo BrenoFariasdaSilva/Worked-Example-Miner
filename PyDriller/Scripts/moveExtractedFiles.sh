@@ -6,6 +6,8 @@
 
 # Get the current directory
 current_dir="$(pwd)"
+
+# Print the current directory
 echo "Current directory: ${current_dir}"
 
 # If the current_dir doesn't end with "/PyDriller" or "/PyDriller/Scripts", then exit
@@ -19,7 +21,7 @@ save_path_prefix=""
 
 # Check if the current directory ends with "/PyDriller" or "/PyDriller/Scripts"
 if [[ "${current_dir}" == *"/PyDriller/Scripts" ]]; then
-   save_path_prefix="../"
+   save_path_prefix="../" # Set the save path prefix
 fi
 
 # Define the source and destination folder names
@@ -41,4 +43,5 @@ for source_folder in "${source_folders[@]}"; do
    rm -r "${source_folder}"
 done
 
+# Print a success message
 echo "Files moved and source folders deleted successfully."
