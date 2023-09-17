@@ -4,6 +4,10 @@
 # chmod +x ./generateZipFiles.sh
 # ./generateZipFiles.sh
 
+# Get the current directory
+current_dir="$(pwd)"
+echo "Current directory: ${current_dir}"
+
 # If the current_dir doesn't end with "/PyDriller" or "/PyDriller/Scripts", then exit
 if [[ "${current_dir}" != *"/PyDriller" && "${current_dir}" != *"/PyDriller/Scripts" ]]; then
    echo "Please run the script from the '/PyDriller' or 'PyDriller/Scripts' directory."
@@ -19,10 +23,7 @@ subfolders=("ck_metrics" "diffs" "graphics" "metrics_evolution" "metrics_predict
 # List of the folder to zip
 folders_list=("")
 
-# Get the current directory
-current_dir="$(pwd)"
 save_path_prefix=""
-echo "Current directory: ${current_dir}"
 
 # Create a "Compressed" directory if it does not exist
 if [[ "${current_dir}" == *"Scripts" ]]; then
