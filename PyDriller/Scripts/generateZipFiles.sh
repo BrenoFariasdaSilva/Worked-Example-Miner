@@ -27,17 +27,17 @@ folders_list=("")
 save_path_prefix=""
 
 # Create a "Compressed" directory if it does not exist
-if [[ "${current_dir}" == *"Scripts" ]]; then
+if [[ "${current_dir}" == *"/PyDriller" ]]; then
+   if [[ ! -d "compressed/" ]]; then
+      echo "Creating the compressed directory in current path..."
+      mkdir -p "compressed" # Create the directory
+   fi
+fi
+if [[ "${current_dir}" == *"/PyDriller/Scripts" ]]; then
    save_path_prefix="../"
    if [[ ! -d "${save_path_prefix}compressed/" ]]; then
       echo "Creating the compressed directory in parent path..."
       mkdir -p "${save_path_prefix}compressed" # Create the directory
-   fi
-fi
-if [[ "${current_dir}" == *"PyDriller" ]]; then
-   if [[ ! -d "compressed/" ]]; then
-      echo "Creating the compressed directory in current path..."
-      mkdir -p "compressed" # Create the directory
    fi
 fi
 
