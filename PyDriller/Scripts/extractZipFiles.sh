@@ -18,9 +18,9 @@ fi
 
 # Check if the current directory ends with "/PyDriller" or "/PyDriller/Scripts"
 if [[ "$current_dir" == *"/PyDriller" ]]; then
-   compressed_dir="/compressed"
+   compressed_dir="/compressed" # Set the compressed directory
 elif [[ "$current_dir" == *"/PyDriller/Scripts" ]]; then
-   compressed_dir="../compressed"
+   compressed_dir="../compressed" # Set the compressed directory
 fi
 
 # If the compressed directory does not exist, then create it
@@ -43,4 +43,5 @@ for repo_name in "${repositories[@]}"; do
    fi
 done
 
+# Print a success message
 echo "Files unzipped successfully."
