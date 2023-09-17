@@ -6,7 +6,7 @@
 
 # Define the source and destination folder names
 source_folders=("Commons Lang" "Kafka" "JabRef" "ZooKeeper")
-destination_folders=("ck_metrics" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
+destination_folders=("ck_metrics" "diffs" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
 
 # Loop through the source folders and move their contents
 for source_folder in "${source_folders[@]}"; do
