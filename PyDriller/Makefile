@@ -1,6 +1,9 @@
 ck_metrics_script:
 	clear; python3 ck_metrics.py
 
+file_diffs_script:
+	clear; python3 file_diffs.py
+
 generate_images_script:
 	clear; python3 generate_images.py
 
