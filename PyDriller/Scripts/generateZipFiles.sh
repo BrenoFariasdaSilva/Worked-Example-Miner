@@ -4,9 +4,9 @@
 # chmod +x ./generateZipFiles.sh
 # ./generateZipFiles.sh
 
-# If the current_dir doesn't end with "PyDriller" or "Scripts", then exit
-if [[ "${current_dir}" != *"Scripts" && "${current_dir}" != *"PyDriller" ]]; then
-   echo "Please run the script from the /PyDriller or PyDriller/Scripts directory."
+# If the current_dir doesn't end with "/PyDriller" or "/PyDriller/Scripts", then exit
+if [[ "${current_dir}" != *"/PyDriller" && "${current_dir}" != *"/PyDriller/Scripts" ]]; then
+   echo "Please run the script from the '/PyDriller' or 'PyDriller/Scripts' directory."
    exit
 fi
 
