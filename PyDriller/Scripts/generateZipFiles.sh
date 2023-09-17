@@ -4,6 +4,12 @@
 # chmod +x ./generateZipFiles.sh
 # ./generateZipFiles.sh
 
+# If the current_dir doesn't end with "PyDriller" or "Scripts", then exit
+if [[ "${current_dir}" != *"Scripts" && "${current_dir}" != *"PyDriller" ]]; then
+   echo "Please run the script from the /PyDriller or PyDriller/Scripts directory."
+   exit
+fi
+
 # Define the list of repositories
 repositories=("commons-lang" "jabref" "kafka" "zookeeper")
 
@@ -17,12 +23,6 @@ folders_list=("")
 current_dir="$(pwd)"
 save_path_prefix=""
 echo "Current directory: ${current_dir}"
-
-# If the current_dir doesn't end with "PyDriller" or "Scripts", then exit
-if [[ "${current_dir}" != *"Scripts" && "${current_dir}" != *"PyDriller" ]]; then
-   echo "Please run the script from the /PyDriller or PyDriller/Scripts directory."
-   exit
-fi
 
 # Create a "Compressed" directory if it does not exist
 if [[ "${current_dir}" == *"Scripts" ]]; then
