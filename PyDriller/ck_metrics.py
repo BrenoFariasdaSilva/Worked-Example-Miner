@@ -290,18 +290,6 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
       # Write the commit hashes
       writer.writerows(commit_hashes)
 
-# @brief: This function defines the command to play a sound when the program finishes
-# @param: None
-# @return: None
-def play_sound():
-	if os.path.exists(SOUND_FILE):
-		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
-			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
-		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
-	else: # if the sound file does not exist
-		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
-
 # @brief: This function sorts the commit hashes by commit date
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
@@ -315,6 +303,18 @@ def sort_commit_hashes_by_commit_date(repository_name):
    commit_hashes = commit_hashes.sort_values(by="commit date")
    # Overwrite the CSV file with the sorted DataFrame
    commit_hashes.to_csv(commit_hashes_file_path, index=False)
+
+# @brief: This function defines the command to play a sound when the program finishes
+# @param: None
+# @return: None
+def play_sound():
+	if os.path.exists(SOUND_FILE):
+		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
+			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
+		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
+			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+	else: # if the sound file does not exist
+		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
