@@ -1,8 +1,28 @@
 import os # The OS module in Python provides functions for interacting with the operating system.
+import atexit # For playing a sound when the program finishes
+import platform # For getting the operating system name
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from tqdm import tqdm # TQDM is a progress bar library with good support for nested loops and Jupyter/IPython notebooks.
 from colorama import Style # Colorama is a Python library for printing colored text and stylizing terminal output.
 from ck_metrics import backgroundColors # Import the background colors from the ck_metrics module
+
+SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
+SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
+
+# @brief: This function defines the command to play a sound when the program finishes
+# @param: None
+# @return: None
+def play_sound():
+	if os.path.exists(SOUND_FILE):
+		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
+			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
+		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
+			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+	else: # if the sound file does not exist
+		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+
+# Register the function to play a sound when the program finishes
+atexit.register(play_sound)
 
 # Current working directory
 cwd = os.getcwd()
