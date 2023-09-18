@@ -73,7 +73,7 @@ def main():
 	# Current working directory
 	cwd = os.getcwd()
 
-	# Loop through the repositories
+	# Loop through the repositories and generate the diffs
 	loop_through_repositories(cwd)
 
 	print(f"{backgroundColors.GREEN}All diffs for {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES.keys())}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}")
