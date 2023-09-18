@@ -41,7 +41,7 @@ def loop_through_repositories(cwd):
 			continue
 
 		# Loop through the commits of the repository and generate the diffs files
-		generate_diffs(cwd, repository_name, commits_generator, commits)
+		generate_diffs(cwd, repository_name, commits_generator)
 
 # @brief: This function generates the diffs for the commits of a repository
 # @param: cwd - The current working directory
