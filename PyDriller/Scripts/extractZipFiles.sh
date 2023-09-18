@@ -37,6 +37,7 @@ repositories=("commons-lang" "jabref" "kafka" "zookeeper")
 # Loop through the specified repository names and unzip the corresponding files
 for repo_name in "${repositories[@]}"; do
    zipfile="$compressed_dir/${repo_name}.zip" # Define the zip file path
+   echo "Unzipping $zipfile to $compressed_dir..."
    if [ -e "$zipfile" ]; then # Check if the zip file exists
       unzip -q "$zipfile" -d "$compressed_dir" # Unzip the file
       echo "Unzipped $zipfile to $compressed_dir" 
