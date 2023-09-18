@@ -32,7 +32,7 @@ for repository_name, repository_url in DEFAULT_REPOSITORY_NAMES.items():
 			if not os.path.exists(diff_file_directory):
 				os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
 			# Save the diff file
-			with open(f"{diff_file_directory}{modified_file.filename}", "w", encoding="utf-8", errors="ignore") as diff_file:
+			with open(f"{diff_file_directory}{modified_file.filename}.diff", "w", encoding="utf-8", errors="ignore") as diff_file:
 				diff_file.write(file_diff) # Write the diff to the file
 
 	print(f"{backgroundColors.GREEN}All diffs for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}\n")
