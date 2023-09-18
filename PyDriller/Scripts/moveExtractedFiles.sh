@@ -32,6 +32,7 @@ destination_folders=("ck_metrics" "diffs" "graphics" "metrics_evolution" "metric
 for source_folder in "${source_folders[@]}"; do
    # Loop through the destination folders and move the contents
    for destination_folder in "${destination_folders[@]}"; do
+      echo "Moving the contents from ${source_folder}/${destination_folder} to ${path_prefix}${destination_folder}/"
       # Create the destination folder if it doesn't exist
       mkdir -p "${path_prefix}${destination_folder}"
       
