@@ -50,6 +50,8 @@ for repo_name in "${repositories[@]}"; do
       folders_list+=("${path_prefix}${folder}/${repo_name}/") # Add the folder to the list
    done
 
+   echo "Creating a zip file for the ${repo_name} repository..."
+
    # Create a zip file for the repository
    zip -r "${path_prefix}compressed/${repo_name}.zip" "${folders_list[@]}"
 done
