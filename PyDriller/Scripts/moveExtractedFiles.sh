@@ -16,32 +16,31 @@ if [[ "${current_dir}" != *"/PyDriller" && "${current_dir}" != *"/PyDriller/Scri
    exit
 fi
 
-# Define the save path prefix
-path_prefix=""
+compressed_folder_path=""
 
-# Check if the current directory ends with "/PyDriller" or "/PyDriller/Scripts"
-if [[ "${current_dir}" == *"/PyDriller/Scripts" ]]; then
-   path_prefix="../" # Set the save path prefix
+if [[ "${current_dir}" == *"/PyDriller" ]]; then
+   compressed_folder_path="/compressed" # Set the compressed directory
+elif [[ "${current_dir}" == *"/PyDriller/Scripts" ]]; then
+   compressed_folder_path="../compressed" # Set the compressed directory
 fi
 
-# Define the source and destination folder names
-source_folders=("commons-lang" "jabref" "kafka" "zookeeper")
-destination_folders=("ck_metrics" "diffs" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
+# Define the extraced folder names
+extracted_folders=("ck_metrics" "diffs" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
 
-# Loop through the source folders and move their contents
-for source_folder in "${source_folders[@]}"; do
-   # Loop through the destination folders and move the contents
-   for destination_folder in "${destination_folders[@]}"; do
-      echo "Moving the contents from ${source_folder}/${destination_folder} to ${path_prefix}${destination_folder}/"
-      # Create the destination folder if it doesn't exist
-      mkdir -p "${path_prefix}${destination_folder}"
-      
-      # Move the contents from the source to destination folder
-      mv "${source_folder}/${destination_folder}"/* "${path_prefix}${destination_folder}/"
-   done
+# Loop through the destination folders and move the contents
+for extracted_folders in "${extracted_folders[@]}"; do
+   echo "Moving the contents from ${compressed_folder_path}/${extracted_folders} to ../"
 
-   # Delete the source folder after moving its contents
-   rm -r "${source_folder}"
+   # If the destination folder doesn't exist, then create it
+   if [[ ! -d "../${extracted_folders}" ]]; then
+      mkdir "../${extracted_folders}"
+   fi
+   
+   # Move the contents from the source to destination folder
+   mv "${compressed_folder_path}/${extracted_folders}"/* "../${extracted_folders}/"
+
+   # Delete the source folder
+   rm -rf "${compressed_folder_path}/${extracted_folders}"
 done
 
 # Print a success message
