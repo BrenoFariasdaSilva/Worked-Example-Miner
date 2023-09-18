@@ -17,11 +17,11 @@ if [[ "${current_dir}" != *"/PyDriller" && "${current_dir}" != *"/PyDriller/Scri
 fi
 
 # Define the save path prefix
-save_path_prefix=""
+path_prefix=""
 
 # Check if the current directory ends with "/PyDriller" or "/PyDriller/Scripts"
 if [[ "${current_dir}" == *"/PyDriller/Scripts" ]]; then
-   save_path_prefix="../" # Set the save path prefix
+   path_prefix="../" # Set the save path prefix
 fi
 
 # Define the source and destination folder names
@@ -33,10 +33,10 @@ for source_folder in "${source_folders[@]}"; do
    # Loop through the destination folders and move the contents
    for destination_folder in "${destination_folders[@]}"; do
       # Create the destination folder if it doesn't exist
-      mkdir -p "${save_path_prefix}${destination_folder}"
+      mkdir -p "${path_prefix}${destination_folder}"
       
       # Move the contents from the source to destination folder
-      mv "${source_folder}/${destination_folder}"/* "${save_path_prefix}${destination_folder}/"
+      mv "${source_folder}/${destination_folder}"/* "${path_prefix}${destination_folder}/"
    done
 
    # Delete the source folder after moving its contents
