@@ -272,7 +272,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    i = 1
    commit_hashes = []
 
-   estimated_time_string = f"Estimated time for running all of the iterations in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+   estimated_time_string = f"Estimated time for running all of the iterations for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
    output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * number_of_commits), 2))
 
    # Create a progress bar with the total number of commits
