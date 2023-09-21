@@ -8,7 +8,6 @@ import platform # For getting the operating system name
 import time # For measuring the time
 from tqdm import tqdm # for progress bar
 from sklearn.linear_model import LinearRegression # for the linear regression
-from sklearn.model_selection import train_test_split # for splitting the data into training and testing
 from colorama import Style # For coloring the terminal
 
 # Import from the main.py file
@@ -326,9 +325,10 @@ def linear_regression_predictions(metrics, filename, repository_name, progress_s
 		if len(x) < 2 or len(y) < 2:
 			return
 		
-		# Perform linear regression using numpy.polyfit
-		coeffs = np.polyfit(x, y, deg=1)
-		linear_fit = coeffs[1] + coeffs[0] * x
+		# Perform linear regression using Scikit-Learn
+		model = LinearRegression()
+		model.fit(x.reshape(-1, 1), y)
+		linear_fit = model.predict(x.reshape(-1, 1))
 
 		# Create the plot
 		plt.figure(figsize=(10, 6))
