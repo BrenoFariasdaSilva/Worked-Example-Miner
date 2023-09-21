@@ -363,37 +363,36 @@ def main():
       print(f"{backgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{backgroundColors.RED}.{Style.RESET_ALL}")
       return
    
-   # Get the user input
-   repository_url = get_user_repository_url()
-   # Get the name of the repository
-   repository_name = get_repository_name(repository_url)
+   for repository_url in DEFAULT_REPOSITORY_URL:
+      # Get the name of the repository
+      repository_name = get_repository_name(repository_url)
 
-   # Verify if the metrics were already calculated
-   if verify_ck_metrics_folder(repository_name):
-      print(f"{backgroundColors.GREEN}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
-      return
-   
-   # Create the ck metrics directory
-   create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
-   # Create the repositories directory
-   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
+      # Verify if the metrics were already calculated
+      if verify_ck_metrics_folder(repository_name):
+         print(f"{backgroundColors.GREEN}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
+         return
+      
+      # Create the ck metrics directory
+      create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
+      # Create the repositories directory
+      create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
 
-   # Clone the repository
-   clone_repository(repository_name, repository_url)
-   
-   # Get the number of commits, which is needed to traverse the repository
-   number_of_commits = len(list(Repository(repository_url).traverse_commits()))
-   # Traverse the repository to run ck for every commit hash in the repository 
-   commit_hashes = traverse_repository(repository_name, repository_url, number_of_commits)
+      # Clone the repository
+      clone_repository(repository_name, repository_url)
+      
+      # Get the number of commits, which is needed to traverse the repository
+      number_of_commits = len(list(Repository(repository_url).traverse_commits()))
+      # Traverse the repository to run ck for every commit hash in the repository 
+      commit_hashes = traverse_repository(repository_name, repository_url, number_of_commits)
 
-   # Write the commit hashes to a csv file
-   write_commit_hashes_to_csv(repository_name, commit_hashes)
+      # Write the commit hashes to a csv file
+      write_commit_hashes_to_csv(repository_name, commit_hashes)
 
-   # Sort commit hashes by commit date
-   sort_commit_hashes_by_commit_date(repository_name)
+      # Sort commit hashes by commit date
+      sort_commit_hashes_by_commit_date(repository_name)
 
-   # Checkout the main branch
-   checkout_branch("main")
+      # Checkout the main branch
+      checkout_branch("main")
 
 # Directly run the main function if the script is executed
 if __name__ == '__main__':
