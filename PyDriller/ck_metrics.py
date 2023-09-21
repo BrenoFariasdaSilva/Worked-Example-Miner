@@ -6,8 +6,9 @@ import platform # For getting the operating system name
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
-from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from colorama import Style # For coloring the terminal
+from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
+from tqdm import tqdm # for progress bar
 
 # Macros:
 class backgroundColors: # Colors for the terminal
@@ -42,6 +43,7 @@ RELATIVE_CK_JAR_PATH = "/ck/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The r
 
 # Default values:
 DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
+ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
 FULL_CK_METRICS_DIRECTORY_PATH = PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
 FULL_REPOSITORIES_DIRECTORY_PATH = PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_CK_JAR_PATH = PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
@@ -156,7 +158,6 @@ def verify_ck_metrics_folder(repository_name):
 
    # Verify if the repository exists
    if not os.path.exists(commit_file_path):
-      print(f"{backgroundColors.RED}File {backgroundColors.CYAN}{commit_file}{backgroundColors.RED} does not exist inside {backgroundColors.CYAN}{data_path}{backgroundColors.RED}.{Style.RESET_ALL}")
       return False # Return False because the repository does not exist
 
    # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
@@ -209,7 +210,6 @@ def generate_output_directory_paths(repository_name, commit_hash, commit_number)
 # @return: None
 def output_commit_progress(repository_name, commit_hash, commit_number, number_of_commits):
    relative_cmd = f"{backgroundColors.GREEN}java -jar {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH} {RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}{backgroundColors.GREEN} false 0 false {backgroundColors.CYAN}{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_hash}/"
-   print(f"{backgroundColors.CYAN}{commit_number} of {number_of_commits}{backgroundColors.GREEN} - Running CK: {relative_cmd}{Style.RESET_ALL}")
 
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
@@ -239,9 +239,7 @@ def output_time(output_string, time):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
-   first_iteration_time_string = f"Time taken to generate {backgroundColors.CYAN}CK metrics{backgroundColors.GREEN} for the first commit in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
-   output_time(first_iteration_time_string, round(first_iteration_duration, 2))
-   estimated_time_string = f"Estimated time for the rest of the iterations in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+   estimated_time_string = f"Estimated time for running all the of the iterations in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
    output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2))
    time_taken_string = f"Time taken to generate CK metrics for {backgroundColors.CYAN}{number_of_commits}{backgroundColors.GREEN} commits in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository: "
    output_time(time_taken_string, round(elapsed_time, 2))
@@ -272,51 +270,52 @@ def generate_diffs(repository_name, commit_hash, commit_number):
 def traverse_repository(repository_name, repository_url, number_of_commits):
    start_time = time.time()  # Start measuring time
    i = 1
-   traversed_first_commit = False
    commit_hashes = []
 
-   for commit in Repository(repository_url).traverse_commits():
-      # Store the commit hash, commit message and commit date in one line of the list, separated by commas
-      current_tuple = (commit.hash, commit.msg.split('\n')[0], commit.committer_date)
-      commit_hashes.append(current_tuple)
+   estimated_time_string = f"Estimated time for running all of the iterations in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+   output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * number_of_commits), 2))
 
-      # Save the diff of the modified files of the current commit
-      generate_diffs(repository_name, commit, i)
+   # Create a progress bar with the total number of commits
+   with tqdm(total=number_of_commits, unit=" commit") as pbar:
+      for commit in Repository(repository_url).traverse_commits():
+         # Store the commit hash, commit message and commit date in one line of the list, separated by commas
+         current_tuple = (commit.hash, commit.msg.split('\n')[0], commit.committer_date)
+         commit_hashes.append(current_tuple)
 
-      # Change working directory to the repository directory
-      workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
-      os.chdir(workdir)        
+         # Save the diff of the modified files of the current commit
+         generate_diffs(repository_name, commit, i)
 
-      # Checkout the commit hash branch to run ck
-      checkout_branch(commit.hash)
+         # Change working directory to the repository directory
+         workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
+         os.chdir(workdir)        
 
-      # Create the ck_metrics directory paths
-      output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, i)
-      # Create the ck_metrics directory
-      create_directory(output_directory, relative_output_directory)
+         # Checkout the commit hash branch to run ck
+         checkout_branch(commit.hash)
 
-      # Change working directory to the repository directory
-      os.chdir(output_directory)
+         # Create the ck_metrics directory paths
+         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, i)
+         # Create the ck_metrics directory
+         create_directory(output_directory, relative_output_directory)
 
-      # Output the progress of the analyzed commit
-      output_commit_progress(repository_name, commit.hash, i, number_of_commits)
+         # Change working directory to the repository directory
+         os.chdir(output_directory)
 
-      # Run ck metrics for the current commit hash
-      cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
-      run_ck_metrics_generator(cmd)
+         # Output the progress of the analyzed commit
+         output_commit_progress(repository_name, commit.hash, i, number_of_commits)
 
-      if i == 1:
-         traversed_first_commit = True
-         first_iteration_time_string = f"Time taken to generate {backgroundColors.CYAN}CK metrics and Commit Diffs {backgroundColors.GREEN}for the first commit in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
-         first_iteration_duration = time.time() - start_time
-         output_time(first_iteration_time_string, round(first_iteration_duration, 2))
+         # Run ck metrics for the current commit hash
+         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
+         run_ck_metrics_generator(cmd)
 
-      i += 1
+         if i == 1:
+            first_iteration_duration = time.time() - start_time  # Calculate the duration of the first iteration
 
-   if traversed_first_commit:
-      elapsed_time = time.time() - start_time  # Calculate elapsed time
-      show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
-      
+         i += 1
+         pbar.update(1) # Update the progress bar
+
+   elapsed_time = time.time() - start_time  # Calculate elapsed time
+   show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
+
    return commit_hashes
 
 # @brief: This function writes the commit hashes to a csv file
