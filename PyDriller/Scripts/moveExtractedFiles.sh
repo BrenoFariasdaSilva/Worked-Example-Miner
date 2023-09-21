@@ -25,7 +25,7 @@ elif [[ "${current_dir}" == *"/PyDriller/Scripts" ]]; then
 fi
 
 # Define the extraced folder names
-extracted_folders=("ck_metrics" "diffs" "graphics" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
+extracted_folders=("ck_metrics" "diffs" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
 
 # Loop through the destination folders and move the contents
 for extracted_folders in "${extracted_folders[@]}"; do
