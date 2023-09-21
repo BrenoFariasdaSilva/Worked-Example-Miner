@@ -4,6 +4,7 @@ import os # OS module in Python provides functions for interacting with the oper
 import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool,
 import platform # For getting the operating system name
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
+import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from colorama import Style # For coloring the terminal
@@ -53,6 +54,55 @@ def path_contains_whitespaces():
    if " " in PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
+
+# @brief: This function is used to process the repositories concurrently, using threads
+# @param: None
+# @return: None 
+def process_repositories_concurrently(repository_urls):
+   threads = []
+
+   for repository_url in repository_urls:
+      thread = threading.Thread(target=process_repository, args=(repository_url,))
+      threads.append(thread)
+      thread.start()
+
+   # Wait for all threads to finish
+   for thread in threads:
+      thread.join()
+
+# @brief: This function is used to process the repository
+# @param: repository_url: URL of the repository to be analyzed
+# @return: None
+def process_repository(repository_url):
+   # Get the name of the repository
+   repository_name = get_repository_name(repository_url)
+
+   # Verify if the metrics were already calculated
+   if verify_ck_metrics_folder(repository_name):
+      print(f"{backgroundColors.GREEN}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
+      return
+
+   # Create the ck metrics directory
+   create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
+   # Create the repositories directory
+   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
+
+   # Clone the repository
+   clone_repository(repository_name, repository_url)
+
+   # Get the number of commits, which is needed to traverse the repository
+   number_of_commits = len(list(Repository(repository_url).traverse_commits()))
+   # Traverse the repository to run ck for every commit hash in the repository
+   commit_hashes = traverse_repository(repository_name, repository_url, number_of_commits)
+
+   # Write the commit hashes to a csv file
+   write_commit_hashes_to_csv(repository_name, commit_hashes)
+
+   # Sort commit hashes by commit date
+   sort_commit_hashes_by_commit_date(repository_name)
+
+   # Checkout the main branch
+   checkout_branch("main")
 
 # @brief: Get the string after the last slash
 # @param: url: URL of the repository to be analyzed
@@ -343,36 +393,7 @@ def main():
       print(f"{backgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{backgroundColors.RED}.{Style.RESET_ALL}")
       return
    
-   for repository_url in DEFAULT_REPOSITORY_URL:
-      # Get the name of the repository
-      repository_name = get_repository_name(repository_url)
-
-      # Verify if the metrics were already calculated
-      if verify_ck_metrics_folder(repository_name):
-         print(f"{backgroundColors.GREEN}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
-         return
-      
-      # Create the ck metrics directory
-      create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
-      # Create the repositories directory
-      create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
-
-      # Clone the repository
-      clone_repository(repository_name, repository_url)
-      
-      # Get the number of commits, which is needed to traverse the repository
-      number_of_commits = len(list(Repository(repository_url).traverse_commits()))
-      # Traverse the repository to run ck for every commit hash in the repository 
-      commit_hashes = traverse_repository(repository_name, repository_url, number_of_commits)
-
-      # Write the commit hashes to a csv file
-      write_commit_hashes_to_csv(repository_name, commit_hashes)
-
-      # Sort commit hashes by commit date
-      sort_commit_hashes_by_commit_date(repository_name)
-
-      # Checkout the main branch
-      checkout_branch("main")
+   process_repositories_concurrently()
 
 # Directly run the main function if the script is executed
 if __name__ == '__main__':
