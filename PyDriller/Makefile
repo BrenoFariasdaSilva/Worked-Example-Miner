@@ -3,9 +3,6 @@
 ck_metrics_script:
 	clear; python3 ck_metrics.py
 
-repository_diffs_script:
-	clear; python3 repository_diffs.py
-
 generate_images_script:
 	clear; python3 generate_images.py
 
