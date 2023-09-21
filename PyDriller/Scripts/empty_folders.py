@@ -11,7 +11,7 @@ class backgroundColors: # Colors for the terminal
 # @brief: This function counts the empty folders in a directory
 # @param: directory - The directory to count the empty folders
 # @return: empty_folders - The list of empty folders
-def count_empty_folders(directory):
+def search_empty_folders(directory):
 	empty_folders = [] # The list of empty folders
 
 	# Loop through the directory
@@ -34,7 +34,7 @@ def main():
 	if not os.path.isdir(initial_directory):
 		print(f"{backgroundColors.RED}Invalid directory path.{Style.RESET_ALL}")
 	else:
-		empty_folders = count_empty_folders(initial_directory)
+		empty_folders = search_empty_folders(initial_directory)
 		if empty_folders:
 			print(f"{backgroundColors.GREEN}Empty folders found:{Style.RESET_ALL}")
 			for folder in empty_folders:
