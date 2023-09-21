@@ -1,3 +1,5 @@
+# Main Scripts:
+
 ck_metrics_script:
 	clear; python3 ck_metrics.py
 
@@ -10,8 +12,21 @@ generate_images_script:
 metrics_changes_script:
 	clear; python3 metrics_changes.py
 
+# Auxiliar Scripts:
+
 empty_folders_script:
-	clear; python3 Scripts/empty_folders.py
+	chmod +x Scripts/empty_folders.py; clear; python3 Scripts/empty_folders.py
+
+extractZipFiles:
+	chmod +x Scripts/extractZipFiles.py; clear; python3 Scripts/extractZipFiles.py
+
+generateZipFiles:
+	chmod +x Scripts/generateZipFiles.py; clear; python3 Scripts/generateZipFiles.py
+
+moveExtractedFiles:
+	chmod +x Scripts/moveExtractedFiles.py; clear; python3 Scripts/moveExtractedFiles.py
+	
+# Install Dependencies:
 
 dependencies:
 	pip install matplotlib
