@@ -174,10 +174,11 @@ def run_ck_metrics_generator(cmd):
 # @brief: This function generates the output directory path for the CK metrics generator
 # @param: repository_name: Name of the repository to be analyzed
 # @param: commit_hash: Commit hash of the commit to be analyzed
+# @param: commit_number: Number of the commit to be analyzed
 # @return: The output_directory and relative_output_directory paths
-def generate_output_directory_paths(repository_name, commit_hash):
-   output_directory = FULL_CK_METRICS_DIRECTORY_PATH + "/" + repository_name + "/" + commit_hash + "/"
-   relative_output_directory = RELATIVE_CK_METRICS_DIRECTORY_PATH + "/" + repository_name + "/" + commit_hash + "/"
+def generate_output_directory_paths(repository_name, commit_hash, commit_number):
+   output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
+   relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    return output_directory, relative_output_directory
 
 # @brief: This function outputs the progress of the analyzed commit
@@ -249,7 +250,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
       checkout_branch(commit.hash)
 
       # Create the output directory paths
-      output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash)
+      output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, i)
       # Create the output directory
       create_directory(output_directory, relative_output_directory)
 
