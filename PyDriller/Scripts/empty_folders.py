@@ -8,6 +8,8 @@ class backgroundColors: # Colors for the terminal
 	YELLOW = "\033[93m" # Yellow
 	RED = "\033[91m" # Red
 
+DATA_FOLDERS = ["ck_metrics", "diffs", "metrics_evolution", "metrics_predictions", "metrics_statistics"] # The data folders
+
 # @brief: This function counts the empty folders in a directory
 # @param: directory - The directory to count the empty folders
 # @return: empty_folders - The list of empty folders
@@ -29,19 +31,24 @@ def search_empty_folders(directory):
 # @return: None
 def main():
 	print(f"{backgroundColors.GREEN}Current working directory: {backgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
-	initial_directory = input(f"{backgroundColors.GREEN}Enter the initial directory {backgroundColors.CYAN}(Relative/Absolute Paths): {Style.RESET_ALL}")
+	initial_directory = input(f"{backgroundColors.GREEN}Enter the initial directory {backgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
+
+	if initial_directory.lower() == "default":
+		initial_directory = DATA_FOLDERS
+		print(f"{backgroundColors.GREEN}Initial directory: {backgroundColors.CYAN}{initial_directory}{Style.RESET_ALL}")
 	
-	if not os.path.isdir(initial_directory):
-		print(f"{backgroundColors.RED}Invalid directory path.{Style.RESET_ALL}")
-	else:
-		empty_folders = search_empty_folders(initial_directory)
+	for directory in initial_directory:
+		if not os.path.isdir(directory):
+			print(f"{backgroundColors.RED}Invalid directory path: {backgroundColors.CYAN}{directory}{Style.RESET_ALL}")
+			continue
+		empty_folders = search_empty_folders(directory)
 		if empty_folders:
 			print(f"{backgroundColors.GREEN}Empty folders found:{Style.RESET_ALL}")
 			for folder in empty_folders:
 				print(f"{backgroundColors.CYAN}{folder}{Style.RESET_ALL}")
 			print(f"{backgroundColors.GREEN}Total empty folders found: {backgroundColors.CYAN}{len(empty_folders)}{Style.RESET_ALL}")
 		else:
-			print(f"{backgroundColors.CYAN}No empty folders found.{Style.RESET_ALL}")
+			print(f"{backgroundColors.GREEN}No empty folders found in {backgroundColors.CYAN}{directory}{Style.RESET_ALL}")
 
 if __name__ == "__main__":
 	main()
