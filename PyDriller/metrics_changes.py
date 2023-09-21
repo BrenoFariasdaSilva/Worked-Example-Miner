@@ -100,8 +100,10 @@ def process_repository(repository_name):
 	# Sort the csv file by the number of changes
 	sort_csv_by_changes(repository_name)
 
+	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CHANGED_METHODS_CSV_FILENAME}"
+
 	# Remove the old csv file
-	os.remove(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + CHANGED_METHODS_CSV_FILENAME)
+	os.remove(old_csv_file_path)
 
 	elapsed_time = time.time() - start_time
 	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics changes{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
@@ -265,8 +267,8 @@ def traverse_directory(directory_path):
 	progress_bar = None
 
 	# Traverse the directory
+	# Iterate through each file in the directory and call the process_csv_file function to get the methods metrics of each file
 	for root, dirs in os.walk(directory_path):
-		# Iterate through each file in the directory and call the process_csv_file function to get the methods metrics of each file
 		dirs.sort() # Sort the directories alphabetically
 		for dir in dirs: # For each subdirectory in the directories
 			for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
@@ -452,11 +454,11 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 # @return: None
 def sort_csv_by_changes(repository_name):
 	# Read the csv file
-	data = pd.read_csv(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + CHANGED_METHODS_CSV_FILENAME)
+	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CHANGED_METHODS_CSV_FILENAME}")
 	# Sort the csv file by the number of changes
 	data = data.sort_values(by=["Changed"], ascending=False)
 	# Write the sorted csv file to a new csv file
-	data.to_csv(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + SORTED_CHANGED_METHODS_CSV_FILENAME, index=False)
+	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}", index=False)
 	print(f"{backgroundColors.CYAN}Successfully sorted{backgroundColors.GREEN} the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of times they changed{backgroundColors.GREEN} and {backgroundColors.CYAN}stored{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 
 # @brief: This function outputs time, considering the appropriate time unit
