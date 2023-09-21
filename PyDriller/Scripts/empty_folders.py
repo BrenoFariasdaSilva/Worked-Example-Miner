@@ -32,21 +32,23 @@ def search_empty_folders(directory):
 def main():
 	print(f"{backgroundColors.GREEN}Current working directory: {backgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
 	initial_directory = input(f"{backgroundColors.GREEN}Enter the initial directory {backgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
+	print(f"")
 
 	if initial_directory.lower() == "default":
 		initial_directory = DATA_FOLDERS
-		print(f"{backgroundColors.GREEN}Initial directory: {backgroundColors.CYAN}{initial_directory}{Style.RESET_ALL}")
 	
 	for directory in initial_directory:
 		if not os.path.isdir(directory):
 			print(f"{backgroundColors.RED}Invalid directory path: {backgroundColors.CYAN}{directory}{Style.RESET_ALL}")
 			continue
+
 		empty_folders = search_empty_folders(directory)
 		if empty_folders:
-			print(f"{backgroundColors.GREEN}Empty folders found:{Style.RESET_ALL}")
+			print(f"{backgroundColors.GREEN}Empty folders found in {backgroundColors.CYAN}{directory}{backgroundColors.GREEN}:{Style.RESET_ALL}")
 			for folder in empty_folders:
 				print(f"{backgroundColors.CYAN}{folder}{Style.RESET_ALL}")
-			print(f"{backgroundColors.GREEN}Total empty folders found: {backgroundColors.CYAN}{len(empty_folders)}{Style.RESET_ALL}")
+			print(f"{backgroundColors.GREEN}Total empty folders found in {backgroundColors.CYAN}{directory}{backgroundColors.GREEN}: {backgroundColors.CYAN}{len(empty_folders)}{Style.RESET_ALL}")
+			print(f"")
 		else:
 			print(f"{backgroundColors.GREEN}No empty folders found in {backgroundColors.CYAN}{directory}{Style.RESET_ALL}")
 
