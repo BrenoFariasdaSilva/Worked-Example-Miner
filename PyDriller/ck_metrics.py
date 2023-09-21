@@ -41,7 +41,7 @@ RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of th
 RELATIVE_CK_JAR_PATH = "/ck/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The relative path of the CK JAR file
 
 # Default values:
-DEFAULT_REPOSITORY_URL = ["https://github.com/apache/commons-lang", "https://github.com/JabRef/jabref", "https://github.com/apache/kafka", "https://github.com/apache/zookeeper"] # The default repository URL
+DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
 FULL_CK_METRICS_DIRECTORY_PATH = PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
 FULL_REPOSITORIES_DIRECTORY_PATH = PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_CK_JAR_PATH = PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
@@ -58,25 +58,24 @@ def path_contains_whitespaces():
 # @brief: This function is used to process the repositories concurrently, using threads
 # @param: None
 # @return: None 
-def process_repositories_concurrently(repository_urls):
-   threads = []
-
-   for repository_url in repository_urls:
-      thread = threading.Thread(target=process_repository, args=(repository_url,))
-      threads.append(thread)
-      thread.start()
+def process_repositories_concurrently():
+   print(f"{backgroundColors.GREEN}Processing the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys)}{backgroundColors.GREEN} repositories concurrently...{Style.RESET_ALL}")
+   threads = [] # The threads list
+   # Loop through the default repositories
+   for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
+      thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
+      threads.append(thread) # Append the thread to the threads list
+      thread.start() # Start the thread
 
    # Wait for all threads to finish
    for thread in threads:
-      thread.join()
+      thread.join() # Wait for the thread to finish
 
 # @brief: This function is used to process the repository
+# @param: repository_name: Name of the repository to be analyzed
 # @param: repository_url: URL of the repository to be analyzed
 # @return: None
-def process_repository(repository_url):
-   # Get the name of the repository
-   repository_name = get_repository_name(repository_url)
-
+def process_repository(repository_name, repository_url):
    # Verify if the metrics were already calculated
    if verify_ck_metrics_folder(repository_name):
       print(f"{backgroundColors.GREEN}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
@@ -103,13 +102,6 @@ def process_repository(repository_url):
 
    # Checkout the main branch
    checkout_branch("main")
-
-# @brief: Get the string after the last slash
-# @param: url: URL of the repository to be analyzed
-# @return: The name of the repository
-def get_repository_name(url):
-   # Return the string after the last slash
-   return url.split("/")[-1]
 
 # @brief: Update the repository using "git pull"
 # @param: repository_name: Name of the repository to be analyzed
@@ -267,11 +259,10 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
 # @param: commit_number - The number of the commit to be analyzed
 # @return: None
 def generate_diffs(repository_name, commit_hash, commit_number):
-   cwd = os.getcwd() # Get the current working directory
    # Loop through the modified files of the commit
    for modified_file in commit_hash.modified_files:
       file_diff = modified_file.diff # Get the diff of the modified file
-      diff_file_directory = f"{cwd}{DEFAULT_DIFFS_DIRECTORY}/{repository_name}/{commit_number}-{commit_hash.hash}/" # Define the directory to save the diff file
+      diff_file_directory = f"{PATH}{DEFAULT_DIFFS_DIRECTORY}/{repository_name}/{commit_number}-{commit_hash.hash}/" # Define the directory to save the diff file
 
       # Validate if the directory exists, if not, create it
       if not os.path.exists(diff_file_directory):
@@ -279,8 +270,6 @@ def generate_diffs(repository_name, commit_hash, commit_number):
       # Save the diff file
       with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file:
          diff_file.write(file_diff) # Write the diff to the file
-
-   print(f"{backgroundColors.GREEN}All diffs for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}\n")
 
 # @brief: This function traverses the repository
 # @param: repository_name: Name of the repository to be analyzed
@@ -325,7 +314,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
       if i == 1:
          traversed_first_commit = True
-         first_iteration_time_string = f"Time taken to generate {backgroundColors.CYAN}CK metrics{backgroundColors.GREEN} for the first commit in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+         first_iteration_time_string = f"Time taken to generate {backgroundColors.CYAN}CK metrics and Commit Diffs {backgroundColors.GREEN}for the first commit in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
          first_iteration_duration = time.time() - start_time
          output_time(first_iteration_time_string, round(first_iteration_duration, 2))
 
