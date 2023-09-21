@@ -1,14 +1,14 @@
-import os # for walking through directories
-import csv # for reading csv files
-import numpy as np # for calculating the min, max, avg, and third quartile of each metric
-import pandas as pd # for the csv file operations
-import matplotlib.pyplot as plt # for plotting the graphs
 import atexit # For playing a sound when the program finishes
+import csv # for reading csv files
+import matplotlib.pyplot as plt # for plotting the graphs
+import numpy as np # for calculating the min, max, avg, and third quartile of each metric
+import os # for walking through directories
+import pandas as pd # for the csv file operations
 import platform # For getting the operating system name
 import time # For measuring the time
-from tqdm import tqdm # for progress bar
-from sklearn.linear_model import LinearRegression # for the linear regression
 from colorama import Style # For coloring the terminal
+from sklearn.linear_model import LinearRegression # for the linear regression
+from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
 from ck_metrics import backgroundColors # For coloring the terminal outputs

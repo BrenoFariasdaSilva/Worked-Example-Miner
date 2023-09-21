@@ -1,10 +1,10 @@
-import os # OS module in Python provides functions for interacting with the operating system
-import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
-import csv # CSV (Comma Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database
-import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool,
-import time # This module provides various time-related functions
 import atexit # For playing a sound when the program finishes
+import csv # CSV (Comma Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database
+import os # OS module in Python provides functions for interacting with the operating system
+import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool,
 import platform # For getting the operating system name
+import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
+import time # This module provides various time-related functions
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from colorama import Style # For coloring the terminal
 
