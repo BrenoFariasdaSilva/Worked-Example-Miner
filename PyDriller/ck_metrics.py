@@ -156,7 +156,7 @@ def create_directory(full_directory_name, relative_directory_name):
 def verify_ck_metrics_folder(repository_name):
    data_path = os.path.join(PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
    repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
-   commit_file = f"{repository_name}-commit_hashes{COMMIT_HASHES_FILE_EXTENSION}" # The name of the commit hashes file
+   commit_file = f"{repository_name}commits_list{COMMIT_HASHES_FILE_EXTENSION}" # The name of the commit hashes file
    commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
 
    # Verify if the repository exists
@@ -323,7 +323,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 # @param: commit_hashes: List of tuples containing the commit hashes, commit messages and commit dates
 # @return: None
 def write_commit_hashes_to_csv(repository_name, commit_hashes):
-   file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commit_hashes{COMMIT_HASHES_FILE_EXTENSION}"
+   file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}commits_list{COMMIT_HASHES_FILE_EXTENSION}"
    with open(file_path, "w", newline='') as csv_file:
       writer = csv.writer(csv_file)
       # Write the header
@@ -336,7 +336,7 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
 # @return: None
 def sort_commit_hashes_by_commit_date(repository_name):
    # Get the commit hashes file path
-   commit_hashes_file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commit_hashes{COMMIT_HASHES_FILE_EXTENSION}"
+   commit_hashes_file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}commits_list{COMMIT_HASHES_FILE_EXTENSION}"
    # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
    commit_hashes = pd.read_csv(commit_hashes_file_path, sep=",", usecols=["commit hash", "commit date"], header=0)
    # Sort the DataFrame by the "commit date" column
