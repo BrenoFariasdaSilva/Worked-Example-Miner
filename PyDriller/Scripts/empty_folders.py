@@ -50,7 +50,7 @@ def main():
 			print(f"{backgroundColors.GREEN}Total empty folders found in {backgroundColors.CYAN}{directory}{backgroundColors.GREEN}: {backgroundColors.CYAN}{len(empty_folders)}{Style.RESET_ALL}")
 			print(f"")
 		else:
-			print(f"{backgroundColors.GREEN}No empty folders found in {backgroundColors.CYAN}{directory}{Style.RESET_ALL}")
+			print(f"{backgroundColors.GREEN}No empty folders found in {backgroundColors.CYAN}{directory}{backgroundColors.GREEN}.{Style.RESET_ALL}")
 
 if __name__ == "__main__":
 	main()
