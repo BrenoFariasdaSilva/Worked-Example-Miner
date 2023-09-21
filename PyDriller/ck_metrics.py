@@ -54,26 +54,6 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
-# @brief: Verifiy if the attribute is empty. If so, set it to the default value
-# @param: attribute: The attribute to be checked
-# @param: default_attribute_value: The default value of the attribute
-# @return: The repository URL and the output directory
-def validate_attribute(attribute, default_attribute_value):
-   if not attribute: # Verify if the attribute is empty
-      print(f"{backgroundColors.YELLOW}The attribute is empty! Using the default value: {backgroundColors.CYAN}{default_attribute_value}{Style.RESET_ALL}")
-      attribute = default_attribute_value # Set the attribute to the default value
-   return attribute
-
-# @brief: Get the user input of the repository URL
-# @param: None
-# @return: repository_url: URL of the repository to be analyzed
-def get_user_repository_url():
-   # Ask for user input of the repository URL
-   repository_url = input(f"{backgroundColors.GREEN}Enter the repository URL {backgroundColors.CYAN}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
-
-   # Return the repository URL
-   return validate_attribute(repository_url, DEFAULT_REPOSITORY_URL[0])
-
 # @brief: Get the string after the last slash
 # @param: url: URL of the repository to be analyzed
 # @return: The name of the repository
