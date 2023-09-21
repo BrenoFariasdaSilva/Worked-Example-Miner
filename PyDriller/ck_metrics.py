@@ -205,15 +205,6 @@ def generate_output_directory_paths(repository_name, commit_hash, commit_number)
    relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    return output_directory, relative_output_directory
 
-# @brief: This function outputs the progress of the analyzed commit
-# @param: repository_name: Name of the repository to be analyzed
-# @param: commit_hash: Commit hash of the commit to be analyzed
-# @param: commit_number: Number of the commit to be analyzed
-# @param: number_of_commits: Number of commits to be analyzed
-# @return: None
-def output_commit_progress(repository_name, commit_hash, commit_number, number_of_commits):
-   relative_cmd = f"{backgroundColors.GREEN}java -jar {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH} {RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}{backgroundColors.GREEN} false 0 false {backgroundColors.CYAN}{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_hash}/"
-
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
 # @param: time: Time to be outputted
@@ -272,6 +263,7 @@ def generate_diffs(repository_name, commit_hash, commit_number):
 # @return: The commit hashes of the repository
 def traverse_repository(repository_name, repository_url, number_of_commits):
    start_time = time.time()  # Start measuring time
+   first_iteration_duration = 0  # Duration of the first iteration
    i = 1
    commit_hashes = []
 
@@ -299,9 +291,6 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
          # Change working directory to the repository directory
          os.chdir(output_directory)
-
-         # Output the progress of the analyzed commit
-         output_commit_progress(repository_name, commit.hash, i, number_of_commits)
 
          # Run ck metrics for the current commit hash
          cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
