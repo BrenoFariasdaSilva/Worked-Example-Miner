@@ -246,15 +246,15 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
       commit_hashes.append(current_tuple)
 
       # Change working directory to the repository directory
-      workdir_directory = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
-      os.chdir(workdir_directory)        
+      workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
+      os.chdir(workdir)        
 
       # Checkout the commit hash branch to run ck
       checkout_branch(commit.hash)
 
-      # Create the output directory paths
+      # Create the ck_metrics directory paths
       output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, i)
-      # Create the output directory
+      # Create the ck_metrics directory
       create_directory(output_directory, relative_output_directory)
 
       # Change working directory to the repository directory
@@ -264,7 +264,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
       output_commit_progress(repository_name, commit.hash, i, number_of_commits)
 
       # Run ck metrics for the current commit hash
-      cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir_directory} false 0 false {output_directory}"
+      cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
       run_ck_metrics_generator(cmd)
 
       if i == 1:
