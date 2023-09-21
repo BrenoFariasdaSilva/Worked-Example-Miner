@@ -7,9 +7,13 @@ from colorama import Style # Colorama is a Python library for printing colored t
 from ck_metrics import backgroundColors # Import the background colors from the ck_metrics module
 
 # Define the constants
-DEFAULT_REPOSITORY_NAMES = {"commons-lang":"https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"}
+DEFAULT_REPOSITORY_NAMES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"}
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
+DIFF_FILE_EXTENSION = ".diff" # The diff file extension
+
+# Define default paths
+DEFAULT_DIFFS_DIRECTORY = "diffs" # The default diffs directory
 
 # @brief: This function defines the command to play a sound when the program finishes
 # @param: None
@@ -62,13 +66,13 @@ def generate_diffs(cwd, repository_name, commits_generator):
 		# Loop through the modified files of the commit
 		for modified_file in commit.modified_files:
 			file_diff = modified_file.diff # Get the diff of the modified file
-			diff_file_directory = f"{cwd}/diffs/{repository_name}/{i} - {commit.hash}/" # Define the directory to save the diff file
+			diff_file_directory = f"{cwd}/{DEFAULT_DIFFS_DIRECTORY}/{repository_name}/{i}-{commit.hash}/" # Define the directory to save the diff file
 
 			# Validate if the directory exists, if not, create it
 			if not os.path.exists(diff_file_directory):
 				os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
 			# Save the diff file
-			with open(f"{diff_file_directory}{modified_file.filename}.diff", "w", encoding="utf-8", errors="ignore") as diff_file:
+			with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file:
 				diff_file.write(file_diff) # Write the diff to the file
 
 	print(f"{backgroundColors.GREEN}All diffs for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} saved successfully.{Style.RESET_ALL}\n")
