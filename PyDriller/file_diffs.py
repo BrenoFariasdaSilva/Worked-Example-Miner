@@ -26,6 +26,15 @@ def play_sound():
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
+# @brief: This function is used to verify if the PATH constant contain whitespaces
+# @param: current_working_directory - The current working directory
+# @return: True if the PATH constant contain whitespaces, False otherwise
+def path_contains_whitespaces(current_working_directory):
+   # Verify if the PATH constant contains whitespaces
+   if " " in current_working_directory:
+      return True # Return True if the PATH constant contains whitespaces
+   return False # Return False if the PATH constant does not contain whitespaces
+
 # @brief: This function loops through the repositories
 # @param: cwd - The current working directory
 # @return: None
@@ -68,10 +77,15 @@ def generate_diffs(cwd, repository_name, commits_generator):
 # @param: None
 # @return: None
 def main():
-	print(f"{backgroundColors.GREEN}Starting to generate the diffs for {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES.keys())}{backgroundColors.GREEN}.{Style.RESET_ALL}\n")
-
 	# Current working directory
 	cwd = os.getcwd()
+
+	# Verify if the path constant contains whitespaces
+	if path_contains_whitespaces(cwd):
+		print(f"{backgroundColors.RED}The path {backgroundColors.CYAN}{cwd}{backgroundColors.RED} constant contains whitespaces:. Please remove them!{Style.RESET_ALL}")
+		return
+
+	print(f"{backgroundColors.GREEN}Starting to generate the diffs for {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES.keys())}{backgroundColors.GREEN}.{Style.RESET_ALL}\n")
 
 	# Loop through the repositories and generate the diffs
 	loop_through_repositories(cwd)
