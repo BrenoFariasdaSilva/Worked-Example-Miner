@@ -75,12 +75,12 @@ def loop_through_default_repository_names():
 # @return: None
 def process_repository(repository_name):
 	start_time = time.time() # Start the timer
-	directory_path = get_directory_path(repository_name) # Get the directory path from user input of the repository name
+	repository_ck_metrics = get_directory_path(repository_name) # Get the directory path from user input of the repository name
 	
 	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository will be analyzed.{Style.RESET_ALL}")
 	# Get the directory path from user input of the repository name
 
-	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(directory_path).
+	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
 	if not verify_ck_metrics_folders(repository_name):
 		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the ck_metrics.py file first{Style.RESET_ALL}")
 		return
@@ -89,7 +89,7 @@ def process_repository(repository_name):
 	create_directories(repository_name)
 
 	# Traverse the directory and get the method metrics
-	metrics_track_record = traverse_directory(directory_path)
+	metrics_track_record = traverse_directory(repository_ck_metrics)
 
 	# Write, for each identifier, the metrics evolution values to a csv file
 	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
