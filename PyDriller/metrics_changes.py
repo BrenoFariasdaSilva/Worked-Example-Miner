@@ -265,19 +265,20 @@ def traverse_directory(directory_path):
 	progress_bar = None
 
 	# Traverse the directory
-	for root, dirs, files in os.walk(directory_path):
+	for root, dirs in os.walk(directory_path):
 		# Iterate through each file in the directory and call the process_csv_file function to get the methods metrics of each file
-		for file in files:
-			# If the file is a csv file
-			if file == CK_CSV_FILE:
-				file_path = os.path.join(root, file) # Get the path to the csv file
-				process_csv_file(file_path, metrics_track_record) # Process the csv file
-				file_count += 1 # Increment the file count
+		dirs.sort() # Sort the directories alphabetically
+		for dir in dirs: # For each subdirectory in the directories
+			for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
+				if file == CK_CSV_FILE: # If the file is a csv file
+					file_path = os.path.join(root, file) # Get the path to the csv file
+					process_csv_file(file_path, metrics_track_record) # Process the csv file
+					file_count += 1 # Increment the file count
 
-				if progress_bar is None: # If the progress bar is not initialized
-					progress_bar = tqdm(total=file_count) # Initialize the progress bar
-				else:
-					progress_bar.update(1) # Update the progress bar
+					if progress_bar is None: # If the progress bar is not initialized
+						progress_bar = tqdm(total=file_count) # Initialize the progress bar
+					else:
+						progress_bar.update(1) # Update the progress bar
 
 	# Close the progress bar
 	if progress_bar is not None:
