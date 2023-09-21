@@ -184,18 +184,17 @@ def create_directory(full_directory_name, relative_directory_name):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def create_directories(repository_name):
-	# Create the output RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH directory if it does not exist
+	# Create the output METRICS_EVOLUTION directories if they does not exist
 	create_directory(FULL_METRICS_EVOLUTION_DIRECTORY_PATH, RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH)
-	# Create the output RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH directory if it does not exist
+	create_directory(f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}") # Create the directory where the csv file will be stored
+
+	# Create the output RELATIVE_METRICS_STATISTICS directories if they does not exist
 	create_directory(FULL_METRICS_STATISTICS_DIRECTORY_PATH, RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH)
-	# Create the output RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH directory if it does not exist
+	create_directory(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}")
+	
+	# Create the output RELATIVE_METRICS_PREDICTION directories if they does not exist
 	create_directory(FULL_METRICS_PREDICTION_DIRECTORY_PATH, RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH)
-	# Create the metrics evolution output repository_name directory if it does not exist
-	create_directory(FULL_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS, RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS) # Create the directory where the csv file will be stored
-	# Create the metrics statistics output repository_name directory if it does not exist
-	create_directory(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name, RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name)
-	# Create the metrics prediction output repository_name directory if it does not exist
-	create_directory(FULL_METRICS_PREDICTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS, RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS)
+	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
 
 # @brief: Validate the class name, that is, if it contains any dots in the name
 # @param class_name: The name of the class
