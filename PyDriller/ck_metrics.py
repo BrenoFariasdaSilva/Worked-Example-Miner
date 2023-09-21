@@ -107,7 +107,6 @@ def process_repository(repository_name, repository_url):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def update_repository(repository_name):
-   print(f"{backgroundColors.GREEN}Updating the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository using {backgroundColors.CYAN}git pull{backgroundColors.GREEN}.{Style.RESET_ALL}")
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
@@ -124,7 +123,6 @@ def clone_repository(repository_name, repository_url):
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
-      print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository is already cloned!{Style.RESET_ALL}")
       update_repository(repository_name) # Update the repository
       return
    else:
