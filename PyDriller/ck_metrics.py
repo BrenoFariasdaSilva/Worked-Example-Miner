@@ -141,11 +141,9 @@ def clone_repository(repository_name, repository_url):
 # @return: None
 def create_directory(full_directory_name, relative_directory_name):
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory already exists{Style.RESET_ALL}")
       return
    try: # Try to create the directory
       os.makedirs(full_directory_name)
-      print(f"{backgroundColors.GREEN}Successfully created the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory{Style.RESET_ALL}")
    except OSError: # If the directory cannot be created
       print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
@@ -153,7 +151,6 @@ def create_directory(full_directory_name, relative_directory_name):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: True if all the metrics are already calculated, False otherwise
 def verify_ck_metrics_folder(repository_name):
-   print(f"{backgroundColors.GREEN}Checking if all the {backgroundColors.CYAN}CK metrics{backgroundColors.GREEN} are already calculated for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
    data_path = os.path.join(PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
    repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
    commit_file = f"{repository_name}-commit_hashes{COMMIT_HASHES_FILE_EXTENSION}" # The name of the commit hashes file
@@ -176,7 +173,6 @@ def verify_ck_metrics_folder(repository_name):
          for ck_metric_file in CK_METRICS_FILES: # Verify if all the ck metrics files exist inside the folder
             ck_metric_file_path = os.path.join(folder_path, ck_metric_file)
             if not os.path.exists(ck_metric_file_path): # If the file does not exist
-               print(f"{backgroundColors.RED}The file {backgroundColors.CYAN}{ck_metric_file}{backgroundColors.RED} does not exist inside {backgroundColors.CYAN}{folder_path}{backgroundColors.RED}.{Style.RESET_ALL}")
                return False # If the file does not exist, then the metrics are not calculated
    return True # If all the metrics are already calculated
 
