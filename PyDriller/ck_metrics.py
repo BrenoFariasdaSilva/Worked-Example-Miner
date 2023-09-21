@@ -59,7 +59,7 @@ def path_contains_whitespaces():
 # @param: None
 # @return: None 
 def process_repositories_concurrently():
-   print(f"{backgroundColors.GREEN}Processing the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys)}{backgroundColors.GREEN} repositories concurrently...{Style.RESET_ALL}")
+   print(f"{backgroundColors.GREEN}Processing the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} repositories concurrently...{Style.RESET_ALL}")
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
@@ -190,7 +190,6 @@ def run_ck_metrics_generator(cmd):
    # Create a thread to run the cmd command
    thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = thread.communicate()
-   print(f"{backgroundColors.GREEN}{stdout.decode('utf-8')}{Style.RESET_ALL}")
 
 # @brief: This function generates the output directory path for the CK metrics generator
 # @param: repository_name: Name of the repository to be analyzed
