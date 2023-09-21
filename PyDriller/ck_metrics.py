@@ -43,6 +43,7 @@ RELATIVE_CK_JAR_PATH = "/ck/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The r
 
 # Default values:
 DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
+COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
 ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
 FULL_CK_METRICS_DIRECTORY_PATH = PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
 FULL_REPOSITORIES_DIRECTORY_PATH = PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
@@ -65,6 +66,8 @@ def process_repositories_concurrently():
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
+      estimated_time_string = f"Estimated time for running all of the iterations for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+      output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * COMMITS_NUMBER[repository_name]), 2))
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
       threads.append(thread) # Append the thread to the threads list
       thread.start() # Start the thread
@@ -272,11 +275,8 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    i = 1
    commit_hashes = []
 
-   estimated_time_string = f"Estimated time for running all of the iterations for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
-   output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * number_of_commits), 2))
-
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits, unit=" commit") as pbar:
+   with tqdm(total=number_of_commits, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}") as pbar:
       for commit in Repository(repository_url).traverse_commits():
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
          current_tuple = (commit.hash, commit.msg.split('\n')[0], commit.committer_date)
