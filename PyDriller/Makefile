@@ -10,6 +10,9 @@ generate_images_script:
 metrics_changes_script:
 	clear; python3 metrics_changes.py
 
+empty_folders_script:
+	clear; python3 Scripts/empty_folders.py
+
 dependencies:
 	pip install matplotlib
 	pip install numpy
