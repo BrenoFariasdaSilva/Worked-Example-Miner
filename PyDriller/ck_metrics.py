@@ -327,12 +327,16 @@ def sort_commit_hashes_by_commit_date(repository_name):
    # Get the commit hashes file path
    commit_hashes_file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}commits_list{COMMIT_HASHES_FILE_EXTENSION}"
    # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
-   commit_hashes = pd.read_csv(commit_hashes_file_path, sep=",", usecols=["commit hash", "commit date"], header=0)
+   commit_hashes = pd.read_csv(commit_hashes_file_path, sep=",", usecols=["commit hash", "commit message", "commit date"], header=0)
    # Sort the DataFrame by the "commit date" column
    commit_hashes["commit date"] = pd.to_datetime(commit_hashes["commit date"])
-   commit_hashes = commit_hashes.sort_values(by="commit date")
-   # Overwrite the CSV file with the sorted DataFrame
-   commit_hashes.to_csv(commit_hashes_file_path, index=False)
+   new_commit_hashes = commit_hashes.sort_values(by="commit date")
+   # verify the new_commit_hashes order are equal to commit_hashes
+   if new_commit_hashes.equals(commit_hashes):
+      print(f"{backgroundColors.RED}The commit hashes of {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} are already sorted{Style.RESET_ALL}")
+      return
+   # Write the sorted commit hashes to the csv file
+   new_commit_hashes.to_csv(commit_hashes_file_path, index=False)
 
 # @brief: This function defines the command to play a sound when the program finishes
 # @param: None
