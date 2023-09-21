@@ -240,6 +240,9 @@ def process_csv_file(file_path, metrics_track_record):
 			metrics = (cbo, cboModified, wmc, rfc)
 			identifier = f"{class_name} {variable_attribute}"
 
+			# TODO: Rewrite this, in order not to only add the metrics if it does not exist, but in that commit the file was changed.
+			# Think in a way to validate this so i only store in the metrics evolution the values of when the file was modified.
+
 			if identifier not in metrics_track_record: # if the identifier (of the method or class) is not in the dictionary
 				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0}
 
