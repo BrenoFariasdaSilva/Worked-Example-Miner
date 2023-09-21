@@ -34,13 +34,13 @@ TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, second
  
 # Relative paths:
 RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path of the directory that contains the CK generated files
-RELATIVE_REPOSITORY_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
+RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 RELATIVE_CK_JAR_PATH = "/ck/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The relative path of the CK JAR file
 
 # Default values:
 DEFAULT_REPOSITORY_URL = ["https://github.com/apache/commons-lang", "https://github.com/JabRef/jabref", "https://github.com/apache/kafka", "https://github.com/apache/zookeeper"] # The default repository URL
 FULL_CK_METRICS_DIRECTORY_PATH = PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
-FULL_REPOSITORY_DIRECTORY_PATH = PATH + RELATIVE_REPOSITORY_DIRECTORY_PATH # The full path of the directory that contains the repositories
+FULL_REPOSITORIES_DIRECTORY_PATH = PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_CK_JAR_PATH = PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
 
 # @brief: This function is used to verify if the PATH constant contain whitespaces
@@ -84,7 +84,9 @@ def get_repository_name(url):
 # @return: None
 def update_repository(repository_name):
    print(f"{backgroundColors.GREEN}Updating the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository using {backgroundColors.CYAN}git pull{backgroundColors.GREEN}.{Style.RESET_ALL}")
-   os.chdir(FULL_REPOSITORY_DIRECTORY_PATH + '/' + repository_name)
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
+   
    # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
@@ -95,15 +97,16 @@ def update_repository(repository_name):
 # @param: repository_url: URL of the repository to be analyzed
 # @return: None
 def clone_repository(repository_name, repository_url):
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
-   if os.path.isdir(FULL_REPOSITORY_DIRECTORY_PATH + '/' + repository_name) and os.listdir(FULL_REPOSITORY_DIRECTORY_PATH + '/' + repository_name):
+   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
       print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository is already cloned!{Style.RESET_ALL}")
       update_repository(repository_name) # Update the repository
       return
    else:
       print(f"{backgroundColors.GREEN}Cloning the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
       # Create a thread to clone the repository
-      thread = subprocess.Popen(["git", "clone", repository_url, FULL_REPOSITORY_DIRECTORY_PATH + '/' + repository_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
       print(f"{backgroundColors.GREEN}Successfully cloned the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository{Style.RESET_ALL}")
@@ -188,7 +191,7 @@ def generate_output_directory_paths(repository_name, commit_hash, commit_number)
 # @param: number_of_commits: Number of commits to be analyzed
 # @return: None
 def output_commit_progress(repository_name, commit_hash, commit_number, number_of_commits):
-   relative_cmd = f"{backgroundColors.GREEN}java -jar {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH} {RELATIVE_REPOSITORY_DIRECTORY_PATH}/{repository_name}{backgroundColors.GREEN} false 0 false {backgroundColors.CYAN}{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_hash}/"
+   relative_cmd = f"{backgroundColors.GREEN}java -jar {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH} {RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}{backgroundColors.GREEN} false 0 false {backgroundColors.CYAN}{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_hash}/"
    print(f"{backgroundColors.CYAN}{commit_number} of {number_of_commits}{backgroundColors.GREEN} - Running CK: {relative_cmd}{Style.RESET_ALL}")
 
 # @brief: This function outputs time, considering the appropriate time unit
@@ -243,7 +246,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
       commit_hashes.append(current_tuple)
 
       # Change working directory to the repository directory
-      workdir_directory = FULL_REPOSITORY_DIRECTORY_PATH + "/" + repository_name
+      workdir_directory = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
       os.chdir(workdir_directory)        
 
       # Checkout the commit hash branch to run ck
@@ -347,7 +350,7 @@ def main():
    # Create the ck metrics directory
    create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
    # Create the repositories directory
-   create_directory(FULL_REPOSITORY_DIRECTORY_PATH, RELATIVE_REPOSITORY_DIRECTORY_PATH)
+   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
 
    # Clone the repository
    clone_repository(repository_name, repository_url)
