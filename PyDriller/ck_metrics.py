@@ -62,7 +62,6 @@ def path_contains_whitespaces():
 # @param: None
 # @return: None 
 def process_repositories_concurrently():
-   print(f"{backgroundColors.GREEN}Processing the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} repositories concurrently...{Style.RESET_ALL}")
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
@@ -345,6 +344,9 @@ def main():
    if not os.path.exists(FULL_CK_JAR_PATH):
       print(f"{backgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{backgroundColors.RED}.{Style.RESET_ALL}")
       return
+
+   print(f"{backgroundColors.GREEN}This script will process the repositories: {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} concurrently.{Style.RESET_ALL}")
+   print(f"{backgroundColors.GREEN}The files that this script will generate are the ck metrics files, the commit hashes list file and the diffs of each commit.{Style.RESET_ALL}")
    
    process_repositories_concurrently()
 
