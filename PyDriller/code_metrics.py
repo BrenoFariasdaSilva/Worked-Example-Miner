@@ -57,7 +57,7 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
-# @brief: This function is used to process the repositories concurrently, using threads
+# @brief: This function is used to process each repositorie name concurrently, using threads
 # @param: None
 # @return: None 
 def process_repositories_concurrently():
