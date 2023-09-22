@@ -24,9 +24,6 @@ print(f"Start path: {START_PATH}")
 # Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
-# if the START_PATH ends with "Scientific-Research", then the SOUND_FILE to the in the current directory
-if START_PATH.endswith("Scientific-Research"):
-   SOUND_FILE = ".assets/NotificationSound.wav" # The path to the sound file
 
 # Extensions:
 CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit hashes
