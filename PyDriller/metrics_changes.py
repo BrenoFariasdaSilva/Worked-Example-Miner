@@ -94,16 +94,6 @@ def process_repository(repository_name):
 	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics changes{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2))
 
-# @brief: Verifiy if the attribute is empty. If so, set it to the default value
-# @param: attribute: The attribute to be checked
-# @param: default_attribute_value: The default value of the attribute
-# @return: The repository URL and the output directory
-def validate_attribute(attribute, default_attribute_value):
-   if not attribute: # Verify if the attribute is empty
-      print(f"{backgroundColors.YELLOW}The attribute is empty! Using the default value: {backgroundColors.CYAN}{default_attribute_value}{Style.RESET_ALL}")
-      attribute = default_attribute_value # Set the attribute to the default value
-   return attribute
-
 # @brief: Gets the user input for the repository name and returns the path to the directory
 # @param: repository_name
 # @return: The path to the directory of the CK metrics related to the repository
@@ -194,7 +184,6 @@ def process_csv_file(file_path, metrics_track_record):
 # @param repository_ck_metrics_path: The path to the directory
 # @return: A dictionary containing the metrics of each class and method combination
 def traverse_directory(repository_ck_metrics_path):
-	print(f"{backgroundColors.GREEN}Traversing the {backgroundColors.CYAN}{'/'.join(repository_ck_metrics_path.rsplit('/', 2)[-2:])}{backgroundColors.GREEN} directory...{Style.RESET_ALL}")
 	metrics_track_record = {}
 	file_count = 0
 	progress_bar = None
@@ -239,7 +228,6 @@ def get_clean_id(id):
 # @param: progress_status: The progress status
 # @return: None
 def linear_regression_predictions(metrics, filename, repository_name, progress_status):
-	print(f"{backgroundColors.GREEN}Linear Regression {progress_status}{backgroundColors.GREEN} for the {backgroundColors.CYAN}{filename} {CK_CSV_FILE.replace('.csv', '')}{backgroundColors.GREEN} in the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	# Check for empty metrics list
 	if not metrics:
 		print(f"{backgroundColors.RED}Metrics list is empty!{Style.RESET_ALL}")
@@ -292,7 +280,6 @@ def linear_regression_predictions(metrics, filename, repository_name, progress_s
 # @param: metrics_track_record: A dictionary containing the metrics of each method or class
 # @return: None
 def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
-	print(f"{backgroundColors.GREEN}Writing the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} metrics track record to a csv file inside {backgroundColors.CYAN}{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}{backgroundColors.GREEN}...{Style.RESET_ALL}")
 	progress_counter = 0
 	# For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
 	for identifier, record in metrics_track_record.items():
@@ -319,8 +306,6 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 		progress_counter += 1
 		progress_status = f"{backgroundColors.CYAN}{progress_counter}{backgroundColors.GREEN} of {backgroundColors.CYAN}{len(metrics_track_record)}{Style.RESET_ALL}"
 		linear_regression_predictions(metrics, filename, repository_name, progress_status) # Update the filename to remove the csv file extension
-
-	print(f"{backgroundColors.GREEN}Finished writing the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} metrics track record to a csv file inside {backgroundColors.CYAN}{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}{Style.RESET_ALL}")
 
 # @brief: Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 # @param csv_writer: The csv writer object
@@ -393,7 +378,6 @@ def sort_csv_by_changes(repository_name):
 	data = data.sort_values(by=["Changed"], ascending=False)
 	# Write the sorted csv file to a new csv file
 	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}", index=False)
-	print(f"{backgroundColors.CYAN}Successfully sorted{backgroundColors.GREEN} the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of times they changed{backgroundColors.GREEN} and {backgroundColors.CYAN}stored{backgroundColors.GREEN} inside the {backgroundColors.CYAN}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
@@ -440,11 +424,8 @@ def main():
 		print(f"{backgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return
 
-	print(f"{backgroundColors.GREEN}This script {backgroundColors.CYAN}generates the csv files{backgroundColors.GREEN} with the {backgroundColors.CYAN}{CLASSES_OR_METHODS} metrics values{backgroundColors.GREEN} for {backgroundColors.CYAN}each commit hash{backgroundColors.GREEN} and store them inside the {backgroundColors.CYAN}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}/repository_name/commit_hash{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
-	print(f"{backgroundColors.GREEN}This script {backgroundColors.CYAN}generates a csv file{backgroundColors.GREEN} with the {backgroundColors.CYAN}{CLASSES_OR_METHODS} sorted{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of times that the {CK_CSV_FILE.replace('.csv', '')} changed{backgroundColors.GREEN} and store it inside the {backgroundColors.CYAN}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
-	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}source of the metrics values{backgroundColors.GREEN} is the {backgroundColors.CYAN}{CK_CSV_FILE}{backgroundColors.GREEN} files.{Style.RESET_ALL}")
+	print(f"{backgroundColors.GREEN}This script generates the {backgroundColors.CYAN}metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{backgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 
-	print(f"{backgroundColors.GREEN}Processing all the repositories: {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES}{Style.RESET_ALL}")
 	loop_through_default_repository_names() # Process all the repositories
 		
 # Directive to run the main function
