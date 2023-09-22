@@ -62,12 +62,13 @@ def loop_through_default_repository_names():
 # @return: None
 def process_repository(repository_name):
 	start_time = time.time() # Start the timer
-	repository_ck_metrics = get_directory_path(repository_name) # Get the directory path from user input of the repository name
-	
+
 	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
 	if not verify_ck_metrics_folder(repository_name):
 		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the ck_metrics.py file first{Style.RESET_ALL}")
 		return
+
+	repository_ck_metrics = get_directory_path(repository_name) # Get the directory path from user input of the repository name
 	
 	# Create the desired directory if it does not exist
 	create_directories(repository_name)
@@ -107,15 +108,8 @@ def validate_attribute(attribute, default_attribute_value):
 # @param: repository_name
 # @return: The path to the directory of the CK metrics related to the repository
 def get_directory_path(repository_name):
-	directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
-
-	# Verify if the directory does not exist
-	while not os.path.isdir(directory_path):
-		print(f"{backgroundColors.RED}The directory does not exist. Please try again.{Style.RESET_ALL}")
-		repository_name = input(f"{backgroundColors.GREEN}Enter the repository name {backgroundColors.CYAN}(String){backgroundColors.GREEN}: {Style.RESET_ALL}")
-		directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
-
-	return directory_path
+	repository_ck_metrics_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
+	return repository_ck_metrics_path
 
 # @brief: This function create all the desired directories
 # @param: repository_name: Name of the repository to be analyzed
@@ -197,19 +191,19 @@ def process_csv_file(file_path, metrics_track_record):
 				commit_hashes.append(commit_hash) # add the commit hash to the list
 
 # @brief: Traverses a directory and processes all the csv files
-# @param directory_path: The path to the directory
+# @param repository_ck_metrics_path: The path to the directory
 # @return: A dictionary containing the metrics of each class and method combination
-def traverse_directory(directory_path):
-	print(f"{backgroundColors.GREEN}Traversing the {backgroundColors.CYAN}{'/'.join(directory_path.rsplit('/', 2)[-2:])}{backgroundColors.GREEN} directory...{Style.RESET_ALL}")
+def traverse_directory(repository_ck_metrics_path):
+	print(f"{backgroundColors.GREEN}Traversing the {backgroundColors.CYAN}{'/'.join(repository_ck_metrics_path.rsplit('/', 2)[-2:])}{backgroundColors.GREEN} directory...{Style.RESET_ALL}")
 	metrics_track_record = {}
 	file_count = 0
 	progress_bar = None
 
 	# Traverse the directory
-	# Iterate through each file in the directory and call the process_csv_file function to get the methods metrics of each file
-	for root, dirs in os.walk(directory_path):
-		dirs.sort() # Sort the directories alphabetically
-		for dir in dirs: # For each subdirectory in the directories
+	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
+	for root, subdirs, files in os.walk(repository_ck_metrics_path):
+		subdirs.sort() # Sort the directories alphabetically
+		for dir in subdirs: # For each subdirectory in the directories
 			for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 				if file == CK_CSV_FILE: # If the file is a csv file
 					file_path = os.path.join(root, file) # Get the path to the csv file
