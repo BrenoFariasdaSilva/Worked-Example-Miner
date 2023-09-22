@@ -348,7 +348,7 @@ def main():
       return
 
    print(f"{backgroundColors.GREEN}This script will process the repositories: {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} concurrently.{Style.RESET_ALL}")
-   print(f"{backgroundColors.GREEN}The files that this script will generate are the {backgroundColors.RED}ck metrics files, the commit hashes list file and the diffs of each commit{backgroundColors.GREEN}.{Style.RESET_ALL}")
+   print(f"{backgroundColors.GREEN}The files that this script will generate are the {backgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{backgroundColors.GREEN}.{Style.RESET_ALL}")
    
    process_repositories_concurrently()
 
