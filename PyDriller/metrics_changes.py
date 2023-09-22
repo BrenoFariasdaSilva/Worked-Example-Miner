@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt # for plotting the graphs
 import numpy as np # for calculating the min, max, avg, and third quartile of each metric
 import os # for walking through directories
 import pandas as pd # for the csv file operations
-import platform # For getting the operating system name
 import time # For measuring the time
 from colorama import Style # For coloring the terminal
 from sklearn.linear_model import LinearRegression # for the linear regression
