@@ -166,7 +166,8 @@ def verify_ck_metrics_folder(repository_name):
    i = 0
    for commit_hash in commit_hashes:
       commit_hash = commit_hash[0] # This removes the [] and the '' from the commit hash
-      folder_path = os.path.join(repo_path, f"{i}-{commit_hash}") # Join the repo path with the folder name
+      commit_file_filename = f"{i}-{commit_hash}" # The name of the folder
+      folder_path = os.path.join(repo_path, commit_file_filename) # Join the repo path with the folder name
       i += 1
 
       if os.path.exists(folder_path): # Verify if the folder exists
