@@ -11,7 +11,7 @@ from sklearn.linear_model import LinearRegression # for the linear regression
 from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
-from ck_metrics import path_contains_whitespaces, verify_ck_metrics_folder # Importing functions from the ck_metrics.py file
+from ck_metrics import path_contains_whitespaces, verify_ck_metrics_folder, create_directory # Importing functions from the ck_metrics.py file
 from ck_metrics import backgroundColors # For coloring the terminal outputs
 
 # CONSTANTS:
@@ -116,20 +116,6 @@ def get_directory_path(repository_name):
 		directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
 
 	return directory_path
-
-# @brief: Create a directory
-# @param: full_directory_name: Name of the directory to be created
-# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
-# @return: None
-def create_directory(full_directory_name, relative_directory_name):
-   if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory already exists{Style.RESET_ALL}")
-      return
-   try: # Try to create the directory
-      os.makedirs(full_directory_name)
-      print (f"{backgroundColors.GREEN}Successfully created the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory{Style.RESET_ALL}")
-   except OSError: # If the directory cannot be created
-      print (f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
 # @brief: This function create all the desired directories
 # @param: repository_name: Name of the repository to be analyzed
