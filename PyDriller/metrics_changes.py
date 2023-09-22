@@ -190,19 +190,21 @@ def traverse_directory(repository_ck_metrics_path):
 
 	# Traverse the directory
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
-	for root, subdirs, files in os.walk(repository_ck_metrics_path):
-		subdirs.sort() # Sort the directories alphabetically
-		for dir in subdirs: # For each subdirectory in the directories
-			for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
-				if file == CK_CSV_FILE: # If the file is a csv file
-					file_path = os.path.join(root, file) # Get the path to the csv file
-					process_csv_file(file_path, metrics_track_record) # Process the csv file
-					file_count += 1 # Increment the file count
+	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {backgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
+		for root, subdirs, files in os.walk(repository_ck_metrics_path):
+			subdirs.sort() # Sort the directories alphabetically
+			for dir in subdirs: # For each subdirectory in the directories
+				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
+					if file == CK_CSV_FILE: # If the file is a csv file
+						relative_file_path = os.path.join(dir, file) # Get the relative path to the csv file
+						file_path = os.path.join(root, relative_file_path) # Get the path to the csv file
+						process_csv_file(file_path, metrics_track_record) # Process the csv file
+						file_count += 1 # Increment the file count
 
-					if progress_bar is None: # If the progress bar is not initialized
-						progress_bar = tqdm(total=file_count) # Initialize the progress bar
-					else:
-						progress_bar.update(1) # Update the progress bar
+						if progress_bar is None: # If the progress bar is not initialized
+							progress_bar = tqdm(total=file_count) # Initialize the progress bar
+						else:
+							progress_bar.update(1) # Update the progress bar
 
 	# Close the progress bar
 	if progress_bar is not None:
