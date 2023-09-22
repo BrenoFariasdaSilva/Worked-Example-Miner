@@ -11,7 +11,7 @@ from sklearn.linear_model import LinearRegression # for the linear regression
 from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
-from ck_metrics import path_contains_whitespaces, verify_ck_metrics_folders # Importing functions from the ck_metrics.py file
+from ck_metrics import path_contains_whitespaces, verify_ck_metrics_folder # Importing functions from the ck_metrics.py file
 from ck_metrics import backgroundColors # For coloring the terminal outputs
 
 # CONSTANTS:
@@ -65,7 +65,7 @@ def process_repository(repository_name):
 	repository_ck_metrics = get_directory_path(repository_name) # Get the directory path from user input of the repository name
 	
 	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
-	if not verify_ck_metrics_folders(repository_name):
+	if not verify_ck_metrics_folder(repository_name):
 		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the ck_metrics.py file first{Style.RESET_ALL}")
 		return
 	
