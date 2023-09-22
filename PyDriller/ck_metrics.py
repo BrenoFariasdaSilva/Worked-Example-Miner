@@ -157,15 +157,17 @@ def verify_ck_metrics_folder(repository_name):
 
    # Verify if the repository exists
    if not os.path.exists(commit_file_path):
-      return False # Return False because the repository does not exist
+      return False # Return False because the repository commit list does not exist
 
    # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
    commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["commit hash"], header=0).values.tolist()
 
    # Verify if the repository exists
+   i = 0
    for commit_hash in commit_hashes:
       commit_hash = commit_hash[0] # This removes the [] and the '' from the commit hash
-      folder_path = os.path.join(repo_path, commit_hash) # Join the repo path with the folder name
+      folder_path = os.path.join(repo_path, f"{i}-{commit_hash}") # Join the repo path with the folder name
+      i += 1
 
       if os.path.exists(folder_path): # Verify if the folder exists
          for ck_metric_file in CK_METRICS_FILES: # Verify if all the ck metrics files exist inside the folder

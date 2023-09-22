@@ -33,7 +33,7 @@ CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit
 CK_CSV_FILE = "class.csv" if PROCESS_CLASSES else "method.csv" # The name of the csv generated file from ck.
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}-changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
-SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}-sorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
+SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}-changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
 RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path to the directory containing the ck metrics
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
@@ -59,15 +59,11 @@ def path_contains_whitespaces():
 # @param: None
 # @return: None
 def loop_through_default_repository_names():
-	loop_start_time = time.time() # Start the timer
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"")
 		process_repository(repository_name) # Process the current repository
 		print(f"------------------------------------------------------------")
 		print(f"")
-	elapsed_time = time.time() - loop_start_time
-	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics changes{backgroundColors.GREEN} for the {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES} {CLASSES_OR_METHODS}{backgroundColors.GREEN}: "
-	output_time(elapsed_time_string, round(elapsed_time, 2))
 
 # @brief: This function call the procedures to process the specified repository
 # @param: repository_name: The name of the repository to be analyzed 
@@ -76,9 +72,6 @@ def process_repository(repository_name):
 	start_time = time.time() # Start the timer
 	repository_ck_metrics = get_directory_path(repository_name) # Get the directory path from user input of the repository name
 	
-	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository will be analyzed.{Style.RESET_ALL}")
-	# Get the directory path from user input of the repository name
-
 	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
 	if not verify_ck_metrics_folders(repository_name):
 		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the ck_metrics.py file first{Style.RESET_ALL}")
@@ -512,15 +505,8 @@ def main():
 	print(f"{backgroundColors.GREEN}This script {backgroundColors.CYAN}generates a csv file{backgroundColors.GREEN} with the {backgroundColors.CYAN}{CLASSES_OR_METHODS} sorted{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of times that the {CK_CSV_FILE.replace('.csv', '')} changed{backgroundColors.GREEN} and store it inside the {backgroundColors.CYAN}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}{backgroundColors.GREEN} directory.{Style.RESET_ALL}")
 	print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}source of the metrics values{backgroundColors.GREEN} is the {backgroundColors.CYAN}{CK_CSV_FILE}{backgroundColors.GREEN} files.{Style.RESET_ALL}")
 
-	# Asks for user input if wants to process all the repositories or just one
-	process_all_repositories = input(f"{backgroundColors.GREEN}Do you want to process all the repositories? {backgroundColors.CYAN}(y/n){backgroundColors.GREEN}: {Style.RESET_ALL}")
-	# Verify if the user wants to process all the repositories
-	if process_all_repositories.lower() == "y" or process_all_repositories.lower() == "":
-		print(f"{backgroundColors.GREEN}Processing all the repositories: {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES}{Style.RESET_ALL}")
-		loop_through_default_repository_names() # Process all the repositories
-	else:
-		print(f"{backgroundColors.GREEN}Processing a single repository: {backgroundColors.CYAN}{CURRENT_REPOSITORY_NAME}{Style.RESET_ALL}")
-		process_repository(CURRENT_REPOSITORY_NAME) # Process a single repository, that is, the CURRENT_REPOSITORY_NAME.
+	print(f"{backgroundColors.GREEN}Processing all the repositories: {backgroundColors.CYAN}{DEFAULT_REPOSITORY_NAMES}{Style.RESET_ALL}")
+	loop_through_default_repository_names() # Process all the repositories
 		
 # Directive to run the main function
 if __name__ == "__main__":
