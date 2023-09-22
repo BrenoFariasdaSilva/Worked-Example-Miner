@@ -20,7 +20,6 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 4 # The number of metrics
 DEFAULT_REPOSITORY_NAMES = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
-CURRENT_REPOSITORY_NAME = DEFAULT_REPOSITORY_NAMES[0] # The current repository name
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 METRICS_POSITION = {"CBO": 0, "CBOModified": 1, "WMC": 2, "RFC": 3}
 
@@ -161,9 +160,6 @@ def process_csv_file(file_path, metrics_track_record):
 			# Create a tuple containing the metrics
 			metrics = (cbo, cboModified, wmc, rfc)
 			identifier = f"{class_name} {variable_attribute}"
-
-			# TODO: Rewrite this, in order not to only add the metrics if it does not exist, but in that commit the file was changed.
-			# Think in a way to validate this so i only store in the metrics evolution the values of when the file was modified.
 
 			if identifier not in metrics_track_record: # if the identifier (of the method or class) is not in the dictionary
 				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0}
