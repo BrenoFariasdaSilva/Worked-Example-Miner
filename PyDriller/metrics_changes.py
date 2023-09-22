@@ -38,10 +38,10 @@ FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTIO
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
 
-# @brief: This function loops through the DEFAULT_REPOSITORY_NAME list
+# @brief: This function loops through the DEFAULT_REPOSITORY_NAME list and calls the process_repository function for each repository
 # @param: None
 # @return: None
-def loop_through_default_repository_names():
+def process_all_repositories():
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"")
 		process_repository(repository_name) # Process the current repository
@@ -382,7 +382,7 @@ def main():
 
 	print(f"{backgroundColors.GREEN}This script generates the {backgroundColors.CYAN}metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{backgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 
-	loop_through_default_repository_names() # Process all the repositories
+	process_all_repositories() # Process all the repositories
 		
 # Directive to run the main function
 if __name__ == "__main__":
