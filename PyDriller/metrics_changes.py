@@ -11,6 +11,7 @@ from sklearn.linear_model import LinearRegression # for the linear regression
 from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
+from ck_metrics import path_contains_whitespaces, verify_ck_metrics_folders # Importing functions from the ck_metrics.py file
 from ck_metrics import backgroundColors # For coloring the terminal outputs
 
 # CONSTANTS:
@@ -45,15 +46,6 @@ FULL_CK_METRICS_DIRECTORY_PATH = f"{PATH}{RELATIVE_CK_METRICS_DIRECTORY_PATH}" #
 FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
-
-# @brief: This function is used to check if the PATH constant contain whitespaces
-# @param: None
-# @return: True if the PATH constant contain whitespaces, False otherwise
-def path_contains_whitespaces():
-   # Verify if the PATH constant contains whitespaces
-   if " " in PATH: 
-      return True # Return True if the PATH constant contains whitespaces
-   return False # Return False if the PATH constant does not contain whitespaces
 
 # @brief: This function loops through the DEFAULT_REPOSITORY_NAME list
 # @param: None
@@ -124,39 +116,6 @@ def get_directory_path(repository_name):
 		directory_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
 
 	return directory_path
-
-# @brief: This verifies if all the ck metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder
-# @param: repository_name: Name of the repository to be analyzed
-# @return: True if all the metrics are already calculated, False otherwise
-def verify_ck_metrics_folders(repository_name):
-	print(f"{backgroundColors.GREEN}Checking if all the {backgroundColors.CYAN}CK metrics{backgroundColors.GREEN} are already calculated for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
-	current_path = PATH
-	data_path = os.path.join(current_path, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the current path with the relative path of the ck metrics directory
-	commit_file = f"{repository_name}-commit_hashes{CSV_FILE_EXTENSION}" # The name of the commit hashes file
-	commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
-
-	# Verify if the repository exists
-	if not os.path.exists(commit_file_path):
-		print(f"{backgroundColors.RED}File {backgroundColors.CYAN}{commit_file}{backgroundColors.RED} does not exist inside {backgroundColors.CYAN}{data_path}{backgroundColors.RED}.{Style.RESET_ALL}")
-		return False # Return False if the repository does not exist
-
-	# Read the commit hashes file with pandas and get only the "commit_hash" column
-	commit_hashes = pd.read_csv(commit_file_path)["commit hash"].tolist()
-
-	repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
-
-	# Verify if the repository exists
-	for commit_hash in commit_hashes:
-		if (str(commit_hash) == "nan"):
-			continue
-		folder_path = os.path.join(repo_path, str(commit_hash)) # Join the repo path with the commit hash
-
-		if not os.path.exists(folder_path): # Verify if the folder exists
-			print(f"{backgroundColors.RED}Folder {backgroundColors.CYAN}{commit_hash}{backgroundColors.RED} does not exist inside {backgroundColors.CYAN}{repo_path}{backgroundColors.RED}.{Style.RESET_ALL}")
-			return False # Return False if the folder does not exist
-		
-	print(f"{backgroundColors.GREEN}All the {backgroundColors.CYAN}CK metrics{backgroundColors.GREEN} are already calculated for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository.{Style.RESET_ALL}")
-	return True # Return True if all the metrics are already calculated
 
 # @brief: Create a directory
 # @param: full_directory_name: Name of the directory to be created
