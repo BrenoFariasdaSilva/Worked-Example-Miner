@@ -314,7 +314,7 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
    with open(file_path, "w", newline='') as csv_file:
       writer = csv.writer(csv_file)
       # Write the header
-      writer.writerow(["commit hash", "commit message", "commit date"])
+      writer.writerow(["Commit Hash", "Commit Message", "Commit Date"])
       # Write the commit hashes
       writer.writerows(commit_hashes)
 
