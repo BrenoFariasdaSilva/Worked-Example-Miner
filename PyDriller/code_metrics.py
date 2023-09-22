@@ -42,8 +42,8 @@ RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of th
 
 # Default values:
 DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
-COMMITS_NUMBER = {"Calculator": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
-ITERATIONS_DURATION = {"Calculator": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
+COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
+ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
 FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_CK_JAR_PATH = START_PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
