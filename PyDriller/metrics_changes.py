@@ -19,11 +19,7 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 4 # The number of metrics
 DEFAULT_REPOSITORY_NAMES = ["commons-lang", "jabref", "kafka", "zookeeper"] # The default repository names
-SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 METRICS_POSITION = {"CBO": 0, "CBOModified": 1, "WMC": 2, "RFC": 3}
-
-# Time units:
-TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, seconds in a day
 
 # Extensions:
 CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit hashes
@@ -37,7 +33,6 @@ RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path to the di
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
 RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH = "/metrics_predictions" # The relative path to the directory containing the metrics prediction
-SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
 
 # Directories Paths:
 FULL_CK_METRICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_CK_METRICS_DIRECTORY_PATH}" # The full path to the directory containing the ck metrics
