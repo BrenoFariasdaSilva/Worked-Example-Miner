@@ -15,7 +15,7 @@ from ck_metrics import path_contains_whitespaces, verify_ck_metrics_folder, crea
 from ck_metrics import backgroundColors # For coloring the terminal outputs
 
 # CONSTANTS:
-PATH = os.getcwd() # Get the current working directory
+START_PATH = os.getcwd() # Get the current working directory
 PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {backgroundColors.CYAN}class.csv{backgroundColors.GREEN} file {backgroundColors.RED}(True/False){backgroundColors.GREEN}? {Style.RESET_ALL}") == "True" # If True, then process the method.csv file. If False, then process the class.csv file
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 4 # The number of metrics
@@ -42,10 +42,10 @@ RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH = "/metrics_predictions" # The relati
 SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
 
 # Directories Paths:
-FULL_CK_METRICS_DIRECTORY_PATH = f"{PATH}{RELATIVE_CK_METRICS_DIRECTORY_PATH}" # The full path to the directory containing the ck metrics
-FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
-FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
-FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
+FULL_CK_METRICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_CK_METRICS_DIRECTORY_PATH}" # The full path to the directory containing the ck metrics
+FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
+FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
+FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
 
 # @brief: This function loops through the DEFAULT_REPOSITORY_NAME list
 # @param: None
