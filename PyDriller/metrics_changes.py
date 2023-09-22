@@ -33,7 +33,7 @@ CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit
 # Filenames:
 CK_CSV_FILE = "class.csv" if PROCESS_CLASSES else "method.csv" # The name of the csv generated file from ck.
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
-CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}-changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
+UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}-unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
 SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}-changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
 RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path to the directory containing the ck metrics
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
@@ -85,7 +85,7 @@ def process_repository(repository_name):
 	# Sort the csv file by the number of changes
 	sort_csv_by_changes(repository_name)
 
-	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CHANGED_METHODS_CSV_FILENAME}"
+	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 
 	# Remove the old csv file
 	os.remove(old_csv_file_path)
@@ -227,7 +227,7 @@ def get_clean_id(id):
 # @param: repository_name: The name of the repository
 # @param: progress_status: The progress status
 # @return: None
-def linear_regression_predictions(metrics, filename, repository_name, progress_status):
+def linear_regression_graphics(metrics, filename, repository_name, progress_status):
 	# Check for empty metrics list
 	if not metrics:
 		print(f"{backgroundColors.RED}Metrics list is empty!{Style.RESET_ALL}")
@@ -305,7 +305,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], metrics[i][3]])
 		progress_counter += 1
 		progress_status = f"{backgroundColors.CYAN}{progress_counter}{backgroundColors.GREEN} of {backgroundColors.CYAN}{len(metrics_track_record)}{Style.RESET_ALL}"
-		linear_regression_predictions(metrics, filename, repository_name, progress_status) # Update the filename to remove the csv file extension
+		linear_regression_graphics(metrics, filename, repository_name, progress_status) # Update the filename to remove the csv file extension
 
 # @brief: Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 # @param csv_writer: The csv writer object
@@ -342,7 +342,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 # @return: None
 def process_metrics_track_record(repository_name, metrics_track_record):
 	# Open the csv file and process the metrics of each method
-	with open(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + CHANGED_METHODS_CSV_FILENAME, "w") as csvfile:
+	with open(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + UNSORTED_CHANGED_METHODS_CSV_FILENAME, "w") as csvfile:
 		writer = csv.writer(csvfile)	
 		if PROCESS_CLASSES:
 			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "CBOModified Min", "CBOModified Max", "CBOModified Avg", "CBOModified Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
@@ -373,7 +373,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 # @return: None
 def sort_csv_by_changes(repository_name):
 	# Read the csv file
-	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CHANGED_METHODS_CSV_FILENAME}")
+	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}")
 	# Sort the csv file by the number of changes
 	data = data.sort_values(by=["Changed"], ascending=False)
 	# Write the sorted csv file to a new csv file
