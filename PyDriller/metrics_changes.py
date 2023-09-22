@@ -178,7 +178,6 @@ def traverse_directory(repository_ck_metrics_path):
 	file_count = 0
 	progress_bar = None
 
-	# Traverse the directory
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {backgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path):
@@ -217,9 +216,8 @@ def get_clean_id(id):
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: filename: The filename for the PNG plot
 # @param: repository_name: The name of the repository
-# @param: progress_status: The progress status
 # @return: None
-def linear_regression_graphics(metrics, filename, repository_name, progress_status):
+def linear_regression_graphics(metrics, filename, repository_name):
 	# Check for empty metrics list
 	if not metrics:
 		print(f"{backgroundColors.RED}Metrics list is empty!{Style.RESET_ALL}")
@@ -282,7 +280,8 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 		mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/"
 		if not os.path.exists(mkdir_path):
 			os.makedirs(mkdir_path)
-		with open(FULL_METRICS_EVOLUTION_DIRECTORY_PATH + "/" + repository_name + "/" + CLASSES_OR_METHODS + "/" + class_name + "/" + variable_attribute + CSV_FILE_EXTENSION, "w") as csvfile:
+		metrics_filename = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}{CSV_FILE_EXTENSION}"
+		with open(metrics_filename, "w") as csvfile:
 			writer = csv.writer(csvfile)
 			if PROCESS_CLASSES:
 				unique_identifier = class_name
@@ -295,9 +294,8 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			metrics_len = len(metrics)
 			for i in range(metrics_len):
 				writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], metrics[i][3]])
-		progress_counter += 1
-		progress_status = f"{backgroundColors.CYAN}{progress_counter}{backgroundColors.GREEN} of {backgroundColors.CYAN}{len(metrics_track_record)}{Style.RESET_ALL}"
-		linear_regression_graphics(metrics, filename, repository_name, progress_status) # Update the filename to remove the csv file extension
+
+		linear_regression_graphics(metrics, filename, repository_name) # Perform linear regression on the metrics
 
 # @brief: Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 # @param csv_writer: The csv writer object
@@ -334,7 +332,8 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 # @return: None
 def process_metrics_track_record(repository_name, metrics_track_record):
 	# Open the csv file and process the metrics of each method
-	with open(FULL_METRICS_STATISTICS_DIRECTORY_PATH + "/" + repository_name + "/" + UNSORTED_CHANGED_METHODS_CSV_FILENAME, "w") as csvfile:
+	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
+	with open(unsorted_metrics_filename, "w") as csvfile:
 		writer = csv.writer(csvfile)	
 		if PROCESS_CLASSES:
 			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "CBOModified Min", "CBOModified Max", "CBOModified Avg", "CBOModified Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
