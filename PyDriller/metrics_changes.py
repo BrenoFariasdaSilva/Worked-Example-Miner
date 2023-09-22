@@ -10,8 +10,8 @@ from sklearn.linear_model import LinearRegression # for the linear regression
 from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
-from ck_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verify_ck_metrics_folder # Importing functions from the ck_metrics.py file
-from ck_metrics import backgroundColors # For coloring the terminal outputs
+from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verify_ck_metrics_folder # Importing functions from the ck_metrics.py file
+from code_metrics import backgroundColors # For coloring the terminal outputs
 
 # CONSTANTS:
 START_PATH = os.getcwd() # Get the current working directory

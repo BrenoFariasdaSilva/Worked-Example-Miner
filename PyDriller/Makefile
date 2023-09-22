@@ -1,7 +1,7 @@
 # Main Scripts:
 
-ck_metrics_script:
-	clear; python3 ck_metrics.py
+code_metrics_script:
+	clear; python3 code_metrics.py
 
 metrics_changes_script:
 	clear; python3 metrics_changes.py
