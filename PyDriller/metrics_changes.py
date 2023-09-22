@@ -11,7 +11,7 @@ from sklearn.linear_model import LinearRegression # for the linear regression
 from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
-from ck_metrics import path_contains_whitespaces, verify_ck_metrics_folder, create_directory # Importing functions from the ck_metrics.py file
+from ck_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verify_ck_metrics_folder # Importing functions from the ck_metrics.py file
 from ck_metrics import backgroundColors # For coloring the terminal outputs
 
 # CONSTANTS:
@@ -380,39 +380,6 @@ def sort_csv_by_changes(repository_name):
 	data = data.sort_values(by=["Changed"], ascending=False)
 	# Write the sorted csv file to a new csv file
 	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}", index=False)
-
-# @brief: This function outputs time, considering the appropriate time unit
-# @param: output_string: String to be outputted
-# @param: time: Time to be outputted
-# @return: None
-def output_time(output_string, time):
-   if float(time) < int(TIME_UNITS[0]):
-      time_unit = "seconds"
-      time_value = time
-   elif float(time) < float(TIME_UNITS[1]):
-      time_unit = "minutes"
-      time_value = time / TIME_UNITS[0]
-   elif float(time) < float(TIME_UNITS[2]):
-      time_unit = "hours"
-      time_value = time / TIME_UNITS[1]
-   else:
-      time_unit = "days"
-      time_value = time / TIME_UNITS[2]
-
-   rounded_time = round(time_value, 2)
-   print(f"{backgroundColors.GREEN}{output_string}{backgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
-
-# @brief: This function defines the command to play a sound when the program finishes
-# @param: None
-# @return: None
-def play_sound():
-	if os.path.exists(SOUND_FILE):
-		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
-			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
-		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
-	else: # if the sound file does not exist
-		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
