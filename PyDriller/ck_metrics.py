@@ -22,8 +22,7 @@ SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # Th
 SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
         
 # Default paths:
-PATH = os.getcwd() # Get the current working directory
-DEFAULT_FOLDER = PATH # Get the current working directory
+START_PATH = os.getcwd() # Get the current working directory
 
 # Extensions:
 COMMIT_HASHES_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit hashes
@@ -45,16 +44,16 @@ RELATIVE_CK_JAR_PATH = "/ck/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The r
 DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
 COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
 ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
-FULL_CK_METRICS_DIRECTORY_PATH = PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
-FULL_REPOSITORIES_DIRECTORY_PATH = PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
-FULL_CK_JAR_PATH = PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
+FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
+FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
+FULL_CK_JAR_PATH = START_PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
 
 # @brief: This function is used to verify if the PATH constant contain whitespaces
 # @param: None
 # @return: True if the PATH constant contain whitespaces, False otherwise
 def path_contains_whitespaces():
    # Verify if the PATH constant contains whitespaces
-   if " " in PATH: # If the PATH constant contains whitespaces
+   if " " in START_PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
@@ -114,7 +113,7 @@ def update_repository(repository_name):
    # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
-   os.chdir(DEFAULT_FOLDER) # Change the current working directory to the default one
+   os.chdir(START_PATH) # Change the current working directory to the default one
 
 # @brief: Clone the repository to the repository directory
 # @param: repository_name: Name of the repository to be analyzed
@@ -150,7 +149,7 @@ def create_directory(full_directory_name, relative_directory_name):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: True if all the metrics are already calculated, False otherwise
 def verify_ck_metrics_folder(repository_name):
-   data_path = os.path.join(PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
+   data_path = os.path.join(START_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
    repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
    commit_file = f"{repository_name}-commits_list{COMMIT_HASHES_FILE_EXTENSION}" # The name of the commit hashes file
    commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
@@ -246,7 +245,7 @@ def generate_diffs(repository_name, commit_hash, commit_number):
    # Loop through the modified files of the commit
    for modified_file in commit_hash.modified_files:
       file_diff = modified_file.diff # Get the diff of the modified file
-      diff_file_directory = f"{PATH}{DEFAULT_DIFFS_DIRECTORY}/{repository_name}/{commit_number}-{commit_hash.hash}/" # Define the directory to save the diff file
+      diff_file_directory = f"{START_PATH}{DEFAULT_DIFFS_DIRECTORY}/{repository_name}/{commit_number}-{commit_hash.hash}/" # Define the directory to save the diff file
 
       # Validate if the directory exists, if not, create it
       if not os.path.exists(diff_file_directory):
