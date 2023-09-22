@@ -159,7 +159,7 @@ def verify_ck_metrics_folder(repository_name):
       return False # Return False because the repository commit list does not exist
 
    # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
-   commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["commit hash"], header=0).values.tolist()
+   commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
 
    # Verify if the repository exists
    i = 0
