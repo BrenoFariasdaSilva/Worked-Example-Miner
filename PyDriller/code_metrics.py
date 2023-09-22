@@ -19,7 +19,6 @@ class backgroundColors: # Colors for the terminal
     
 # Default paths:
 START_PATH = os.getcwd() # Get the current working directory
-print(f"Start path: {START_PATH}")
         
 # Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
