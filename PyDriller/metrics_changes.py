@@ -44,6 +44,7 @@ FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICT
 def process_all_repositories():
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"")
+		print(f"{backgroundColors.GREEN}Processing the {backgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name) # Process the current repository
 		print(f"------------------------------------------------------------")
 		print(f"")
@@ -380,7 +381,7 @@ def main():
 		print(f"{backgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return
 
-	print(f"{backgroundColors.GREEN}This script generates the {backgroundColors.CYAN}metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{backgroundColors.GREEN} repositories.{Style.RESET_ALL}")
+	print(f"{backgroundColors.GREEN}This script generates the {backgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{backgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 
 	process_all_repositories() # Process all the repositories
 		
