@@ -162,12 +162,10 @@ def verify_ck_metrics_folder(repository_name):
    commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
 
    # Verify if the repository exists
-   i = 0
    for commit_hash in commit_hashes:
       commit_hash = commit_hash[0] # This removes the [] and the '' from the commit hash
-      commit_file_filename = f"{i}-{commit_hash}" # The name of the folder
+      commit_file_filename = commit_hash # The name of the folder
       folder_path = os.path.join(repo_path, commit_file_filename) # Join the repo path with the folder name
-      i += 1
 
       if os.path.exists(folder_path): # Verify if the folder exists
          for ck_metric_file in CK_METRICS_FILES: # Verify if all the ck metrics files exist inside the folder
@@ -269,7 +267,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    with tqdm(total=number_of_commits, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}") as pbar:
       for commit in Repository(repository_url).traverse_commits():
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
-         current_tuple = (commit.hash, commit.msg.split('\n')[0], commit.committer_date)
+         current_tuple = (f"{i}-{commit.hash}", commit.msg.split('\n')[0], commit.committer_date)
          commit_hashes.append(current_tuple)
 
          # Save the diff of the modified files of the current commit
