@@ -365,6 +365,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 # @param: repository_name: The name of the repository
 # @return: None
 def sort_csv_by_changes(repository_name):
+	print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}metrics statistics files{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of changes{backgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}")
 	# Sort the csv file by the number of changes
