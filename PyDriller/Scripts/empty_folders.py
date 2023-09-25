@@ -20,6 +20,8 @@ def search_empty_folders(directory):
 	for root, dirs, files in os.walk(directory):
 		for dir in dirs: # Loop through the directories
 			folder_path = os.path.join(root, dir) # Get the path of the directory
+			if ".git" in folder_path: # If the substring ".git" is in the path, skip it
+				continue
 			if not os.listdir(folder_path): # If the directory is empty
 				empty_folders.append(folder_path) # Add the directory to the list of empty folders
 
