@@ -50,6 +50,9 @@ for repo_name in "${repositories[@]}"; do
       folders_list+=("${path_prefix}${folder}/${repo_name}/") # Add the folder to the list
    done
 
+   # Add the ${path_prefix}/ck_metrics/repository_name-commits_list.csv file to the list
+   folders_list+=("${path_prefix}${subfolders[0]}/${repo_name}/${repo_name}-commits_list.csv")
+
    echo "Creating a zip file for the ${repo_name} repository..."
 
    # Create a zip file for the repository
