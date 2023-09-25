@@ -17,11 +17,13 @@ if [[ "${current_dir}" != *"/PyDriller" && "${current_dir}" != *"/PyDriller/Scri
 fi
 
 compressed_folder_path=""
+path_prefix=""
 
 if [[ "${current_dir}" == *"/PyDriller" ]]; then
    compressed_folder_path="/compressed" # Set the compressed directory
 elif [[ "${current_dir}" == *"/PyDriller/Scripts" ]]; then
    compressed_folder_path="../compressed" # Set the compressed directory
+   path_prefix="../" # Set the save path prefix
 fi
 
 # Define the extraced folder names
@@ -42,6 +44,15 @@ for extracted_folders in "${extracted_folders[@]}"; do
    # Delete the source folder
    rm -rf "${compressed_folder_path}/${extracted_folders}"
 done
+
+# Play a sound when the script finishes
+sound_file="${path_prefix}../.assets/NotificationSound.wav"
+
+if [ -e "$sound_file" ]; then
+  aplay "$sound_file" # Play the sound file
+else
+  echo "Sound file not found at: $sound_file"
+fi
 
 # Print a success message
 echo "Files moved and source folders deleted successfully."

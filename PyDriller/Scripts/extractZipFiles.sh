@@ -7,9 +7,12 @@
 # Get the current directory
 current_dir="$(pwd)"
 
+# Print the current directory
+echo "Current directory: ${current_dir}"
+
 # Define the compressed directory
 compressed_dir="" 
-prefix_path=""
+path_prefix=""
 
 # If the current_dir doesn't end with "/PyDriller" or "/PyDriller/Scripts", then exit
 if [[ "${current_dir}" != *"/PyDriller" && "${current_dir}" != *"/PyDriller/Scripts" ]]; then
@@ -22,7 +25,7 @@ if [[ "$current_dir" == *"/PyDriller" ]]; then
    compressed_dir="/compressed" # Set the compressed directory
 elif [[ "$current_dir" == *"/PyDriller/Scripts" ]]; then
    compressed_dir="../compressed" # Set the compressed directory
-   prefix_path="../" # Set the prefix path
+   path_prefix="../" # Set the prefix path
 fi
 
 # If the compressed directory does not exist, then create it
@@ -47,7 +50,7 @@ for repo_name in "${repositories[@]}"; do
 done
 
 # Play a sound when the script finishes
-sound_file="${prefix_path}../.assets/NotificationSound.wav"
+sound_file="${path_prefix}../.assets/NotificationSound.wav"
 
 if [ -e "$sound_file" ]; then
   aplay "$sound_file" # Play the sound file
