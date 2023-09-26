@@ -95,6 +95,22 @@ def process_repository(repository_name, repository_url):
    output_string = f"{backgroundColors.GREEN}Time needed to {backgroundColors.CYAN}generate the JSON files {backgroundColors.GREEN}for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
 
+# @brief: Clone the repository to the repository directory
+# @param: repository_name: Name of the repository to be analyzed
+# @param: repository_url: URL of the repository to be analyzed
+# @return: None
+def clone_repository(repository_name, repository_url):
+   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   # Verify if the repository directory already exists and if it is not empty
+   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
+      update_repository(repository_name) # Update the repository
+      return
+   else:
+      # Create a thread to clone the repository
+      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      # Wait for the thread to finish
+      thread.wait()
+
 # @brief: Create a directory
 # @param: full_directory_name: Name of the directory to be created
 # @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
