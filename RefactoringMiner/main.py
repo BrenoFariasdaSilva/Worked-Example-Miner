@@ -41,3 +41,22 @@ RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of th
 ABSOLUTE_REFACTORING_MINER_PATH = START_PATH + RELATIVE_REFACTORING_MINER_PATH # The absolute path to the RefactoringMiner Tool
 ABSOLUTE_JSON_FILES_DIRECTORY_PATH = START_PATH + RELATIVE_JSON_FILES_DIRECTORY_PATH # The absolute path of the directory that contains the generated JSON files
 ABSOLUTE_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The absolute path of the directory that contains the repositories
+
+# @brief: This function is used to verify if the PATH constant contain whitespaces
+# @param: None
+# @return: True if the PATH constant contain whitespaces, False otherwise
+def path_contains_whitespaces():
+   # Verify if the PATH constant contains whitespaces
+   if " " in START_PATH: # If the PATH constant contains whitespaces
+      return True # Return True if the PATH constant contains whitespaces
+   return False # Return False if the PATH constant does not contain whitespaces
+
+def main():
+	# Verify if the path contains whitespaces
+	if path_contains_whitespaces():
+		print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{START_PATH}{backgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
+		return
+
+# Directly run the main function if the script is executed
+if __name__ == '__main__':
+   main() # Run the main function
