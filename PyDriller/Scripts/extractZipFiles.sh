@@ -26,7 +26,7 @@ if [[ ! -d "$compressed_dir" ]]; then
 fi
 
 # Define the list of repositories
-repositories=("kafka")
+repositories=("commons-lang" "jabref" "kafka" "zookeeper")
 
 # Loop through the specified repository names and unzip the corresponding files
 for repo_name in "${repositories[@]}"; do
