@@ -16,7 +16,7 @@ if [[ "${current_dir}" != *"/PyDriller" ]]; then
    exit # Exit the script
 fi
 
-compressed_folder_path="/compressed" # Set the compressed directory
+compressed_folder_path="compressed" # Set the compressed directory
 
 # Define the extraced folder names
 extracted_folders=("ck_metrics" "diffs" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
@@ -26,15 +26,15 @@ for extracted_folder in "${extracted_folders[@]}"; do
    echo "Moving the contents from ${compressed_folder_path}/${extracted_folder} to ../${extracted_folder}/"
 
    # If the destination folder doesn't exist, then create it
-   if [[ ! -d "../${extracted_folder}" ]]; then
-      mkdir "../${extracted_folder}"
+   if [[ ! -d "${extracted_folder}" ]]; then
+      mkdir "${extracted_folder}"
    fi
    
    # Move the contents from the source to destination folder
-   mv "${compressed_folder_path}/${extracted_folder}"/* "../${extracted_folder}/"
+   mv "${compressed_folder_path}/${extracted_folder}"/* "${extracted_folder}/"
 
    # Delete the source folder
-   rm -rf "${compressed_folder_path}/${extracted_folder:?}"
+   rm -rf "${compressed_folder_path}/${extracted_folder}"
 done
 
 # Play a sound when the script finishes
