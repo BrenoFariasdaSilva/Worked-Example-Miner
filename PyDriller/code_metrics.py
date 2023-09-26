@@ -8,7 +8,7 @@ import threading # The threading module provides a high-level interface for runn
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
-from tqdm import tqdm # for progress bar
+from tqdm import tqdm # For Generating the Progress Bars
 
 # Macros:
 class backgroundColors: # Colors for the terminal
@@ -336,7 +336,7 @@ atexit.register(play_sound)
 def main():
    # Verify if the path constants contains whitespaces
    if path_contains_whitespaces():
-      print(f"{backgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
+      print(f"{backgroundColors.RED}The {START_PATH} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return
    
    # Verify if the CK JAR file exists
