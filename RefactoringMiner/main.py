@@ -13,7 +13,7 @@ class backgroundColors: # Colors for the terminal
 	GREEN = "\033[92m" # Green
 	YELLOW = "\033[93m" # Yellow
 	RED = "\033[91m" # Red
-
+    
 # Default paths:
 START_PATH = os.getcwd() # Get the current working directory
         
@@ -70,7 +70,7 @@ def process_repositories_concurrently():
       thread.join() # Wait for the thread to finish
       # Update the progress bar ever time a thread finishes
       pbar.update(1)
-
+      
 # @brief: This function is used to process the repository
 # @param: repository_name: Name of the repository to be analyzed
 # @param: repository_url: URL of the repository to be analyzed
@@ -95,6 +95,18 @@ def process_repository(repository_name, repository_url):
    output_string = f"{backgroundColors.GREEN}Time needed to {backgroundColors.CYAN}generate the JSON files {backgroundColors.GREEN}for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
 
+# @brief: Create a directory
+# @param: full_directory_name: Name of the directory to be created
+# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
+# @return: None
+def create_directory(full_directory_name, relative_directory_name):
+   if os.path.isdir(full_directory_name): # Verify if the directory already exists
+      return
+   try: # Try to create the directory
+      os.makedirs(full_directory_name)
+   except OSError: # If the directory cannot be created
+      print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
+
 # @brief: Update the repository using "git pull"
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
@@ -106,7 +118,7 @@ def update_repository(repository_name):
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
-
+   
 # @brief: Clone the repository to the repository directory
 # @param: repository_name: Name of the repository to be analyzed
 # @param: repository_url: URL of the repository to be analyzed
@@ -122,7 +134,7 @@ def clone_repository(repository_name, repository_url):
       thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
-
+      
 # This function runs the RefactoringMiner command to generate the JSON files
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
@@ -133,7 +145,7 @@ def generate_commit_refactors(repository_name):
    # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
    thread = subprocess.Popen([ABSOLUTE_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_repository_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = thread.communicate() # Get the output of the thread
-
+   
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
 # @param: time: Time to be outputted
@@ -169,18 +181,6 @@ def play_sound():
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
-
-# @brief: Create a directory
-# @param: full_directory_name: Name of the directory to be created
-# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
-# @return: None
-def create_directory(full_directory_name, relative_directory_name):
-   if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return
-   try: # Try to create the directory
-      os.makedirs(full_directory_name)
-   except OSError: # If the directory cannot be created
-      print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
 # @brief: This function is used to run the main function
 def main():
