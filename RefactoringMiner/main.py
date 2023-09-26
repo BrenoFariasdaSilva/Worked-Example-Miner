@@ -134,6 +134,27 @@ def generate_commit_refactors(repository_name):
    thread = subprocess.Popen([ABSOLUTE_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_repository_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = thread.communicate() # Get the output of the thread
 
+# @brief: This function outputs time, considering the appropriate time unit
+# @param: output_string: String to be outputted
+# @param: time: Time to be outputted
+# @return: None
+def output_time(output_string, time):
+   if float(time) < int(TIME_UNITS[0]):
+      time_unit = "seconds"
+      time_value = time
+   elif float(time) < float(TIME_UNITS[1]):
+      time_unit = "minutes"
+      time_value = time / TIME_UNITS[0]
+   elif float(time) < float(TIME_UNITS[2]):
+      time_unit = "hours"
+      time_value = time / TIME_UNITS[1]
+   else:
+      time_unit = "days"
+      time_value = time / TIME_UNITS[2]
+
+   rounded_time = round(time_value, 2)
+   print(f"{output_string}{backgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
+
 # @brief: Create a directory
 # @param: full_directory_name: Name of the directory to be created
 # @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
