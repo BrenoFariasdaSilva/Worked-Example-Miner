@@ -67,6 +67,8 @@ def process_repository(repository_name):
 
 	# Traverse the directory and get the method metrics
 	metrics_track_record = traverse_directory(repository_ck_metrics)
+	for key in metrics_track_record:
+		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
 
 	# Write, for each identifier, the metrics evolution values to a csv file
 	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
