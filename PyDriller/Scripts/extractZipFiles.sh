@@ -17,7 +17,7 @@ if [[ "${current_dir}" != *"/PyDriller" ]]; then
 fi
 
 # Define the compressed directory
-compressed_dir="/compressed" # Set the compressed directory 
+compressed_dir="compressed" # Set the compressed directory 
 
 # If the compressed directory does not exist, then create it
 if [[ ! -d "$compressed_dir" ]]; then
@@ -26,11 +26,12 @@ if [[ ! -d "$compressed_dir" ]]; then
 fi
 
 # Define the list of repositories
-repositories=("commons-lang" "jabref" "kafka" "zookeeper")
+repositories=("kafka")
 
 # Loop through the specified repository names and unzip the corresponding files
 for repo_name in "${repositories[@]}"; do
    zipfile="$compressed_dir/${repo_name}.zip" # Define the zip file path
+   echo "Unzipping $zipfile to $compressed_dir..."
    echo "Unzipping $zipfile to $compressed_dir..."
    if [ -e "$zipfile" ]; then # Check if the zip file exists
       unzip -q "$zipfile" -d "$compressed_dir" # Unzip the file
