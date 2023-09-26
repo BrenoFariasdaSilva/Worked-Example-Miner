@@ -60,7 +60,7 @@ def process_repositories_concurrently():
    with tqdm(total=len(DEFAULT_REPOSITORIES), desc=f"{backgroundColors.GREEN}Running {backgroundColors.CYAN}RefactoringMiner{backgroundColors.GREEN} for {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{Style.RESET_ALL}", bar_format="{l_bar}{bar} [ time left: {remaining} ]") as pbar:
       for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
          estimated_time_string = f"{backgroundColors.GREEN}Estimated time for running all of the iterations for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
-         output_time(estimated_time_string, round(((ITERATIONS_PER_SECOND[repository_name] * COMMITS_NUMBER[repository_name])/60), 2))
+         output_time(estimated_time_string, round((COMMITS_NUMBER[repository_name]/(ITERATIONS_PER_SECOND[repository_name])), 2))
          thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
          threads.append(thread) # Append the thread to the threads list
          thread.start() # Start the thread
@@ -77,11 +77,6 @@ def process_repositories_concurrently():
 # @return: None
 def process_repository(repository_name, repository_url):
    start_time = time.time() # Get the start time
-
-   # Create the repositories directory
-   create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}")
-   # Create the json directory
-   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}/{repository_name}")
 
    # Clone the repository or update it if it already exists
    clone_repository(repository_name, repository_url)
