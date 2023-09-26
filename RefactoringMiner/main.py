@@ -95,6 +95,18 @@ def process_repository(repository_name, repository_url):
    output_string = f"{backgroundColors.GREEN}Time needed to {backgroundColors.CYAN}generate the JSON files {backgroundColors.GREEN}for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
 
+# @brief: Update the repository using "git pull"
+# @param: repository_name: Name of the repository to be analyzed
+# @return: None
+def update_repository(repository_name):
+   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
+   
+   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
+   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   update_thread.wait() # Wait for the thread to finish
+   os.chdir(START_PATH) # Change the current working directory to the default one
+
 # @brief: Clone the repository to the repository directory
 # @param: repository_name: Name of the repository to be analyzed
 # @param: repository_url: URL of the repository to be analyzed
