@@ -6,3 +6,10 @@ import threading # The threading module provides a high-level interface for runn
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 from tqdm import tqdm # For Generating the Progress Bars
+
+# Macros:
+class backgroundColors: # Colors for the terminal
+	CYAN = "\033[96m" # Cyan
+	GREEN = "\033[92m" # Green
+	YELLOW = "\033[93m" # Yellow
+	RED = "\033[91m" # Red
