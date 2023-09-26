@@ -67,7 +67,10 @@ def process_repository(repository_name):
 
 	# Traverse the directory and get the method metrics
 	metrics_track_record = traverse_directory(repository_ck_metrics)
+
+	# Loop through the metrics_track_record and sort the commit hashes list for each class or method
 	for key in metrics_track_record:
+		# Sort the commit hashes list for each class or method
 		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
 
 	# Write, for each identifier, the metrics evolution values to a csv file
