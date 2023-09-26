@@ -95,16 +95,33 @@ def process_repository(repository_name, repository_url):
    output_string = f"{backgroundColors.GREEN}Time needed to {backgroundColors.CYAN}generate the JSON files {backgroundColors.GREEN}for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
 
+# @brief: Create a directory
+# @param: full_directory_name: Name of the directory to be created
+# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
+# @return: None
+def create_directory(full_directory_name, relative_directory_name):
+   if os.path.isdir(full_directory_name): # Verify if the directory already exists
+      return
+   try: # Try to create the directory
+      os.makedirs(full_directory_name)
+   except OSError: # If the directory cannot be created
+      print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
+# @brief: This function is used to run the main function
 def main():
 	# Verify if the path contains whitespaces
 	if path_contains_whitespaces():
 		print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{START_PATH}{backgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return
-     
-   # Process the repositories concurrently
-	process_repositories_concurrently()
 
+	# Create the json directory
+	create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
+	# Create the repositories directory
+	create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
+
+	# Process the repositories concurrently
+	process_repositories_concurrently()
+    
 # Directly run the main function if the script is executed
 if __name__ == '__main__':
    main() # Run the main function
