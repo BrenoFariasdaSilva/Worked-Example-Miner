@@ -10,23 +10,14 @@ current_dir="$(pwd)"
 # Print the current directory
 echo "Current directory: ${current_dir}"
 
+# If the current_dir doesn't end with "/PyDriller", then exit
+if [[ "${current_dir}" != *"/PyDriller" ]]; then
+   echo "Please run the script from the '/PyDriller' with the command './Scripts/extractZipFiles.sh'."
+   exit # Exit the script
+fi
+
 # Define the compressed directory
-compressed_dir="" 
-path_prefix=""
-
-# If the current_dir doesn't end with "/PyDriller" or "/PyDriller/Scripts", then exit
-if [[ "${current_dir}" != *"/PyDriller" && "${current_dir}" != *"/PyDriller/Scripts" ]]; then
-   echo "Please run the script from the '/PyDriller' or '/PyDriller/Scripts' directory."
-   exit
-fi
-
-# Check if the current directory ends with "/PyDriller" or "/PyDriller/Scripts"
-if [[ "$current_dir" == *"/PyDriller" ]]; then
-   compressed_dir="/compressed" # Set the compressed directory
-elif [[ "$current_dir" == *"/PyDriller/Scripts" ]]; then
-   compressed_dir="../compressed" # Set the compressed directory
-   path_prefix="../" # Set the prefix path
-fi
+compressed_dir="/compressed" # Set the compressed directory 
 
 # If the compressed directory does not exist, then create it
 if [[ ! -d "$compressed_dir" ]]; then
@@ -50,7 +41,7 @@ for repo_name in "${repositories[@]}"; do
 done
 
 # Play a sound when the script finishes
-sound_file="${path_prefix}../.assets/NotificationSound.wav"
+sound_file="../.assets/NotificationSound.wav"
 
 if [ -e "$sound_file" ]; then
   aplay "$sound_file" # Play the sound file
