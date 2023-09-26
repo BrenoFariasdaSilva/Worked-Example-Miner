@@ -5,7 +5,6 @@ import subprocess # The subprocess module allows you to spawn new processes, con
 import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
-from tqdm import tqdm # For Generating the Progress Bars
 
 # Macros:
 class backgroundColors: # Colors for the terminal
@@ -57,19 +56,16 @@ def path_contains_whitespaces():
 def process_repositories_concurrently():
    threads = [] # The threads list
    # Loop through the default repositories
-   with tqdm(total=len(DEFAULT_REPOSITORIES), desc=f"{backgroundColors.GREEN}Running {backgroundColors.CYAN}RefactoringMiner{backgroundColors.GREEN} for {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{Style.RESET_ALL}", bar_format="{l_bar}{bar} [ time left: {remaining} ]") as pbar:
-      for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
-         estimated_time_string = f"{backgroundColors.GREEN}Estimated time for running all of the iterations for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
-         output_time(estimated_time_string, round((COMMITS_NUMBER[repository_name]/(ITERATIONS_PER_SECOND[repository_name])), 2))
-         thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
-         threads.append(thread) # Append the thread to the threads list
-         thread.start() # Start the thread
+   for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
+      estimated_time_string = f"{backgroundColors.GREEN}Estimated time for running all of the iterations for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+      output_time(estimated_time_string, round((COMMITS_NUMBER[repository_name]/(ITERATIONS_PER_SECOND[repository_name])), 2))
+      thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
+      threads.append(thread) # Append the thread to the threads list
+      thread.start() # Start the thread
 
    # Wait for all threads to finish
    for thread in threads:
       thread.join() # Wait for the thread to finish
-      # Update the progress bar ever time a thread finishes
-      pbar.update(1)
       
 # @brief: This function is used to process the repository
 # @param: repository_name: Name of the repository to be analyzed
