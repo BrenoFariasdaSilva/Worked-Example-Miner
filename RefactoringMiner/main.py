@@ -123,6 +123,17 @@ def clone_repository(repository_name, repository_url):
       # Wait for the thread to finish
       thread.wait()
 
+# This function runs the RefactoringMiner command to generate the JSON files
+# @param: repository_name: Name of the repository to be analyzed
+# @return: None
+def generate_commit_refactors(repository_name):
+   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   json_repository_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+
+   # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
+   thread = subprocess.Popen([ABSOLUTE_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_repository_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   stdout, stderr = thread.communicate() # Get the output of the thread
+
 # @brief: Create a directory
 # @param: full_directory_name: Name of the directory to be created
 # @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
