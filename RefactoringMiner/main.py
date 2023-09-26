@@ -71,6 +71,31 @@ def process_repositories_concurrently():
       # Update the progress bar ever time a thread finishes
       pbar.update(1)
 
+# @brief: This function is used to process the repository
+# @param: repository_name: Name of the repository to be analyzed
+# @param: repository_url: URL of the repository to be analyzed
+# @return: None
+def process_repository(repository_name, repository_url):
+   start_time = time.time() # Get the start time
+
+   # Create the repositories directory
+   create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}")
+   # Create the json directory
+   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}/{repository_name}")
+
+   # Clone the repository or update it if it already exists
+   clone_repository(repository_name, repository_url)
+
+   # Run the RefactoringMiner command to generate the JSON files
+   generate_commit_refactors(repository_name)
+
+   end_time = time.time() # Get the end time
+
+   # Output the time needed to generate the JSON files for the repository
+   output_string = f"{backgroundColors.GREEN}Time needed to {backgroundColors.CYAN}generate the JSON files {backgroundColors.GREEN}for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+   output_time(output_string, end_time - start_time)
+
+
 def main():
 	# Verify if the path contains whitespaces
 	if path_contains_whitespaces():
