@@ -20,7 +20,7 @@ fi
 repositories=("commons-lang" "jabref" "kafka" "zookeeper")
 
 # Define the list of subfolders
-subfolders=("metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
+subfolders=("diffs" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
 
 # List of the folder to zip
 folders_list=("")
