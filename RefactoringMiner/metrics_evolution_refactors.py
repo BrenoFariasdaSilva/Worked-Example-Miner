@@ -29,9 +29,10 @@ JSON_FILE_FORMAT = "json" # The extension of the generated file by the Refactori
 
 # Default values:
 DEFAULT_REPOSITORY = "zookeeper" # The default repository to be analyzed
-CLASSES_OR_METHODS = "methods" # The default class or method to be analyzed
 DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
+CLASSES_TYPE = {"class", "interface", "enum", "innerclass", "anonymous"} # The types of classes.
 FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Leader": "lead", "org.apache.zookeeper.server.quorum.LeaderElection": "lookForLeader", "org.apache.zookeeper.server.quorum.Follower": "followLeader"} # The desired classes or methods of each repository
+CLASSES_OR_METHODS = "classes" if any(class_type in FILES_TO_ANALYZE.values() for class_type in CLASSES_TYPE) else "methods" # The default class or method to be analyzed
 
 # Relative paths:
 RELATIVE_REFACTORING_MINER_PATH = "/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner Tool
@@ -148,13 +149,10 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
 
       json_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the output JSON file
 
-      # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -c COMMIT_HASH REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH 
-      thread = subprocess.Popen([f"{ABSOLUTE_REFACTORING_MINER_PATH}", "-c", f"{commit_hash}", f"{repository_directory_path}", "-json", f"{json_filepath}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      # print the output of the thread
-      print(thread.stdout.read().decode("utf-8"))
+      # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -c REPOSITORY_DIRECTORY_PATH COMMIT_HASH -json JSON_FILES_DIRECTORY_PATH 
+      thread = subprocess.Popen([f"{ABSOLUTE_REFACTORING_MINER_PATH}", "-c", f"{repository_directory_path}", f"{commit_hash}", "-json", f"{json_filepath}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
-
    
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
