@@ -65,6 +65,18 @@ def verify_refactorings():
          print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}Refactorings{backgroundColors.GREEN} for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository were already generated.{Style.RESET_ALL}")
    return refactorings # Return the refactorings dictionary
 
+# @brief: Create a directory
+# @param: full_directory_name: Name of the directory to be created
+# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
+# @return: None
+def create_directory(full_directory_name, relative_directory_name):
+   if os.path.isdir(full_directory_name): # Verify if the directory already exists
+      return
+   try: # Try to create the directory
+      os.makedirs(full_directory_name)
+   except OSError: # If the directory cannot be created
+      print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
+
 # @brief: This function is used to process each repositorie name concurrently, using threads
 # @param: repositories: The repositories dictionary to be analyzed
 # @return: None 
@@ -100,30 +112,6 @@ def process_repository(repository_name, repository_url):
    # Output the time needed to generate the JSON files for the repository
    output_string = f"{backgroundColors.GREEN}Time needed to {backgroundColors.CYAN}generate the JSON files {backgroundColors.GREEN}for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
-
-# @brief: Create a directory
-# @param: full_directory_name: Name of the directory to be created
-# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
-# @return: None
-def create_directory(full_directory_name, relative_directory_name):
-   if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return
-   try: # Try to create the directory
-      os.makedirs(full_directory_name)
-   except OSError: # If the directory cannot be created
-      print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
-
-# @brief: Update the repository using "git pull"
-# @param: repository_name: Name of the repository to be analyzed
-# @return: None
-def update_repository(repository_name):
-   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
-   
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
-   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   update_thread.wait() # Wait for the thread to finish
-   os.chdir(START_PATH) # Change the current working directory to the default one
    
 # @brief: Clone the repository to the repository directory
 # @param: repository_name: Name of the repository to be analyzed
@@ -140,6 +128,18 @@ def clone_repository(repository_name, repository_url):
       thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
+
+# @brief: Update the repository using "git pull"
+# @param: repository_name: Name of the repository to be analyzed
+# @return: None
+def update_repository(repository_name):
+   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
+   
+   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
+   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   update_thread.wait() # Wait for the thread to finish
+   os.chdir(START_PATH) # Change the current working directory to the default one
       
 # This function runs the RefactoringMiner command to generate the JSON files
 # @param: repository_name: Name of the repository to be analyzed
