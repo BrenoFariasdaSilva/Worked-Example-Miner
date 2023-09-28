@@ -50,6 +50,19 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
+# @brief: This function is used to verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
+# @param: None
+# @return: Returns a new dictionary with the DEFAULT_REFACTORINGS that were not generated
+def verify_refactorings():
+   refactorings = {} # The refactorings dictionary
+   # Loop through the default repositories
+   for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
+      json_repository_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+      # Verify if the JSON file already exists
+      if not os.path.isfile(json_repository_filepath):
+         refactorings[repository_name] = repository_url # Add the repository to the refactorings dictionary
+   return refactorings # Return the refactorings dictionary
+
 # @brief: This function is used to process each repositorie name concurrently, using threads
 # @param: None
 # @return: None 
@@ -175,18 +188,23 @@ atexit.register(play_sound)
 
 # @brief: This function is used to run the main function
 def main():
-	# Verify if the path contains whitespaces
-	if path_contains_whitespaces():
-		print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{START_PATH}{backgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
-		return
+   # Verify if the path contains whitespaces
+   if path_contains_whitespaces():
+      print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{START_PATH}{backgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
+      return
+      
+   repositories = verify_refactorings() # Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
+   if not repositories:
+      print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}Refactorings{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} repositories were already generated.{Style.RESET_ALL}")
+      return
 
-	# Create the json directory
-	create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
-	# Create the repositories directory
-	create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
+   # Create the json directory
+   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
+   # Create the repositories directory
+   create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
 
-	# Process the repositories concurrently
-	process_repositories_concurrently()
+   # Process the repositories concurrently
+   process_repositories_concurrently()
     
 # Directly run the main function if the script is executed
 if __name__ == '__main__':
