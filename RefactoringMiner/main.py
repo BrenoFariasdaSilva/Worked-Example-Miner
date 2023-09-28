@@ -64,12 +64,12 @@ def verify_refactorings():
    return refactorings # Return the refactorings dictionary
 
 # @brief: This function is used to process each repositorie name concurrently, using threads
-# @param: None
+# @param: repositories: The repositories dictionary to be analyzed
 # @return: None 
-def process_repositories_concurrently():
+def process_repositories_concurrently(repositories):
    threads = [] # The threads list
    # Loop through the default repositories
-   for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
+   for repository_name, repository_url in repositories.items():
       estimated_time_string = f"{backgroundColors.GREEN}Estimated time for {backgroundColors.CYAN}generating the refactoring{backgroundColors.GREEN} for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
       output_time(estimated_time_string, round((COMMITS_NUMBER[repository_name]/(ITERATIONS_PER_SECOND[repository_name])), 2))
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
@@ -193,9 +193,11 @@ def main():
       print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{START_PATH}{backgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return
       
+   print(f"{backgroundColors.GREEN}This script will {backgroundColors.CYAN}generate de refactors{backgroundColors.GREEN} using {backgroundColors.CYAN}RefactoringMiner{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} repositories.{Style.RESET_ALL}")
+
    repositories = verify_refactorings() # Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
    if not repositories:
-      print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}Refactorings{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} repositories were already generated.{Style.RESET_ALL}")
+      print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}RefactoringMiner{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} repositories were already generated.{Style.RESET_ALL}")
       return
 
    # Create the json directory
@@ -204,7 +206,7 @@ def main():
    create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
 
    # Process the repositories concurrently
-   process_repositories_concurrently()
+   process_repositories_concurrently(repositories)
     
 # Directly run the main function if the script is executed
 if __name__ == '__main__':
