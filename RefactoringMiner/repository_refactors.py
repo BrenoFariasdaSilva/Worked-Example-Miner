@@ -32,9 +32,9 @@ COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookee
 ITERATIONS_PER_SECOND = {"commons-lang": 4, "jabref": 4, "kafka": 4, "zookeeper": 4} # The duration of the iterations for each repository
 
 # Relative paths:
-RELATIVE_REPOSITORY_REFACTORS_DIRECTORY_PATH = "/repository_refactors" # The relative path of the directory that contains the generated JSON files 
 RELATIVE_REFACTORING_MINER_PATH = "/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner Tool
 RELATIVE_JSON_FILES_DIRECTORY_PATH = "/json_files" # The relative path of the directory that contains the generated JSON files
+RELATIVE_REPOSITORY_REFACTORS_DIRECTORY_PATH = "/repository_refactors" # The relative path of the directory that contains the generated JSON files 
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
 # Absolute paths:
@@ -147,10 +147,10 @@ def update_repository(repository_name):
 # @return: None
 def generate_commit_refactors(repository_name):
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   json_repository_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORY_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+   json_output_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORY_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
 
    # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
-   thread = subprocess.Popen([ABSOLUTE_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_repository_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   thread = subprocess.Popen([ABSOLUTE_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_output_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = thread.communicate() # Get the output of the thread
    
 # @brief: This function outputs time, considering the appropriate time unit
