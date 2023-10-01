@@ -78,7 +78,7 @@ def process_repository(repository_name):
 		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
 
 	# Save the metrics_track_record to a file
-	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/metrics_{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
+	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
 		for key, value in metrics_track_record.items():
 			file.write(f"{key}: \n")
 			file.write(f"\tMetrics: {value['metrics']}\n")
