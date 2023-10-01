@@ -243,6 +243,25 @@ def generate_diffs(repository_name, commit_hash, commit_number):
    for modified_file in commit_hash.modified_files:
       file_diff = modified_file.diff # Get the diff of the modified file
 
+      """
+      TODO: Como fazer para obter o nome do pacote em que o arquivo está, além de dividir o diff pelos métodos alterados?
+      TENTATIVAS: 
+      1º - Os arquivos do ck não servem, pois existem classes com o mesmo nome em pacotes diferentes;
+      2º - O diff não é dividido por métodos, mas sim pelo arquivo como um todo;
+      3º - O diff também não guarda o nome do pacote, apenas o nome do arquivo;
+
+      SOLUÇÕES:
+      1º - Talvez seja possível obter o nome do pacote abrindo o arquivo e procurando uma linha que comece por "package", mas isso não é garantido!
+      Além disso, pode ter sido uma remoção "-" do package, ao invés de uma adição "+", ou simplesmente não ter sido alterado;
+
+      OBJETIVO: Salvar o diff de cada método alterado em um arquivo separado, com o nome da classe e o nome do pacote a que pertence;
+
+      IMPLICAÇÕES: No arquivo metrics_changes.py, linha 159 seria possível validar se realmente o método em questão foi de fato alterado,
+      julgando não apenas pela mudança da tupla das métrics do CBO, CBOM, WMC e RFC.
+
+      SUGESTÕES?
+      """
+
       diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/" # Define the directory to save the diff file
 
       # Validate if the directory exists, if not, create it
