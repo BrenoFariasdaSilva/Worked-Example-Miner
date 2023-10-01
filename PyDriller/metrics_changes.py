@@ -29,11 +29,13 @@ CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # 
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
 SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
+RELATIVE_METRICS_DATA_DIRECTORY_PATH = "/metrics_data" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
 RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH = "/metrics_predictions" # The relative path to the directory containing the metrics prediction
 
 # Directories Paths:
+FULL_METRICS_DATA_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_DATA_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
@@ -62,18 +64,27 @@ def process_repository(repository_name):
 		return
 
 	# Get the directory path for the specified repository name
-	repository_ck_metrics = get_directory_path(repository_name)
+	repository_ck_metrics_path = get_directory_path(repository_name)
 	
 	# Create the desired directory if it does not exist
 	create_directories(repository_name)
 
 	# Traverse the directory and get the method metrics
-	metrics_track_record = traverse_directory(repository_ck_metrics)
+	metrics_track_record = traverse_directory(repository_ck_metrics_path)
 
 	# Loop through the metrics_track_record and sort the commit hashes list for each class or method
 	for key in metrics_track_record:
 		# Sort the commit hashes list for each class or method
 		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
+
+	# Save the metrics_track_record to a file
+	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/metrics_{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
+		for key, value in metrics_track_record.items():
+			file.write(f"{key}: \n")
+			file.write(f"\tMetrics: {value['metrics']}\n")
+			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n")
+			file.write(f"\tChanged: {value['changed']}\n")
+			file.write(f"\n")
 
 	# Write, for each identifier, the metrics evolution values to a csv file
 	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
@@ -104,6 +115,10 @@ def get_directory_path(repository_name):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def create_directories(repository_name):
+	# Create the output METRICS_DATA directories if they does not exist
+	create_directory(FULL_METRICS_DATA_DIRECTORY_PATH, RELATIVE_METRICS_DATA_DIRECTORY_PATH)
+	create_directory(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}")
+
 	# Create the output METRICS_EVOLUTION directories if they does not exist
 	create_directory(FULL_METRICS_EVOLUTION_DIRECTORY_PATH, RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}") # Create the directory where the csv file will be stored
