@@ -77,14 +77,8 @@ def process_repository(repository_name):
 		# Sort the commit hashes list for each class or method
 		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
 
-	# Save the metrics_track_record to a file
-	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
-		for key, value in metrics_track_record.items():
-			file.write(f"{key}: \n")
-			file.write(f"\tMetrics: {value['metrics']}\n")
-			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n")
-			file.write(f"\tChanged: {value['changed']}\n")
-			file.write(f"\n")
+	# Write the metrics_track_record to a txt file
+	write_metrics_track_record_to_txt(repository_name, metrics_track_record)
 
 	# Write, for each identifier, the metrics evolution values to a csv file
 	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
@@ -223,6 +217,19 @@ def traverse_directory(repository_ck_metrics_path):
 
 	# Return the method metrics, which is a dictionary containing the metrics of each method  
 	return metrics_track_record
+
+# @brief: This function writes the metrics_track_record to a txt file
+# @param: repository_name: The name of the repository
+# @param: metrics_track_record: A dictionary containing the metrics of each method or class
+# @return: None
+def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
+	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
+		for key, value in metrics_track_record.items():
+			file.write(f"{key}: \n")
+			file.write(f"\tMetrics: {value['metrics']}\n")
+			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n")
+			file.write(f"\tChanged: {value['changed']}\n")
+			file.write(f"\n")
 
 # @brief: This function receives an id and verify if it contains slashes, if so, it returns the id without the slashes
 # @param: id: ID of the class or method to be analyzed
