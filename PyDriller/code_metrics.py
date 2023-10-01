@@ -242,7 +242,7 @@ def generate_diffs(repository_name, commit_hash, commit_number):
    # Loop through the modified files of the commit
    for modified_file in commit_hash.modified_files:
       file_diff = modified_file.diff # Get the diff of the modified file
-      diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash.hash}/" # Define the directory to save the diff file
+      diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/" # Define the directory to save the diff file
 
       # Validate if the directory exists, if not, create it
       if not os.path.exists(diff_file_directory):
@@ -270,7 +270,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          commit_hashes.append(current_tuple)
 
          # Save the diff of the modified files of the current commit
-         generate_diffs(repository_name, commit, i)
+         generate_diffs(repository_name, commit.hash, i)
 
          # Change working directory to the repository directory
          workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
