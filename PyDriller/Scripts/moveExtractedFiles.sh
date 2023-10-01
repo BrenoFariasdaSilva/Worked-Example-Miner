@@ -19,7 +19,7 @@ fi
 compressed_folder_path="compressed" # Set the compressed directory
 
 # Define the extraced folder names
-extracted_folders=("ck_metrics" "diffs" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
+extracted_folders=("ck_metrics" "diffs" "metrics_data" "metrics_evolution" "metrics_predictions" "metrics_statistics" "repositories")
 
 # Loop through the destination folders and move the contents
 for extracted_folder in "${extracted_folders[@]}"; do
