@@ -53,14 +53,16 @@ def process_all_repositories():
 # @param: repository_name: The name of the repository to be analyzed 
 # @return: None
 def process_repository(repository_name):
-	start_time = time.time() # Start the timer
+	# Start the timer
+	start_time = time.time()
 
 	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
 	if not verify_ck_metrics_folder(repository_name):
 		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the {backgroundColors.CYAN}code_metrics.py{backgroundColors.RED} file first{Style.RESET_ALL}")
 		return
 
-	repository_ck_metrics = get_directory_path(repository_name) # Get the directory path from user input of the repository name
+	# Get the directory path for the specified repository name
+	repository_ck_metrics = get_directory_path(repository_name)
 	
 	# Create the desired directory if it does not exist
 	create_directories(repository_name)
@@ -91,7 +93,7 @@ def process_repository(repository_name):
 	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2))
 
-# @brief: Gets the user input for the repository name and returns the path to the directory
+# @brief: Gets the path to the directory of the CK metrics related to the repository
 # @param: repository_name
 # @return: The path to the directory of the CK metrics related to the repository
 def get_directory_path(repository_name):
@@ -185,7 +187,8 @@ def traverse_directory(repository_ck_metrics_path):
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {backgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path):
-			subdirs.sort() # Sort the directories alphabetically
+			# Sort the subdirectories in ascending order by the substring that comes before the "-"
+			subdirs.sort(key=lambda x: int(x.split("-")[0]))
 			for dir in subdirs: # For each subdirectory in the directories
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 					if file == CK_CSV_FILE: # If the file is the desired csv file
@@ -254,7 +257,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		plt.plot(x, linear_fit, "-", label="Linear Regression Fit")
 		plt.xlabel("Commit Number")
 		plt.ylabel(f"{key} Value")
-		plt.title(f"Linear Regression for {key} metric of {filename}")
+		plt.title(f"Linear Regression for {key} metric of {class_name} {variable_attribute}")
 		plt.legend()
 
 		# Create the Class/Method linear prediction directory if it does not exist
