@@ -76,19 +76,19 @@ def process_repository(repository_name):
 	# Write, for each identifier, the metrics evolution values to a csv file
 	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
 
-	# Process the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
-	process_metrics_track_record(repository_name, metrics_track_record)
+	# Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
+	generate_metrics_track_record_statistics(repository_name, metrics_track_record)
 
 	# Sort the csv file by the number of changes
 	sort_csv_by_changes(repository_name)
 
-	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
-
 	# Remove the old csv file
+	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 	os.remove(old_csv_file_path)
 
+	# Output the elapsed time to process this repository
 	elapsed_time = time.time() - start_time
-	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2))
 
 # @brief: Gets the user input for the repository name and returns the path to the directory
@@ -188,7 +188,7 @@ def traverse_directory(repository_ck_metrics_path):
 			subdirs.sort() # Sort the directories alphabetically
 			for dir in subdirs: # For each subdirectory in the directories
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
-					if file == CK_CSV_FILE: # If the file is a csv file
+					if file == CK_CSV_FILE: # If the file is the desired csv file
 						relative_file_path = os.path.join(dir, file) # Get the relative path to the csv file
 						file_path = os.path.join(root, relative_file_path) # Get the path to the csv file
 						process_csv_file(file_path, metrics_track_record) # Process the csv file
@@ -218,10 +218,11 @@ def get_clean_id(id):
    
 # @brief: Perform linear regression on the given metrics and save the plot to a PNG file
 # @param: metrics: A list containing the metrics values for linear regression
-# @param: filename: The filename for the PNG plot
+# @param: class_name: The class name of the current linear regression
+# @param: variable_attribute: The variable attribute (class type or method name) of the current linear regression
 # @param: repository_name: The name of the repository
 # @return: None
-def linear_regression_graphics(metrics, filename, repository_name):
+def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
 	# Check for empty metrics list
 	if not metrics:
 		print(f"{backgroundColors.RED}Metrics list is empty!{Style.RESET_ALL}")
@@ -256,9 +257,6 @@ def linear_regression_graphics(metrics, filename, repository_name):
 		plt.title(f"Linear Regression for {key} metric of {filename}")
 		plt.legend()
 
-		class_name = filename.split(' ')[0] # Get the class name
-		variable_attribute = get_clean_id(filename.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
-
 		# Create the Class/Method linear prediction directory if it does not exist
 		if not os.path.exists(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}"):
 			os.makedirs(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}")
@@ -280,7 +278,6 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			metrics = record["metrics"]
 			class_name = identifier.split(' ')[0] # Get the identifier which is currently the class name
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
-			filename = f"{class_name} {variable_attribute}" # The filename of the csv file without the file extension
 			mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/"
 			if not os.path.exists(mkdir_path):
 				os.makedirs(mkdir_path)
@@ -299,7 +296,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				for i in range(metrics_len):
 					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], metrics[i][3]])
 
-			linear_regression_graphics(metrics, filename, repository_name) # Perform linear regression on the metrics
+			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) # Perform linear regression on the metrics
 			progress_bar.update(1) # Update the progress bar
 
 # @brief: Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
@@ -335,7 +332,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 # @param repository_name: The name of the repository
 # @param metrics_track_record: A dictionary containing the metrics of each method or class
 # @return: None
-def process_metrics_track_record(repository_name, metrics_track_record):
+def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	# Open the csv file and process the metrics of each method
 	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 	with open(unsorted_metrics_filename, "w") as csvfile:
