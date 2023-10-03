@@ -11,7 +11,7 @@ from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
 from code_metrics import backgroundColors # For coloring the terminal outputs
-from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH # Importing constants from the code_metrics.py file
+from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH # Importing constants from the code_metrics.py file
 from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
 
 # CONSTANTS:
@@ -157,6 +157,8 @@ def process_csv_file(file_path, metrics_track_record):
 			class_name = row["class"]
 			if PROCESS_CLASSES:
 				if not valid_class_name(class_name):
+					# @TODO: Check if this is the correct way to handle this case.
+					# What if we get the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/src/ ?
 					class_name = get_class_package_name(row["file"])
 				variable_attribute = row["type"]
 			else:
@@ -176,6 +178,8 @@ def process_csv_file(file_path, metrics_track_record):
 			metrics_changes = metrics_track_record[identifier]["metrics"]
 			# Get the commit hashes list for the method
 			commit_hashes = metrics_track_record[identifier]["commit_hashes"]
+
+			# @TODO: Only append if the filename was modified in the commit_hash.modified_files.old_path and commit_hash.modified_files.new_path.
 
 			# Try to find the same metrics in the list for the same method. If it does not exist, then add it to the list
 			if metrics not in metrics_changes: # if the metrics are not in the list
