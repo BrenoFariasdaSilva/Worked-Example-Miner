@@ -1,24 +1,24 @@
 # Main Scripts:
 
 code_metrics_script:
-	clear; python3 code_metrics.py
+	clear; time python3 code_metrics.py
 
 metrics_changes_script:
-	clear; python3 metrics_changes.py
+	clear; time python3 metrics_changes.py
 
 # Auxiliar Scripts:
 
 empty_folders_script:
-	chmod +x Scripts/empty_folders.py; clear; python3 Scripts/empty_folders.py
+	chmod +x Scripts/empty_folders.py; clear; time python3 Scripts/empty_folders.py
 
 extractZipFiles:
-	chmod +x Scripts/extractZipFiles.py; clear; python3 Scripts/extractZipFiles.py
+	chmod +x Scripts/extractZipFiles.py; clear; time python3 Scripts/extractZipFiles.py
 
 generateZipFiles:
-	chmod +x Scripts/generateZipFiles.py; clear; python3 Scripts/generateZipFiles.py
+	chmod +x Scripts/generateZipFiles.py; clear; time python3 Scripts/generateZipFiles.py
 
 moveExtractedFiles:
-	chmod +x Scripts/moveExtractedFiles.py; clear; python3 Scripts/moveExtractedFiles.py
+	chmod +x Scripts/moveExtractedFiles.py; clear; time python3 Scripts/moveExtractedFiles.py
 	
 # Install Dependencies:
 
