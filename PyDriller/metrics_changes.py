@@ -176,9 +176,13 @@ def was_file_modified(commit_hash, row):
 	repository_name = file_path.split('/')[0]
 	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/src/
 
+	# Get the repository url
 	repository_url = DEFAULT_REPOSITORIES[file_path.split('/')[0]]
+	# Generate the commit object for a single specific commit hash, to avoid traversing the entire repository
 	for commit in Repository(repository_url, single=commit_hash).traverse_commits():
+		# Loop through all of the modified files of the commit
 		for modified_file in commit.modified_files:
+			# If the modified file path is equal to the file path, then the file was modified
 			if modified_file.new_path == file_path:
 				return True
 
