@@ -71,7 +71,7 @@ def process_repository(repository_name):
 	create_directories(repository_name)
 
 	# Traverse the directory and get the method metrics
-	metrics_track_record = traverse_directory(repository_ck_metrics_path)
+	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path)
 
 	# Loop through the metrics_track_record and sort the commit hashes list for each class or method
 	for key in metrics_track_record:
@@ -167,32 +167,29 @@ def get_identifier_and_metrics(row):
 	return identifier, metrics
 
 # @brief: Checks if the file was modified
+# @param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
 # @param commit_hash: The commit hash of the current row
 # @param row: The row of the csv file
 # @return: True if the file was modified, False otherwise
-def was_file_modified(commit_hash, row):
+def was_file_modified(commit_dict, commit_hash, row):	
 	# The file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/
 	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
 	repository_name = file_path.split('/')[0]
 	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/
-
-	# Get the repository url
-	repository_url = DEFAULT_REPOSITORIES[file_path.split('/')[0]]
-	# Generate the commit object for a single specific commit hash, to avoid traversing the entire repository
-	for commit in Repository(repository_url, single=commit_hash).traverse_commits():
-		# Loop through all of the modified files of the commit
-		for modified_file in commit.modified_files:
-			# If the modified file path is equal to the file path, then the file was modified
-			if modified_file.new_path == file_path:
-				return True
-
-	return False
+			
+	modified_files_paths = commit_dict[commit_hash]
+	for modified_file_path in modified_files_paths:
+		# If the modified file path is equal to the file path, then the file was modified
+		if modified_file_path == file_path:
+			return True # The file was modified
+	return False # The file was not modified
 
 # @brief: Processes a csv file containing the metrics of a method nor class
+# @param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
 # @param file_path: The path to the csv file
 # @param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
 # @return: None
-def process_csv_file(file_path, metrics_track_record):
+def process_csv_file(commit_dict, file_path, metrics_track_record):
 	# Open the csv file
 	with open(file_path, "r") as csvfile:
 		# Read the csv file
@@ -216,7 +213,7 @@ def process_csv_file(file_path, metrics_track_record):
 			commit_hash = commit_number.split("-")[1]
 
 			# Verify if the file in the current row of the file path was actually modified
-			if (was_file_modified(commit_hash, row)):
+			if (was_file_modified(commit_dict, commit_hash, row)):
 				# Append the metrics to the list
 				metrics_changes.append(metrics)
 				# Increment the number of changes
@@ -224,13 +221,29 @@ def process_csv_file(file_path, metrics_track_record):
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
 
+# @brief: This function generates the commit dictionary, which is a dictionary containing the modified files for each commit
+# @param repository_name: The name of the repository
+# @return: A dictionary containing the modified files for each commit
+def generate_commit_dict(repository_name):
+	commit_dict = {} # A dictionary containing the commit hashes as keys and the commit objects as values
+	
+	# Traverse the repository and get the modified files for each commit and store it in the commit_dict
+	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits():
+		commit_dict[commit.hash] = [] # Initialize the commit hash list
+		for modified_file in commit.modified_files: # For each modified file in the commit
+			commit_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit hash list
+	return commit_dict
+
 # @brief: Traverses a directory and processes all the csv files
 # @param repository_ck_metrics_path: The path to the directory
+# @param repository_name: The name of the repository
 # @return: A dictionary containing the metrics of each class and method combination
-def traverse_directory(repository_ck_metrics_path):
+def traverse_directory(repository_name, repository_ck_metrics_path):
 	metrics_track_record = {}
 	file_count = 0
 	progress_bar = None
+
+	commit_dict = generate_commit_dict(repository_name) # A dictionary containing the commit hashes as keys and the commit objects as values
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {backgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
@@ -242,7 +255,7 @@ def traverse_directory(repository_ck_metrics_path):
 					if file == CK_CSV_FILE: # If the file is the desired csv file
 						relative_file_path = os.path.join(dir, file) # Get the relative path to the csv file
 						file_path = os.path.join(root, relative_file_path) # Get the path to the csv file
-						process_csv_file(file_path, metrics_track_record) # Process the csv file
+						process_csv_file(commit_dict, file_path, metrics_track_record) # Process the csv file
 						file_count += 1 # Increment the file count
 
 						if progress_bar is None: # If the progress bar is not initialized
