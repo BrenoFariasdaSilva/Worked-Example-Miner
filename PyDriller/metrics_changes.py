@@ -301,12 +301,12 @@ def get_clean_id(id):
 def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
 	# Check for empty metrics list
 	if not metrics:
-		print(f"{backgroundColors.RED}Metrics list is empty!{Style.RESET_ALL}")
+		print(f"{backgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
 		return
 
 	# Check for invalid values in the metrics
 	if np.isnan(metrics).any() or np.isinf(metrics).any():
-		print(f"{backgroundColors.RED}Metrics list contains invalid values (NaN or inf)!{Style.RESET_ALL}")
+		print(f"{backgroundColors.RED}Metrics list for {class_name} {variable_attribute} contains invalid values!{Style.RESET_ALL}")
 		return
 	
 	# Loop through the metrics_position dictionary
