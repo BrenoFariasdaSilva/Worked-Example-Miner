@@ -301,7 +301,7 @@ def get_clean_id(id):
 def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
 	# Check for empty metrics list
 	if not metrics:
-		print(f"{backgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
+		# print(f"{backgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
 		return
 
 	# Check for invalid values in the metrics
