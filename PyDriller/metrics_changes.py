@@ -17,9 +17,9 @@ from code_metrics import create_directory, output_time, path_contains_whitespace
 # CONSTANTS:
 PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {backgroundColors.CYAN}class.csv{backgroundColors.GREEN} file {backgroundColors.RED}(True/False){backgroundColors.GREEN}? {Style.RESET_ALL}") == "True" # If True, then process the method.csv file. If False, then process the class.csv file
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
-NUMBER_OF_METRICS = 4 # The number of metrics
+NUMBER_OF_METRICS = 3 # The number of metrics
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
-METRICS_POSITION = {"CBO": 0, "CBOModified": 1, "WMC": 2, "RFC": 3}
+METRICS_POSITION = {"CBO": 0, "WMC": 2, "RFC": 3}
 
 # Extensions:
 PNG_FILE_EXTENSION = ".png" # The extension of the PNG files
@@ -162,12 +162,11 @@ def process_csv_file(file_path, metrics_track_record):
 			else:
 				variable_attribute = row["method"]
 			cbo = float(row["cbo"])
-			cboModified = float(row["cboModified"])
 			wmc = float(row["wmc"])
 			rfc = float(row["rfc"])
 
 			# Create a tuple containing the metrics
-			metrics = (cbo, cboModified, wmc, rfc)
+			metrics = (cbo, wmc, rfc)
 			identifier = f"{class_name} {variable_attribute}"
 
 			if identifier not in metrics_track_record: # if the identifier (of the method or class) is not in the dictionary
@@ -311,15 +310,15 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				writer = csv.writer(csvfile)
 				if PROCESS_CLASSES:
 					unique_identifier = class_name
-					writer.writerow(["Class", "Commit Hash", "CBO", "CBO Modified", "WMC", "RFC"])
+					writer.writerow(["Class", "Commit Hash", "CBO", "WMC", "RFC"])
 				else:
 					unique_identifier = variable_attribute
-					writer.writerow(["Method", "Commit Hash", "CBO", "CBO Modified", "WMC", "RFC"])
+					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC"])
 				
 				# get the len of the metrics list
 				metrics_len = len(metrics)
 				for i in range(metrics_len):
-					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], metrics[i][3]])
+					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2]])
 
 			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) # Perform linear regression on the metrics
 			progress_bar.update(1) # Update the progress bar
@@ -338,10 +337,6 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	cboMax = round(float(max(metrics_values[0])), 3)
 	cboAvg = round(float(sum(metrics_values[0])) / len(metrics_values[0]), 3)
 	cboQ3 = round(float(np.percentile(metrics_values[0], 75)), 3)
-	cboModifiedMin = round(float(min(metrics_values[1])), 3)
-	cboModifiedMax = round(float(max(metrics_values[1])), 3)
-	cboModifiedAvg = round(float(sum(metrics_values[1])) / len(metrics_values[1]), 3)
-	cboModifiedQ3 = round(float(np.percentile(metrics_values[1], 75)), 3)
 	wmcMin = round(float(min(metrics_values[2])), 3)
 	wmcMax = round(float(max(metrics_values[2])), 3)
 	wmcAvg = round(float(sum(metrics_values[2])) / len(metrics_values[2]), 3)
@@ -351,7 +346,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	rfcAvg = round(float(sum(metrics_values[3])) / len(metrics_values[3]), 3)
 	rfcQ3 = round(float(np.percentile(metrics_values[3], 75)), 3)
 
-	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, cboModifiedMin, cboModifiedMax, cboModifiedAvg, cboModifiedQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash])
+	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash])
 
 # @brief: Process the metrics in metrics_track_record to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 # @param repository_name: The name of the repository
@@ -363,11 +358,11 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 	with open(unsorted_metrics_filename, "w") as csvfile:
 		writer = csv.writer(csvfile)	
 		if PROCESS_CLASSES:
-			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "CBOModified Min", "CBOModified Max", "CBOModified Avg", "CBOModified Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
+			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
 		else:
-			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "CBOModified Min", "CBOModified Max", "CBOModified Avg", "CBOModified Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
+			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
 
-		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, cboModified, wmc, rfc)
+		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
 		with tqdm(total=len(metrics_track_record), unit=f" {backgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
 			for identifier, metrics in metrics_track_record.items():
 				# check if the metrics changes is greater than the minimum changes
