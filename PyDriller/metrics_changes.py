@@ -20,7 +20,7 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
-METRICS_POSITION = {"CBO": 0, "WMC": 2, "RFC": 3}
+METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2}
 
 # Extensions:
 PNG_FILE_EXTENSION = ".png" # The extension of the PNG files
@@ -226,7 +226,7 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 # @return: A dictionary containing the modified files for each commit
 def generate_commit_dict(repository_name):
 	commit_dict = {} # A dictionary containing the commit hashes as keys and the commit objects as values
-	
+
 	# Traverse the repository and get the modified files for each commit and store it in the commit_dict
 	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits():
 		commit_dict[commit.hash] = [] # Initialize the commit hash list
