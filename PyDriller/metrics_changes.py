@@ -6,6 +6,7 @@ import os # for walking through directories
 import pandas as pd # for the csv file operations
 import time # For measuring the time
 from colorama import Style # For coloring the terminal
+from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from sklearn.linear_model import LinearRegression # for the linear regression
 from tqdm import tqdm # for progress bar
 
@@ -143,6 +144,46 @@ def get_class_package_name(file_name):
 
 	return package_name
 
+# @brief: Gets the identifier and metrics of the method or class from the row
+# @param row: The row of the csv file
+# @return: The identifier and metrics of the method or class
+def get_identifier_and_metrics(row):
+	class_name = row["class"]
+	if PROCESS_CLASSES:
+		if not valid_class_name(class_name):
+			class_name = get_class_package_name(row["file"])
+		variable_attribute = row["type"]
+	else:
+		variable_attribute = row["method"]
+
+	cbo = float(row["cbo"])
+	wmc = float(row["wmc"])
+	rfc = float(row["rfc"])
+
+	# Create a tuple containing the metrics
+	metrics = (cbo, wmc, rfc)
+	identifier = f"{class_name} {variable_attribute}"
+
+	return identifier, metrics
+
+# @brief: Checks if the file was modified
+# @param row: The row of the csv file
+# @return: True if the file was modified, False otherwise
+def was_file_modified(row):
+	# file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/src/
+	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
+	repository_name = file_path.split('/')[0]
+	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/src/
+
+	repository_url = DEFAULT_REPOSITORIES[file_path.split('/')[0]]
+	for commit in Repository(repository_url).traverse_commits():
+		for modified_file in commit.modified_files:
+			if modified_file.new_path == file_path:
+				print(f"{backgroundColors.GREEN}File {backgroundColors.CYAN}{file_path}{backgroundColors.GREEN} was modified in commit {backgroundColors.CYAN}{commit.hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
+				return True
+			
+	return False
+
 # @brief: Processes a csv file containing the metrics of a method nor class
 # @param file_path: The path to the csv file
 # @param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
@@ -154,24 +195,11 @@ def process_csv_file(file_path, metrics_track_record):
 		reader = csv.DictReader(csvfile)
 		# Iterate through each row, that is, for each method in the csv file
 		for row in reader:
-			class_name = row["class"]
-			if PROCESS_CLASSES:
-				if not valid_class_name(class_name):
-					# @TODO: Check if this is the correct way to handle this case.
-					# What if we get the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/src/ ?
-					class_name = get_class_package_name(row["file"])
-				variable_attribute = row["type"]
-			else:
-				variable_attribute = row["method"]
-			cbo = float(row["cbo"])
-			wmc = float(row["wmc"])
-			rfc = float(row["rfc"])
+			# Get the identifier and metrics of the method
+			identifier, metrics = get_identifier_and_metrics(row)
 
-			# Create a tuple containing the metrics
-			metrics = (cbo, wmc, rfc)
-			identifier = f"{class_name} {variable_attribute}"
-
-			if identifier not in metrics_track_record: # if the identifier (of the method or class) is not in the dictionary
+			# If the identifier is not in the dictionary, then add it
+			if identifier not in metrics_track_record:
 				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0}
 
 			# Get the metrics_changes list for the method
@@ -179,14 +207,16 @@ def process_csv_file(file_path, metrics_track_record):
 			# Get the commit hashes list for the method
 			commit_hashes = metrics_track_record[identifier]["commit_hashes"]
 
-			# @TODO: Only append if the filename was modified in the commit_hash.modified_files.old_path and commit_hash.modified_files.new_path.
-
-			# Try to find the same metrics in the list for the same method. If it does not exist, then add it to the list
-			if metrics not in metrics_changes: # if the metrics are not in the list
-				metrics_changes.append(metrics) # add the metrics values to the list
-				metrics_track_record[identifier]["changed"] += 1 # increment the number of changes
+			# Verify if the file in the current row of the file path was actually modified
+			if (was_file_modified(row)):
+				# Append the metrics to the list
+				metrics_changes.append(metrics)
+				# Increment the number of changes
+				metrics_track_record[identifier]["changed"] += 1
+				# Get the commit hash of the current row
 				commit_hash = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")]
-				commit_hashes.append(commit_hash) # add the commit hash to the list
+				# Append the commit hash to the list
+				commit_hashes.append(commit_hash)
 
 # @brief: Traverses a directory and processes all the csv files
 # @param repository_ck_metrics_path: The path to the directory
