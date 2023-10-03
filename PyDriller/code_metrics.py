@@ -258,8 +258,8 @@ def generate_diffs(repository_name, commit_hash, commit_number):
 # @param: number_of_commits: Number of commits to be analyzed
 # @return: The commit hashes of the repository
 def traverse_repository(repository_name, repository_url, number_of_commits):
-   start_time = time.time()  # Start measuring time
-   first_iteration_duration = 0  # Duration of the first iteration
+   start_time = time.time() # Start measuring time
+   first_iteration_duration = 0 # Duration of the first iteration
    i = 1
    commit_hashes = []
 
@@ -293,12 +293,12 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          run_ck_metrics_generator(cmd)
 
          if i == 1:
-            first_iteration_duration = time.time() - start_time  # Calculate the duration of the first iteration
+            first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
          i += 1
          pbar.update(1) # Update the progress bar
 
-   elapsed_time = time.time() - start_time  # Calculate elapsed time
+   elapsed_time = time.time() - start_time # Calculate elapsed time
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
 
    return commit_hashes
