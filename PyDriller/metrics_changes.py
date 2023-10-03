@@ -171,10 +171,10 @@ def get_identifier_and_metrics(row):
 # @param row: The row of the csv file
 # @return: True if the file was modified, False otherwise
 def was_file_modified(commit_hash, row):
-	# file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/src/
+	# The file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/
 	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
 	repository_name = file_path.split('/')[0]
-	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/src/
+	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/
 
 	# Get the repository url
 	repository_url = DEFAULT_REPOSITORIES[file_path.split('/')[0]]
