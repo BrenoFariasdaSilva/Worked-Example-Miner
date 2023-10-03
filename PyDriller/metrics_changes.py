@@ -50,7 +50,6 @@ def process_all_repositories():
 		print(f"{backgroundColors.GREEN}Processing the {backgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name) # Process the current repository
 		print(f"------------------------------------------------------------")
-		print(f"")
 
 # @brief: This function call the procedures to process the specified repository
 # @param: repository_name: The name of the repository to be analyzed 
