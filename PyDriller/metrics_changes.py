@@ -177,13 +177,13 @@ def was_file_modified(commit_hash, row):
 	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/src/
 
 	repository_url = DEFAULT_REPOSITORIES[file_path.split('/')[0]]
-	for commit in Repository(repository_url).traverse_commits():
+	for commit in Repository(repository_url, only_commits=[commit_hash]).traverse_commits():
 		if commit.hash == commit_hash:
 			for modified_file in commit.modified_files:
 				if modified_file.new_path == file_path:
 					print(f"{backgroundColors.GREEN}File {backgroundColors.CYAN}{file_path}{backgroundColors.GREEN} was modified in commit {backgroundColors.CYAN}{commit.hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
 					return True
-			
+				
 	return False
 
 # @brief: Processes a csv file containing the metrics of a method nor class
