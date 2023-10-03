@@ -167,9 +167,10 @@ def get_identifier_and_metrics(row):
 	return identifier, metrics
 
 # @brief: Checks if the file was modified
+# @param commit_hash: The commit hash of the current row
 # @param row: The row of the csv file
 # @return: True if the file was modified, False otherwise
-def was_file_modified(row):
+def was_file_modified(commit_hash, row):
 	# file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/src/
 	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
 	repository_name = file_path.split('/')[0]
@@ -177,10 +178,11 @@ def was_file_modified(row):
 
 	repository_url = DEFAULT_REPOSITORIES[file_path.split('/')[0]]
 	for commit in Repository(repository_url).traverse_commits():
-		for modified_file in commit.modified_files:
-			if modified_file.new_path == file_path:
-				print(f"{backgroundColors.GREEN}File {backgroundColors.CYAN}{file_path}{backgroundColors.GREEN} was modified in commit {backgroundColors.CYAN}{commit.hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
-				return True
+		if commit.hash == commit_hash:
+			for modified_file in commit.modified_files:
+				if modified_file.new_path == file_path:
+					print(f"{backgroundColors.GREEN}File {backgroundColors.CYAN}{file_path}{backgroundColors.GREEN} was modified in commit {backgroundColors.CYAN}{commit.hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
+					return True
 			
 	return False
 
@@ -206,15 +208,15 @@ def process_csv_file(file_path, metrics_track_record):
 			metrics_changes = metrics_track_record[identifier]["metrics"]
 			# Get the commit hashes list for the method
 			commit_hashes = metrics_track_record[identifier]["commit_hashes"]
+			# Get the commit hash of the current row
+			commit_hash = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")]
 
 			# Verify if the file in the current row of the file path was actually modified
-			if (was_file_modified(row)):
+			if (was_file_modified(commit_hash, row)):
 				# Append the metrics to the list
 				metrics_changes.append(metrics)
 				# Increment the number of changes
 				metrics_track_record[identifier]["changed"] += 1
-				# Get the commit hash of the current row
-				commit_hash = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")]
 				# Append the commit hash to the list
 				commit_hashes.append(commit_hash)
 
