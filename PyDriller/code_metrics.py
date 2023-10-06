@@ -42,7 +42,8 @@ RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progre
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
 # Default values:
-DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
+DEFAULT_REPOSITORIES = {"jabref": "https://github.com/JabRef/jabref"} # The default repositories to be analyzed
+# DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
 COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
 ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
 FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
@@ -243,28 +244,35 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
 # @return: The commit hashes and the last commit
 def get_last_execution_progress(repository_name, saved_progress_file):
    commit_hashes = [] # The commit hashes list
-   last_commit = 0 # The last commit
+   last_commit_number = 0 # The last commit number
 
    # Check if there is a saved progress file
    if os.path.exists(saved_progress_file):
       with open(saved_progress_file, 'r') as progress_file:
          lines = progress_file.readlines()
+         # remove the last two lines
+         lines = lines[:-2]
+         # Clear the saved progress file
+         with open(saved_progress_file, 'w') as progress_file:
+            progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
          # If it only has one line, then it is just the header
-         if len(lines) < 3:
-            return commit_hashes, last_commit
-         last_commit = progress_file.readlines()[-1].split(',')[0] # Get the last commit number
-         last_commit_hash = 0
-         # Fill the commit_hashes list with the commits that were already processed
-         for line in progress_file.readlines()[1:]:
-            current_tuple = (line.split(',')[1], line.split(',')[2], line.split(',')[3])
-            last_commit_hash = line.split(',')[1]
-            commit_hashes.append(current_tuple)
-         print(f"{backgroundColors.GREEN}Resuming the execution of the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository from commit {backgroundColors.CYAN}{last_commit}º {last_commit_hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
+         if len(lines) > 3:
+            last_commit_number = int(lines[-1].split(',')[0])
+            last_commit_hash = 0
+            with open(saved_progress_file, 'w') as progress_file:
+               for line in lines:
+                  progress_file.write(line)
+            # Fill the commit_hashes list with the commits that were already processed
+            for line in lines[1:]:
+               current_tuple = (line.split(',')[1], line.split(',')[2], line.split(',')[3])
+               last_commit_hash = line.split(',')[1]
+               commit_hashes.append(current_tuple)
+            print(f"{backgroundColors.GREEN}Resuming the execution of the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository from commit {backgroundColors.CYAN}{last_commit_number}º {last_commit_hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
    else: # If there is no saved progress file, create one and write the header
       with open(saved_progress_file, 'w') as progress_file:
          progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
 
-   return commit_hashes, last_commit
+   return commit_hashes, last_commit_number
 
 # @brief: This function generates the diffs for the commits of a repository
 # @param: repository_name - The name of the repository
