@@ -38,6 +38,7 @@ TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, second
 RELATIVE_CK_JAR_PATH = "/ck/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The relative path of the CK JAR file
 RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path of the directory that contains the CK generated files
 RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory that contains the diffs
+RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
 # Default values:
@@ -45,6 +46,7 @@ DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang"
 COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
 ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
 FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
+FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # The full path of the progress file
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_CK_JAR_PATH = START_PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
 
@@ -86,6 +88,8 @@ def process_repository(repository_name, repository_url):
 
    # Create the ck metrics directory
    create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
+   # Create the progress directory
+   create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH)
    # Create the repositories directory
    create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
 
@@ -233,13 +237,37 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
    time_taken_string = f"Time taken to generate CK metrics for {backgroundColors.CYAN}{number_of_commits}{backgroundColors.GREEN} commits in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository: "
    output_time(time_taken_string, round(elapsed_time, 2))
 
+# @brief: This function gets the last execution progress of the repository
+# @param: saved_progress_file: Name of the file that contains the saved progress
+# @return: The commit hashes and the last commit
+def get_last_execution_progress(saved_progress_file):
+   commit_hashes = [] # The commit hashes list
+   last_commit = 0 # The last commit
+
+   # Check if there is a saved progress file
+   if os.path.exists(saved_progress_file):
+      with open(saved_progress_file, 'r') as progress_file:
+         lines = progress_file.readlines()
+         # If it only has one line, then it is just the header
+         if len(lines) < 3:
+            return commit_hashes, last_commit
+         last_commit = progress_file.readlines()[-1].split(',')[0] # Get the last commit number
+         # Fill the commit_hashes list with the commits that were already processed
+         for line in progress_file.readlines()[1:]:
+            current_tuple = (line.split(',')[1], line.split(',')[2], line.split(',')[3])
+            commit_hashes.append(current_tuple)
+   else: # If there is no saved progress file, create one and write the header
+      with open(saved_progress_file, 'w') as progress_file:
+         progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
+
+   return commit_hashes, last_commit
+
 # @brief: This function generates the diffs for the commits of a repository
 # @param: repository_name - The name of the repository
 # @param: commit - The commit object to be analyzed
 # @param: commit_number - The number of the commit to be analyzed
 # @return: None
 def generate_diffs(repository_name, commit, commit_number):
-   # Loop through the modified files of the commit
    for modified_file in commit.modified_files:
       file_diff = modified_file.diff # Get the diff of the modified file
 
@@ -261,11 +289,18 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
    i = 1
-   commit_hashes = []
+   saved_progress_file = f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv"
+
+   # Get the last execution progress of the repository
+   commit_hashes, last_commit = get_last_execution_progress(saved_progress_file)
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}") as pbar:
+   with tqdm(total=number_of_commits-last_commit, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}") as pbar:
       for commit in Repository(repository_url).traverse_commits():
+         if i < last_commit:
+            i += 1
+            pbar.update(1)
+            continue
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
          current_tuple = (f"{i}-{commit.hash}", commit.msg.split('\n')[0], commit.committer_date)
          commit_hashes.append(current_tuple)
@@ -295,8 +330,16 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          if i == 1:
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
+         # Append the commit hash, commit message and commit date to the progress file
+         if i % 10 == 0 and i > 1:
+            with open(saved_progress_file, 'a') as progress_file:
+               progress_file.write(f"{i},{current_tuple[0]},{current_tuple[1]},{current_tuple[2]}\n")
+
          i += 1
          pbar.update(1) # Update the progress bar
+
+   # Remove the saved progress file when processing is complete
+   os.remove(saved_progress_file)
 
    elapsed_time = time.time() - start_time # Calculate elapsed time
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
