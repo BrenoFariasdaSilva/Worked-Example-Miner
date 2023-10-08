@@ -23,6 +23,8 @@ moveExtractedFiles:
 # Install Dependencies:
 
 dependencies:
+	pip install atexit
+	pip install colorama
 	pip install matplotlib
 	pip install numpy
 	pip install pandas
