@@ -212,7 +212,7 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 			commit_hash = commit_number.split("-")[1]
 
 			# Verify if the file in the current row of the file path was actually modified
-			if (was_file_modified(commit_dict, commit_hash, row)):
+			if (metrics not in metrics_changes) and (was_file_modified(commit_dict, commit_hash, row)):
 				# Append the metrics to the list
 				metrics_changes.append(metrics)
 				# Increment the number of changes
