@@ -177,9 +177,10 @@ def filter_json_file(json_filepath, json_filtered_filepath):
      if "refactorings" in commit:
          filtered_json_data = [refactoring for refactoring in commit["refactorings"] if refactoring["type"] in DESIRED_REFACTORING_TYPES]
 
-   # Write the filtered JSON data to the file
-   with open(json_filtered_filepath, 'w') as json_file:
-      json.dump(filtered_json_data, json_file, indent=1)
+   # Write the filtered JSON data to the file if it is not empty
+   if filtered_json_data:
+      with open(json_filtered_filepath, 'w') as json_file:
+         json.dump(filtered_json_data, json_file, indent=1) # Write the filtered JSON data to the file
    
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
