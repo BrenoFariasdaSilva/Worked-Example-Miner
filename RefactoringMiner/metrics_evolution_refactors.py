@@ -159,13 +159,14 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
       thread.wait()
 
       # Filter the JSON file
-      filter_json_file(json_filepath, json_filtered_filepath)
+      filter_json_file(classname, json_filepath, json_filtered_filepath)
 
 # @brief: This function is used to filter the JSON file
+# @param: classname: Name of the class to be analyzed
 # @param: json_filepath: Path to the JSON file to be filtered
 # @param: json_filtered_filepath: Path to the JSON file to be filtered
 # @return: None
-def filter_json_file(json_filepath, json_filtered_filepath):
+def filter_json_file(classname, json_filepath, json_filtered_filepath):
    # Read the JSON data from the file
    with open(json_filepath, 'r') as json_file:
       json_data = json.load(json_file)
@@ -174,8 +175,13 @@ def filter_json_file(json_filepath, json_filtered_filepath):
 
    # Filter out refactoring instances that are not in the desired types
    for commit in json_data['commits']:
-     if "refactorings" in commit:
-         filtered_json_data = [refactoring for refactoring in commit["refactorings"] if refactoring["type"] in DESIRED_REFACTORING_TYPES]
+      for refactoring in commit["refactorings"]:
+         if refactoring["type"] in DESIRED_REFACTORING_TYPES:
+            for rightSideLocation, leftSideLocation in zip(refactoring["rightSideLocations"], refactoring["leftSideLocations"]):
+               file_classname = classname.replace(".", "/")
+               file_classname = f"{file_classname}.java"
+               if file_classname in rightSideLocation["filePath"] or file_classname in leftSideLocation["filePath"]:
+                  filtered_json_data.append(refactoring)
 
    # Write the filtered JSON data to the file if it is not empty
    if filtered_json_data:
