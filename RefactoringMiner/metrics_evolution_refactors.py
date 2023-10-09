@@ -1,6 +1,7 @@
 import atexit # For playing a sound when the program finishes
 import os # OS module in Python provides functions for interacting with the operating system
 import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
+import json # JSON (JavaScript Object Notation) is a lightweight data-interchange format
 import platform # For getting the operating system name
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import threading # The threading module provides a high-level interface for running tasks in separate threads
@@ -20,6 +21,7 @@ START_PATH = os.getcwd() # Get the current working directory
 # Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
+DESIRED_REFACTORING_TYPES = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method"] # The desired refactoring types
 
 # Time units:
 TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, seconds in a day
@@ -141,6 +143,7 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
 
    # Create the output directory for the JSON files
    create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}")
+   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered")
 
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    for commit_hash in commits_hashes: # For each commit, generate the JSON file
@@ -148,11 +151,32 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
       index, commit_hash = commit_hash.split("-", 1)
 
       json_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the output JSON file
+      json_filtered_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the filtered JSON file
 
       # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -c REPOSITORY_DIRECTORY_PATH COMMIT_HASH -json JSON_FILES_DIRECTORY_PATH 
       thread = subprocess.Popen([f"{ABSOLUTE_REFACTORING_MINER_PATH}", "-c", f"{repository_directory_path}", f"{commit_hash}", "-json", f"{json_filepath}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
+
+      # Filter the JSON file
+      filter_json_file(json_filepath, json_filtered_filepath)
+
+# @brief: This function is used to filter the JSON file
+# @param: json_filepath: Path to the JSON file to be filtered
+# @param: json_filtered_filepath: Path to the JSON file to be filtered
+# @return: None
+def filter_json_file(json_filepath, json_filtered_filepath):
+   # Read the JSON data from the file
+   with open(json_filepath, 'r') as json_file:
+      json_data = json.load(json_file)
+
+   # Filter out refactoring instances that are not in the desired types
+   if "refactorings" in json_data:
+      json_data["refactorings"] = [refactoring for refactoring in json_data["refactorings"] if refactoring.get("type") in DESIRED_REFACTORING_TYPES]
+
+   # Write the filtered JSON data back to the file
+   with open(json_filtered_filepath, 'w') as json_file:
+      json.dump(json_data, json_file, indent=1) # You can adjust the indentation level as needed
    
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
