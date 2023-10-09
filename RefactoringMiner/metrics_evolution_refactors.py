@@ -170,13 +170,16 @@ def filter_json_file(json_filepath, json_filtered_filepath):
    with open(json_filepath, 'r') as json_file:
       json_data = json.load(json_file)
 
+   filtered_json_data = json_data.copy() # Copy the JSON data
    # Filter out refactoring instances that are not in the desired types
-   if "refactorings" in json_data:
-      json_data["refactorings"] = [refactoring for refactoring in json_data["refactorings"] if refactoring.get("type") in DESIRED_REFACTORING_TYPES]
+   for commit in json_data['commits']:
+      for refactoring in commit['refactorings']:
+         if refactoring['type'] in DESIRED_REFACTORING_TYPES:
+            filtered_json_data['commits'][json_data['commits'].index(commit)]['refactorings'].remove(refactoring)
 
-   # Write the filtered JSON data back to the file
+   # Write the filtered JSON data to the file
    with open(json_filtered_filepath, 'w') as json_file:
-      json.dump(json_data, json_file, indent=1) # You can adjust the indentation level as needed
+      json.dump(filtered_json_data, json_file, indent=1)
    
 # @brief: This function outputs time, considering the appropriate time unit
 # @param: output_string: String to be outputted
