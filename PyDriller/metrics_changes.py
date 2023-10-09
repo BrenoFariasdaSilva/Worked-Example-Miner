@@ -196,7 +196,7 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 		# Iterate through each row, that is, for each method in the csv file
 		for row in reader:
 			# Get the identifier and metrics of the method
-			identifier, metrics = get_identifier_and_metrics(row)
+			identifier, ck_metrics = get_identifier_and_metrics(row)
 
 			# If the identifier is not in the dictionary, then add it
 			if identifier not in metrics_track_record:
@@ -212,9 +212,9 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 			commit_hash = commit_number.split("-")[1]
 
 			# Verify if the file in the current row of the file path was actually modified
-			if (metrics not in metrics_changes) and (was_file_modified(commit_dict, commit_hash, row)):
+			if (commit_hash not in commit_hashes or (ck_metrics not in metrics_changes)) and (was_file_modified(commit_dict, commit_hash, row)):
 				# Append the metrics to the list
-				metrics_changes.append(metrics)
+				metrics_changes.append(ck_metrics)
 				# Increment the number of changes
 				metrics_track_record[identifier]["changed"] += 1
 				# Append the commit hash to the list
