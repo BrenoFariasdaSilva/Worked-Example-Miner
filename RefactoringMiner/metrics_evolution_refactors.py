@@ -33,7 +33,8 @@ JSON_FILE_FORMAT = "json" # The extension of the generated file by the Refactori
 DEFAULT_REPOSITORY = "zookeeper" # The default repository to be analyzed
 DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
 CLASSES_TYPE = {"class", "interface", "enum", "innerclass", "anonymous"} # The types of classes.
-FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Leader": "lead", "org.apache.zookeeper.server.quorum.LeaderElection": "lookForLeader", "org.apache.zookeeper.server.quorum.Follower": "followLeader"} # The desired classes or methods of each repository
+FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Leader": "lead", "org.apache.zookeeper.server.quorum.LeaderElection": "lookForLeader", "org.apache.zookeeper.server.quorum.Follower": "followLeader"} # The desired methods of each repository
+# FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Learner": "class"} # The desired classes of each repository
 CLASSES_OR_METHODS = "classes" if any(class_type in FILES_TO_ANALYZE.values() for class_type in CLASSES_TYPE) else "methods" # The default class or method to be analyzed
 
 # Relative paths:
