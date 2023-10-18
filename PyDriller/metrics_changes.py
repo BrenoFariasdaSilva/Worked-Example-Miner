@@ -19,6 +19,8 @@ from code_metrics import create_directory, output_time, path_contains_whitespace
 PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {backgroundColors.CYAN}class.csv{backgroundColors.GREEN} file {backgroundColors.RED}(True/False){backgroundColors.GREEN}? {Style.RESET_ALL}") == "True" # If True, then process the method.csv file. If False, then process the class.csv file
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
+DESIRED_DECREASED = 0.20 # The desired decreased in the metric
+DRAMASTIC_CHANGE_METRICS = ["CBO"] # The desired metrics to check for dramatic changes
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2}
 
@@ -30,12 +32,15 @@ CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # 
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
 SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
+INTERESTING_CHANGES_FILENAME = "interesting_changes" # The name of the txt file containing the interesting changes
+RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH = "/interesting_changes" # The relative path to the directory containing the interesting changes
 RELATIVE_METRICS_DATA_DIRECTORY_PATH = "/metrics_data" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
 RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH = "/metrics_predictions" # The relative path to the directory containing the metrics prediction
 
 # Directories Paths:
+FULL_INTERESTING_CHANGES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH}" # The full path to the directory containing the interesting changes
 FULL_METRICS_DATA_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_DATA_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
@@ -89,6 +94,9 @@ def process_repository(repository_name):
 	# Sort the csv file by the number of changes
 	sort_csv_by_changes(repository_name)
 
+	# Sort the interesting changes csv file by the percentual variation of the metric
+	sort_csv_by_percentual_variation(repository_name)
+
 	# Remove the old csv file
 	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 	os.remove(old_csv_file_path)
@@ -109,6 +117,10 @@ def get_directory_path(repository_name):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def create_directories(repository_name):
+	# Create the output INTERESTING_CHANGES directories if they does not exist
+	create_directory(FULL_INTERESTING_CHANGES_DIRECTORY_PATH, RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH)
+	create_directory(f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}")
+
 	# Create the output METRICS_DATA directories if they does not exist
 	create_directory(FULL_METRICS_DATA_DIRECTORY_PATH, RELATIVE_METRICS_DATA_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}")
@@ -291,7 +303,7 @@ def get_clean_id(id):
       return str(id.split("/")[0:-1])[2:-2]
    else:
       return id
-	
+
 # @brief: This function verifies if a specified folder exists, if not, it creates it
 # @param: folder_path: The path to the folder
 # @return: True if the folder already exists, False otherwise
@@ -306,7 +318,45 @@ def verify_and_create_folder(folder_path):
 # @return: True if the file already exists, False otherwise
 def verify_file(file_path):
 	return os.path.exists(file_path)
-   
+
+# @brief: This function verifies if the class or method has had a dramatic decrease in the current metric
+# @param: metrics: A list containing the metrics values for linear regression
+# @param: class_name: The class name of the current linear regression
+# @param: variable_attribute: The variable attribute (class type or method name) of the current linear regression
+# @param: metric_name: The name of the metric
+# @param: repository_name: The name of the repository
+# @return: None
+def verify_dramatic_metric_decrease(metrics, class_name, variable_attribute, metric_name, repository_name):
+	folder_path = f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}/"
+	csv_filename = f"{folder_path}{CLASSES_OR_METHODS}-{INTERESTING_CHANGES_FILENAME}{CSV_FILE_EXTENSION}"
+
+	# If the csv folder does not exist, create it
+	if not verify_file(csv_filename):
+		with open(f"{csv_filename}", "w") as csvfile:
+			writer = csv.writer(csvfile)
+			if PROCESS_CLASSES:
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation"])
+			else:
+				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation"])
+
+	biggest_change = [0, 0, 0.0] # The biggest change values in the metric
+
+	# Check if the current metric decreased by more than DESIRED_DECREASED in any commit
+	for i in range(1, len(metrics)):
+		if metrics[i] >= metrics[i - 1] or metrics[i - 1] == 0:
+			continue
+
+		current_percentual_variation = round((metrics[i - 1] - metrics[i]) / metrics[i - 1], 3)
+		# If the current percentual variation is bigger than the desired decreased, then update the biggest_change list
+		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
+			biggest_change = [metrics[i - 1], metrics[i], current_percentual_variation]
+
+	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
+	if biggest_change[2] > DESIRED_DECREASED:
+		with open(f"{csv_filename}", "a") as csvfile:
+			writer = csv.writer(csvfile)
+			writer.writerow([class_name, variable_attribute, biggest_change[0], biggest_change[1], biggest_change[2]])
+	 
 # @brief: Perform linear regression on the given metrics and save the plot to a PNG file
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: class_name: The class name of the current linear regression
@@ -330,6 +380,10 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		x = np.arange(len(metrics))
 		y = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
 
+		# For the CBO metric, check if there occurred any dramatic decrease in the metric
+		if key in DRAMASTIC_CHANGE_METRICS:
+			verify_dramatic_metric_decrease(y, class_name, variable_attribute, key, repository_name)
+			
 		# Check for sufficient data points for regression
 		if len(x) < 2 or len(y) < 2:
 			return
@@ -452,13 +506,25 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 # @param: repository_name: The name of the repository
 # @return: None
 def sort_csv_by_changes(repository_name):
-	print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}metrics statistics files{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of changes{backgroundColors.GREEN}.{Style.RESET_ALL}")
+	# print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}metrics statistics files{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of changes{backgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}")
 	# Sort the csv file by the number of changes
 	data = data.sort_values(by=["Changed"], ascending=False)
 	# Write the sorted csv file to a new csv file
 	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}", index=False)
+
+# @brief: This function sorts the interesting changes csv file according to the percentual variation of the metric
+# @param: repository_name: The name of the repository
+# @return: None
+def sort_csv_by_percentual_variation(repository_name):
+	# print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}interesting changes files{backgroundColors.GREEN} by the {backgroundColors.CYAN}percentual variation of the metric{backgroundColors.GREEN}.{Style.RESET_ALL}")
+	# Read the csv file
+	data = pd.read_csv(f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{INTERESTING_CHANGES_FILENAME}{CSV_FILE_EXTENSION}")
+	# Sort the csv file by the percentual variation of the metric
+	data = data.sort_values(by=["Percentual Variation"], ascending=False)
+	# Write the sorted csv file to a new csv file
+	data.to_csv(f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{INTERESTING_CHANGES_FILENAME}{CSV_FILE_EXTENSION}", index=False)
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
