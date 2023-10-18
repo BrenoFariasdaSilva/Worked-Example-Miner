@@ -30,7 +30,6 @@ def search_files(directory, file_counts, found_file_paths, repository_name):
 				if file == target_name:
 					file_counts[target_name] += 1
 					found_file_paths.append(file_path)
-					print(f"{backgroundColors.GREEN}Found {backgroundColors.CYAN}{target_name} {backgroundColors.GREEN}file in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: {backgroundColors.CYAN}{file_path}{Style.RESET_ALL}")
 	return found_file_paths, file_counts
 
 # @brief: This function writes the found file paths to a text file
@@ -40,10 +39,10 @@ def search_files(directory, file_counts, found_file_paths, repository_name):
 # @return: None
 def write_file_paths(found_file_paths, repository_name, current_directory):
 	output_file_path = f"{current_directory}/metrics_data/{repository_name}/changes_files_list.txt"
-	print(f"{backgroundColors.GREEN}Writing found file paths to {backgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
+	print(f"{backgroundColors.GREEN}Writing found files to {backgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
 	with open(output_file_path, "w") as file:
 		found_files_count = len(found_file_paths)
-		file.write(f"Found {found_files_count} {backgroundColors.GREEN}files in {repository_name}\n")
+		file.write(f"Found files in PyDriller/diffs/{repository_name}: {found_files_count}\n")
 		for path in found_file_paths:
 			file.write(f"{path}\n")
 
@@ -56,12 +55,14 @@ def main():
 
 	# Search directories
 	for repository_name in REPOSITORIES:
+		print(f"{backgroundColors.GREEN}Searching for {backgroundColors.CYAN}changes files{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}...{Style.RESET_ALL}")
+
 		# Set the search directory
 		search_directory = os.path.join(current_directory, "diffs", repository_name)
 
 		# Verify if the search directory exists
 		if not os.path.isdir(search_directory):
-			print(f"{backgroundColors.RED}Directory {backgroundColors.CYAN}{search_directory}{backgroundColors.RED} does not exist{Style.RESET_ALL}")
+			print(f"{backgroundColors.RED}Directory {backgroundColors.CYAN}PyDriller/diffs/{repository_name}{backgroundColors.RED} does not exist{Style.RESET_ALL}")
 			continue
  
 		# Initialize counters
