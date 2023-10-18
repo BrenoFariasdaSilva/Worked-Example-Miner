@@ -8,6 +8,9 @@ metrics_changes_script:
 
 # Auxiliar Scripts:
 
+changes_files_script:
+	chmod +x Scripts/changes_files.py; clear; time python3 Scripts/changes_files.py
+
 empty_folders_script:
 	chmod +x Scripts/empty_folders.py; clear; time python3 Scripts/empty_folders.py
 
