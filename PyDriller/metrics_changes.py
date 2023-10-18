@@ -20,7 +20,7 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASED = 0.20 # The desired decreased in the metric
-SUBSTANTIAL_CHANGE_METRIC = ["CBO"] # The desired metrics to check for substantial changes
+SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to check for substantial changes
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2}
 
@@ -32,7 +32,7 @@ CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # 
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
 SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
-SUBSTANTIAL_CHANGES_FILENAME = "substantial_changes" # The relative path to the directory containing the interesting changes
+SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # The relative path to the directory containing the interesting changes
 RELATIVE_METRICS_DATA_DIRECTORY_PATH = "/metrics_data" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
@@ -322,7 +322,7 @@ def verify_file(file_path):
 # @return: None
 def verify_substantial_metric_decrease(metrics, class_name, variable_attribute, metric_name, repository_name):
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/"
-	csv_filename = f"{folder_path}{CLASSES_OR_METHODS}-{metric_name}-{SUBSTANTIAL_CHANGES_FILENAME}{CSV_FILE_EXTENSION}"
+	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME}"
 
 	# If the csv folder does not exist, create it
 	if not verify_file(csv_filename):
@@ -375,7 +375,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		y = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
 
 		# For the CBO metric, check if there occurred any substantial decrease in the metric
-		if key in SUBSTANTIAL_CHANGE_METRIC:
+		if key == SUBSTANTIAL_CHANGE_METRIC:
 			verify_substantial_metric_decrease(y, class_name, variable_attribute, key, repository_name)
 			
 		# Check for sufficient data points for regression
@@ -514,11 +514,11 @@ def sort_csv_by_changes(repository_name):
 def sort_csv_by_percentual_variation(repository_name):
 	# print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}interesting changes files{backgroundColors.GREEN} by the {backgroundColors.CYAN}percentual variation of the metric{backgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
-	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{SUBSTANTIAL_CHANGE_METRIC}-{SUBSTANTIAL_CHANGES_FILENAME}{CSV_FILE_EXTENSION}")
+	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}")
 	# Sort the csv file by the percentual variation of the metric
 	data = data.sort_values(by=["Percentual Variation"], ascending=False)
 	# Write the sorted csv file to a new csv file
-	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{SUBSTANTIAL_CHANGE_METRIC}-{SUBSTANTIAL_CHANGES_FILENAME}{CSV_FILE_EXTENSION}", index=False)
+	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}", index=False)
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
