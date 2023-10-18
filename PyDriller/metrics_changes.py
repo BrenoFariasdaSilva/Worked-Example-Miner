@@ -20,7 +20,7 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASED = 0.20 # The desired decreased in the metric
-DRAMASTIC_CHANGE_METRICS = ["CBO"] # The desired metrics to check for dramatic changes
+SUBSTANTIAL_CHANGE_METRICS = ["CBO"] # The desired metrics to check for substantial changes
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2}
 
@@ -319,14 +319,14 @@ def verify_and_create_folder(folder_path):
 def verify_file(file_path):
 	return os.path.exists(file_path)
 
-# @brief: This function verifies if the class or method has had a dramatic decrease in the current metric
+# @brief: This function verifies if the class or method has had a substantial decrease in the current metric
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: class_name: The class name of the current linear regression
 # @param: variable_attribute: The variable attribute (class type or method name) of the current linear regression
 # @param: metric_name: The name of the metric
 # @param: repository_name: The name of the repository
 # @return: None
-def verify_dramatic_metric_decrease(metrics, class_name, variable_attribute, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics, class_name, variable_attribute, metric_name, repository_name):
 	folder_path = f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}/"
 	csv_filename = f"{folder_path}{CLASSES_OR_METHODS}-{INTERESTING_CHANGES_FILENAME}{CSV_FILE_EXTENSION}"
 
@@ -380,9 +380,9 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		x = np.arange(len(metrics))
 		y = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
 
-		# For the CBO metric, check if there occurred any dramatic decrease in the metric
-		if key in DRAMASTIC_CHANGE_METRICS:
-			verify_dramatic_metric_decrease(y, class_name, variable_attribute, key, repository_name)
+		# For the CBO metric, check if there occurred any substantial decrease in the metric
+		if key in SUBSTANTIAL_CHANGE_METRICS:
+			verify_substantial_metric_decrease(y, class_name, variable_attribute, key, repository_name)
 			
 		# Check for sufficient data points for regression
 		if len(x) < 2 or len(y) < 2:
