@@ -20,7 +20,7 @@ PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASED = 0.20 # The desired decreased in the metric
-SUBSTANTIAL_CHANGE_METRICS = ["CBO"] # The desired metrics to check for substantial changes
+SUBSTANTIAL_CHANGE_METRIC = ["CBO"] # The desired metrics to check for substantial changes
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2}
 
@@ -32,15 +32,13 @@ CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # 
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
 SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
-INTERESTING_CHANGES_FILENAME = "interesting_changes" # The name of the txt file containing the interesting changes
-RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH = "/interesting_changes" # The relative path to the directory containing the interesting changes
+SUBSTANTIAL_CHANGES_FILENAME = "substantial_changes" # The relative path to the directory containing the interesting changes
 RELATIVE_METRICS_DATA_DIRECTORY_PATH = "/metrics_data" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
 RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH = "/metrics_predictions" # The relative path to the directory containing the metrics prediction
 
 # Directories Paths:
-FULL_INTERESTING_CHANGES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH}" # The full path to the directory containing the interesting changes
 FULL_METRICS_DATA_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_DATA_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
@@ -94,12 +92,12 @@ def process_repository(repository_name):
 	# Sort the csv file by the number of changes
 	sort_csv_by_changes(repository_name)
 
-	# Sort the interesting changes csv file by the percentual variation of the metric
-	sort_csv_by_percentual_variation(repository_name)
-
 	# Remove the old csv file
 	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 	os.remove(old_csv_file_path)
+
+	# Sort the interesting changes csv file by the percentual variation of the metric
+	sort_csv_by_percentual_variation(repository_name)
 
 	# Output the elapsed time to process this repository
 	elapsed_time = time.time() - start_time
@@ -117,10 +115,6 @@ def get_directory_path(repository_name):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def create_directories(repository_name):
-	# Create the output INTERESTING_CHANGES directories if they does not exist
-	create_directory(FULL_INTERESTING_CHANGES_DIRECTORY_PATH, RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH)
-	create_directory(f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}")
-
 	# Create the output METRICS_DATA directories if they does not exist
 	create_directory(FULL_METRICS_DATA_DIRECTORY_PATH, RELATIVE_METRICS_DATA_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}")
@@ -327,8 +321,8 @@ def verify_file(file_path):
 # @param: repository_name: The name of the repository
 # @return: None
 def verify_substantial_metric_decrease(metrics, class_name, variable_attribute, metric_name, repository_name):
-	folder_path = f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}/"
-	csv_filename = f"{folder_path}{CLASSES_OR_METHODS}-{INTERESTING_CHANGES_FILENAME}{CSV_FILE_EXTENSION}"
+	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/"
+	csv_filename = f"{folder_path}{CLASSES_OR_METHODS}-{metric_name}-{SUBSTANTIAL_CHANGES_FILENAME}{CSV_FILE_EXTENSION}"
 
 	# If the csv folder does not exist, create it
 	if not verify_file(csv_filename):
@@ -381,7 +375,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		y = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
 
 		# For the CBO metric, check if there occurred any substantial decrease in the metric
-		if key in SUBSTANTIAL_CHANGE_METRICS:
+		if key in SUBSTANTIAL_CHANGE_METRIC:
 			verify_substantial_metric_decrease(y, class_name, variable_attribute, key, repository_name)
 			
 		# Check for sufficient data points for regression
@@ -520,11 +514,11 @@ def sort_csv_by_changes(repository_name):
 def sort_csv_by_percentual_variation(repository_name):
 	# print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}interesting changes files{backgroundColors.GREEN} by the {backgroundColors.CYAN}percentual variation of the metric{backgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
-	data = pd.read_csv(f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{INTERESTING_CHANGES_FILENAME}{CSV_FILE_EXTENSION}")
+	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{SUBSTANTIAL_CHANGE_METRIC}-{SUBSTANTIAL_CHANGES_FILENAME}{CSV_FILE_EXTENSION}")
 	# Sort the csv file by the percentual variation of the metric
 	data = data.sort_values(by=["Percentual Variation"], ascending=False)
 	# Write the sorted csv file to a new csv file
-	data.to_csv(f"{FULL_INTERESTING_CHANGES_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{INTERESTING_CHANGES_FILENAME}{CSV_FILE_EXTENSION}", index=False)
+	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}-{SUBSTANTIAL_CHANGE_METRIC}-{SUBSTANTIAL_CHANGES_FILENAME}{CSV_FILE_EXTENSION}", index=False)
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
