@@ -291,6 +291,21 @@ def get_clean_id(id):
       return str(id.split("/")[0:-1])[2:-2]
    else:
       return id
+	
+# @brief: This function verifies if a specified folder exists, if not, it creates it
+# @param: folder_path: The path to the folder
+# @return: True if the folder already exists, False otherwise
+def verify_and_create_folder(folder_path):
+	if not os.path.exists(folder_path):
+		os.makedirs(folder_path)
+		return False
+	return True
+
+# @brief: This function verifies if a specified file exists
+# @param: file_path: The path to the file
+# @return: True if the file already exists, False otherwise
+def verify_file(file_path):
+	return os.path.exists(file_path)
    
 # @brief: Perform linear regression on the given metrics and save the plot to a PNG file
 # @param: metrics: A list containing the metrics values for linear regression
@@ -334,8 +349,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		plt.legend()
 
 		# Create the Class/Method linear prediction directory if it does not exist
-		if not os.path.exists(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}"):
-			os.makedirs(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}")
+		verify_and_create_folder(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}")
 
 		# Save the plot to a PNG file
 		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{key}{PNG_FILE_EXTENSION}")
@@ -355,8 +369,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			class_name = identifier.split(' ')[0] # Get the identifier which is currently the class name
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 			mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/"
-			if not os.path.exists(mkdir_path):
-				os.makedirs(mkdir_path)
+			verify_and_create_folder(mkdir_path)
 			metrics_filename = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}{CSV_FILE_EXTENSION}"
 			with open(metrics_filename, "w") as csvfile:
 				writer = csv.writer(csvfile)
