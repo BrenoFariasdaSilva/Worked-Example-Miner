@@ -10,28 +10,28 @@ class backgroundColors: # Colors for the terminal
 	RED = "\033[91m" # Red
 
 # List of target file names
-TARGET_FILENAMES = ["CHANGES.txt.diff"]
+TARGET_FILENAMES = {"commons-lang": "", "jabref": "", "kafka": "", "zookeeper": "CHANGES.txt.diff"}
 
 # Repositories List
 REPOSITORIES = ["commons-lang", "jabref", "kafka", "zookeeper"]
 
 # @brief: This function searches for files in the given directory
 # @param: search_directory - The directory to search in
-# @param: file_counts - A dictionary to store the number of files found
-# @param: found_file_paths - A list to store the paths of the found files
+# @param: search_string - The string to search for
 # @return: found_file_paths - A list of the paths of the found files
 # @return: file_counts - A dictionary containing the number of files found
-def search_files(search_directory, file_counts, found_file_paths):
+def search_files(search_directory, search_string):
+	file_counts = 0 # Counter for the number of files found
+	found_file_paths = [] # List to store the paths of the found files
 	# Walk through the directory
 	for root, _, files in os.walk(search_directory):
 		# Search for the target files
 		for file in files:
 			file_path = os.path.join(root, file)
-			# Check if the file is a target file
-			for target_name in TARGET_FILENAMES:
-				if file == target_name:
-					file_counts[target_name] += 1 # Increment the counter
-					found_file_paths.append(file_path) # Add the file path to the list
+			# Verify if the file name matches the target file name
+			if search_string in file:
+				file_counts += 1 # Increment the counter
+				found_file_paths.append(file_path) # Add the file path to the list
 					
 	return found_file_paths, file_counts # Return the list and the dictionary
 
@@ -41,7 +41,7 @@ def search_files(search_directory, file_counts, found_file_paths):
 # @param: current_directory - The current directory
 # @return: None
 def write_file_paths(found_file_paths, repository_name, current_directory):
-	output_file_path = f"{current_directory}/metrics_data/{repository_name}/changes_files_list.txt"
+	output_file_path = f"{current_directory}/metrics_data/{repository_name}/track_files_list.txt"
 	print(f"{backgroundColors.GREEN}Writing found files to {backgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
 
 	# If the found file paths list is empty, return
@@ -76,22 +76,19 @@ def main():
 		if not os.path.isdir(search_directory):
 			print(f"{backgroundColors.RED}Directory {backgroundColors.CYAN}PyDriller/diffs/{repository_name}{backgroundColors.RED} does not exist{Style.RESET_ALL}")
 			continue
- 
-		# Initialize counters
-		file_counts = {name: 0 for name in TARGET_FILENAMES}
-	
-		# List to store found file paths
-		found_file_paths = []
-	
-		# Call the function to start the search
-		found_file_paths, file_counts = search_files(search_directory, file_counts, found_file_paths)
 
-		# Print the number of files found
-		for name, count in file_counts.items():
-			print(f"{backgroundColors.GREEN}Number of {backgroundColors.CYAN}{name} {backgroundColors.GREEN}files found in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: {backgroundColors.CYAN}{count}{Style.RESET_ALL}")
+		# Verify if the target file name is empty
+		if not TARGET_FILENAMES[repository_name]:
+			print(f"{backgroundColors.RED}Target file name for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} is empty{Style.RESET_ALL}")
+			continue
+
+		# Call the function to start the search
+		found_file_paths, file_counts = search_files(search_directory, TARGET_FILENAMES[repository_name])
+
+		print(f"{backgroundColors.GREEN}Number of {backgroundColors.CYAN}{TARGET_FILENAMES[repository_name]} {backgroundColors.GREEN}files found in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: {backgroundColors.CYAN}{file_counts}{Style.RESET_ALL}")
 
 		# Sort the file paths based on the numeric value
-		found_file_paths.sort(key=lambda path: int(re.search(r'zookeeper/(\d+)-', path).group(1)))
+		found_file_paths.sort(key=lambda path: int(re.search(rf"{repository_name}/(\d+)-", path).group(1)))
 
 		# Write the file paths to a text file
 		write_file_paths(found_file_paths, repository_name, current_directory)

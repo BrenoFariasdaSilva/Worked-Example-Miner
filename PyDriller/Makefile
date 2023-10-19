@@ -8,9 +8,6 @@ metrics_changes_script:
 
 # Auxiliar Scripts:
 
-changes_files_script:
-	chmod +x Scripts/changes_files.py; clear; time python3 Scripts/changes_files.py
-
 empty_folders_script:
 	chmod +x Scripts/empty_folders.py; clear; time python3 Scripts/empty_folders.py
 
@@ -22,6 +19,9 @@ generateZipFiles:
 
 moveExtractedFiles:
 	chmod +x Scripts/moveExtractedFiles.py; clear; time python3 Scripts/moveExtractedFiles.py
+
+track_files_script:
+	chmod +x Scripts/track_files.py; clear; time python3 Scripts/track_files.py
 	
 # Install Dependencies:
 
