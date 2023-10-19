@@ -44,6 +44,11 @@ def write_file_paths(found_file_paths, repository_name, current_directory):
 	output_file_path = f"{current_directory}/metrics_data/{repository_name}/changes_files_list.txt"
 	print(f"{backgroundColors.GREEN}Writing found files to {backgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
 
+	# If the found file paths list is empty, return
+	if not found_file_paths:
+		print(f"{backgroundColors.RED}No files found in {backgroundColors.CYAN}{repository_name}{Style.RESET_ALL}")
+		return
+
 	# Write the found file paths to a text file
 	with open(output_file_path, "w") as file:
 		found_files_count = len(found_file_paths)
