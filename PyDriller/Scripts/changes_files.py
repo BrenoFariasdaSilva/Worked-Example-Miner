@@ -16,21 +16,24 @@ TARGET_FILENAMES = ["CHANGES.txt.diff"]
 REPOSITORIES = ["commons-lang", "jabref", "kafka", "zookeeper"]
 
 # @brief: This function searches for files in the given directory
-# @param: directory - The directory to search in
+# @param: search_directory - The directory to search in
 # @param: file_counts - A dictionary to store the number of files found
 # @param: found_file_paths - A list to store the paths of the found files
-# @param: repository_name - The name of the repository
 # @return: found_file_paths - A list of the paths of the found files
 # @return: file_counts - A dictionary containing the number of files found
-def search_files(directory, file_counts, found_file_paths, repository_name):
-	for root, _, files in os.walk(directory):
+def search_files(search_directory, file_counts, found_file_paths):
+	# Walk through the directory
+	for root, _, files in os.walk(search_directory):
+		# Search for the target files
 		for file in files:
 			file_path = os.path.join(root, file)
+			# Check if the file is a target file
 			for target_name in TARGET_FILENAMES:
 				if file == target_name:
-					file_counts[target_name] += 1
-					found_file_paths.append(file_path)
-	return found_file_paths, file_counts
+					file_counts[target_name] += 1 # Increment the counter
+					found_file_paths.append(file_path) # Add the file path to the list
+					
+	return found_file_paths, file_counts # Return the list and the dictionary
 
 # @brief: This function writes the found file paths to a text file
 # @param: found_file_paths - A list of the paths of the found files
@@ -40,9 +43,13 @@ def search_files(directory, file_counts, found_file_paths, repository_name):
 def write_file_paths(found_file_paths, repository_name, current_directory):
 	output_file_path = f"{current_directory}/metrics_data/{repository_name}/changes_files_list.txt"
 	print(f"{backgroundColors.GREEN}Writing found files to {backgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
+
+	# Write the found file paths to a text file
 	with open(output_file_path, "w") as file:
 		found_files_count = len(found_file_paths)
 		file.write(f"Found files in PyDriller/diffs/{repository_name}: {found_files_count}\n")
+
+		# Write the file paths to the text file
 		for path in found_file_paths:
 			file.write(f"{path}\n")
 
@@ -72,9 +79,9 @@ def main():
 		found_file_paths = []
 	
 		# Call the function to start the search
-		found_file_paths, file_counts = search_files(search_directory, file_counts, found_file_paths, repository_name)
+		found_file_paths, file_counts = search_files(search_directory, file_counts, found_file_paths)
 
-		# Print the counts
+		# Print the number of files found
 		for name, count in file_counts.items():
 			print(f"{backgroundColors.GREEN}Number of {backgroundColors.CYAN}{name} {backgroundColors.GREEN}files found in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: {backgroundColors.CYAN}{count}{Style.RESET_ALL}")
 
