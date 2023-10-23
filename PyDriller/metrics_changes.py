@@ -316,11 +316,11 @@ def verify_file(file_path):
 # @brief: This function verifies if the class or method has had a substantial decrease in the current metric
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: class_name: The class name of the current linear regression
-# @param: variable_attribute: The variable attribute (class type or method name) of the current linear regression
+# @param: raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 # @param: metric_name: The name of the metric
 # @param: repository_name: The name of the repository
 # @return: None
-def verify_substantial_metric_decrease(metrics, class_name, variable_attribute, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics, class_name, raw_variable_attribute, metric_name, repository_name):
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/"
 	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME}"
 
@@ -349,15 +349,16 @@ def verify_substantial_metric_decrease(metrics, class_name, variable_attribute, 
 	if biggest_change[2] > DESIRED_DECREASED:
 		with open(f"{csv_filename}", "a") as csvfile:
 			writer = csv.writer(csvfile)
-			writer.writerow([class_name, variable_attribute, biggest_change[0], biggest_change[1], biggest_change[2]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], biggest_change[2]])
 	 
 # @brief: Perform linear regression on the given metrics and save the plot to a PNG file
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: class_name: The class name of the current linear regression
 # @param: variable_attribute: The variable attribute (class type or method name) of the current linear regression
+# @param: raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 # @param: repository_name: The name of the repository
 # @return: None
-def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
+def linear_regression_graphics(metrics, class_name, variable_attribute, raw_variable_attribute, repository_name):
 	# Check for empty metrics list
 	if not metrics:
 		# print(f"{backgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
@@ -376,7 +377,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 
 		# For the CBO metric, check if there occurred any substantial decrease in the metric
 		if key == SUBSTANTIAL_CHANGE_METRIC:
-			verify_substantial_metric_decrease(y, class_name, variable_attribute, key, repository_name)
+			verify_substantial_metric_decrease(y, class_name, raw_variable_attribute, key, repository_name)
 			
 		# Check for sufficient data points for regression
 		if len(x) < 2 or len(y) < 2:
@@ -433,7 +434,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				for i in range(metrics_len):
 					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2]])
 
-			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) # Perform linear regression on the metrics
+			linear_regression_graphics(metrics, class_name, variable_attribute, identifier.split(" ")[1], repository_name) # Perform linear regression on the metrics
 			progress_bar.update(1) # Update the progress bar
 
 # @brief: Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
