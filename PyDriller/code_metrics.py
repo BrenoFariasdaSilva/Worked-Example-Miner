@@ -240,8 +240,9 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
 # @brief: This function gets the last execution progress of the repository
 # @param: repository_name: Name of the repository to be analyzed
 # @param: saved_progress_file: Name of the file that contains the saved progress
+# @param: number_of_commits: Number of commits to be analyzed
 # @return: The commit hashes and the last commit
-def get_last_execution_progress(repository_name, saved_progress_file):
+def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    commit_hashes = [] # The commit hashes list
    last_commit_number = 0 # The last commit number
 
@@ -266,7 +267,11 @@ def get_last_execution_progress(repository_name, saved_progress_file):
                current_tuple = (line.split(',')[1], line.split(',')[2], line.split(',')[3])
                last_commit_hash = line.split(',')[1]
                commit_hashes.append(current_tuple)
-            print(f"{backgroundColors.GREEN}Resuming the execution of the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository from commit {backgroundColors.CYAN}{last_commit_number}º {last_commit_hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
+            percentage_progress = round((last_commit_number / number_of_commits) * 100, 2)
+            print(f"{backgroundColors.GREEN}{backgroundColors.CYAN}{repository_name.capitalize()}{backgroundColors.GREEN} stopped executing in {backgroundColors.CYAN}{percentage_progress}%{backgroundColors.GREEN} of it's progress in the {backgroundColors.CYAN}{last_commit_number}º{backgroundColors.GREEN} commit: {backgroundColors.CYAN}{last_commit_hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
+            execution_time = f"Estimated time for running the remaining iterations in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: {Style.RESET_ALL}"
+            output_time(execution_time, round((ITERATIONS_DURATION[repository_name] * (number_of_commits - last_commit_number)), 2))
+            
    else: # If there is no saved progress file, create one and write the header
       with open(saved_progress_file, 'w') as progress_file:
          progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
@@ -303,7 +308,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    saved_progress_file = f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv"
 
    # Get the last execution progress of the repository
-   commit_hashes, last_commit = get_last_execution_progress(repository_name, saved_progress_file)
+   commit_hashes, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
 
    # Create a progress bar with the total number of commits
    with tqdm(total=number_of_commits-last_commit, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}") as pbar:
