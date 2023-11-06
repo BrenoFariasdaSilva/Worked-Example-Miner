@@ -114,7 +114,7 @@ def update_repository(repository_name):
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
+   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + "/" + repository_name
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
@@ -248,24 +248,24 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
 
    # Check if there is a saved progress file
    if os.path.exists(saved_progress_file):
-      with open(saved_progress_file, 'r') as progress_file:
+      with open(saved_progress_file, "r") as progress_file:
          lines = progress_file.readlines()
          # remove the last two lines
          lines = lines[:-2]
          # Clear the saved progress file
-         with open(saved_progress_file, 'w') as progress_file:
+         with open(saved_progress_file, "w") as progress_file:
             progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
          # If it only has one line, then it is just the header
          if len(lines) > 3:
-            last_commit_number = int(lines[-1].split(',')[0])
+            last_commit_number = int(lines[-1].split(",")[0])
             last_commit_hash = 0
-            with open(saved_progress_file, 'w') as progress_file:
+            with open(saved_progress_file, "w") as progress_file:
                for line in lines:
                   progress_file.write(line)
             # Fill the commit_hashes list with the commits that were already processed
             for line in lines[1:]:
-               current_tuple = (line.split(',')[1], line.split(',')[2], line.split(',')[3])
-               last_commit_hash = line.split(',')[1]
+               current_tuple = (line.split(",")[1], line.split(",")[2], line.split(",")[3])
+               last_commit_hash = line.split(",")[1]
                commit_hashes.append(current_tuple)
             percentage_progress = round((last_commit_number / number_of_commits) * 100, 2)
             print(f"{backgroundColors.GREEN}{backgroundColors.CYAN}{repository_name.capitalize()}{backgroundColors.GREEN} stopped executing in {backgroundColors.CYAN}{percentage_progress}%{backgroundColors.GREEN} of it's progress in the {backgroundColors.CYAN}{last_commit_number}º{backgroundColors.GREEN} commit: {backgroundColors.CYAN}{last_commit_hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
@@ -273,7 +273,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
             output_time(execution_time, round((ITERATIONS_DURATION[repository_name] * (number_of_commits - last_commit_number)), 2))
             
    else: # If there is no saved progress file, create one and write the header
-      with open(saved_progress_file, 'w') as progress_file:
+      with open(saved_progress_file, "w") as progress_file:
          progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
 
    return commit_hashes, last_commit_number
@@ -318,7 +318,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             pbar.update(1)
             continue
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
-         current_tuple = (f"{i}-{commit.hash}", commit.msg.split('\n')[0], commit.committer_date)
+         current_tuple = (f"{i}-{commit.hash}", commit.msg.split("\n")[0], commit.committer_date)
          commit_hashes.append(current_tuple)
 
          # Save the diff of the modified files of the current commit
@@ -347,7 +347,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
          # Append the commit hash, commit message and commit date to the progress file
-         with open(saved_progress_file, 'a') as progress_file:
+         with open(saved_progress_file, "a") as progress_file:
             progress_file.write(f"{i},{commit.hash},{current_tuple[1]},{current_tuple[2]}\n")
 
          i += 1
@@ -367,7 +367,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 # @return: None
 def write_commit_hashes_to_csv(repository_name, commit_hashes):
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
-   with open(file_path, "w", newline='') as csv_file:
+   with open(file_path, "w", newline="") as csv_file:
       writer = csv.writer(csv_file)
       # Write the header
       writer.writerow(["Commit Hash", "Commit Message", "Commit Date"])
@@ -409,5 +409,5 @@ def main():
    process_repositories_concurrently()
 
 # Directly run the main function if the script is executed
-if __name__ == '__main__':
+if __name__ == "__main__":
    main() # Run the main function
