@@ -42,7 +42,7 @@ RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progre
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
 # Default values:
-DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
+DEFAULT_REPOSITORIES = {"jabref": "https://github.com/JabRef/jabref"} # The default repositories to be analyzed
 COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
 ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
 FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
@@ -311,7 +311,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    commit_hashes, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits-last_commit, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}") as pbar:
+   with tqdm(total=number_of_commits-last_commit, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url).traverse_commits():
          if i < last_commit:
             i += 1
