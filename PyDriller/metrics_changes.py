@@ -537,6 +537,6 @@ def main():
 
 	process_all_repositories() # Process all the repositories
 		
-# Directive to run the main function
-if __name__ == "__main__":
-	main() # Call the main function
+# This is the standard boilerplate that calls the main() function.
+if __name__ == '__main__':
+   main() # Call the main function
