@@ -8,6 +8,7 @@ class backgroundColors: # Colors for the terminal
 	GREEN = "\033[92m" # Green
 	YELLOW = "\033[93m" # Yellow
 	RED = "\033[91m" # Red
+	CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
 # List of target file names
 TARGET_FILENAMES = {"commons-lang": "", "jabref": "", "kafka": "", "zookeeper": "CHANGES.txt.diff"}
@@ -47,16 +48,16 @@ def write_file_paths(found_file_paths, repository_name, current_directory):
 	# If the found file paths list is empty, return
 	if not found_file_paths:
 		print(f"{backgroundColors.RED}No files found in {backgroundColors.CYAN}{repository_name}{Style.RESET_ALL}")
-		return
+		return # Exit the function
 
 	# Write the found file paths to a text file
 	with open(output_file_path, "w") as file:
 		found_files_count = len(found_file_paths)
 		file.write(f"Found files in PyDriller/diffs/{repository_name}: {found_files_count}\n")
 
-		# Write the file paths to the text file
+		# For each file path in the list
 		for path in found_file_paths:
-			file.write(f"{path}\n")
+			file.write(f"{path}\n") # Write the file path to the text file
 
 # @brief: This is the main function
 # @param: None
