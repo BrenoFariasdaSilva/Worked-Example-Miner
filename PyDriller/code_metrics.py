@@ -11,7 +11,7 @@ from pydriller import Repository # PyDriller is a Python framework that helps de
 from tqdm import tqdm # For Generating the Progress Bars
 
 # Macros:
-class backgroundColors: # Colors for the terminal
+class BackgroundColors: # Colors for the terminal
    CYAN = "\033[96m" # Cyan
    GREEN = "\033[92m" # Green
    YELLOW = "\033[93m" # Yellow
@@ -69,7 +69,7 @@ def process_repositories_concurrently():
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
-      estimated_time_string = f"Estimated time for running all of the iterations for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+      estimated_time_string = f"Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
       output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * COMMITS_NUMBER[repository_name]), 2))
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
       threads.append(thread) # Append the thread to the threads list
@@ -86,7 +86,7 @@ def process_repositories_concurrently():
 def process_repository(repository_name, repository_url):
    # Verify if the metrics were already calculated
    if verify_ck_metrics_folder(repository_name):
-      print(f"{backgroundColors.GREEN}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
       return
 
    # Create the ck metrics directory
@@ -133,12 +133,12 @@ def clone_repository(repository_name, repository_url):
       update_repository(repository_name) # Update the repository
       return
    else:
-      print(f"{backgroundColors.GREEN}Cloning the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
       # Create a thread to clone the repository
       thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
-      print(f"{backgroundColors.GREEN}Successfully cloned the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}Successfully cloned the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository{Style.RESET_ALL}")
 
 # @brief: Create a directory
 # @param: full_directory_name: Name of the directory to be created
@@ -150,7 +150,7 @@ def create_directory(full_directory_name, relative_directory_name):
    try: # Try to create the directory
       os.makedirs(full_directory_name)
    except OSError: # If the directory cannot be created
-      print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
 # @brief: This verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder
 # @param: repository_name: Name of the repository to be analyzed
@@ -226,7 +226,7 @@ def output_time(output_string, time):
       time_value = time / TIME_UNITS[2]
 
    rounded_time = round(time_value, 2)
-   print(f"{backgroundColors.GREEN}{output_string}{backgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
 # @brief: This function outputs the execution time of the CK metrics generator
 # @param: first_iteration_duration: Duration of the first iteration
@@ -235,9 +235,9 @@ def output_time(output_string, time):
 # @param: repository_name: Name of the repository to be analyzed
 # @return: None
 def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
-   estimated_time_string = f"Estimated time for running all the of the iterations in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+   estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2))
-   time_taken_string = f"Time taken to generate CK metrics for {backgroundColors.CYAN}{number_of_commits}{backgroundColors.GREEN} commits in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository: "
+   time_taken_string = f"Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
    output_time(time_taken_string, round(elapsed_time, 2))
 
 # @brief: This function gets the last execution progress of the repository
@@ -271,8 +271,8 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
                last_commit_hash = line.split(",")[1]
                commit_hashes.append(current_tuple)
             percentage_progress = round((last_commit_number / number_of_commits) * 100, 2)
-            print(f"{backgroundColors.GREEN}{backgroundColors.CYAN}{repository_name.capitalize()}{backgroundColors.GREEN} stopped executing in {backgroundColors.CYAN}{percentage_progress}%{backgroundColors.GREEN} of it's progress in the {backgroundColors.CYAN}{last_commit_number}º{backgroundColors.GREEN} commit: {backgroundColors.CYAN}{last_commit_hash}{backgroundColors.GREEN}.{Style.RESET_ALL}")
-            execution_time = f"Estimated time for running the remaining iterations in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: {Style.RESET_ALL}"
+            print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+            execution_time = f"Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
             output_time(execution_time, round((ITERATIONS_DURATION[repository_name] * (number_of_commits - last_commit_number)), 2))
             
    else: # If there is no saved progress file, create one and write the header
@@ -314,7 +314,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    commit_hashes, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits-last_commit, unit=f" {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} commits{Style.RESET_ALL}", unit_scale=True) as pbar:
+   with tqdm(total=number_of_commits-last_commit, unit=f" {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commits{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url).traverse_commits():
          if i < last_commit:
             i += 1
@@ -385,9 +385,9 @@ def play_sound():
 		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
 			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
 		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
 	else: # if the sound file does not exist
-		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+		print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
@@ -398,16 +398,16 @@ atexit.register(play_sound)
 def main():
    # Verify if the path constants contains whitespaces
    if path_contains_whitespaces():
-      print(f"{backgroundColors.RED}The {START_PATH} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
+      print(f"{BackgroundColors.RED}The {START_PATH} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return
    
    # Verify if the CK JAR file exists
    if not os.path.exists(FULL_CK_JAR_PATH):
-      print(f"{backgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {backgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{backgroundColors.RED}.{Style.RESET_ALL}")
+      print(f"{BackgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{BackgroundColors.RED}.{Style.RESET_ALL}")
       return
 
-   print(f"{backgroundColors.GREEN}This script will process the repositories: {backgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{backgroundColors.GREEN} concurrently.{Style.RESET_ALL}")
-   print(f"{backgroundColors.GREEN}The files that this script will generate are the {backgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{backgroundColors.GREEN}.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} concurrently.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    
    process_repositories_concurrently()
 

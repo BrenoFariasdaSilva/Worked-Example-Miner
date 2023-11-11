@@ -7,7 +7,7 @@ import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 
 # Macros:
-class backgroundColors: # Colors for the terminal
+class BackgroundColors: # Colors for the terminal
    CYAN = "\033[96m" # Cyan
    GREEN = "\033[92m" # Green
    YELLOW = "\033[93m" # Yellow
@@ -66,7 +66,7 @@ def verify_refactorings():
       if not os.path.isfile(json_repository_filepath):
          refactorings[repository_name] = repository_url # Add the repository to the refactorings dictionary
       else:
-         print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}Refactorings{backgroundColors.GREEN} for the {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository were already generated.{Style.RESET_ALL}")
+         print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository were already generated.{Style.RESET_ALL}")
    return refactorings # Return the refactorings dictionary
 
 # @brief: Create a directory
@@ -79,7 +79,7 @@ def create_directory(full_directory_name, relative_directory_name):
    try: # Try to create the directory
       os.makedirs(full_directory_name)
    except OSError: # If the directory cannot be created
-      print(f"{backgroundColors.GREEN}The creation of the {backgroundColors.CYAN}{relative_directory_name}{backgroundColors.GREEN} directory failed{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
 # @brief: This function is used to process each repositorie name concurrently, using threads
 # @param: repositories: The repositories dictionary to be analyzed
@@ -88,7 +88,7 @@ def process_repositories_concurrently(repositories):
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in repositories.items():
-      estimated_time_string = f"{backgroundColors.GREEN}Estimated time for {backgroundColors.CYAN}generating the refactoring{backgroundColors.GREEN} for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+      estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for {BackgroundColors.CYAN}generating the refactoring{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
       output_time(estimated_time_string, round((COMMITS_NUMBER[repository_name]/(ITERATIONS_PER_SECOND[repository_name])), 2))
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
       threads.append(thread) # Append the thread to the threads list
@@ -114,7 +114,7 @@ def process_repository(repository_name, repository_url):
    end_time = time.time() # Get the end time
 
    # Output the time needed to generate the JSON files for the repository
-   output_string = f"{backgroundColors.GREEN}Time needed to {backgroundColors.CYAN}generate the JSON files {backgroundColors.GREEN}for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+   output_string = f"{BackgroundColors.GREEN}Time needed to {BackgroundColors.CYAN}generate the JSON files {BackgroundColors.GREEN}for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
    
 # @brief: Clone the repository to the repository directory
@@ -175,7 +175,7 @@ def output_time(output_string, time):
       time_value = time / TIME_UNITS[2]
 
    rounded_time = round(time_value, 2)
-   print(f"{output_string}{backgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
+   print(f"{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
 # @brief: This function defines the command to play a sound when the program finishes
 # @param: None
@@ -185,9 +185,9 @@ def play_sound():
 		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
 			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
 		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{backgroundColors.RED}The {backgroundColors.CYAN}platform.system(){backgroundColors.RED} is not in the {backgroundColors.CYAN}SOUND_COMMANDS dictionary{backgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
 	else: # if the sound file does not exist
-		print(f"{backgroundColors.RED}Sound file {backgroundColors.CYAN}{SOUND_FILE}{backgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+		print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
@@ -196,14 +196,14 @@ atexit.register(play_sound)
 def main():
    # Verify if the path contains whitespaces
    if path_contains_whitespaces():
-      print(f"{backgroundColors.RED}The {backgroundColors.CYAN}{START_PATH}{backgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return
       
    repositories = verify_refactorings() # Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
    if not repositories:
       return
    
-   print(f"{backgroundColors.GREEN}This script will {backgroundColors.CYAN}generate de refactors{backgroundColors.GREEN} using {backgroundColors.CYAN}RefactoringMiner{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(repositories.keys())}{backgroundColors.GREEN} repositories.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate de refactors{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 
    # Create the json directory
    create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORY_REFACTORS_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORY_REFACTORS_DIRECTORY_PATH}")
@@ -213,7 +213,7 @@ def main():
    # Process the repositories concurrently
    process_repositories_concurrently(repositories)
 
-   print(f"{backgroundColors.GREEN}The {backgroundColors.CYAN}refactors{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(repositories.keys())}{backgroundColors.GREEN} repositories were generated.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}refactors{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories were generated.{Style.RESET_ALL}")
     
 # Directly run the main function if the script is executed
 if __name__ == '__main__':

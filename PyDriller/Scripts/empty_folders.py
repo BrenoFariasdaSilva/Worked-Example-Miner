@@ -2,7 +2,7 @@ import os # This module provides a portable way of using operating system depend
 from colorama import Style # Colorama is a Python library for printing colored text and stylizing terminal output.
 
 # Macros:
-class backgroundColors: # Colors for the terminal
+class BackgroundColors: # Colors for the terminal
 	CYAN = "\033[96m" # Cyan
 	GREEN = "\033[92m" # Green
 	YELLOW = "\033[93m" # Yellow
@@ -35,8 +35,8 @@ def search_empty_folders(directory):
 # @param: None
 # @return: None
 def main():
-	print(f"{backgroundColors.GREEN}Current working directory: {backgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
-	initial_directory = input(f"{backgroundColors.GREEN}Enter the initial directory {backgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
+	print(f"{BackgroundColors.GREEN}Current working directory: {BackgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
+	initial_directory = input(f"{BackgroundColors.GREEN}Enter the initial directory {BackgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
 	print(f"")
 
 	if initial_directory.lower() == "default":
@@ -44,18 +44,18 @@ def main():
 	
 	for directory in initial_directory:
 		if not os.path.isdir(directory):
-			print(f"{backgroundColors.RED}Invalid directory path: {backgroundColors.CYAN}{directory}{Style.RESET_ALL}")
+			print(f"{BackgroundColors.RED}Invalid directory path: {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
 			continue
 
 		empty_folders = search_empty_folders(directory)
 		if empty_folders:
-			print(f"{backgroundColors.GREEN}Empty folders found in {backgroundColors.CYAN}{directory}{backgroundColors.GREEN}:{Style.RESET_ALL}")
+			print(f"{BackgroundColors.GREEN}Empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}:{Style.RESET_ALL}")
 			for folder in empty_folders:
-				print(f"{backgroundColors.CYAN}{folder}{Style.RESET_ALL}")
-			print(f"{backgroundColors.GREEN}Total empty folders found in {backgroundColors.CYAN}{directory}{backgroundColors.GREEN}: {backgroundColors.CYAN}{len(empty_folders)}{Style.RESET_ALL}")
+				print(f"{BackgroundColors.CYAN}{folder}{Style.RESET_ALL}")
+			print(f"{BackgroundColors.GREEN}Total empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}: {BackgroundColors.CYAN}{len(empty_folders)}{Style.RESET_ALL}")
 			print(f"")
 		else:
-			print(f"{backgroundColors.GREEN}No empty folders found in {backgroundColors.CYAN}{directory}{backgroundColors.GREEN}.{Style.RESET_ALL}")
+			print(f"{BackgroundColors.GREEN}No empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 # This is the standard boilerplate that calls the main() function.
 if __name__ == "__main__":

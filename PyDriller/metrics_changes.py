@@ -11,12 +11,12 @@ from sklearn.linear_model import LinearRegression # for the linear regression
 from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
-from code_metrics import backgroundColors # For coloring the terminal outputs
+from code_metrics import BackgroundColors # For coloring the terminal outputs
 from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH # Importing constants from the code_metrics.py file
 from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
 
 # CONSTANTS:
-PROCESS_CLASSES = input(f"{backgroundColors.GREEN}Do you want to process the {backgroundColors.CYAN}class.csv{backgroundColors.GREEN} file {backgroundColors.RED}(True/False){backgroundColors.GREEN}? {Style.RESET_ALL}") == "True" # If True, then process the method.csv file. If False, then process the class.csv file
+PROCESS_CLASSES = input(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}") == "True" # If True, then process the method.csv file. If False, then process the class.csv file
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASED = 0.20 # The desired decreased in the metric
@@ -50,7 +50,7 @@ FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICT
 def process_all_repositories():
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"")
-		print(f"{backgroundColors.GREEN}Processing the {backgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN} repository...{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name) # Process the current repository
 		print(f"------------------------------------------------------------")
 
@@ -63,7 +63,7 @@ def process_repository(repository_name):
 
 	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
 	if not verify_ck_metrics_folder(repository_name):
-		print(f"{backgroundColors.RED}The metrics for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} were not calculated. Please run the {backgroundColors.CYAN}code_metrics.py{backgroundColors.RED} file first{Style.RESET_ALL}")
+		print(f"{BackgroundColors.RED}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} were not calculated. Please run the {BackgroundColors.CYAN}code_metrics.py{BackgroundColors.RED} file first{Style.RESET_ALL}")
 		return
 
 	# Get the directory path for the specified repository name
@@ -101,7 +101,7 @@ def process_repository(repository_name):
 
 	# Output the elapsed time to process this repository
 	elapsed_time = time.time() - start_time
-	elapsed_time_string = f"Time taken to generate the {backgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{CLASSES_OR_METHODS}{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: "
+	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2))
 
 # @brief: Gets the path to the directory of the CK metrics related to the repository
@@ -251,7 +251,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	commit_dict = generate_commit_dict(repository_name) # A dictionary containing the commit hashes as keys and the commit objects as values
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
-	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {backgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
+	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path):
 			# Sort the subdirectories in ascending order by the substring that comes before the "-"
 			subdirs.sort(key=lambda x: int(x.split("-")[0]))
@@ -361,12 +361,12 @@ def verify_substantial_metric_decrease(metrics, class_name, raw_variable_attribu
 def linear_regression_graphics(metrics, class_name, variable_attribute, raw_variable_attribute, repository_name):
 	# Check for empty metrics list
 	if not metrics:
-		# print(f"{backgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
+		# print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
 		return
 
 	# Check for invalid values in the metrics
 	if np.isnan(metrics).any() or np.isinf(metrics).any():
-		print(f"{backgroundColors.RED}Metrics list for {class_name} {variable_attribute} contains invalid values!{Style.RESET_ALL}")
+		print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} contains invalid values!{Style.RESET_ALL}")
 		return
 	
 	# Loop through the metrics_position dictionary
@@ -412,7 +412,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, raw_vari
 # @return: None
 def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 	# For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
-	with tqdm(total=len(metrics_track_record), unit=f" {backgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar:
+	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar:
 		for identifier, record in metrics_track_record.items():
 			metrics = record["metrics"]
 			class_name = identifier.split(' ')[0] # Get the identifier which is currently the class name
@@ -477,7 +477,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
 
 		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
-		with tqdm(total=len(metrics_track_record), unit=f" {backgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
+		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
 			for identifier, metrics in metrics_track_record.items():
 				# check if the metrics changes is greater than the minimum changes
 				if metrics["changed"] < MINIMUM_CHANGES:
@@ -501,7 +501,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 # @param: repository_name: The name of the repository
 # @return: None
 def sort_csv_by_changes(repository_name):
-	# print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}metrics statistics files{backgroundColors.GREEN} by the {backgroundColors.CYAN}number of changes{backgroundColors.GREEN}.{Style.RESET_ALL}")
+	# print(f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}metrics statistics files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}number of changes{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}")
 	# Sort the csv file by the number of changes
@@ -513,7 +513,7 @@ def sort_csv_by_changes(repository_name):
 # @param: repository_name: The name of the repository
 # @return: None
 def sort_csv_by_percentual_variation(repository_name):
-	# print(f"{backgroundColors.GREEN}Sorting the {backgroundColors.CYAN}interesting changes files{backgroundColors.GREEN} by the {backgroundColors.CYAN}percentual variation of the metric{backgroundColors.GREEN}.{Style.RESET_ALL}")
+	# print(f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}")
 	# Sort the csv file by the percentual variation of the metric
@@ -530,10 +530,10 @@ atexit.register(play_sound)
 def main():
 	# Check if the path constants contains whitespaces
 	if path_contains_whitespaces():
-		print(f"{backgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
+		print(f"{BackgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return
 
-	print(f"{backgroundColors.GREEN}This script generates the {backgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression{backgroundColors.GREEN} for the {backgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{backgroundColors.GREEN} repositories.{Style.RESET_ALL}")
+	print(f"{BackgroundColors.GREEN}This script generates the {BackgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 
 	process_all_repositories() # Process all the repositories
 		

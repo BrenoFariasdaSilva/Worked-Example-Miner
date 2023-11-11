@@ -3,7 +3,7 @@ import re # Regular expression operations module
 from colorama import Style # Colorama is a Python library for printing colored text and stylizing terminal output.
 
 # Macros:
-class backgroundColors: # Colors for the terminal
+class BackgroundColors: # Colors for the terminal
 	CYAN = "\033[96m" # Cyan
 	GREEN = "\033[92m" # Green
 	YELLOW = "\033[93m" # Yellow
@@ -45,11 +45,11 @@ def search_files(search_directory, search_string):
 # @return: None
 def write_file_paths(found_file_paths, repository_name, current_directory):
 	output_file_path = f"{current_directory}/metrics_data/{repository_name}/track_files_list.txt"
-	print(f"{backgroundColors.GREEN}Writing found files to {backgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
+	print(f"{BackgroundColors.GREEN}Writing found files to {BackgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
 
 	# If the found file paths list is empty, return
 	if not found_file_paths:
-		print(f"{backgroundColors.RED}No files found in {backgroundColors.CYAN}{repository_name}{Style.RESET_ALL}")
+		print(f"{BackgroundColors.RED}No files found in {BackgroundColors.CYAN}{repository_name}{Style.RESET_ALL}")
 		return # Exit the function
 
 	# Write the found file paths to a text file
@@ -70,25 +70,25 @@ def main():
 
 	# Search directories
 	for repository_name in REPOSITORIES:
-		print(f"{backgroundColors.GREEN}Searching for {backgroundColors.CYAN}changes files{backgroundColors.GREEN} in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}...{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Searching for {BackgroundColors.CYAN}changes files{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 
 		# Set the search directory
 		search_directory = os.path.join(current_directory, "diffs", repository_name)
 
 		# Verify if the search directory exists
 		if not os.path.isdir(search_directory):
-			print(f"{backgroundColors.RED}Directory {backgroundColors.CYAN}PyDriller/diffs/{repository_name}{backgroundColors.RED} does not exist{Style.RESET_ALL}")
+			print(f"{BackgroundColors.RED}Directory {BackgroundColors.CYAN}PyDriller/diffs/{repository_name}{BackgroundColors.RED} does not exist{Style.RESET_ALL}")
 			continue
 
 		# Verify if the target file name is empty
 		if not TARGET_FILENAMES[repository_name]:
-			print(f"{backgroundColors.RED}Target file name for {backgroundColors.CYAN}{repository_name}{backgroundColors.RED} is empty{Style.RESET_ALL}")
+			print(f"{BackgroundColors.RED}Target file name for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} is empty{Style.RESET_ALL}")
 			continue
 
 		# Call the function to start the search
 		found_file_paths, file_counts = search_files(search_directory, TARGET_FILENAMES[repository_name])
 
-		print(f"{backgroundColors.GREEN}Number of {backgroundColors.CYAN}{TARGET_FILENAMES[repository_name]} {backgroundColors.GREEN}files found in {backgroundColors.CYAN}{repository_name}{backgroundColors.GREEN}: {backgroundColors.CYAN}{file_counts}{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Number of {BackgroundColors.CYAN}{TARGET_FILENAMES[repository_name]} {BackgroundColors.GREEN}files found in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {BackgroundColors.CYAN}{file_counts}{Style.RESET_ALL}")
 
 		# Sort the file paths based on the numeric value
 		found_file_paths.sort(key=lambda path: int(re.search(rf"{repository_name}/(\d+)-", path).group(1)))
