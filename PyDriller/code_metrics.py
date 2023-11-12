@@ -24,7 +24,7 @@ class BackgroundColors: # Colors for the terminal
 START_PATH = os.getcwd() # Get the current working directory
         
 # Constants:
-SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
+SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} 
 SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
 
 # Extensions:
@@ -377,9 +377,7 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
       # Write the commit hashes
       writer.writerows(commit_hashes)
 
-# @brief: This function defines the command to play a sound when the program finishes
-# @param: None
-# @return: None
+This function defines the command to play a sound when the program finishes
 def play_sound():
 	if os.path.exists(SOUND_FILE):
 		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
