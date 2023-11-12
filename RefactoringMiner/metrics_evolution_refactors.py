@@ -213,7 +213,7 @@ def output_time(output_string, time):
    rounded_time = round(time_value, 2)
    print(f"{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
-This function defines the command to play a sound when the program finishes
+# This function defines the command to play a sound when the program finishes
 def play_sound():
 	if os.path.exists(SOUND_FILE):
 		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
@@ -243,6 +243,6 @@ def main():
    # Process the repository
    process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])
     
-# Directly run the main function if the script is executed
+# This is the standard boilerplate that calls the main() function.
 if __name__ == '__main__':
-   main() # Run the main function
+   main() # Call the main function

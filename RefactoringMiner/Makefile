@@ -5,7 +5,7 @@ metrics_evolution_refactors_script:
 	clear; time python3 metrics_evolution_refactors.py
 
 dependencies:
-	pip install atexit
+	pip install
 	pip install colorama
 	pip install pandas
 	pip install pydriller

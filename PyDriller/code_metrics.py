@@ -377,7 +377,7 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
       # Write the commit hashes
       writer.writerows(commit_hashes)
 
-This function defines the command to play a sound when the program finishes
+# This function defines the command to play a sound when the program finishes
 def play_sound():
 	if os.path.exists(SOUND_FILE):
 		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
@@ -408,7 +408,7 @@ def main():
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    
    process_repositories_concurrently()
-
-# Directly run the main function if the script is executed
-if __name__ == "__main__":
-   main() # Run the main function
+		
+# This is the standard boilerplate that calls the main() function.
+if __name__ == '__main__':
+   main() # Call the main function

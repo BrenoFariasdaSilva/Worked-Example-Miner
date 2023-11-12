@@ -26,7 +26,7 @@ track_files_script:
 # Install Dependencies:
 
 dependencies:
-	pip install atexit
+	pip install
 	pip install colorama
 	pip install matplotlib
 	pip install numpy
