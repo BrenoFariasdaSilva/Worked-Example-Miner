@@ -1,5 +1,4 @@
 # Main Scripts:
-
 code_metrics_script:
 	clear; time python3 code_metrics.py
 
@@ -7,7 +6,6 @@ metrics_changes_script:
 	clear; time python3 metrics_changes.py
 
 # Auxiliar Scripts:
-
 empty_folders_script:
 	clear; time python3 Scripts/empty_folders.py
 
@@ -24,7 +22,6 @@ track_files_script:
 	clear; time python3 Scripts/track_files.py
 	
 # Install Dependencies:
-
 dependencies:
 	pip install colorama
 	pip install matplotlib
