@@ -1,3 +1,5 @@
+# @TODO: Line 323, function verify_substantial_metric_decrease, add the step (commit number and commit id) where the substantial decrease occurred
+
 import atexit # For playing a sound when the program finishes
 import csv # for reading csv files
 import matplotlib.pyplot as plt # for plotting the graphs
