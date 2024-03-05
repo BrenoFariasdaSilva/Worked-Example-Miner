@@ -1,5 +1,6 @@
-# @TODO: Line 323, function verify_substantial_metric_decrease, add the step (commit number and commit id) where the substantial decrease occurred
+# @TODO: Line 250, comment and explain what the metrics_track_record dictionary do and what it contains, as well as how it is structured.
 # @TODO: Line 378, rename the x and y variables to a more meaningful name: (metrics_qtde, metrics_values)?
+# @TODO: Line 323, function verify_substantial_metric_decrease, add the step (commit number and commit id) where the substantial decrease occurred.
 
 import atexit # For playing a sound when the program finishes
 import csv # for reading csv files
