@@ -1,4 +1,3 @@
-# @TODO: Line 250, comment and explain what the metrics_track_record dictionary do and what it contains, as well as how it is structured.
 # @TODO: Line 378, rename the x and y variables to a more meaningful name: (metrics_qtde, metrics_values)?
 # @TODO: Line 323, function verify_substantial_metric_decrease, add the step (commit number and commit id) where the substantial decrease occurred.
 
@@ -248,7 +247,7 @@ def generate_commit_dict(repository_name):
 # @param repository_name: The name of the repository
 # @return: A dictionary containing the metrics of each class and method combination
 def traverse_directory(repository_name, repository_ck_metrics_path):
-	metrics_track_record = {}
+	metrics_track_record = {} # Dictionary containing the track record of the metrics of each method nor class. The key is the identifier and the value is a dictionary containing the metrics, commit hashes and the number of times the metrics changed.
 	file_count = 0
 	progress_bar = None
 
