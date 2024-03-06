@@ -1,4 +1,3 @@
-# @TODO: Line 378, rename the x and y variables to a more meaningful name: (metrics_qtde, metrics_values)?
 # @TODO: Line 323, function verify_substantial_metric_decrease, add the step (commit number and commit id) where the substantial decrease occurred.
 
 import atexit # For playing a sound when the program finishes
@@ -323,7 +322,7 @@ def verify_file(file_path):
 # @param: metric_name: The name of the metric
 # @param: repository_name: The name of the repository
 # @return: None
-def verify_substantial_metric_decrease(metrics, class_name, raw_variable_attribute, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, metric_name, repository_name):
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/"
 	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME}"
 
@@ -339,14 +338,14 @@ def verify_substantial_metric_decrease(metrics, class_name, raw_variable_attribu
 	biggest_change = [0, 0, 0.0] # The biggest change values in the metric
 
 	# Check if the current metric decreased by more than DESIRED_DECREASED in any commit
-	for i in range(1, len(metrics)):
-		if metrics[i] >= metrics[i - 1] or metrics[i - 1] == 0:
+	for i in range(1, len(metrics_values)):
+		if metrics_values[i] >= metrics_values[i - 1] or metrics_values[i - 1] == 0:
 			continue
 
-		current_percentual_variation = round((metrics[i - 1] - metrics[i]) / metrics[i - 1], 3)
+		current_percentual_variation = round((metrics_values[i - 1] - metrics_values[i]) / metrics_values[i - 1], 3)
 		# If the current percentual variation is bigger than the desired decreased, then update the biggest_change list
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
-			biggest_change = [metrics[i - 1], metrics[i], current_percentual_variation]
+			biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation]
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
@@ -375,26 +374,26 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, raw_vari
 	# Loop through the metrics_position dictionary
 	for key, value in METRICS_POSITION.items():
 		# Extract the metrics values
-		x = np.arange(len(metrics))
-		y = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
+		commit_number = np.arange(len(metrics))
+		metric_values = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
 
 		# For the CBO metric, check if there occurred any substantial decrease in the metric
 		if key == SUBSTANTIAL_CHANGE_METRIC:
-			verify_substantial_metric_decrease(y, class_name, raw_variable_attribute, key, repository_name)
+			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, key, repository_name)
 			
 		# Check for sufficient data points for regression
-		if len(x) < 2 or len(y) < 2:
+		if len(commit_number) < 2 or len(metric_values) < 2:
 			return
 		
 		# Perform linear regression using Scikit-Learn
 		model = LinearRegression()
-		model.fit(x.reshape(-1, 1), y)
-		linear_fit = model.predict(x.reshape(-1, 1))
+		model.fit(commit_number.reshape(-1, 1), metric_values)
+		linear_fit = model.predict(commit_number.reshape(-1, 1))
 
 		# Create the plot
 		plt.figure(figsize=(10, 6))
-		plt.plot(x, y, "o", label=f"{key}")
-		plt.plot(x, linear_fit, "-", label="Linear Regression Fit")
+		plt.plot(commit_number, metric_values, "o", label=f"{key}")
+		plt.plot(commit_number, linear_fit, "-", label="Linear Regression Fit")
 		plt.xlabel("Commit Number")
 		plt.ylabel(f"{key} Value")
 		plt.title(f"Linear Regression for {key} metric of {class_name} {variable_attribute}")
