@@ -10,13 +10,13 @@ empty_folders_script:
 	clear; time python3 Scripts/empty_folders.py
 
 extractZipFiles:
-	chmod +x Scripts/extractZipFiles.py; clear; time python3 Scripts/extractZipFiles.py
+	chmod +x Scripts/extractZipFiles.sh; clear; time python3 Scripts/extractZipFiles.sh
 
 generateZipFiles:
-	chmod +x Scripts/generateZipFiles.py; clear; time python3 Scripts/generateZipFiles.py
+	chmod +x Scripts/generateZipFiles.sh; clear; time python3 Scripts/generateZipFiles.sh
 
 moveExtractedFiles:
-	chmod +x Scripts/moveExtractedFiles.py; clear; time python3 Scripts/moveExtractedFiles.py
+	chmod +x Scripts/moveExtractedFiles.sh; clear; time python3 Scripts/moveExtractedFiles.sh
 
 track_files_script:
 	clear; time python3 Scripts/track_files.py
