@@ -321,10 +321,11 @@ def verify_file(file_path):
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: class_name: The class name of the current linear regression
 # @param: raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
+# @param: commit_hashes: The commit hashes list for the speficied class_name.
 # @param: metric_name: The name of the metric
 # @param: repository_name: The name of the repository
 # @return: None
-def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, metric_name, repository_name):
 	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS):
 		return # If any of the class name ignore keywords is found in the class name, return
 
@@ -339,11 +340,12 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile)
 			if PROCESS_CLASSES:
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation"])
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash"])
 			else:
-				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation"])
+				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash"])
 
 	biggest_change = [0, 0, 0.0] # The biggest change values in the metric
+	commit_data = [0, 0] # The commit data [commit_number, commit_hash]
 
 	# Check if the current metric decreased by more than DESIRED_DECREASED in any commit
 	for i in range(1, len(metrics_values)):
@@ -354,21 +356,23 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		# If the current percentual variation is bigger than the desired decreased, then update the biggest_change list
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
 			biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation]
+			commit_data = [i, commit_hashes[i - 1]]
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
 		with open(f"{csv_filename}", "a") as csvfile:
 			writer = csv.writer(csvfile)
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], biggest_change[2]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], biggest_change[2], commit_data[0], commit_data[1]])
 	 
 # @brief: Perform linear regression on the given metrics and save the plot to a PNG file
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: class_name: The class name of the current linear regression
 # @param: variable_attribute: The variable attribute (class type or method name) of the current linear regression
+# @param: commit_hashes: A list of the commit_hashes for the specified class_name/identifier.
 # @param: raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 # @param: repository_name: The name of the repository
 # @return: None
-def linear_regression_graphics(metrics, class_name, variable_attribute, raw_variable_attribute, repository_name):
+def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, raw_variable_attribute, repository_name):
 	# Check for empty metrics list
 	if not metrics:
 		# print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
@@ -380,14 +384,14 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, raw_vari
 		return
 	
 	# Loop through the metrics_position dictionary
-	for key, value in METRICS_POSITION.items():
+	for metric_name, metric_position in METRICS_POSITION.items():
 		# Extract the metrics values
 		commit_number = np.arange(len(metrics)) # Create an array with the order of the commits numbers
-		metric_values = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
+		metric_values = np.array(metrics)[:, metric_position] # Considering the metric in the value variable for linear regression
 
 		# For the CBO metric, check if there occurred any substantial decrease in the metric
-		if key == SUBSTANTIAL_CHANGE_METRIC:
-			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, key, repository_name)
+		if metric_name == SUBSTANTIAL_CHANGE_METRIC:
+			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, metric_name, repository_name)
 			
 		# Check for sufficient data points for regression
 		if len(commit_number) < 2 or len(metric_values) < 2:
@@ -400,18 +404,18 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, raw_vari
 
 		# Create the plot
 		plt.figure(figsize=(10, 6))
-		plt.plot(commit_number, metric_values, "o", label=f"{key}")
+		plt.plot(commit_number, metric_values, "o", label=f"{metric_name}")
 		plt.plot(commit_number, linear_fit, "-", label="Linear Regression Fit")
 		plt.xlabel("Commit Number")
-		plt.ylabel(f"{key} Value")
-		plt.title(f"Linear Regression for {key} metric of {class_name} {variable_attribute}")
+		plt.ylabel(f"{metric_name} Value")
+		plt.title(f"Linear Regression for {metric_name} metric of {class_name} {variable_attribute}")
 		plt.legend()
 
 		# Create the Class/Method linear prediction directory if it does not exist
 		verify_and_create_folder(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}")
 
 		# Save the plot to a PNG file
-		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{key}{PNG_FILE_EXTENSION}")
+		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{metric_name}{PNG_FILE_EXTENSION}")
 		
 		# Close the plot
 		plt.close()
@@ -444,7 +448,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				for i in range(metrics_len):
 					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2]])
 
-			linear_regression_graphics(metrics, class_name, variable_attribute, identifier.split(" ")[1], repository_name) # Perform linear regression on the metrics
+			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], identifier.split(" ")[1], repository_name) # Perform linear regression on the metrics
 			progress_bar.update(1) # Update the progress bar
 
 # @brief: Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
