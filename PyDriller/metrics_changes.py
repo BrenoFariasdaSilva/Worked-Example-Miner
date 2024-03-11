@@ -357,7 +357,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		# If the current percentual variation is bigger than the desired decreased, then update the biggest_change list
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
 			biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation]
-			commit_data = [i, commit_hashes[i - 1]]
+			commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
