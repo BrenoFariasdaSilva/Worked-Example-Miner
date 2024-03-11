@@ -345,7 +345,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			else:
 				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash"])
 
-	biggest_change = [0, 0, 0.0] # The biggest change values in the metric
+	biggest_change = [0, 0, 0.00] # The biggest change values in the metric
 	commit_data = [0, 0] # The commit data [commit_number, commit_hash]
 
 	# Check if the current metric decreased by more than DESIRED_DECREASED in any commit
@@ -363,7 +363,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	if biggest_change[2] > DESIRED_DECREASED:
 		with open(f"{csv_filename}", "a") as csvfile:
 			writer = csv.writer(csvfile)
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], biggest_change[2], commit_data[0], commit_data[1]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), commit_data[0], commit_data[1]])
 	 
 # @brief: Perform linear regression on the given metrics and save the plot to a PNG file
 # @param: metrics: A list containing the metrics values for linear regression
