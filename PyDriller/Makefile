@@ -1,32 +1,42 @@
-# Main Scripts:
-code_metrics_script:
-	clear; time python3 code_metrics.py
+# Variables
+VENV := venv
+PYTHON := $(VENV)/bin/python3
+PIP := $(VENV)/bin/pip
 
-metrics_changes_script:
-	clear; time python3 metrics_changes.py
+# Main Scripts:
+code_metrics_script: $(VENV)
+	clear; time $(PYTHON) code_metrics.py
+
+metrics_changes_script: $(VENV)
+	clear; time $(PYTHON) metrics_changes.py
 
 # Auxiliar Scripts:
-empty_folders_script:
-	clear; time python3 Scripts/empty_folders.py
+empty_folders_script: $(VENV)
+	clear; time $(PYTHON) Scripts/empty_folders.py
 
-extractZipFiles:
-	chmod +x Scripts/extractZipFiles.sh; clear; time python3 Scripts/extractZipFiles.sh
+extractZipFiles: $(VENV)
+	chmod +x Scripts/extractZipFiles.sh; clear; time ./Scripts/extractZipFiles.sh
 
-generateZipFiles:
-	chmod +x Scripts/generateZipFiles.sh; clear; time python3 Scripts/generateZipFiles.sh
+generateZipFiles: $(VENV)
+	chmod +x Scripts/generateZipFiles.sh; clear; time ./Scripts/generateZipFiles.sh
 
-moveExtractedFiles:
-	chmod +x Scripts/moveExtractedFiles.sh; clear; time python3 Scripts/moveExtractedFiles.sh
+moveExtractedFiles: $(VENV)
+	chmod +x Scripts/moveExtractedFiles.sh; clear; time ./Scripts/moveExtractedFiles.sh
 
-track_files_script:
-	clear; time python3 Scripts/track_files.py
-	
-# Install Dependencies:
+track_files_script: $(VENV)
+	clear; time $(PYTHON) Scripts/track_files.py
+
+# Setup Virtual Environment and Install Dependencies
+$(VENV): dependencies
+
 dependencies:
-	pip install colorama
-	pip install matplotlib
-	pip install numpy
-	pip install pandas
-	pip install pydriller
-	pip install scikit-learn
-	pip install tqdm
+	python3 -m venv $(VENV)
+	$(PIP) install colorama matplotlib numpy pandas pydriller scikit-learn tqdm
+
+# Utility rule for cleaning the project
+clean:
+	rm -rf $(VENV)
+	find . -type f -name '*.pyc' -delete
+	find . -type d -name '__pycache__' -delete
+
+.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extractZipFiles generateZipFiles moveExtractedFiles track_files_script dependencies
