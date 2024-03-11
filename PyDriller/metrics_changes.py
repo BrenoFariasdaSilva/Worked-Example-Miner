@@ -22,6 +22,8 @@ PROCESS_CLASSES = input(f"{BackgroundColors.GREEN}Do you want to process the {Ba
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASED = 0.20 # The desired decreased in the metric
+IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
+IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
 SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to check for substantial changes
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2}
@@ -323,6 +325,12 @@ def verify_file(file_path):
 # @param: repository_name: The name of the repository
 # @return: None
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, metric_name, repository_name):
+	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS):
+		return # If any of the class name ignore keywords is found in the class name, return
+
+	if any(keyword.lower() in raw_variable_attribute.lower() for keyword in IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS):
+		return # If any of the variable/attribute ignore keywords is found in the variable attribute, return
+	
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/"
 	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME}"
 
@@ -340,7 +348,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	# Check if the current metric decreased by more than DESIRED_DECREASED in any commit
 	for i in range(1, len(metrics_values)):
 		if metrics_values[i] >= metrics_values[i - 1] or metrics_values[i - 1] == 0:
-			continue
+			continue # If the current metric is bigger than the previous metric or the previous metric is zero, then continue
 
 		current_percentual_variation = round((metrics_values[i - 1] - metrics_values[i]) / metrics_values[i - 1], 3)
 		# If the current percentual variation is bigger than the desired decreased, then update the biggest_change list
@@ -374,7 +382,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, raw_vari
 	# Loop through the metrics_position dictionary
 	for key, value in METRICS_POSITION.items():
 		# Extract the metrics values
-		commit_number = np.arange(len(metrics))
+		commit_number = np.arange(len(metrics)) # Create an array with the order of the commits numbers
 		metric_values = np.array(metrics)[:, value] # Considering the metric in the value variable for linear regression
 
 		# For the CBO metric, check if there occurred any substantial decrease in the metric
