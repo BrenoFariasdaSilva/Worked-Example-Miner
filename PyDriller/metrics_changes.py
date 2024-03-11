@@ -1,4 +1,5 @@
-# @TODO: Line 323, function verify_substantial_metric_decrease, add the step (commit number and commit id) where the substantial decrease occurred.
+# @TODO: In the verify_substantial_metric_decrease function, also add a column with the refactor type identified for that commit hash (sha1) and class_name (codeElement) from RefactoringMiner.
+# @TODO: Also, create a list to use as filter for only writing in the CSV of the substantial changes specific refactorings of interest ("Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method").
 
 import atexit # For playing a sound when the program finishes
 import csv # for reading csv files
