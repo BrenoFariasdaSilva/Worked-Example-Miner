@@ -1,5 +1,5 @@
-# @TODO: In the verify_substantial_metric_decrease function, also add a column with the refactor type identified for that commit hash (sha1) and class_name (codeElement) from RefactoringMiner.
-# @TODO: Also, create a list to use as filter for only writing in the CSV of the substantial changes specific refactorings of interest ("Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method").
+# @TODO 1: Line 369 - In the verify_substantial_metric_decrease function, also add a column with the refactor type identified for that commit hash (sha1) and class_name (codeElement) from RefactoringMiner.
+# @TODO 1.1: Also, create a list to use as filter for only writing in the CSV of the substantial changes specific refactorings of interest ("Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method").
 
 import atexit # For playing a sound when the program finishes
 import csv # for reading csv files
@@ -365,6 +365,8 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
 			biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation]
 			commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
+
+		# @TODO: Verifiy here if the refactor type of the commit hash and class_name from RefactoringMiner is the one desired. Ther refactoring type is in using: ../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner -c ./repositories/repository_name <commit-sha1> -json ./refactorings/repository_name/commit_number-commit_hash
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
