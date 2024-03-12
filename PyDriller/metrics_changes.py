@@ -27,7 +27,8 @@ IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
 SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to check for substantial changes
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
-METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2}
+METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
+FIRST_SUBSTANTIAL_CHANGE_CHECK = True # If True, then it is the first run of the program
 
 # Extensions:
 PNG_FILE_EXTENSION = ".png" # The extension of the PNG files
@@ -336,8 +337,14 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/"
 	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME}"
 
-	# If the csv folder does not exist, create it
-	if not verify_file(csv_filename):
+	global FIRST_SUBSTANTIAL_CHANGE_CHECK # Declare that we're using the global variable
+	
+	# Verify if it's the first run and if the CSV file already exists
+	if FIRST_SUBSTANTIAL_CHANGE_CHECK and verify_file(csv_filename):
+		FIRST_SUBSTANTIAL_CHANGE_CHECK = False # Update the flag after handling the first run
+		os.remove(csv_filename) # Remove the CSV file if it exists
+
+		# Open the csv file and write the header. If the file does not exist, create it.
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile)
 			if PROCESS_CLASSES:
