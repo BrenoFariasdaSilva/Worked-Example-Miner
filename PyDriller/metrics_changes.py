@@ -9,6 +9,7 @@ import numpy as np # for calculating the min, max, avg, and third quartile of ea
 import os # for walking through directories
 import pandas as pd # for the csv file operations
 import time # For measuring the time
+import json # For reading the refactoring file
 from colorama import Style # For coloring the terminal
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from sklearn.linear_model import LinearRegression # for the linear regression
@@ -320,6 +321,31 @@ def verify_and_create_folder(folder_path):
 def verify_file(file_path):
 	return os.path.exists(file_path)
 
+# @brief: This function gets the refactoring type of the commit hash and class name from RefactoringMiner
+# @param: repository_name: The name of the repository
+# @param: commit_number: The commit number of the current linear regression
+# @param: commit_hash: The commit hash of the current linear regression
+# @param: class_name: The class name of the current linear regression
+# @return: The refactoring type
+def get_refactoring_type(repository_name, commit_number, commit_hash, class_name):
+	# Get the refactoring file path
+	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}.json"
+
+	if not verify_file(refactoring_file_path):
+		# Call the generate_refactoring_file function to generate the refactoring file
+		generate_refactoring_file(repository_name, commit_number, commit_hash)
+
+	# Open the refactoring file
+	with open(refactoring_file_path, "r") as file:
+		data = json.load(file) # Load the json data
+		# Loop through the refactorings in the data
+		# @TODO: Gerar manualmente um teste e ver se o commits vai ser apenas uma posição, pois acho que precisamos percorrer todos os commits até achar um com o filePath igual ao class_name
+		for refactoring in data["commits"][0]["refactorings"]:
+			# If the filePath in the leftSide is equal to the class name, then return the refactoring type
+			if class_name.replace(".", "/") in refactoring["leftSideLocations"]["filePath"]:
+				return refactoring["type"] # Return the refactoring type
+	return None
+
 # @brief: This function generates the refactoring file for a specific commit hash in a specific repository
 # @param: repository_name: The name of the repository
 # @param: commit_number: The commit number of the current linear regression
@@ -386,7 +412,8 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation]
 			commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
 
-		# @TODO: Verifiy here if the refactor type of the commit hash and class_name from RefactoringMiner is the one desired. Ther refactoring type is in using: ../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner -c ./repositories/repository_name <commit-sha1> -json ./refactorings/repository_name/commit_number-commit_hash
+		# Get the refactoring type of the commit hash and class name from RefactoringMiner
+		refactoring_type = get_refactoring_type(repository_name, commit_data[0], commit_data[1], class_name)
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
