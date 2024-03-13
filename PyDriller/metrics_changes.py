@@ -1,5 +1,6 @@
 # @TODO 1: Line 369 - In the verify_substantial_metric_decrease function, also add a column with the refactor type identified for that commit hash (sha1) and class_name (codeElement) from RefactoringMiner.
 # @TODO 1.1: Also, create a list to use as filter for only writing in the CSV of the substantial changes specific refactorings of interest ("Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method").
+# @TODO 1.2: Also, modify later the get_refactoring_type function to return the refactoring_info dictionary, which contains the refactoring type, filePath and codeElement.	
 
 import atexit # For playing a sound when the program finishes
 import csv # for reading csv files
@@ -332,7 +333,6 @@ def generate_refactoring_file(repository_name, commit_number, commit_hash):
 	# Get the refactoring file path
 	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}.json"
 
-	# Check if the refactoring file exists
 	if not verify_file(refactoring_file_path):
 		# Run RefactoringMiner to get the refactoring data
 		os.system(f"../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner -c ./repositories/{repository_name} {commit_hash} -json {refactoring_file_path}")
