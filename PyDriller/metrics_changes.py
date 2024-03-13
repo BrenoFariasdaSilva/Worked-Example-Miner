@@ -319,6 +319,26 @@ def verify_and_create_folder(folder_path):
 def verify_file(file_path):
 	return os.path.exists(file_path)
 
+# @brief: This function generates the refactoring file for a specific commit hash in a specific repository
+# @param: repository_name: The name of the repository
+# @param: commit_number: The commit number of the current linear regression
+# @param: commit_hash: The commit hash of the current linear regression
+# @param: class_name: The class name of the current linear regression
+# @return: The refactoring file path
+def generate_refactoring_file(repository_name, commit_number, commit_hash):
+	# Create the "refactorings" directory if it does not exist
+	verify_and_create_folder(f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}")
+
+	# Get the refactoring file path
+	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}.json"
+
+	# Check if the refactoring file exists
+	if not verify_file(refactoring_file_path):
+		# Run RefactoringMiner to get the refactoring data
+		os.system(f"../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner -c ./repositories/{repository_name} {commit_hash} -json {refactoring_file_path}")
+
+	return refactoring_file_path # Return the refactoring file path
+
 # @brief: This function verifies if the class or method has had a substantial decrease in the current metric
 # @param: metrics: A list containing the metrics values for linear regression
 # @param: class_name: The class name of the current linear regression
