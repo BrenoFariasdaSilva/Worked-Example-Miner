@@ -30,6 +30,7 @@ SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to check for substantial 
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
 FIRST_SUBSTANTIAL_CHANGE_CHECK = True # If True, then it is the first run of the program
+DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to check for substantial changes
 
 # Extensions:
 PNG_FILE_EXTENSION = ".png" # The extension of the PNG files
@@ -369,9 +370,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile)
 			if PROCESS_CLASSES:
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash"])
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
 			else:
-				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash"])
+				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric
 	commit_data = [0, 0] # The commit data [commit_number, commit_hash]
@@ -384,16 +385,20 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		current_percentual_variation = round((metrics_values[i - 1] - metrics_values[i]) / metrics_values[i - 1], 3)
 		# If the current percentual variation is bigger than the desired decreased, then update the biggest_change list
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
-			biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation]
-			commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
+			# Fetch commit data to retrieve refactoring information
+			temp_commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
+			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[0], temp_commit_data[1], class_name)
 
-		# @TODO: Verifiy here if the refactor type of the commit hash and class_name from RefactoringMiner is the one desired. Ther refactoring type is in using: ../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner -c ./repositories/repository_name <commit-sha1> -json ./refactorings/repository_name/commit_number-commit_hash
+			# Update the biggest change if it involves desired refactoring types
+			if any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
+				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
+				commit_data = temp_commit_data
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
 		with open(f"{csv_filename}", "a") as csvfile:
 			writer = csv.writer(csvfile)
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), commit_data[0], commit_data[1]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), commit_data[0], commit_data[1], refactorings_info["types"], refactorings_info["filePath"]])
 	 
 # @brief: Perform linear regression on the given metrics and save the plot to a PNG file
 # @param: metrics: A list containing the metrics values for linear regression
@@ -460,7 +465,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar:
 		for identifier, record in metrics_track_record.items():
 			metrics = record["metrics"]
-			class_name = identifier.split(' ')[0] # Get the identifier which is currently the class name
+			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 			mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/"
 			verify_and_create_folder(mkdir_path)
