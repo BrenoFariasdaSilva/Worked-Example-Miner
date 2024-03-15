@@ -1,7 +1,3 @@
-# @TODO 1: Line 369 - In the verify_substantial_metric_decrease function, also add a column with the refactor type identified for that commit hash (sha1) and class_name (codeElement) from RefactoringMiner.
-# @TODO 1.1: Also, create a list to use as filter for only writing in the CSV of the substantial changes specific refactorings of interest ("Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method").
-# @TODO 1.2: Also, modify later the get_refactoring_type function to return the refactoring_info dictionary, which contains the refactoring type, filePath and codeElement.	
-
 import atexit # For playing a sound when the program finishes
 import csv # for reading csv files
 import matplotlib.pyplot as plt # for plotting the graphs
@@ -9,6 +5,7 @@ import numpy as np # for calculating the min, max, avg, and third quartile of ea
 import os # for walking through directories
 import pandas as pd # for the csv file operations
 import time # For measuring the time
+import json # For reading the refactoring file from RefactoringMiner
 from colorama import Style # For coloring the terminal
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from sklearn.linear_model import LinearRegression # for the linear regression
@@ -34,6 +31,7 @@ DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Pu
 
 # Extensions:
 PNG_FILE_EXTENSION = ".png" # The extension of the PNG files
+REFACTORING_MINER_JSON_FILE_EXTENSION = ".json" # The extension of the RefactoringMiner JSON files
 
 # Filenames:
 CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # The name of the csv generated file from ck.
@@ -188,7 +186,7 @@ def get_identifier_and_metrics(row):
 def was_file_modified(commit_dict, commit_hash, row):	
 	# The file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/
 	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
-	repository_name = file_path.split('/')[0]
+	repository_name = file_path.split("/")[0]
 	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/
 			
 	modified_files_paths = commit_dict[commit_hash]
@@ -322,24 +320,36 @@ def verify_and_create_folder(folder_path):
 def verify_file(file_path):
 	return os.path.exists(file_path)
 
-# @brief: This function generates the refactoring file for a specific commit hash in a specific repository
+# @brief: This function gets specific informations about the refactorings of the commit hash and class name from RefactoringMiner
 # @param: repository_name: The name of the repository
 # @param: commit_number: The commit number of the current linear regression
 # @param: commit_hash: The commit hash of the current linear regression
 # @param: class_name: The class name of the current linear regression
-# @return: The refactoring file path
-def generate_refactoring_file(repository_name, commit_number, commit_hash):
-	# Create the "refactorings" directory if it does not exist
-	verify_and_create_folder(f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}")
-
+# @return: The dictionary containing the specific informations about the refactorings
+def get_refactorings_info(repository_name, commit_number, commit_hash, class_name):
 	# Get the refactoring file path
-	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}.json"
+	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # The refactoring file path
 
 	if not verify_file(refactoring_file_path):
-		# Run RefactoringMiner to get the refactoring data
-		os.system(f"../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner -c ./repositories/{repository_name} {commit_hash} -json {refactoring_file_path}")
+		# Call the generate_refactoring_file function to generate the refactoring file
+		generate_refactoring_file(repository_name, commit_number, commit_hash)
 
-	return refactoring_file_path # Return the refactoring file path
+	# Open the refactoring file
+	with open(refactoring_file_path, "r") as file:
+		refactorings_info = {"types": [],"filePath": []} # The refactorings information dictionary
+		data = json.load(file) # Load the json data
+		# Loop through the refactorings in the data
+		for commit in data["commits"]:
+			if commit["sha1"] == commit_hash: # If the commit hash is equal to the specified commit hash
+				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
+					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Loop through the locations in the refactoring
+						# If the class name is in the file path, then append the refactoring type to the refactorings list
+						if class_name.replace(".", "/") in location["filePath"]:
+							refactorings_info["types"].append(refactoring["type"])
+							if location["filePath"] not in refactorings_info["filePath"]:
+								# print(f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
+								refactorings_info["filePath"].append(location["filePath"])
+		return refactorings_info # Return the refactorings types list
 
 # @brief: This function verifies if the class or method has had a substantial decrease in the current metric
 # @param: metrics: A list containing the metrics values for linear regression
