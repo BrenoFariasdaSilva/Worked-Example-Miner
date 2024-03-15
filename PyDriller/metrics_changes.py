@@ -28,6 +28,7 @@ SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to check for substantial 
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
 FIRST_SUBSTANTIAL_CHANGE_CHECK = True # If True, then it is the first run of the program
+DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to check for substantial changes
 
 # Extensions:
@@ -423,8 +424,13 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			temp_commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
 			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[0], temp_commit_data[1], class_name)
 
-			# Update the biggest change if it involves desired refactoring types
-			if any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
+			if DESIRED_REFACTORINGS_ONLY: 
+				# Update the biggest change if it involves desired refactoring types.
+				if any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
+					biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
+					commit_data = temp_commit_data
+			else:
+				# If not filtering by desired refactorings, store any type of refactoring.
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
 				commit_data = temp_commit_data
 
