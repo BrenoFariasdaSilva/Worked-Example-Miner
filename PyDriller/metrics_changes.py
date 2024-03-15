@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt # for plotting the graphs
 import numpy as np # for calculating the min, max, avg, and third quartile of each metric
 import os # for walking through directories
 import pandas as pd # for the csv file operations
+import platform # For determining the system's null device to discard output
 import time # For measuring the time
 import json # For reading the refactoring file from RefactoringMiner
 from colorama import Style # For coloring the terminal
@@ -13,7 +14,7 @@ from tqdm import tqdm # for progress bar
 
 # Import from the main.py file
 from code_metrics import BackgroundColors # For coloring the terminal outputs
-from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH # Importing constants from the code_metrics.py file
+from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH # Importing constants from the code_metrics.py file
 from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
 
 # CONSTANTS:
@@ -350,6 +351,29 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 								# print(f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
 								refactorings_info["filePath"].append(location["filePath"])
 		return refactorings_info # Return the refactorings types list
+
+# @brief: This function generates the refactoring file for a specific commit hash in a specific repository
+# @param: repository_name: The name of the repository
+# @param: commit_number: The commit number of the current linear regression
+# @param: commit_hash: The commit hash of the current linear regression
+# @param: class_name: The class name of the current linear regression
+# @return: The refactoring file path
+def generate_refactoring_file(repository_name, commit_number, commit_hash):
+	# Create the "refactorings" directory if it does not exist
+	verify_and_create_folder(f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}")
+
+	# Get the refactoring file path
+	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}.json"
+
+	if not verify_file(refactoring_file_path):
+		# Determine the system's null device to discard output
+		null_device = "NUL" if platform.system() == "Windows" else "/dev/null"
+		
+		# Run RefactoringMiner to get the refactoring data, hiding its output
+		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c {RELATIVE_REPOSITORIES_DIRECTORY_PATH}{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1"
+		os.system(command)
+
+	return refactoring_file_path # Return the refactoring file path
 
 # @brief: This function verifies if the class or method has had a substantial decrease in the current metric
 # @param: metrics: A list containing the metrics values for linear regression
