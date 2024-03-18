@@ -18,12 +18,16 @@ TARGET_FILENAMES = {"commons-lang": "", "jabref": "", "kafka": "", "zookeeper": 
 # Repositories List
 REPOSITORIES = ["commons-lang", "jabref", "kafka", "zookeeper"]
 
-# @brief: This function searches for files in the given directory
-# @param: search_directory - The directory to search in
-# @param: search_string - The string to search for
-# @return: found_file_paths - A list of the paths of the found files
-# @return: file_counts - A dictionary containing the number of files found
 def search_files(search_directory, search_string):
+	"""
+	Search for files in the given directory.
+
+	:param search_directory: The directory to search in
+	:param search_string: The string to search for
+	:return: found_file_paths: A list of the paths of the found files
+	:return: file_counts: A dictionary containing the number of files found
+	"""
+
 	file_counts = 0 # Counter for the number of files found
 	found_file_paths = [] # List to store the paths of the found files
 	# Walk through the directory
@@ -38,12 +42,16 @@ def search_files(search_directory, search_string):
 					
 	return found_file_paths, file_counts # Return the list and the dictionary
 
-# @brief: This function writes the found file paths to a text file
-# @param: found_file_paths - A list of the paths of the found files
-# @param: repository_name - The name of the repository
-# @param: current_directory - The current directory
-# @return: None
 def write_file_paths(found_file_paths, repository_name, current_directory):
+	"""
+	Write the found file paths to a text file.
+
+	:param found_file_paths: A list of the paths of the found files
+	:param repository_name: The name of the repository
+	:param current_directory: The current directory
+	:return: None
+	"""
+	
 	output_file_path = f"{current_directory}/metrics_data/{repository_name}/track_files_list.txt"
 	print(f"{BackgroundColors.GREEN}Writing found files to {BackgroundColors.CYAN}{output_file_path}{Style.RESET_ALL}")
 
@@ -61,10 +69,13 @@ def write_file_paths(found_file_paths, repository_name, current_directory):
 		for path in found_file_paths:
 			file.write(f"{path}\n") # Write the file path to the text file
 
-# @brief: This is the main function
-# @param: None
-# @return: None
 def main():
+	"""
+   Main function.
+
+   :return: None
+   """
+	
    # Directory to start the search from (current directory)
 	current_directory = os.getcwd()
 
@@ -96,6 +107,11 @@ def main():
 		# Write the file paths to a text file
 		write_file_paths(found_file_paths, repository_name, current_directory)
  
-# This is the standard boilerplate that calls the main() function.
-if __name__ == "__main__":
-	main() # Call the main function
+if __name__ == '__main__':
+   """
+   This is the standard boilerplate that calls the main() function.
+
+   :return: None
+   """
+   
+   main() # Call the main function
