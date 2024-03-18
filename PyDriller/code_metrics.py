@@ -55,19 +55,25 @@ FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_CK_JAR_PATH = START_PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
 
-# @brief: This function is used to verify if the PATH constant contain whitespaces
-# @param: None
-# @return: True if the PATH constant contain whitespaces, False otherwise
 def path_contains_whitespaces():
+   """
+   Verifies if the PATH constant contains whitespaces.
+
+   :return: True if the PATH constant contains whitespaces, False otherwise.
+   """
+   
    # Verify if the PATH constant contains whitespaces
    if " " in START_PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
-# @brief: This function is used to process each repositorie name concurrently, using threads
-# @param: None
-# @return: None 
 def process_repositories_concurrently():
+   """
+   Processes each repository name concurrently, using threads.
+
+   :return: None
+   """
+
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
@@ -81,11 +87,15 @@ def process_repositories_concurrently():
    for thread in threads:
       thread.join() # Wait for the thread to finish
 
-# @brief: This function is used to process the repository
-# @param: repository_name: Name of the repository to be analyzed
-# @param: repository_url: URL of the repository to be analyzed
-# @return: None
 def process_repository(repository_name, repository_url):
+   """
+   Processes the repository.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param repository_url: URL of the repository to be analyzed.
+   :return: None
+   """
+
    # Verify if the metrics were already calculated
    if verify_ck_metrics_folder(repository_name):
       print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
@@ -112,10 +122,14 @@ def process_repository(repository_name, repository_url):
    # Checkout the main branch
    checkout_branch("main")
 
-# @brief: Update the repository using "git pull"
-# @param: repository_name: Name of the repository to be analyzed
-# @return: None
 def update_repository(repository_name):
+   """
+   Updates the repository using "git pull".
+
+   :param repository_name: Name of the repository to be analyzed.
+   :return: None
+   """
+
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
@@ -124,11 +138,16 @@ def update_repository(repository_name):
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
 
-# @brief: Clone the repository to the repository directory
-# @param: repository_name: Name of the repository to be analyzed
-# @param: repository_url: URL of the repository to be analyzed
-# @return: None
 def clone_repository(repository_name, repository_url):
+   """
+   Clones the repository to the repository directory.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param repository_url: URL of the repository to be analyzed.
+
+   :return: None
+   """
+
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
@@ -142,11 +161,15 @@ def clone_repository(repository_name, repository_url):
       thread.wait()
       print(f"{BackgroundColors.GREEN}Successfully cloned the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository{Style.RESET_ALL}")
 
-# @brief: Create a directory
-# @param: full_directory_name: Name of the directory to be created
-# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
-# @return: None
 def create_directory(full_directory_name, relative_directory_name):
+   """
+   Creates a directory.
+
+   :param full_directory_name: Name of the directory to be created.
+   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal.
+   :return: None
+   """
+
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
       return
    try: # Try to create the directory
@@ -154,10 +177,14 @@ def create_directory(full_directory_name, relative_directory_name):
    except OSError: # If the directory cannot be created
       print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
-# @brief: This verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder
-# @param: repository_name: Name of the repository to be analyzed
-# @return: True if all the metrics are already calculated, False otherwise
 def verify_ck_metrics_folder(repository_name):
+   """
+   Verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :return: True if all the metrics are already calculated, False otherwise.
+   """
+
    data_path = os.path.join(START_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
    repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
    commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The name of the commit hashes file
@@ -182,38 +209,54 @@ def verify_ck_metrics_folder(repository_name):
                return False # If the file does not exist, then the metrics are not calculated
    return True # If all the metrics are already calculated
 
-# @brief: This function is used to checkout a specific branch
-# @param: branch_name: Name of the branch to be checked out
-# @return: None
 def checkout_branch(branch_name):
+   """
+   Checks out a specific branch.
+
+   :param branch_name: Name of the branch to be checked out.
+   :return: None
+   """
+
    # Create a thread to checkout the branch
    checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    # Wait for the thread to finish
    checkout_thread.wait()
 
-# @brief: This function is used to run the command that runs the CK metrics generator in a subprocess
-# @param: cmd: Command to be executed
-# @return: None
 def run_ck_metrics_generator(cmd):
+   """
+   Runs the CK metrics generator in a subprocess.
+
+   :param cmd: Command to be executed.
+   :return: None
+   """
+
    # Create a thread to run the cmd command
    thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = thread.communicate()
 
-# @brief: This function generates the output directory path for the CK metrics generator
-# @param: repository_name: Name of the repository to be analyzed
-# @param: commit_hash: Commit hash of the commit to be analyzed
-# @param: commit_number: Number of the commit to be analyzed
-# @return: The output_directory and relative_output_directory paths
 def generate_output_directory_paths(repository_name, commit_hash, commit_number):
+   """
+   Generates the output directory path for the CK metrics generator.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param commit_hash: Commit hash of the commit to be analyzed.
+   :param commit_number: Number of the commit to be analyzed.
+   :return: The output_directory and relative_output_directory paths.
+   """
+
    output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    return output_directory, relative_output_directory
 
-# @brief: This function outputs time, considering the appropriate time unit
-# @param: output_string: String to be outputted
-# @param: time: Time to be outputted
-# @return: None
 def output_time(output_string, time):
+   """
+   Outputs time, considering the appropriate time unit.
+
+   :param output_string: String to be outputted.
+   :param time: Time to be outputted.
+   :return: None
+   """
+
    if float(time) < int(TIME_UNITS[0]):
       time_unit = "seconds"
       time_value = time
@@ -230,24 +273,32 @@ def output_time(output_string, time):
    rounded_time = round(time_value, 2)
    print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
-# @brief: This function outputs the execution time of the CK metrics generator
-# @param: first_iteration_duration: Duration of the first iteration
-# @param: elapsed_time: Elapsed time of the execution
-# @param: number_of_commits: Number of commits to be analyzed
-# @param: repository_name: Name of the repository to be analyzed
-# @return: None
 def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
+   """
+   Shows the execution time of the CK metrics generator.
+
+   :param first_iteration_duration: Duration of the first iteration.
+   :param elapsed_time: Elapsed time of the execution.
+   :param number_of_commits: Number of commits to be analyzed.
+   :param repository_name: Name of the repository to be analyzed.
+   :return: None
+   """
+
    estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2))
    time_taken_string = f"Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
    output_time(time_taken_string, round(elapsed_time, 2))
 
-# @brief: This function gets the last execution progress of the repository
-# @param: repository_name: Name of the repository to be analyzed
-# @param: saved_progress_file: Name of the file that contains the saved progress
-# @param: number_of_commits: Number of commits to be analyzed
-# @return: The commit hashes and the last commit
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
+   """
+   Gets the last execution progress of the repository.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param saved_progress_file: Name of the file that contains the saved progress.
+   :param number_of_commits: Number of commits to be analyzed.
+   :return: The commit hashes and the last commit.
+   """
+
    commit_hashes = [] # The commit hashes list
    last_commit_number = 0 # The last commit number
 
@@ -283,12 +334,16 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
 
    return commit_hashes, last_commit_number
 
-# @brief: This function generates the diffs for the commits of a repository
-# @param: repository_name - The name of the repository
-# @param: commit - The commit object to be analyzed
-# @param: commit_number - The number of the commit to be analyzed
-# @return: None
 def generate_diffs(repository_name, commit, commit_number):
+   """
+   Generates the diffs for the commits of a repository.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param commit: The commit object to be analyzed.
+   :param commit_number: Number of the commit to be analyzed.
+   :return: None
+   """
+
    for modified_file in commit.modified_files:
       file_diff = modified_file.diff # Get the diff of the modified file
 
@@ -301,12 +356,16 @@ def generate_diffs(repository_name, commit, commit_number):
       with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file:
          diff_file.write(file_diff) # Write the diff to the file
 
-# @brief: This function traverses the repository
-# @param: repository_name: Name of the repository to be analyzed
-# @param: repository_url: URL of the repository to be analyzed
-# @param: number_of_commits: Number of commits to be analyzed
-# @return: The commit hashes of the repository
 def traverse_repository(repository_name, repository_url, number_of_commits):
+   """
+   Traverses the repository to run CK for every commit hash in the repository.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param repository_url: URL of the repository to be analyzed.
+   :param number_of_commits: Number of commits to be analyzed.
+   :return: The commit hashes of the repository.
+   """
+
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
    i = 1
@@ -366,11 +425,15 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
    return commit_hashes
 
-# @brief: This function writes the commit hashes to a csv file
-# @param: repository_name: Name of the repository to be analyzed
-# @param: commit_hashes: List of tuples containing the commit hashes, commit messages and commit dates
-# @return: None
 def write_commit_hashes_to_csv(repository_name, commit_hashes):
+   """
+   Writes the commit hashes to a csv file.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param commit_hashes: List of tuples containing the commit hashes, commit messages and commit dates.
+   :return: None
+   """
+   
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
    with open(file_path, "w", newline="") as csv_file:
       writer = csv.writer(csv_file)
@@ -379,23 +442,31 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
       # Write the commit hashes
       writer.writerows(commit_hashes)
 
-# This function defines the command to play a sound when the program finishes
 def play_sound():
-	if os.path.exists(SOUND_FILE):
-		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
-			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
-		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
-	else: # if the sound file does not exist
-		print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+   """
+   Plays a sound when the program finishes.
+
+   :return: None
+   """
+   
+   if os.path.exists(SOUND_FILE):
+      if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
+         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
+      else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
+         print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+   else: # if the sound file does not exist
+      print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
-# @brief: Main function
-# @param: None
-# @return: None
 def main():
+   """
+   Main function.
+
+   :return: None
+   """
+   
    # Verify if the path constants contains whitespaces
    if path_contains_whitespaces():
       print(f"{BackgroundColors.RED}The {START_PATH} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
@@ -409,8 +480,12 @@ def main():
    print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} concurrently.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    
-   process_repositories_concurrently()
+   process_repositories_concurrently() # Process the repositories concurrently
 		
-# This is the standard boilerplate that calls the main() function.
 if __name__ == '__main__':
+   """
+   This is the standard boilerplate that calls the main() function.
+
+   :return: None
+   """
    main() # Call the main function
