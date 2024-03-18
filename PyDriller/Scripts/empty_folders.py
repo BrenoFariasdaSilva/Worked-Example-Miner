@@ -11,12 +11,17 @@ class BackgroundColors: # Colors for the terminal
 	UNDERLINE = "\033[4m" # Underline
 	CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
-DATA_FOLDERS = ["ck_metrics", "diffs", "metrics_evolution", "metrics_predictions", "metrics_statistics"] # The data folders
+DATA_FOLDERS = ["ck_metrics", "diffs", "metrics_evolution", "metrics_predictions", "metrics_statistics"] # The Data Folders
 
-# @brief: This function counts the empty folders in a directory
-# @param: directory - The directory to count the empty folders
-# @return: empty_folders - The list of empty folders
 def search_empty_folders(directory):
+	"""
+	Search for empty folders in the given directory.
+
+	:param directory: The directory to search in
+	:return: empty_folders: The list of empty folders
+	
+	"""
+
 	empty_folders = [] # The list of empty folders
 
 	# Loop through the directory
@@ -31,10 +36,12 @@ def search_empty_folders(directory):
 	# Return the list of empty folders
 	return empty_folders
 
-# @brief: The main function
-# @param: None
-# @return: None
 def main():
+	"""
+   Main function.
+
+   :return: None
+   """
 	print(f"{BackgroundColors.GREEN}Current working directory: {BackgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
 	initial_directory = input(f"{BackgroundColors.GREEN}Enter the initial directory {BackgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
 	print(f"")
@@ -57,6 +64,11 @@ def main():
 		else:
 			print(f"{BackgroundColors.GREEN}No empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-# This is the standard boilerplate that calls the main() function.
-if __name__ == "__main__":
-	main() # Call the main function
+if __name__ == '__main__':
+   """
+   This is the standard boilerplate that calls the main() function.
+
+   :return: None
+   """
+   
+   main() # Call the main function
