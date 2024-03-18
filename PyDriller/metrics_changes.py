@@ -24,12 +24,12 @@ NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASED = 0.20 # The desired decreased in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
-SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to check for substantial changes
+SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to search for substantial changes
 DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
-FIRST_SUBSTANTIAL_CHANGE_CHECK = True # If True, then it is the first run of the program
+FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = True # If True, then it is the first run of the program
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
-DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to check for substantial changes
+DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
 
 # Extensions:
 PNG_FILE_EXTENSION = ".png" # The extension of the PNG files
@@ -53,20 +53,27 @@ FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTIO
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
 
-# @brief: This function loops through the DEFAULT_REPOSITORY_NAME list and calls the process_repository function for each repository
-# @param: None
-# @return: None
 def process_all_repositories():
+	"""
+	Processes all the repositories in the DEFAULT_REPOSITORY_NAMES list.
+
+	:return: None
+	"""
+
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"")
 		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name) # Process the current repository
 		print(f"------------------------------------------------------------")
 
-# @brief: This function call the procedures to process the specified repository
-# @param: repository_name: The name of the repository to be analyzed 
-# @return: None
 def process_repository(repository_name):
+	"""
+	Processes the specified repository.
+
+	:param repository_name: The name of the repository to be analyzed
+	:return: None
+	"""
+
 	# Start the timer
 	start_time = time.time()
 
@@ -113,17 +120,25 @@ def process_repository(repository_name):
 	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2))
 
-# @brief: Gets the path to the directory of the CK metrics related to the repository
-# @param: repository_name
-# @return: The path to the directory of the CK metrics related to the repository
 def get_directory_path(repository_name):
+	"""
+	Gets the path to the directory of the CK metrics related to the repository.
+
+	:param repository_name: The name of the repository to be analyzed
+	:return: The path to the directory of the CK metrics related to the repository
+	"""
+	
 	repository_ck_metrics_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
 	return repository_ck_metrics_path
 
-# @brief: This function create all the desired directories
-# @param: repository_name: Name of the repository to be analyzed
-# @return: None
 def create_directories(repository_name):
+	"""
+	Creates all the desired directories.
+
+	:param repository_name: The name of the repository to be analyzed
+	:return: None
+	"""	
+
 	# Create the output METRICS_DATA directories if they does not exist
 	create_directory(FULL_METRICS_DATA_DIRECTORY_PATH, RELATIVE_METRICS_DATA_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}")
@@ -140,16 +155,24 @@ def create_directories(repository_name):
 	create_directory(FULL_METRICS_PREDICTION_DIRECTORY_PATH, RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
 
-# @brief: Validate the class name, that is, if it contains any dots in the name
-# @param class_name: The name of the class
-# @return: True if the class name is valid, False otherwise
 def valid_class_name(class_name):
+	"""
+	Validates the class name.
+
+	:param class_name: The name of the class
+	:return: True if the class name is valid, False otherwise
+	"""
+	
 	return "." in class_name
 
-# @brief: Gets the package name of the class, which is, get the substring between that starts with "/src/"(excluded) until the last dot(excluded)
-# @param file_name: The file name where the class is located
-# @return: The package name of the class
 def get_class_package_name(file_name):
+	"""
+	Gets the package name of the class.
+
+	:param file_name: The file name where the class is located
+	:return: The package name of the class
+	"""
+	
 	start_substring = "/src/"
 	package_name = file_name[file_name.find(start_substring) + len(start_substring):file_name.rfind(".")]
 
@@ -158,10 +181,14 @@ def get_class_package_name(file_name):
 
 	return package_name
 
-# @brief: Gets the identifier and metrics of the method or class from the row
-# @param row: The row of the csv file
-# @return: The identifier and metrics of the method or class
 def get_identifier_and_metrics(row):
+	"""
+	Gets the identifier and metrics of the method or class from the row.
+
+	:param row: The row of the csv file
+	:return: The identifier and metrics of the method or class
+	"""
+	
 	class_name = row["class"]
 	if PROCESS_CLASSES:
 		if not valid_class_name(class_name):
@@ -180,12 +207,16 @@ def get_identifier_and_metrics(row):
 
 	return identifier, metrics
 
-# @brief: Checks if the file was modified
-# @param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
-# @param commit_hash: The commit hash of the current row
-# @param row: The row of the csv file
-# @return: True if the file was modified, False otherwise
-def was_file_modified(commit_dict, commit_hash, row):	
+def was_file_modified(commit_dict, commit_hash, row):
+	"""
+	Verifies if the file was modified.
+
+	:param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
+	:param commit_hash: The commit hash of the current row
+	:param row: The row of the csv file
+	:return: True if the file was modified, False otherwise
+	"""
+	
 	# The file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/
 	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
 	repository_name = file_path.split("/")[0]
@@ -198,12 +229,16 @@ def was_file_modified(commit_dict, commit_hash, row):
 			return True # The file was modified
 	return False # The file was not modified
 
-# @brief: Processes a csv file containing the metrics of a method nor class
-# @param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
-# @param file_path: The path to the csv file
-# @param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
-# @return: None
 def process_csv_file(commit_dict, file_path, metrics_track_record):
+	"""
+	Processes a csv file containing the metrics of a method nor class.
+
+	:param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
+	:param file_path: The path to the csv file
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
+	:return: None
+	"""
+
 	# Open the csv file
 	with open(file_path, "r") as csvfile:
 		# Read the csv file
@@ -235,10 +270,14 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
 
-# @brief: This function generates the commit dictionary, which is a dictionary containing the modified files for each commit
-# @param repository_name: The name of the repository
-# @return: A dictionary containing the modified files for each commit
 def generate_commit_dict(repository_name):
+	"""
+	Generates the commit dictionary, which is a dictionary containing the modified files for each commit.
+
+	:param repository_name: The name of the repository
+	:return: A dictionary containing the modified files for each commit
+	"""
+
 	commit_dict = {} # A dictionary containing the commit hashes as keys and the commit objects as values
 
 	# Traverse the repository and get the modified files for each commit and store it in the commit_dict
@@ -248,11 +287,15 @@ def generate_commit_dict(repository_name):
 			commit_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit hash list
 	return commit_dict
 
-# @brief: Traverses a directory and processes all the csv files
-# @param repository_ck_metrics_path: The path to the directory
-# @param repository_name: The name of the repository
-# @return: A dictionary containing the metrics of each class and method combination
 def traverse_directory(repository_name, repository_ck_metrics_path):
+	"""
+	Traverses a directory and processes all the csv files.
+
+	:param repository_name: The name of the repository
+	:param repository_ck_metrics_path: The path to the directory
+	:return: A dictionary containing the metrics of each class and method combination
+	"""
+	
 	metrics_track_record = {} # Dictionary containing the track record of the metrics of each method nor class. The key is the identifier and the value is a dictionary containing the metrics, commit hashes and the number of times the metrics changed.
 	file_count = 0
 	progress_bar = None
@@ -284,11 +327,15 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	# Return the method metrics, which is a dictionary containing the metrics of each method  
 	return metrics_track_record
 
-# @brief: This function writes the metrics_track_record to a txt file
-# @param: repository_name: The name of the repository
-# @param: metrics_track_record: A dictionary containing the metrics of each method or class
-# @return: None
 def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
+	"""
+	Writes the metrics_track_record to a txt file.
+
+	:param repository_name: The name of the repository
+	:param metrics_track_record: A dictionary containing the metrics of each method or class
+	:return: None
+	"""
+
 	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
 		for key, value in metrics_track_record.items():
 			file.write(f"{key}: \n")
@@ -297,38 +344,54 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 			file.write(f"\tChanged: {value['changed']}\n")
 			file.write(f"\n")
 
-# @brief: This function receives an id and verify if it contains slashes, if so, it returns the id without the slashes
-# @param: id: ID of the class or method to be analyzed
-# @return: ID of the class or method to be analyzed without the slashes
 def get_clean_id(id):
-   # If the id contains slashes, remove them
-   if "/" in id:
-      return str(id.split("/")[0:-1])[2:-2]
-   else:
-      return id
+	"""
+	Receives an id and verifies if it contains slashes, if so, it returns the id without the slashes.
 
-# @brief: This function verifies if a specified folder exists, if not, it creates it
-# @param: folder_path: The path to the folder
-# @return: True if the folder already exists, False otherwise
+	:param id: ID of the class or method to be analyzed
+	:return: ID of the class or method to be analyzed without the slashes
+	"""
+	
+	# If the id contains slashes, remove them
+	if "/" in id:
+		return str(id.split("/")[0:-1])[2:-2]
+	else:
+		return id
+
 def verify_and_create_folder(folder_path):
+	"""
+	Verifies if a specified folder exists, if not, it creates it.
+
+	:param folder_path: The path to the folder
+	:return: True if the folder already exists, False otherwise
+	"""
+	
 	if not os.path.exists(folder_path):
 		os.makedirs(folder_path)
 		return False
 	return True
 
-# @brief: This function verifies if a specified file exists
-# @param: file_path: The path to the file
-# @return: True if the file already exists, False otherwise
 def verify_file(file_path):
+	"""
+	Verifies if a specified file exists.
+
+	:param file_path: The path to the file
+	:return: True if the file already exists, False otherwise
+	"""
+	
 	return os.path.exists(file_path)
 
-# @brief: This function gets specific informations about the refactorings of the commit hash and class name from RefactoringMiner
-# @param: repository_name: The name of the repository
-# @param: commit_number: The commit number of the current linear regression
-# @param: commit_hash: The commit hash of the current linear regression
-# @param: class_name: The class name of the current linear regression
-# @return: The dictionary containing the specific informations about the refactorings
 def get_refactorings_info(repository_name, commit_number, commit_hash, class_name):
+	"""
+	Gets specific informations about the refactorings of the commit hash and class name from RefactoringMiner.
+
+	:param repository_name: The name of the repository
+	:param commit_number: The commit number of the current linear regression
+	:param commit_hash: The commit hash of the current linear regression
+	:param class_name: The class name of the current linear regression
+	:return: The dictionary containing the specific informations about the refactorings
+	"""
+	
 	# Get the refactoring file path
 	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # The refactoring file path
 
@@ -353,13 +416,16 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 								refactorings_info["filePath"].append(location["filePath"])
 		return refactorings_info # Return the refactorings types list
 
-# @brief: This function generates the refactoring file for a specific commit hash in a specific repository
-# @param: repository_name: The name of the repository
-# @param: commit_number: The commit number of the current linear regression
-# @param: commit_hash: The commit hash of the current linear regression
-# @param: class_name: The class name of the current linear regression
-# @return: The refactoring file path
 def generate_refactoring_file(repository_name, commit_number, commit_hash):
+	"""
+	Generates the refactoring file for a specific commit hash in a specific repository.
+
+	:param repository_name: The name of the repository
+	:param commit_number: The commit number of the current linear regression
+	:param commit_hash: The commit hash of the current linear regression
+	:return: The refactoring file path
+	"""
+	
 	# Create the "refactorings" directory if it does not exist
 	verify_and_create_folder(f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}")
 
@@ -376,15 +442,19 @@ def generate_refactoring_file(repository_name, commit_number, commit_hash):
 
 	return refactoring_file_path # Return the refactoring file path
 
-# @brief: This function verifies if the class or method has had a substantial decrease in the current metric
-# @param: metrics: A list containing the metrics values for linear regression
-# @param: class_name: The class name of the current linear regression
-# @param: raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
-# @param: commit_hashes: The commit hashes list for the speficied class_name.
-# @param: metric_name: The name of the metric
-# @param: repository_name: The name of the repository
-# @return: None
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, metric_name, repository_name):
+	"""
+	Verifies if the class or method has had a substantial decrease in the current metric.
+
+	:param metrics_values: A list containing the metrics values for linear regression
+	:param class_name: The class name of the current linear regression
+	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
+	:param commit_hashes: The commit hashes list for the speficied class_name
+	:param metric_name: The name of the metric
+	:param repository_name: The name of the repository
+	:return: None
+	"""
+	
 	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS):
 		return # If any of the class name ignore keywords is found in the class name, return
 
@@ -394,11 +464,11 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/"
 	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME}"
 
-	global FIRST_SUBSTANTIAL_CHANGE_CHECK # Declare that we're using the global variable
+	global FIRST_SUBSTANTIAL_CHANGE_VERIFICATION # Declare that we're using the global variable
 	
 	# Verify if it's the first run and if the CSV file already exists
-	if FIRST_SUBSTANTIAL_CHANGE_CHECK and verify_file(csv_filename):
-		FIRST_SUBSTANTIAL_CHANGE_CHECK = False # Update the flag after handling the first run
+	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_file(csv_filename):
+		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False # Update the flag after handling the first run
 		os.remove(csv_filename) # Remove the CSV file if it exists
 
 		# Open the csv file and write the header. If the file does not exist, create it.
@@ -412,7 +482,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric
 	commit_data = [0, 0] # The commit data [commit_number, commit_hash]
 
-	# Check if the current metric decreased by more than DESIRED_DECREASED in any commit
+	# Verify if the current metric decreased by more than DESIRED_DECREASED in any commit
 	for i in range(1, len(metrics_values)):
 		if metrics_values[i] >= metrics_values[i - 1] or metrics_values[i - 1] == 0:
 			continue # If the current metric is bigger than the previous metric or the previous metric is zero, then continue
@@ -440,21 +510,25 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			writer = csv.writer(csvfile)
 			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), commit_data[0], commit_data[1], refactorings_info["types"], refactorings_info["filePath"]])
 	 
-# @brief: Perform linear regression on the given metrics and save the plot to a PNG file
-# @param: metrics: A list containing the metrics values for linear regression
-# @param: class_name: The class name of the current linear regression
-# @param: variable_attribute: The variable attribute (class type or method name) of the current linear regression
-# @param: commit_hashes: A list of the commit_hashes for the specified class_name/identifier.
-# @param: raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
-# @param: repository_name: The name of the repository
-# @return: None
 def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, raw_variable_attribute, repository_name):
-	# Check for empty metrics list
+	"""
+	Perform linear regression on the given metrics and save the plot to a PNG file.
+
+	:param metrics: A list containing the metrics values for linear regression
+	:param class_name: The class name of the current linear regression
+	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
+	:param commit_hashes: A list of the commit_hashes for the specified class_name/identifier.
+	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
+	:param repository_name: The name of the repository
+	:return: None
+	"""
+	
+	# Verify for empty metrics list
 	if not metrics:
 		# print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
 		return
 
-	# Check for invalid values in the metrics
+	# Verify for invalid values in the metrics
 	if np.isnan(metrics).any() or np.isinf(metrics).any():
 		print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} contains invalid values!{Style.RESET_ALL}")
 		return
@@ -465,11 +539,11 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		commit_number = np.arange(len(metrics)) # Create an array with the order of the commits numbers
 		metric_values = np.array(metrics)[:, metric_position] # Considering the metric in the value variable for linear regression
 
-		# For the CBO metric, check if there occurred any substantial decrease in the metric
+		# For the CBO metric, verify if there occurred any substantial decrease in the metric
 		if metric_name == SUBSTANTIAL_CHANGE_METRIC:
 			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, metric_name, repository_name)
 			
-		# Check for sufficient data points for regression
+		# Verify for sufficient data points for regression
 		if len(commit_number) < 2 or len(metric_values) < 2:
 			return
 		
@@ -496,11 +570,15 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		# Close the plot
 		plt.close()
    
-# @brief: This function writes the metrics evolution to a csv file
-# @param: repository_name: The name of the repository
-# @param: metrics_track_record: A dictionary containing the metrics of each method or class
-# @return: None
 def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
+	"""
+	Writes the metrics evolution to a csv file.
+
+	:param repository_name: The name of the repository
+	:param metrics_track_record: A dictionary containing the metrics of each method or class
+	:return: None
+	"""
+	
 	# For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
 	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar:
 		for identifier, record in metrics_track_record.items():
@@ -527,16 +605,20 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], identifier.split(" ")[1], repository_name) # Perform linear regression on the metrics
 			progress_bar.update(1) # Update the progress bar
 
-# @brief: Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
-# @param csv_writer: The csv writer object
-# @param id: The id of the method
-# @param key: The key of the method
-# @param metrics: The list of metrics
-# @param metrics_values: The list of metrics values
-# @param first_commit_hash: The first commit hash of the method
-# @param last_commit_hash: The last commit hash of the method
-# @return: None
 def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values, first_commit_hash, last_commit_hash):
+	"""
+	Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
+
+	:param csv_writer: The csv writer object
+	:param id: The id of the method
+	:param key: The key of the method
+	:param metrics: The list of metrics
+	:param metrics_values: The list of metrics values
+	:param first_commit_hash: The first commit hash of the method
+	:param last_commit_hash: The last commit hash of the method
+	:return: None
+	"""
+	
 	cboMin = round(float(min(metrics_values[0])), 3)
 	cboMax = round(float(max(metrics_values[0])), 3)
 	cboAvg = round(float(sum(metrics_values[0])) / len(metrics_values[0]), 3)
@@ -550,13 +632,18 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	rfcAvg = round(float(sum(metrics_values[2])) / len(metrics_values[2]), 3)
 	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3)
 
+	# Write the metrics statistics to the csv file
 	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash])
 
-# @brief: Process the metrics in metrics_track_record to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
-# @param repository_name: The name of the repository
-# @param metrics_track_record: A dictionary containing the metrics of each method or class
-# @return: None
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
+	"""
+	Processes the metrics in metrics_track_record to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
+
+	:param repository_name: The name of the repository
+	:param metrics_track_record: A dictionary containing the metrics of each method or class
+	:return: None
+	"""
+	
 	# Open the csv file and process the metrics of each method
 	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 	with open(unsorted_metrics_filename, "w") as csvfile:
@@ -569,7 +656,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
 		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
 			for identifier, metrics in metrics_track_record.items():
-				# check if the metrics changes is greater than the minimum changes
+				# Verify if the metrics changes is greater than the minimum changes
 				if metrics["changed"] < MINIMUM_CHANGES:
 					continue
 
@@ -587,10 +674,14 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 				write_method_metrics_statistics(writer, id, key, metrics, metrics_values, metrics_track_record[identifier]["commit_hashes"][0], metrics_track_record[identifier]["commit_hashes"][-1])
 				progress_bar.update(1) # Update the progress bar
 
-# @brief: This function sorts the csv file according to the number of changes
-# @param: repository_name: The name of the repository
-# @return: None
 def sort_csv_by_changes(repository_name):
+	"""
+	Sorts the csv file according to the number of changes.
+
+	:param repository_name: The name of the repository
+	:return: None
+	"""
+	
 	# print(f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}metrics statistics files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}number of changes{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}")
@@ -599,10 +690,14 @@ def sort_csv_by_changes(repository_name):
 	# Write the sorted csv file to a new csv file
 	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}", index=False)
 
-# @brief: This function sorts the interesting changes csv file according to the percentual variation of the metric
-# @param: repository_name: The name of the repository
-# @return: None
 def sort_csv_by_percentual_variation(repository_name):
+	"""
+	Sorts the csv file according to the percentual variation of the metric.
+
+	:param repository_name: The name of the repository
+	:return: None
+	"""
+	
 	# print(f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}")
@@ -614,16 +709,19 @@ def sort_csv_by_percentual_variation(repository_name):
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
-# @brief: The main function
-# @param: None
-# @return: None
 def main():
-	# Check if the path constants contains whitespaces
+	"""
+   Main function.
+
+   :return: None
+   """
+   
+	# Verify if the path constants contains whitespaces
 	if path_contains_whitespaces():
 		print(f"{BackgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return
 	
-	# Check if the refactoring miner tool exists in the specified path
+	# Verify if the refactoring miner tool exists in the specified path
 	if not verify_file(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH):
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
 		return
@@ -632,6 +730,11 @@ def main():
 
 	process_all_repositories() # Process all the repositories
 		
-# This is the standard boilerplate that calls the main() function.
 if __name__ == '__main__':
+   """
+   This is the standard boilerplate that calls the main() function.
+
+   :return: None
+   """
+   
    main() # Call the main function
