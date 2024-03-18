@@ -302,7 +302,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    commit_hashes = [] # The commit hashes list
    last_commit_number = 0 # The last commit number
 
-   # Check if there is a saved progress file
+   # Verify if there is a saved progress file
    if os.path.exists(saved_progress_file):
       with open(saved_progress_file, "r") as progress_file:
          lines = progress_file.readlines()
@@ -488,4 +488,5 @@ if __name__ == '__main__':
 
    :return: None
    """
+
    main() # Call the main function
