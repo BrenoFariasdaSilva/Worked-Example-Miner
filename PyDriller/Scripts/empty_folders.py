@@ -42,26 +42,30 @@ def main():
 
    :return: None
    """
+	
 	print(f"{BackgroundColors.GREEN}Current working directory: {BackgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
 	initial_directory = input(f"{BackgroundColors.GREEN}Enter the initial directory {BackgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
 	print(f"")
 
+	# If the initial directory is "default", set it to the data folders
 	if initial_directory.lower() == "default":
-		initial_directory = DATA_FOLDERS
-	
-	for directory in initial_directory:
-		if not os.path.isdir(directory):
-			print(f"{BackgroundColors.RED}Invalid directory path: {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
-			continue
+		initial_directory = DATA_FOLDERS # Set the initial directory to the data folders
 
-		empty_folders = search_empty_folders(directory)
-		if empty_folders:
+	# Loop through the directories in the initial directory	
+	for directory in initial_directory:
+		if not os.path.isdir(directory): # If the directory does not exist
+			print(f"{BackgroundColors.RED}Invalid directory path: {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
+			continue # Skip the directory
+
+		empty_folders = search_empty_folders(directory) # Search for empty folders in the directory
+
+		if empty_folders: # If empty folders are found
 			print(f"{BackgroundColors.GREEN}Empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}:{Style.RESET_ALL}")
-			for folder in empty_folders:
+			for folder in empty_folders: # Loop through the empty folders and print them
 				print(f"{BackgroundColors.CYAN}{folder}{Style.RESET_ALL}")
 			print(f"{BackgroundColors.GREEN}Total empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}: {BackgroundColors.CYAN}{len(empty_folders)}{Style.RESET_ALL}")
 			print(f"")
-		else:
+		else: # If no empty folders are found
 			print(f"{BackgroundColors.GREEN}No empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 if __name__ == '__main__':
