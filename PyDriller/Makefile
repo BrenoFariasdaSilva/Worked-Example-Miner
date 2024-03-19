@@ -33,10 +33,14 @@ dependencies:
 	python3 -m venv $(VENV)
 	$(PIP) install -r requirements.txt
 
+# Generate requirements.txt from the current venv
+generate-requirements:
+	$(PIP) freeze > requirements.txt
+
 # Utility rule for cleaning the project
 clean:
 	rm -rf $(VENV)
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extractZipFiles generateZipFiles moveExtractedFiles track_files_script dependencies
+.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extractZipFiles generateZipFiles moveExtractedFiles track_files_script dependencies generate-requirements
