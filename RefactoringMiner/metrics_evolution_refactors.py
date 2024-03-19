@@ -6,7 +6,7 @@ import threading # The threading module provides a high-level interface for runn
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 from repositories_refactors import BackgroundColors # Import the BackgroundColors class
-from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, ABSOLUTE_REFACTORING_MINER_PATH, ABSOLUTE_JSON_FILES_DIRECTORY_PATH, ABSOLUTE_REPOSITORIES_DIRECTORY_PATH # Import the constants
+from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, ABSOLUTE_REFACTORING_MINER_PATH, ABSOLUTE_JSON_FILES_DIRECTORY_PATH, ABSOLUTE_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
 from repositories_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
 
 # Constants:
@@ -33,7 +33,8 @@ def process_repository(repository_name, repository_url):
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    start_time = time.time() # Get the start time
 
@@ -57,7 +58,8 @@ def generate_refactorings_concurrently(repository_name):
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Generating the refactoring instances concurrently for the {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Generating the refactoring instances concurrently for the {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    threads = [] # List of threads
    for classname, variable_attribute in FILES_TO_ANALYZE.items(): # For each class or method to be analyzed
@@ -77,7 +79,8 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Generating the refactoring instances for the {BackgroundColors.CYAN}{classname}{BackgroundColors.GREEN} {CLASSES_OR_METHODS} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Generating the refactoring instances for the {BackgroundColors.CYAN}{classname}{BackgroundColors.GREEN} {CLASSES_OR_METHODS} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    # Open the metrics_evolutions desired file
    csv_file_path = f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}.csv"
@@ -116,7 +119,8 @@ def filter_json_file(classname, json_filepath, json_filtered_filepath):
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Filtering the JSON file {BackgroundColors.CYAN}{json_filepath}{BackgroundColors.GREEN} according to the desired refactoring types...{Style.RESET_ALL}")
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Filtering the JSON file {BackgroundColors.CYAN}{json_filepath}{BackgroundColors.GREEN} according to the desired refactoring types...{Style.RESET_ALL}")
    
    # Read the JSON data from the file
    with open(json_filepath, "r") as json_file:
