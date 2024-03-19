@@ -33,6 +33,8 @@ def process_repository(repository_name, repository_url):
    :return: None
    """
 
+   print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
    start_time = time.time() # Get the start time
 
    # Clone the repository or update it if it already exists
@@ -55,6 +57,8 @@ def generate_refactorings_concurrently(repository_name):
    :return: None
    """
 
+   print(f"{BackgroundColors.GREEN}Generating the refactoring instances concurrently for the {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
    threads = [] # List of threads
    for classname, variable_attribute in FILES_TO_ANALYZE.items(): # For each class or method to be analyzed
       thread = threading.Thread(target=generate_commit_refactors_for_class_or_methods, args=(repository_name,classname,variable_attribute,)) # Create a thread
@@ -72,6 +76,8 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
    :param variable_attribute: Name of the variable or attribute to be analyzed
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Generating the refactoring instances for the {BackgroundColors.CYAN}{classname}{BackgroundColors.GREEN} {CLASSES_OR_METHODS} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    # Open the metrics_evolutions desired file
    csv_file_path = f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}.csv"
@@ -109,6 +115,8 @@ def filter_json_file(classname, json_filepath, json_filtered_filepath):
    :param json_filtered_filepath: Path to the filtered JSON file
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Filtering the JSON file {BackgroundColors.CYAN}{json_filepath}{BackgroundColors.GREEN} according to the desired refactoring types...{Style.RESET_ALL}")
    
    # Read the JSON data from the file
    with open(json_filepath, "r") as json_file:
@@ -146,7 +154,8 @@ def main():
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return
       
-   print(f"{BackgroundColors.GREEN}This Script will generate de refactors for the commits in {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{DEFAULT_REPOSITORY}{BackgroundColors.GREEN} repository.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Evolution Refactors{BackgroundColors.GREEN}! This tool is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}This Script will generate de refactors for the commits in {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{DEFAULT_REPOSITORY}{BackgroundColors.GREEN} repository that were selected by analyzing the generated data from {BackgroundColors.CYAN}PyDriller/metrics_changes.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}")
 
    # Create the json directory
    create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
