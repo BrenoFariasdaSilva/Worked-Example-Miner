@@ -11,7 +11,9 @@ class BackgroundColors: # Colors for the terminal
 	UNDERLINE = "\033[4m" # Underline
 	CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
+# Constants:
 DATA_FOLDERS = ["ck_metrics", "diffs", "metrics_evolution", "metrics_predictions", "metrics_statistics"] # The Data Folders
+VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
 
 def search_empty_folders(directory):
 	"""
@@ -22,7 +24,8 @@ def search_empty_folders(directory):
 	
 	"""
 
-	print(f"{BackgroundColors.GREEN}Searching for empty folders in {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
+	if VERBOSE: # If the VERBOSE constant is set to True
+		print(f"{BackgroundColors.GREEN}Searching for empty folders in {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
 
 	empty_folders = [] # The list of empty folders
 
