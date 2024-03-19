@@ -19,21 +19,11 @@ DESIRED_REFACTORING_TYPES = ["Extract Method", "Extract Class", "Pull Up Method"
 DEFAULT_REPOSITORY = "zookeeper" # The default repository to be analyzed
 CLASSES_TYPE = {"class", "interface", "enum", "innerclass", "anonymous"} # The types of classes.
 FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Leader": "lead", "org.apache.zookeeper.server.quorum.LeaderElection": "lookForLeader", "org.apache.zookeeper.server.quorum.Follower": "followLeader"} # The desired methods of each repository
-# FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Learner": "class"} # The desired classes of each repository
 CLASSES_OR_METHODS = "classes" if any(class_type in FILES_TO_ANALYZE.values() for class_type in CLASSES_TYPE) else "methods" # The default class or method to be analyzed
 
 # Relative paths:
 RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH = "/metrics_evolution_refactors" # The relative path of the directory that contains the metrics evolution refactors files
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "../PyDriller/metrics_evolution" # The relative path of the directory that contains the metrics evolution files
-
-# @brief: This function is used to verify if the PATH constant contain whitespaces
-# @param: None
-# @return: True if the PATH constant contain whitespaces, False otherwise
-def path_contains_whitespaces():
-   # Verify if the PATH constant contains whitespaces
-   if " " in START_PATH: # If the PATH constant contains whitespaces
-      return True # Return True if the PATH constant contains whitespaces
-   return False # Return False if the PATH constant does not contain whitespaces
       
 # @brief: This function is used to process the repository
 # @param: repository_name: Name of the repository to be analyzed
