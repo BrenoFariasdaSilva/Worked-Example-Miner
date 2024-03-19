@@ -12,6 +12,9 @@ class BackgroundColors: # Colors for the terminal
 	UNDERLINE = "\033[4m" # Underline
 	CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
+# Constants:
+VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
+
 # List of target file names
 TARGET_FILENAMES = {"commons-lang": "", "jabref": "", "kafka": "", "zookeeper": "CHANGES.txt.diff"}
 
@@ -28,7 +31,8 @@ def search_files(search_directory, search_string):
 	:return: file_counts: A dictionary containing the number of files found
 	"""
 
-	print(f"{BackgroundColors.GREEN}Searching for {BackgroundColors.CYAN}{search_string} {BackgroundColors.GREEN}files in {BackgroundColors.CYAN}{search_directory}{Style.RESET_ALL}")
+	if VERBOSE: # If the VERBOSE constant is set to True
+		print(f"{BackgroundColors.GREEN}Searching for {BackgroundColors.CYAN}{search_string} {BackgroundColors.GREEN}files in {BackgroundColors.CYAN}{search_directory}{Style.RESET_ALL}")
 
 	file_counts = 0 # Counter for the number of files found
 	found_file_paths = [] # List to store the paths of the found files
