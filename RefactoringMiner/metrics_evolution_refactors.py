@@ -8,49 +8,23 @@ import threading # The threading module provides a high-level interface for runn
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 
-# Macros:
-class BackgroundColors: # Colors for the terminal
-   CYAN = "\033[96m" # Cyan
-   GREEN = "\033[92m" # Green
-   YELLOW = "\033[93m" # Yellow
-   RED = "\033[91m" # Red
-   BOLD = "\033[1m" # Bold
-   UNDERLINE = "\033[4m" # Underline
-   CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
-    
-# Default paths:
-START_PATH = os.getcwd() # Get the current working directory
-        
+from repository_refactors import BackgroundColors # Import the BackgroundColors class
+from repository_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, ABSOLUTE_REFACTORING_MINER_PATH, ABSOLUTE_JSON_FILES_DIRECTORY_PATH, ABSOLUTE_REPOSITORIES_DIRECTORY_PATH # Import the constants
+from repository_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
+
 # Constants:
-SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} 
-SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
 DESIRED_REFACTORING_TYPES = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactoring types
-
-# Time units:
-TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, seconds in a day
-
-# File Formats:
-JSON_FILE_FORMAT = "json" # The extension of the generated file by the RefactoringMiner Tool.
 
 # Default values:
 DEFAULT_REPOSITORY = "zookeeper" # The default repository to be analyzed
-DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
 CLASSES_TYPE = {"class", "interface", "enum", "innerclass", "anonymous"} # The types of classes.
 FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Leader": "lead", "org.apache.zookeeper.server.quorum.LeaderElection": "lookForLeader", "org.apache.zookeeper.server.quorum.Follower": "followLeader"} # The desired methods of each repository
 # FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Learner": "class"} # The desired classes of each repository
 CLASSES_OR_METHODS = "classes" if any(class_type in FILES_TO_ANALYZE.values() for class_type in CLASSES_TYPE) else "methods" # The default class or method to be analyzed
 
 # Relative paths:
-RELATIVE_REFACTORING_MINER_PATH = "/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner Tool
 RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH = "/metrics_evolution_refactors" # The relative path of the directory that contains the metrics evolution refactors files
-RELATIVE_JSON_FILES_DIRECTORY_PATH = "/json_files" # The relative path of the directory that contains the generated JSON files
-RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "../PyDriller/metrics_evolution" # The relative path of the directory that contains the metrics evolution files
-
-# Absolute paths:
-ABSOLUTE_REFACTORING_MINER_PATH = START_PATH + RELATIVE_REFACTORING_MINER_PATH # The absolute path to the RefactoringMiner Tool
-ABSOLUTE_JSON_FILES_DIRECTORY_PATH = START_PATH + RELATIVE_JSON_FILES_DIRECTORY_PATH # The absolute path of the directory that contains the generated JSON files
-ABSOLUTE_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The absolute path of the directory that contains the repositories
 
 # @brief: This function is used to verify if the PATH constant contain whitespaces
 # @param: None
@@ -60,18 +34,6 @@ def path_contains_whitespaces():
    if " " in START_PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
-
-# @brief: Create a directory
-# @param: full_directory_name: Name of the directory to be created
-# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
-# @return: None
-def create_directory(full_directory_name, relative_directory_name):
-   if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return
-   try: # Try to create the directory
-      os.makedirs(full_directory_name)
-   except OSError: # If the directory cannot be created
-      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
       
 # @brief: This function is used to process the repository
 # @param: repository_name: Name of the repository to be analyzed
@@ -91,34 +53,6 @@ def process_repository(repository_name, repository_url):
    # Output the time needed to generate the JSON files for the repository
    output_string = f"{BackgroundColors.GREEN}Time needed to {BackgroundColors.CYAN}generate the JSON files for the commits in {BackgroundColors.CYAN} {list(FILES_TO_ANALYZE.items())} {BackgroundColors.GREEN}for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
-
-# @brief: Clone the repository to the repository directory
-# @param: repository_name: Name of the repository to be analyzed
-# @param: repository_url: URL of the repository to be analyzed
-# @return: None
-def clone_repository(repository_name, repository_url):
-   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   # Verify if the repository directory already exists and if it is not empty
-   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
-      update_repository(repository_name) # Update the repository
-      return
-   else:
-      # Create a thread to clone the repository
-      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      # Wait for the thread to finish
-      thread.wait()
-
-# @brief: Update the repository using "git pull"
-# @param: repository_name: Name of the repository to be analyzed
-# @return: None
-def update_repository(repository_name):
-   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
-   
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
-   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   update_thread.wait() # Wait for the thread to finish
-   os.chdir(START_PATH) # Change the current working directory to the default one
 
 # @brief: This function is used to create a thread and call the generate_commit_refactors_for_class_or_methods for each FILES_TO_ANALYZE
 # @param: repository_name
@@ -172,13 +106,13 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
 # @return: None
 def filter_json_file(classname, json_filepath, json_filtered_filepath):
    # Read the JSON data from the file
-   with open(json_filepath, 'r') as json_file:
+   with open(json_filepath, "r") as json_file:
       json_data = json.load(json_file)
 
    filtered_json_data = [] # Initialize the filtered JSON data
 
    # Filter out refactoring instances that are not in the desired types
-   for commit in json_data['commits']:
+   for commit in json_data["commits"]:
       for refactoring in commit["refactorings"]:
          if refactoring["type"] in DESIRED_REFACTORING_TYPES:
             for rightSideLocation, leftSideLocation in zip(refactoring["rightSideLocations"], refactoring["leftSideLocations"]):
@@ -189,39 +123,8 @@ def filter_json_file(classname, json_filepath, json_filtered_filepath):
 
    # Write the filtered JSON data to the file if it is not empty
    if filtered_json_data:
-      with open(json_filtered_filepath, 'w') as json_file:
+      with open(json_filtered_filepath, "w") as json_file:
          json.dump(filtered_json_data, json_file, indent=1) # Write the filtered JSON data to the file
-   
-# @brief: This function outputs time, considering the appropriate time unit
-# @param: output_string: String to be outputted
-# @param: time: Time to be outputted
-# @return: None
-def output_time(output_string, time):
-   if float(time) < int(TIME_UNITS[0]):
-      time_unit = "seconds"
-      time_value = time
-   elif float(time) < float(TIME_UNITS[1]):
-      time_unit = "minutes"
-      time_value = time / TIME_UNITS[0]
-   elif float(time) < float(TIME_UNITS[2]):
-      time_unit = "hours"
-      time_value = time / TIME_UNITS[1]
-   else:
-      time_unit = "days"
-      time_value = time / TIME_UNITS[2]
-
-   rounded_time = round(time_value, 2)
-   print(f"{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
-
-# This function defines the command to play a sound when the program finishes
-def play_sound():
-	if os.path.exists(SOUND_FILE):
-		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
-			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
-		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
-	else: # if the sound file does not exist
-		print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
