@@ -29,6 +29,7 @@ track_files_script: $(VENV)
 # Setup Virtual Environment and Install Dependencies
 $(VENV): dependencies
 
+# Install the project dependencies in a virtual environment
 dependencies:
 	python3 -m venv $(VENV)
 	$(PIP) install -r requirements.txt
