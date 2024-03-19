@@ -5,7 +5,7 @@ PIP := $(VENV)/bin/pip
 
 # Scripts:
 repositories_refactors_script: $(VENV)
-	clear; time $(PYTHON) repository_refactors.py
+	clear; time $(PYTHON) repositories_refactors.py
 
 metrics_evolution_refactors_script: $(VENV)
 	clear; time $(PYTHON) metrics_evolution_refactors.py
