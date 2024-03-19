@@ -61,6 +61,8 @@ def path_contains_whitespaces():
 
    :return: True if the PATH constant contains whitespaces, False otherwise.
    """
+
+   print(f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
    
    # Verify if the PATH constant contains whitespaces
    if " " in START_PATH: # If the PATH constant contains whitespaces
@@ -73,6 +75,8 @@ def process_repositories_concurrently():
 
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Processing the repositories in {BackgroundColors.CYAN}{DEFAULT_REPOSITORIES.keys()}{BackgroundColors.GREEN} concurrently...{Style.RESET_ALL}")
 
    threads = [] # The threads list
    # Loop through the default repositories
@@ -95,6 +99,8 @@ def process_repository(repository_name, repository_url):
    :param repository_url: URL of the repository to be analyzed.
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    # Verify if the metrics were already calculated
    if verify_ck_metrics_folder(repository_name):
@@ -130,6 +136,8 @@ def update_repository(repository_name):
    :return: None
    """
 
+   print(f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
@@ -147,6 +155,8 @@ def clone_repository(repository_name, repository_url):
 
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
@@ -170,6 +180,8 @@ def create_directory(full_directory_name, relative_directory_name):
    :return: None
    """
 
+   print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
+
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
       return
    try: # Try to create the directory
@@ -184,6 +196,8 @@ def verify_ck_metrics_folder(repository_name):
    :param repository_name: Name of the repository to be analyzed.
    :return: True if all the metrics are already calculated, False otherwise.
    """
+
+   print(f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated...{Style.RESET_ALL}")
 
    data_path = os.path.join(START_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
    repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
@@ -217,6 +231,8 @@ def checkout_branch(branch_name):
    :return: None
    """
 
+   print(f"{BackgroundColors.GREEN}Checking out the {BackgroundColors.CYAN}{branch_name}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
+
    # Create a thread to checkout the branch
    checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    # Wait for the thread to finish
@@ -229,6 +245,8 @@ def run_ck_metrics_generator(cmd):
    :param cmd: Command to be executed.
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Running the CK metrics generator...{Style.RESET_ALL}")
 
    # Create a thread to run the cmd command
    thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -244,6 +262,8 @@ def generate_output_directory_paths(repository_name, commit_hash, commit_number)
    :return: The output_directory and relative_output_directory paths.
    """
 
+   print(f"{BackgroundColors.GREEN}Generating the output directory paths...{Style.RESET_ALL}")
+
    output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    return output_directory, relative_output_directory
@@ -256,6 +276,8 @@ def output_time(output_string, time):
    :param time: Time to be outputted.
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
 
    if float(time) < int(TIME_UNITS[0]):
       time_unit = "seconds"
@@ -284,6 +306,8 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
    :return: None
    """
 
+   print(f"{BackgroundColors.GREEN}Showing the execution time of the CK metrics generator...{Style.RESET_ALL}")
+
    estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2))
    time_taken_string = f"Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
@@ -298,6 +322,8 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    :param number_of_commits: Number of commits to be analyzed.
    :return: The commit hashes and the last commit.
    """
+
+   print(f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    commit_hashes = [] # The commit hashes list
    last_commit_number = 0 # The last commit number
@@ -344,6 +370,8 @@ def generate_diffs(repository_name, commit, commit_number):
    :return: None
    """
 
+   print(f"{BackgroundColors.GREEN}Generating the diffs for the {BackgroundColors.CYAN}{commit_number}º{BackgroundColors.GREEN} commit of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
    for modified_file in commit.modified_files:
       file_diff = modified_file.diff # Get the diff of the modified file
 
@@ -365,6 +393,8 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    :param number_of_commits: Number of commits to be analyzed.
    :return: The commit hashes of the repository.
    """
+
+   print(f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to run CK for every commit hash...{Style.RESET_ALL}")
 
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
@@ -433,6 +463,8 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
    :param commit_hashes: List of tuples containing the commit hashes, commit messages and commit dates.
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Writing the commit hashes to a csv file...{Style.RESET_ALL}")
    
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
    with open(file_path, "w", newline="") as csv_file:
@@ -448,6 +480,8 @@ def play_sound():
 
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Playing a sound when the program finishes...{Style.RESET_ALL}")
    
    if os.path.exists(SOUND_FILE):
       if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
@@ -477,8 +511,9 @@ def main():
       print(f"{BackgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{BackgroundColors.RED}.{Style.RESET_ALL}")
       return
 
+   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN}! This tool is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} concurrently.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used in the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}")
    
    process_repositories_concurrently() # Process the repositories concurrently
 		
