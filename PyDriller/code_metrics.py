@@ -28,7 +28,7 @@ VERBOSE = False # Verbose mode. If set to True, it will output messages at the s
         
 # Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} 
-SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
+SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound file
 
 # Extensions:
 CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit hashes

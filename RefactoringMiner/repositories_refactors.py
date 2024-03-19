@@ -24,7 +24,7 @@ VERBOSE = False # Verbose mode. If set to True, it will output messages at the s
 
 # Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} 
-SOUND_FILE = "../.assets/NotificationSound.wav" # The path to the sound file
+SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound file
 
 # Time units:
 TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, seconds in a day

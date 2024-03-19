@@ -35,8 +35,8 @@ fi
 
 # Loop through the repositories names
 for repo_name in "${repositories[@]}"; do
-   folders_list=("") # Clean the folders_list variable
-   for folder in "${subfolders[@]}"; do # Loop through the subfolders
+   folders_list=("")                              # Clean the folders_list variable
+   for folder in "${subfolders[@]}"; do           # Loop through the subfolders
       folders_list+=("./${folder}/${repo_name}/") # Add the folder to the list
    done
 
@@ -50,12 +50,12 @@ for repo_name in "${repositories[@]}"; do
 done
 
 # Play a sound when the script finishes
-sound_file="./../.assets/NotificationSound.wav"
+sound_file="./../.assets/Sounds/NotificationSound.wav"
 
 if [ -e "$sound_file" ]; then
-  aplay "$sound_file" # Play the sound file
+   aplay "$sound_file" # Play the sound file
 else
-  echo "Sound file not found at: $sound_file"
+   echo "Sound file not found at: $sound_file"
 fi
 
 # Print a success message

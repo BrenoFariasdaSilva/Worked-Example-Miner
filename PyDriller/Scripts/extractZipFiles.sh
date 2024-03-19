@@ -17,7 +17,7 @@ if [[ "${current_dir}" != *"/PyDriller" ]]; then
 fi
 
 # Define the compressed directory
-compressed_dir="compressed" # Set the compressed directory 
+compressed_dir="compressed" # Set the compressed directory
 
 # If the compressed directory does not exist, then create it
 if [[ ! -d "$compressed_dir" ]]; then
@@ -33,9 +33,9 @@ short_repositories=("commons-lang-short" "jabref-short" "kafka-short" "zookeeper
 for repo_name in "${full_repositories[@]}"; do
    zipfile="$compressed_dir/${repo_name}.zip" # Define the zip file path
    echo "Unzipping $zipfile to $compressed_dir..."
-   if [ -e "$zipfile" ]; then # Check if the zip file exists
+   if [ -e "$zipfile" ]; then                  # Check if the zip file exists
       unzip -q "$zipfile" -d "$compressed_dir" # Unzip the file
-      echo "Unzipped $zipfile to $compressed_dir" 
+      echo "Unzipped $zipfile to $compressed_dir"
    else # If the zip file does not exist, then print an error message
       echo "File $zipfile not found in $compressed_dir"
    fi
@@ -45,21 +45,21 @@ done
 for repo_name in "${short_repositories[@]}"; do
    zipfile="$compressed_dir/${repo_name}.zip" # Define the zip file path
    echo "Unzipping $zipfile to $compressed_dir..."
-   if [ -e "$zipfile" ]; then # Check if the zip file exists
+   if [ -e "$zipfile" ]; then                  # Check if the zip file exists
       unzip -q "$zipfile" -d "$compressed_dir" # Unzip the file
-      echo "Unzipped $zipfile to $compressed_dir" 
+      echo "Unzipped $zipfile to $compressed_dir"
    else # If the zip file does not exist, then print an error message
       echo "File $zipfile not found in $compressed_dir"
    fi
 done
 
 # Play a sound when the script finishes
-sound_file="../.assets/NotificationSound.wav"
+sound_file="../.assets/Sounds/NotificationSound.wav"
 
 if [ -e "$sound_file" ]; then
-  aplay "$sound_file" # Play the sound file
+   aplay "$sound_file" # Play the sound file
 else
-  echo "Sound file not found at: $sound_file"
+   echo "Sound file not found at: $sound_file"
 fi
 
 # Print a success message
