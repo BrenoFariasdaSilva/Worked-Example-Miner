@@ -28,6 +28,8 @@ def search_files(search_directory, search_string):
 	:return: file_counts: A dictionary containing the number of files found
 	"""
 
+	print(f"{BackgroundColors.GREEN}Searching for {BackgroundColors.CYAN}{search_string} {BackgroundColors.GREEN}files in {BackgroundColors.CYAN}{search_directory}{Style.RESET_ALL}")
+
 	file_counts = 0 # Counter for the number of files found
 	found_file_paths = [] # List to store the paths of the found files
 	# Walk through the directory
