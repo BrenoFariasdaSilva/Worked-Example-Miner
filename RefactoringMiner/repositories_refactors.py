@@ -52,6 +52,8 @@ def path_contains_whitespaces():
    :return: True if the PATH constant contains whitespaces, False otherwise
    """
 
+   print(f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
+
    # Verify if the PATH constant contains whitespaces
    if " " in START_PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
@@ -63,6 +65,8 @@ def verify_refactorings():
 
    :return: Returns a new dictionary with the DEFAULT_REFACTORINGS that were not generated
    """
+
+   print(f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}Refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}DEFAULT_REFACTORINGS{BackgroundColors.GREEN} were already generated...{Style.RESET_ALL}")
    
    refactorings = {} # The refactorings dictionary
    # Loop through the default repositories
@@ -83,6 +87,8 @@ def create_directory(full_directory_name, relative_directory_name):
    :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
    
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
       return
@@ -98,6 +104,8 @@ def process_repositories_concurrently(repositories):
    :param repositories: The repositories dictionary to be analyzed
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Processing the repositories {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} concurrently...{Style.RESET_ALL}")
    
    threads = [] # The threads list
    # Loop through the default repositories
@@ -120,6 +128,8 @@ def process_repository(repository_name, repository_url):
    :param repository_url: URL of the repository to be analyzed
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    start_time = time.time() # Get the start time
 
@@ -143,6 +153,8 @@ def clone_repository(repository_name, repository_url):
    :param repository_url: URL of the repository to be analyzed
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
@@ -162,6 +174,8 @@ def update_repository(repository_name):
    :param repository_name: Name of the repository to be analyzed
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
@@ -178,6 +192,8 @@ def generate_commit_refactors(repository_name):
    :param repository_name: Name of the repository to be analyzed
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Generating the {BackgroundColors.CYAN}refactoring instances{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    json_output_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
@@ -194,6 +210,8 @@ def output_time(output_string, time):
    :param time: Time to be outputted
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Outputting the {BackgroundColors.CYAN}time{BackgroundColors.GREEN} needed...{Style.RESET_ALL}")
    
    if float(time) < int(TIME_UNITS[0]):
       time_unit = "seconds"
@@ -217,6 +235,8 @@ def play_sound():
 
    :return: None
    """
+
+   print(f"{BackgroundColors.GREEN}Playing a {BackgroundColors.CYAN}sound{BackgroundColors.GREEN} when the program finishes...{Style.RESET_ALL}")
 
    if os.path.exists(SOUND_FILE):
       if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
