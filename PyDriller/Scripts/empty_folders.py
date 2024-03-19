@@ -22,6 +22,8 @@ def search_empty_folders(directory):
 	
 	"""
 
+	print(f"{BackgroundColors.GREEN}Searching for empty folders in {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
+
 	empty_folders = [] # The list of empty folders
 
 	# Loop through the directory
