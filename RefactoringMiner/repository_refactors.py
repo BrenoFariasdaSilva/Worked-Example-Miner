@@ -45,19 +45,25 @@ ABSOLUTE_REFACTORING_MINER_PATH = START_PATH + RELATIVE_REFACTORING_MINER_PATH #
 ABSOLUTE_JSON_FILES_DIRECTORY_PATH = START_PATH + RELATIVE_JSON_FILES_DIRECTORY_PATH # The absolute path of the directory that contains the generated JSON files
 ABSOLUTE_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The absolute path of the directory that contains the repositories
 
-# @brief: This function is used to verify if the PATH constant contain whitespaces
-# @param: None
-# @return: True if the PATH constant contain whitespaces, False otherwise
 def path_contains_whitespaces():
+   """
+   Verify if the PATH constant contains whitespaces.
+
+   :return: True if the PATH constant contains whitespaces, False otherwise
+   """
+
    # Verify if the PATH constant contains whitespaces
    if " " in START_PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
-# @brief: This function is used to verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
-# @param: None
-# @return: Returns a new dictionary with the DEFAULT_REFACTORINGS that were not generated
 def verify_refactorings():
+   """
+   Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated.
+
+   :return: Returns a new dictionary with the DEFAULT_REFACTORINGS that were not generated
+   """
+   
    refactorings = {} # The refactorings dictionary
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
@@ -69,11 +75,15 @@ def verify_refactorings():
          print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository were already generated.{Style.RESET_ALL}")
    return refactorings # Return the refactorings dictionary
 
-# @brief: Create a directory
-# @param: full_directory_name: Name of the directory to be created
-# @param: relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
-# @return: None
 def create_directory(full_directory_name, relative_directory_name):
+   """
+   Create a directory.
+
+   :param full_directory_name: Name of the directory to be created
+   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal
+   :return: None
+   """
+   
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
       return
    try: # Try to create the directory
@@ -81,10 +91,14 @@ def create_directory(full_directory_name, relative_directory_name):
    except OSError: # If the directory cannot be created
       print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
-# @brief: This function is used to process each repositorie name concurrently, using threads
-# @param: repositories: The repositories dictionary to be analyzed
-# @return: None 
 def process_repositories_concurrently(repositories):
+   """
+   Process the repositories concurrently.
+
+   :param repositories: The repositories dictionary to be analyzed
+   :return: None
+   """
+   
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in repositories.items():
@@ -97,12 +111,16 @@ def process_repositories_concurrently(repositories):
    # Wait for all threads to finish
    for thread in threads:
       thread.join() # Wait for the thread to finish
-      
-# @brief: This function is used to process the repository
-# @param: repository_name: Name of the repository to be analyzed
-# @param: repository_url: URL of the repository to be analyzed
-# @return: None
+
 def process_repository(repository_name, repository_url):
+   """
+   Process the repository.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   :return: None
+   """
+   
    start_time = time.time() # Get the start time
 
    # Clone the repository or update it if it already exists
@@ -116,12 +134,16 @@ def process_repository(repository_name, repository_url):
    # Output the time needed to generate the JSON files for the repository
    output_string = f"{BackgroundColors.GREEN}Time needed to {BackgroundColors.CYAN}generate the JSON files {BackgroundColors.GREEN}for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
-   
-# @brief: Clone the repository to the repository directory
-# @param: repository_name: Name of the repository to be analyzed
-# @param: repository_url: URL of the repository to be analyzed
-# @return: None
+
 def clone_repository(repository_name, repository_url):
+   """
+   Clone the repository to the repository directory.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   :return: None
+   """
+   
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
@@ -133,10 +155,14 @@ def clone_repository(repository_name, repository_url):
       # Wait for the thread to finish
       thread.wait()
 
-# @brief: Update the repository using "git pull"
-# @param: repository_name: Name of the repository to be analyzed
-# @return: None
 def update_repository(repository_name):
+   """
+   Update the repository using "git pull".
+
+   :param repository_name: Name of the repository to be analyzed
+   :return: None
+   """
+   
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
@@ -144,23 +170,31 @@ def update_repository(repository_name):
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
-      
-# This function runs the RefactoringMiner command to generate the JSON files
-# @param: repository_name: Name of the repository to be analyzed
-# @return: None
+
 def generate_commit_refactors(repository_name):
+   """
+   Generate the refactoring instances for the repository.
+
+   :param repository_name: Name of the repository to be analyzed
+   :return: None
+   """
+   
    repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    json_output_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORY_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
 
    # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
    thread = subprocess.Popen([ABSOLUTE_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_output_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = thread.communicate() # Get the output of the thread
-   
-# @brief: This function outputs time, considering the appropriate time unit
-# @param: output_string: String to be outputted
-# @param: time: Time to be outputted
-# @return: None
+
 def output_time(output_string, time):
+   """
+   Output the time, considering the appropriate time unit.
+
+   :param output_string: String to be outputted
+   :param time: Time to be outputted
+   :return: None
+   """
+   
    if float(time) < int(TIME_UNITS[0]):
       time_unit = "seconds"
       time_value = time
@@ -177,21 +211,31 @@ def output_time(output_string, time):
    rounded_time = round(time_value, 2)
    print(f"{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
-# This function defines the command to play a sound when the program finishes
 def play_sound():
-	if os.path.exists(SOUND_FILE):
-		if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
-			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
-		else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
-			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
-	else: # if the sound file does not exist
-		print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+   """
+   Plays a sound when the program finishes.
+
+   :return: None
+   """
+
+   if os.path.exists(SOUND_FILE):
+      if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
+         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
+      else: # if the platform.system() is not in the SOUND_COMMANDS dictionary
+         print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+   else: # if the sound file does not exist
+      print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
-# @brief: This function is used to run the main function
 def main():
+   """
+   Main function.
+
+   :return: None
+   """
+
    # Verify if the path contains whitespaces
    if path_contains_whitespaces():
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
@@ -213,6 +257,11 @@ def main():
 
    print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}refactors{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories were generated.{Style.RESET_ALL}")
     		
-# This is the standard boilerplate that calls the main() function.
 if __name__ == '__main__':
+   """
+   This is the standard boilerplate that calls the main() function.
+
+   :return: None
+   """
+   
    main() # Call the main function
