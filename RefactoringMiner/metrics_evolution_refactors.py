@@ -1,13 +1,10 @@
 import atexit # For playing a sound when the program finishes
-import os # OS module in Python provides functions for interacting with the operating system
 import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
 import json # JSON (JavaScript Object Notation) is a lightweight data-interchange format
-import platform # For getting the operating system name
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
-
 from repository_refactors import BackgroundColors # Import the BackgroundColors class
 from repository_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, ABSOLUTE_REFACTORING_MINER_PATH, ABSOLUTE_JSON_FILES_DIRECTORY_PATH, ABSOLUTE_REPOSITORIES_DIRECTORY_PATH # Import the constants
 from repository_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
@@ -24,12 +21,18 @@ CLASSES_OR_METHODS = "classes" if any(class_type in FILES_TO_ANALYZE.values() fo
 # Relative paths:
 RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH = "/metrics_evolution_refactors" # The relative path of the directory that contains the metrics evolution refactors files
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "../PyDriller/metrics_evolution" # The relative path of the directory that contains the metrics evolution files
-      
-# @brief: This function is used to process the repository
-# @param: repository_name: Name of the repository to be analyzed
-# @param: repository_url: URL of the repository to be analyzed
-# @return: None
+
+# Functions:
+
 def process_repository(repository_name, repository_url):
+   """
+   Process the repository.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   :return: None
+   """
+
    start_time = time.time() # Get the start time
 
    # Clone the repository or update it if it already exists
@@ -44,10 +47,14 @@ def process_repository(repository_name, repository_url):
    output_string = f"{BackgroundColors.GREEN}Time needed to {BackgroundColors.CYAN}generate the JSON files for the commits in {BackgroundColors.CYAN} {list(FILES_TO_ANALYZE.items())} {BackgroundColors.GREEN}for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(output_string, end_time - start_time)
 
-# @brief: This function is used to create a thread and call the generate_commit_refactors_for_class_or_methods for each FILES_TO_ANALYZE
-# @param: repository_name
-# @return: None
 def generate_refactorings_concurrently(repository_name):
+   """
+   Generate the refactoring instances concurrently.
+
+   :param repository_name: Name of the repository to be analyzed
+   :return: None
+   """
+
    threads = [] # List of threads
    for classname, variable_attribute in FILES_TO_ANALYZE.items(): # For each class or method to be analyzed
       thread = threading.Thread(target=generate_commit_refactors_for_class_or_methods, args=(repository_name,classname,variable_attribute,)) # Create a thread
@@ -56,12 +63,16 @@ def generate_refactorings_concurrently(repository_name):
    for thread in threads: # For each thread
       thread.join() # Wait for the thread to finish
 
-# This function runs the RefactoringMiner command to generate the JSON files
-# @param: repository_name: Name of the repository to be analyzed
-# @param: classname: Name of the class to be analyzed
-# @param: variable_attribute: Name of the variable or attribute to be analyzed
-# @return: None
 def generate_commit_refactors_for_class_or_methods(repository_name, classname, variable_attribute):
+   """
+   Generate the refactoring instances for the class or method.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param classname: Name of the class to be analyzed
+   :param variable_attribute: Name of the variable or attribute to be analyzed
+   :return: None
+   """
+   
    # Open the metrics_evolutions desired file
    csv_file_path = f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}.csv"
    # Open the csv file and read the column "Commit Hash"
@@ -89,12 +100,16 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
       # Filter the JSON file
       filter_json_file(classname, json_filepath, json_filtered_filepath)
 
-# @brief: This function is used to filter the JSON file
-# @param: classname: Name of the class to be analyzed
-# @param: json_filepath: Path to the JSON file to be filtered
-# @param: json_filtered_filepath: Path to the JSON file to be filtered
-# @return: None
 def filter_json_file(classname, json_filepath, json_filtered_filepath):
+   """
+   Filter the JSON file according to the desired refactoring types.
+
+   :param classname: Name of the class to be analyzed
+   :param json_filepath: Path to the JSON file to be filtered
+   :param json_filtered_filepath: Path to the filtered JSON file
+   :return: None
+   """
+   
    # Read the JSON data from the file
    with open(json_filepath, "r") as json_file:
       json_data = json.load(json_file)
@@ -119,8 +134,13 @@ def filter_json_file(classname, json_filepath, json_filtered_filepath):
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
-# @brief: This function is used to run the main function
 def main():
+   """
+   Main function.
+
+   :return: None
+   """
+
    # Verify if the path contains whitespaces
    if path_contains_whitespaces():
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
@@ -135,7 +155,12 @@ def main():
 
    # Process the repository
    process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])
-    
-# This is the standard boilerplate that calls the main() function.
+
 if __name__ == '__main__':
+   """
+   This is the standard boilerplate that calls the main() function.
+
+   :return: None
+   """
+   
    main() # Call the main function
