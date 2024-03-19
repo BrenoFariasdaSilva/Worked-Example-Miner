@@ -31,7 +31,7 @@ $(VENV): dependencies
 
 dependencies:
 	python3 -m venv $(VENV)
-	$(PIP) install colorama matplotlib numpy pandas pydriller scikit-learn tqdm
+	$(PIP) install -r requirements.txt
 
 # Utility rule for cleaning the project
 clean:
