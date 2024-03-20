@@ -333,13 +333,13 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    :param repository_name: Name of the repository to be analyzed.
    :param saved_progress_file: Name of the file that contains the saved progress.
    :param number_of_commits: Number of commits to be analyzed.
-   :return: The commit hashes and the last commit.
+   :return: The commits_info and last_commit_number.
    """
 
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   commit_hashes = [] # The commit hashes list
+   commits_info = [] # The commit information list containing the commit hashes, commit messages and commit dates
    last_commit_number = 0 # The last commit number
 
    # Verify if there is a saved progress file
@@ -357,12 +357,12 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
             last_commit_hash = 0
             with open(saved_progress_file, "w") as progress_file:
                for line in lines:
-                  progress_file.write(line)
+                  progress_file.write(line) # Write the line to the progress file
             # Fill the commit_hashes list with the commits that were already processed
             for line in lines[1:]:
-               current_tuple = (line.split(",")[1], line.split(",")[2], line.split(",")[3])
-               last_commit_hash = line.split(",")[1]
-               commit_hashes.append(current_tuple)
+               current_tuple = (line.split(",")[1], line.split(",")[2], line.split(",")[3]) # Store the commit hash, commit message and commit date in one line of the list, separated by commas
+               last_commit_hash = line.split(",")[1] # Get the last commit hash
+               commits_info.append(current_tuple) # Append the current tuple to the commit_hashes list
             percentage_progress = round((last_commit_number / number_of_commits) * 100, 2)
             print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
             execution_time = f"Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
@@ -372,7 +372,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
       with open(saved_progress_file, "w") as progress_file:
          progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
 
-   return commit_hashes, last_commit_number
+   return commits_info, last_commit_number # Return the commit_hashes list and the last commit number
 
 def generate_diffs(repository_name, commit, commit_number):
    """
@@ -414,25 +414,25 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
-   i = 1
+   commit_number = 1 # The current commit number
    saved_progress_file = f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv"
 
    # Get the last execution progress of the repository
-   commit_hashes, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
+   commits_info, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
 
    # Create a progress bar with the total number of commits
    with tqdm(total=number_of_commits-last_commit, unit=f" {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commits{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url).traverse_commits():
-         if i < last_commit:
-            i += 1
+         if commit_number < last_commit:
+            commit_number += 1
             pbar.update(1)
             continue
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
-         current_tuple = (f"{i}-{commit.hash}", commit.msg.split("\n")[0], commit.committer_date)
-         commit_hashes.append(current_tuple)
+         current_tuple = (f"{commit_number}-{commit.hash}", commit.msg.split("\n")[0], commit.committer_date)
+         commits_info.append(current_tuple)
 
          # Save the diff of the modified files of the current commit
-         generate_diffs(repository_name, commit, i)
+         generate_diffs(repository_name, commit, commit_number)
 
          # Change working directory to the repository directory
          workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
@@ -442,7 +442,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          checkout_branch(commit.hash)
 
          # Create the ck_metrics directory paths
-         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, i)
+         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, commit_number)
          # Create the ck_metrics directory
          create_directory(output_directory, relative_output_directory)
 
@@ -453,14 +453,14 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
          run_ck_metrics_generator(cmd)
 
-         if i == 1:
+         if commit_number == 1:
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
          # Append the commit hash, commit message and commit date to the progress file
          with open(saved_progress_file, "a") as progress_file:
-            progress_file.write(f"{i},{commit.hash},{current_tuple[1]},{current_tuple[2]}\n")
+            progress_file.write(f"{commit_number},{commit.hash},{current_tuple[1]},{current_tuple[2]}\n")
 
-         i += 1
+         commit_number += 1
          pbar.update(1) # Update the progress bar
 
    # Remove the saved progress file when processing is complete
@@ -469,7 +469,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    elapsed_time = time.time() - start_time # Calculate elapsed time
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
 
-   return commit_hashes
+   return commits_info
 
 def write_commit_hashes_to_csv(repository_name, commit_hashes):
    """
