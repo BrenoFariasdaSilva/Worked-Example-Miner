@@ -27,7 +27,7 @@ START_PATH = os.getcwd() # Get the current working directory
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
         
 # Constants:
-SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} 
+SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The sound commands for each operating system
 SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound file
 
 # Extensions:
@@ -86,7 +86,7 @@ def process_repositories_in_parallel():
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
       estimated_time_string = f"Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
       commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
-      output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * commits_number), 2))
+      output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
       threads.append(thread) # Append the thread to the threads list
       thread.start() # Start the thread
@@ -124,10 +124,10 @@ def process_repository(repository_name, repository_url):
    # Get the number of commits, which is needed to traverse the repository
    number_of_commits = len(list(Repository(repository_url).traverse_commits()))
    # Traverse the repository to run ck for every commit hash in the repository
-   commit_hashes = traverse_repository(repository_name, repository_url, number_of_commits)
+   commits_info = traverse_repository(repository_name, repository_url, number_of_commits)
 
-   # Write the commit hashes to a csv file
-   write_commit_hashes_to_csv(repository_name, commit_hashes)
+   # Write the commits information to a csv file
+   write_commits_information_to_csv(repository_name, commits_info)
 
    # Checkout the main branch
    checkout_branch("main")
@@ -168,7 +168,7 @@ def clone_repository(repository_name, repository_url):
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
       update_repository(repository_name) # Update the repository
-      return
+      return # Return if the repository directory already exists and if it is not empty
    else:
       print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
       # Create a thread to clone the repository
@@ -190,7 +190,7 @@ def create_directory(full_directory_name, relative_directory_name):
       print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
 
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return
+      return # Return if the directory already exists
    try: # Try to create the directory
       os.makedirs(full_directory_name)
    except OSError: # If the directory cannot be created
@@ -220,7 +220,7 @@ def verify_ck_metrics_folder(repository_name):
    commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
 
    # Verify if the repository exists
-   for commit_hash in commit_hashes:
+   for commit_hash in commit_hashes: # Loop through the commit hashes
       commit_file_filename = commit_hash[0] # This removes the brackets from the commit hash
       folder_path = os.path.join(repo_path, commit_file_filename) # Join the repo path with the folder name
 
@@ -259,8 +259,8 @@ def run_ck_metrics_generator(cmd):
       print(f"{BackgroundColors.GREEN}Running the CK Metrics Generator Command...{Style.RESET_ALL}")
 
    # Create a thread to run the cmd command
-   thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   stdout, stderr = thread.communicate()
+   thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the cmd command in a subprocess
+   stdout, stderr = thread.communicate() # Get the stdout and stderr of the thread
 
 def generate_output_directory_paths(repository_name, commit_hash, commit_number):
    """
@@ -277,7 +277,7 @@ def generate_output_directory_paths(repository_name, commit_hash, commit_number)
 
    output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
-   return output_directory, relative_output_directory
+   return output_directory, relative_output_directory # Return the output_directory and relative_output_directory paths
 
 def output_time(output_string, time):
    """
@@ -291,20 +291,20 @@ def output_time(output_string, time):
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
 
-   if float(time) < int(TIME_UNITS[0]):
-      time_unit = "seconds"
-      time_value = time
-   elif float(time) < float(TIME_UNITS[1]):
-      time_unit = "minutes"
-      time_value = time / TIME_UNITS[0]
-   elif float(time) < float(TIME_UNITS[2]):
-      time_unit = "hours"
-      time_value = time / TIME_UNITS[1]
-   else:
-      time_unit = "days"
-      time_value = time / TIME_UNITS[2]
+   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
+      time_unit = "seconds" # Set the time unit to seconds
+      time_value = time # Set the time value to time
+   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
+      time_unit = "minutes" # Set the time unit to minutes
+      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
+   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
+      time_unit = "hours" # Set the time unit to hours
+      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
+   else: # If the time is greater than or equal to 86400 seconds
+      time_unit = "days" # Set the time unit to days
+      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
 
-   rounded_time = round(time_value, 2)
+   rounded_time = round(time_value, 2) # Round the time value to two decimal places
    print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
 def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
@@ -322,9 +322,9 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
       print(f"{BackgroundColors.GREEN}Showing the execution time of the CK metrics generator...{Style.RESET_ALL}")
 
    estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-   output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2))
+   output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2)) # Output the estimated time for running all of the iterations for the repository
    time_taken_string = f"Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
-   output_time(time_taken_string, round(elapsed_time, 2))
+   output_time(time_taken_string, round(elapsed_time, 2)) # Output the time taken to generate CK metrics for the commits in the repository
 
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
@@ -353,17 +353,17 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
             progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
          # If it only has one line, then it is just the header
          if len(lines) > 3:
-            last_commit_number = int(lines[-1].split(",")[0])
-            last_commit_hash = 0
-            with open(saved_progress_file, "w") as progress_file:
-               for line in lines:
+            last_commit_number = int(lines[-1].split(",")[0]) # Get the last commit number
+            last_commit_hash = 0 # The last commit hash
+            with open(saved_progress_file, "w") as progress_file: # Open the saved progress file
+               for line in lines: # Loop through the lines
                   progress_file.write(line) # Write the line to the progress file
             # Fill the commit_hashes list with the commits that were already processed
-            for line in lines[1:]:
+            for line in lines[1:]: # Loop through the lines
                current_tuple = (line.split(",")[1], line.split(",")[2], line.split(",")[3]) # Store the commit hash, commit message and commit date in one line of the list, separated by commas
                last_commit_hash = line.split(",")[1] # Get the last commit hash
                commits_info.append(current_tuple) # Append the current tuple to the commit_hashes list
-            percentage_progress = round((last_commit_number / number_of_commits) * 100, 2)
+            percentage_progress = round((last_commit_number / number_of_commits) * 100, 2) # Calculate the percentage progress
             print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
             execution_time = f"Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
             output_time(execution_time, round((ITERATIONS_DURATION[repository_name] * (number_of_commits - last_commit_number)), 2))
@@ -387,7 +387,7 @@ def generate_diffs(repository_name, commit, commit_number):
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Generating the diffs for the {BackgroundColors.CYAN}{commit_number}º{BackgroundColors.GREEN} commit of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   for modified_file in commit.modified_files:
+   for modified_file in commit.modified_files: # Loop through the modified files of the commit
       file_diff = modified_file.diff # Get the diff of the modified file
 
       diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit.hash}/" # Define the directory to save the diff file
@@ -406,7 +406,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    :param repository_name: Name of the repository to be analyzed.
    :param repository_url: URL of the repository to be analyzed.
    :param number_of_commits: Number of commits to be analyzed.
-   :return: The commit hashes of the repository.
+   :return: The commit information of the repository.
    """
 
    if VERBOSE: # If the VERBOSE constant is set to True
@@ -422,23 +422,24 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
    # Create a progress bar with the total number of commits
    with tqdm(total=number_of_commits-last_commit, unit=f" {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commits{Style.RESET_ALL}", unit_scale=True) as pbar:
-      for commit in Repository(repository_url).traverse_commits():
-         if commit_number < last_commit:
-            commit_number += 1
-            pbar.update(1)
-            continue
+      for commit in Repository(repository_url).traverse_commits(): # Loop through the commits of the repository
+         if commit_number < last_commit: # If the current commit number is less than the last commit number
+            commit_number += 1 # Increment the commit number
+            pbar.update(1) # Update the progress bar
+            continue # Jump to the next iteration
+
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
          current_tuple = (f"{commit_number}-{commit.hash}", commit.msg.split("\n")[0], commit.committer_date)
-         commits_info.append(current_tuple)
+         commits_info.append(current_tuple) # Append the current tuple to the commit_hashes list
 
          # Save the diff of the modified files of the current commit
          generate_diffs(repository_name, commit, commit_number)
 
          # Change working directory to the repository directory
          workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
-         os.chdir(workdir)        
+         os.chdir(workdir)    
 
-         # Checkout the commit hash branch to run ck
+         # Checkout the current commit hash branch to run ck
          checkout_branch(commit.hash)
 
          # Create the ck_metrics directory paths
@@ -453,35 +454,36 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
          run_ck_metrics_generator(cmd)
 
-         if commit_number == 1:
+         if commit_number == 1: # If it is the first iteration
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
          # Append the commit hash, commit message and commit date to the progress file
          with open(saved_progress_file, "a") as progress_file:
             progress_file.write(f"{commit_number},{commit.hash},{current_tuple[1]},{current_tuple[2]}\n")
 
-         commit_number += 1
+         commit_number += 1 # Increment the commit number
          pbar.update(1) # Update the progress bar
 
    # Remove the saved progress file when processing is complete
    os.remove(saved_progress_file)
 
    elapsed_time = time.time() - start_time # Calculate elapsed time
+   # Show the execution time of the CK metrics generator
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
 
-   return commits_info
+   return commits_info # Return the commits information list
 
-def write_commit_hashes_to_csv(repository_name, commit_hashes):
+def write_commits_information_to_csv(repository_name, commit_info):
    """
-   Writes the commit hashes to a csv file.
+   Writes the commit information to a csv file.
 
    :param repository_name: Name of the repository to be analyzed.
-   :param commit_hashes: List of tuples containing the commit hashes, commit messages and commit dates.
+   :param commit_info: List of tuples containing the commit hashes, commit messages and commit dates.
    :return: None
    """
 
    if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Writing the commit hashes to a csv file...{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}Writing the commit information to a csv file...{Style.RESET_ALL}")
    
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
    with open(file_path, "w", newline="") as csv_file:
@@ -489,7 +491,7 @@ def write_commit_hashes_to_csv(repository_name, commit_hashes):
       # Write the header
       writer.writerow(["Commit Hash", "Commit Message", "Commit Date"])
       # Write the commit hashes
-      writer.writerows(commit_hashes)
+      writer.writerows(commit_info)
 
 def play_sound():
    """
