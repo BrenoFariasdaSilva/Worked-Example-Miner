@@ -93,19 +93,17 @@ def process_repository(repository_name):
 	# Traverse the directory and get the method metrics
 	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path)
 
-	# Loop through the metrics_track_record and sort the commit hashes list for each class or method
-	for key in metrics_track_record:
-		# Sort the commit hashes list for each class or method
-		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
+	# Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
+	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record)
 
 	# Write the metrics_track_record to a txt file
-	write_metrics_track_record_to_txt(repository_name, metrics_track_record)
+	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record)
 
 	# Write, for each identifier, the metrics evolution values to a csv file
-	write_metrics_evolution_to_csv(repository_name, metrics_track_record)
+	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record)
 
 	# Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
-	generate_metrics_track_record_statistics(repository_name, metrics_track_record)
+	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record)
 
 	# Sort the csv file by the number of changes
 	sort_csv_by_changes(repository_name)
@@ -358,6 +356,21 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 
 	# Return the method metrics, which is a dictionary containing the metrics of each method  
 	return metrics_track_record
+
+def sort_commit_hashes_by_commit_number(metrics_track_record):
+	"""
+	Sorts the commit_hashes list for each entry in the metrics_track_record dictionary
+	by the commit number (numeric value before the hyphen).
+
+	:param metrics_track_record: A dictionary where each key maps to another dictionary that contains a list under the key 'commit_hashes'.
+	:return: The sorted metrics_track_record
+	"""
+
+	for key in metrics_track_record:
+		# Sort the commit hashes list for each class or method according to the commit number
+		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
+
+	return metrics_track_record # Return the sorted metrics_track_record
 
 def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 	"""
