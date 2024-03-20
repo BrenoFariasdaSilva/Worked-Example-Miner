@@ -63,7 +63,7 @@ def process_all_repositories():
 	print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for all the repositories...{Style.RESET_ALL}")
 
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
-		print(f"")
+		print(f"") # Print an empty line
 		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name) # Process the current repository
 		print(f"------------------------------------------------------------")
@@ -118,9 +118,9 @@ def process_repository(repository_name):
 	sort_csv_by_percentual_variation(repository_name)
 
 	# Output the elapsed time to process this repository
-	elapsed_time = time.time() - start_time
+	elapsed_time = time.time() - start_time # Calculate the elapsed time
 	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-	output_time(elapsed_time_string, round(elapsed_time, 2))
+	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
 
 def get_directory_path(repository_name):
 	"""
@@ -174,7 +174,7 @@ def valid_class_name(class_name):
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Validating the class name...{Style.RESET_ALL}")
 	
-	return "." in class_name
+	return "." in class_name # If the class name contains a dot, then it is valid (it is a package name) and returns True
 
 def get_class_package_name(file_name):
 	"""
@@ -187,13 +187,13 @@ def get_class_package_name(file_name):
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Getting the package name of the class...{Style.RESET_ALL}")
 	
-	start_substring = "/src/"
-	package_name = file_name[file_name.find(start_substring) + len(start_substring):file_name.rfind(".")]
+	start_substring = "/src/" # The start substring
+	package_name = file_name[file_name.find(start_substring) + len(start_substring):file_name.rfind(".")] # Get the substring that comes after the: /src/ and before the last dot
 
 	# Replace the slashes with dots
 	package_name = package_name.replace("/", ".")
 
-	return package_name
+	return package_name # Return the package name
 
 def get_identifier_and_metrics(row):
 	"""
@@ -206,29 +206,29 @@ def get_identifier_and_metrics(row):
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Getting the identifier and metrics of the method or class...{Style.RESET_ALL}")
 	
-	class_name = row["class"]
-	if PROCESS_CLASSES:
-		if not valid_class_name(class_name):
-			class_name = get_class_package_name(row["file"])
-		variable_attribute = row["type"]
-	else:
-		variable_attribute = row["method"]
+	class_name = row["class"] # Get the class name from the row
+	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
+		if not valid_class_name(class_name): # If the class name is not valid (it is not a package name)
+			class_name = get_class_package_name(row["file"]) # Get the package name of the class
+		variable_attribute = row["type"] # Get the type of the class
+	else: # If the PROCESS_CLASSES constant is set to False
+		variable_attribute = row["method"] # Get the method name from the row
 
-	cbo = float(row["cbo"])
-	wmc = float(row["wmc"])
-	rfc = float(row["rfc"])
+	cbo = float(row["cbo"]) # Get the cbo metric from the row as a float
+	wmc = float(row["wmc"]) # Get the wmc metric from the row as a float
+	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
 
 	# Create a tuple containing the metrics
-	metrics = (cbo, wmc, rfc)
-	identifier = f"{class_name} {variable_attribute}"
+	metrics = (cbo, wmc, rfc) # The metrics tuple
+	identifier = f"{class_name} {variable_attribute}" # The identifier of the method or class
 
-	return identifier, metrics
+	return identifier, metrics # Return the identifier and metrics
 
 def was_file_modified(commit_dict, commit_hash, row):
 	"""
 	Verifies if the file was modified.
 
-	:param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
+	:param commit_dict: A dictionary containing the commit hashes as keys and the modified files list as values
 	:param commit_hash: The commit hash of the current row
 	:param row: The row of the csv file
 	:return: True if the file was modified, False otherwise
@@ -242,8 +242,9 @@ def was_file_modified(commit_dict, commit_hash, row):
 	repository_name = file_path.split("/")[0]
 	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/
 			
-	modified_files_paths = commit_dict[commit_hash]
-	for modified_file_path in modified_files_paths:
+	modified_files_paths = commit_dict[commit_hash] # Get the modified files list for the commit hash
+
+	for modified_file_path in modified_files_paths: # Iterate through the modified files paths
 		# If the modified file path is equal to the file path, then the file was modified
 		if modified_file_path == file_path:
 			return True # The file was modified
@@ -253,7 +254,7 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 	"""
 	Processes a csv file containing the metrics of a method nor class.
 
-	:param commit_dict: A dictionary containing the commit hashes as keys and the commit objects as values
+	:param commit_dict: A dictionary containing the commit hashes as keys and the modified files list as values
 	:param file_path: The path to the csv file
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
 	:return: None
@@ -295,23 +296,24 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 
 def generate_commit_dict(repository_name):
 	"""
-	Generates the commit dictionary, which is a dictionary containing the modified files for each commit.
+	Generates the commit dictionary, which is a dictionary containing the modified files paths for each commit.
 
 	:param repository_name: The name of the repository
-	:return: A dictionary containing the modified files for each commit
+	:return: A dictionary containing the modified files paths for each commit
 	"""
 
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Generating the commit dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-	commit_dict = {} # A dictionary containing the commit hashes as keys and the commit objects as values
+	commit_dict = {} # A dictionary containing the commit hashes as keys and the modified files list as values
 
 	# Traverse the repository and get the modified files for each commit and store it in the commit_dict
 	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits():
 		commit_dict[commit.hash] = [] # Initialize the commit hash list
 		for modified_file in commit.modified_files: # For each modified file in the commit
-			commit_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit hash list
-	return commit_dict
+			commit_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff d
+
+	return commit_dict # Return the commit dictionary containing the modified files paths for each commit
 
 def traverse_directory(repository_name, repository_ck_metrics_path):
 	"""
@@ -326,10 +328,11 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 		print(f"{BackgroundColors.GREEN}Traversing the directory and processing all the csv files for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	metrics_track_record = {} # Dictionary containing the track record of the metrics of each method nor class. The key is the identifier and the value is a dictionary containing the metrics, commit hashes and the number of times the metrics changed.
-	file_count = 0
-	progress_bar = None
+	file_count = 0 # Initialize the file count
+	progress_bar = None # Initialize the progress bar
 
-	commit_dict = generate_commit_dict(repository_name) # A dictionary containing the commit hashes as keys and the commit objects as values
+	# Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
+	commit_dict = generate_commit_dict(repository_name)
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
@@ -368,13 +371,14 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
 
+	# Open the txt file and write the metrics_track_record to it
 	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
-		for key, value in metrics_track_record.items():
-			file.write(f"{key}: \n")
-			file.write(f"\tMetrics: {value['metrics']}\n")
-			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n")
-			file.write(f"\tChanged: {value['changed']}\n")
-			file.write(f"\n")
+		for key, value in metrics_track_record.items(): # For each key, value in the metrics_track_record dictionary
+			file.write(f"{key}: \n") # Write the key
+			file.write(f"\tMetrics: {value['metrics']}\n") # Write the metrics
+			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n") # Write the commit hashes
+			file.write(f"\tChanged: {value['changed']}\n") # Write the changed value
+			file.write(f"\n") # Write a new line
 
 def get_clean_id(id):
 	"""
@@ -389,9 +393,9 @@ def get_clean_id(id):
 	
 	# If the id contains slashes, remove them
 	if "/" in id:
-		return str(id.split("/")[0:-1])[2:-2]
+		return str(id.split("/")[0:-1])[2:-2] # Return the id without the slashes
 	else:
-		return id
+		return id # Return the id
 
 def verify_and_create_folder(folder_path):
 	"""
@@ -404,10 +408,11 @@ def verify_and_create_folder(folder_path):
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Verifying and creating the folder for {BackgroundColors.CYAN}{folder_path}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 	
+	# If the folder does not exist, then create it
 	if not os.path.exists(folder_path):
-		os.makedirs(folder_path)
-		return False
-	return True
+		os.makedirs(folder_path) # Create the folder
+		return False # Return False
+	return True # Return True
 
 def verify_file(file_path):
 	"""
@@ -420,7 +425,7 @@ def verify_file(file_path):
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Verifying the file for {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 	
-	return os.path.exists(file_path)
+	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
 
 def get_refactorings_info(repository_name, commit_number, commit_hash, class_name):
 	"""
@@ -454,8 +459,8 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Loop through the locations in the refactoring
 						# If the class name is in the file path, then append the refactoring type to the refactorings list
 						if class_name.replace(".", "/") in location["filePath"]:
-							refactorings_info["types"].append(refactoring["type"])
-							if location["filePath"] not in refactorings_info["filePath"]:
+							refactorings_info["types"].append(refactoring["type"]) # Append the refactoring type to the refactorings list
+							if location["filePath"] not in refactorings_info["filePath"]: # If the file path is not in the refactorings_info["filePath"] list
 								# print(f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
 								refactorings_info["filePath"].append(location["filePath"])
 		return refactorings_info # Return the refactorings types list
@@ -485,7 +490,7 @@ def generate_refactoring_file(repository_name, commit_number, commit_hash):
 		
 		# Run RefactoringMiner to get the refactoring data, hiding its output
 		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c {RELATIVE_REPOSITORIES_DIRECTORY_PATH}{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1"
-		os.system(command)
+		os.system(command) # Run the command to get the RefactoringMiner data
 
 	return refactoring_file_path # Return the refactoring file path
 
@@ -544,20 +549,23 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			temp_commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
 			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[0], temp_commit_data[1], class_name)
 
+			# If we only want to store the desired refactorings, then verify if the current refactoring type is in the desired refactoring types
 			if DESIRED_REFACTORINGS_ONLY: 
-				# Update the biggest change if it involves desired refactoring types.
+				# If the current refactoring type is in the desired refactoring types, then update the biggest_change list
 				if any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
+					# Update the biggest_change list
 					biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
-					commit_data = temp_commit_data
-			else:
-				# If not filtering by desired refactorings, store any type of refactoring.
+					commit_data = temp_commit_data # Update the commit data
+			else: # If not filtering by desired refactorings, store any type of refactoring.
+				# Update the biggest_change list
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
-				commit_data = temp_commit_data
+				commit_data = temp_commit_data # Update the commit data
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
-		with open(f"{csv_filename}", "a") as csvfile:
-			writer = csv.writer(csvfile)
+		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
+			writer = csv.writer(csvfile) # Create the csv writer
+			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
 			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), commit_data[0], commit_data[1], refactorings_info["types"], refactorings_info["filePath"]])
 	 
 def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, raw_variable_attribute, repository_name):
@@ -584,7 +592,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 	# Verify for invalid values in the metrics
 	if np.isnan(metrics).any() or np.isinf(metrics).any():
 		print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} contains invalid values!{Style.RESET_ALL}")
-		return
+		return # Return if the metrics list contains invalid values
 	
 	# Loop through the metrics_position dictionary
 	for metric_name, metric_position in METRICS_POSITION.items():
@@ -598,21 +606,21 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 			
 		# Verify for sufficient data points for regression
 		if len(commit_number) < 2 or len(metric_values) < 2:
-			return
+			return # Return if there are not enough data points for regression
 		
 		# Perform linear regression using Scikit-Learn
-		model = LinearRegression()
-		model.fit(commit_number.reshape(-1, 1), metric_values)
-		linear_fit = model.predict(commit_number.reshape(-1, 1))
+		model = LinearRegression() # Create the linear regression model
+		model.fit(commit_number.reshape(-1, 1), metric_values) # Fit the model to the data
+		linear_fit = model.predict(commit_number.reshape(-1, 1)) # Perform the linear fit
 
 		# Create the plot
-		plt.figure(figsize=(10, 6))
-		plt.plot(commit_number, metric_values, "o", label=f"{metric_name}")
-		plt.plot(commit_number, linear_fit, "-", label="Linear Regression Fit")
-		plt.xlabel("Commit Number")
-		plt.ylabel(f"{metric_name} Value")
-		plt.title(f"Linear Regression for {metric_name} metric of {class_name} {variable_attribute}")
-		plt.legend()
+		plt.figure(figsize=(10, 6)) # Set the figure size
+		plt.plot(commit_number, metric_values, "o", label=f"{metric_name}") # Plot the metrics values
+		plt.plot(commit_number, linear_fit, "-", label="Linear Regression Fit") # Plot the linear fit
+		plt.xlabel("Commit Number") # Set the x-axis label
+		plt.ylabel(f"{metric_name} Value") # Set the y-axis label
+		plt.title(f"Linear Regression for {metric_name} metric of {class_name} {variable_attribute}") # Set the title
+		plt.legend() # Show the legend
 
 		# Create the Class/Method linear prediction directory if it does not exist
 		verify_and_create_folder(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}")
@@ -641,21 +649,24 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			metrics = record["metrics"]
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
-			mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/"
-			verify_and_create_folder(mkdir_path)
+			mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/" # The path to the directory where the csv file will be stored
+			verify_and_create_folder(mkdir_path) # Create the directory where the csv file will be stored
 			metrics_filename = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}{CSV_FILE_EXTENSION}"
-			with open(metrics_filename, "w") as csvfile:
-				writer = csv.writer(csvfile)
-				if PROCESS_CLASSES:
-					unique_identifier = class_name
-					writer.writerow(["Class", "Commit Hash", "CBO", "WMC", "RFC"])
-				else:
-					unique_identifier = variable_attribute
-					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC"])
+
+			# Open the csv file and write the metrics to it
+			with open(metrics_filename, "w") as csvfile: 
+				writer = csv.writer(csvfile) # Create the csv writer
+				if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
+					unique_identifier = class_name # The unique identifier is the class name
+					writer.writerow(["Class", "Commit Hash", "CBO", "WMC", "RFC"]) # Write the header to the csv file
+				else: # If the PROCESS_CLASSES constant is set to False
+					unique_identifier = variable_attribute # The unique identifier is the method name
+					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC"]) # Write the header to the csv file
 				
-				# get the len of the metrics list
+				# Get the len of the metrics list
 				metrics_len = len(metrics)
-				for i in range(metrics_len):
+				for i in range(metrics_len): # For each metric in the metrics list
+					# Write the unique identifier, the commit hash, and the metrics to the csv file
 					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2]])
 
 			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], identifier.split(" ")[1], repository_name) # Perform linear regression on the metrics
@@ -678,18 +689,18 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Calculating the minimum, maximum, average, and third quartile of each metric and writing it to a csv file for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 	
-	cboMin = round(float(min(metrics_values[0])), 3)
-	cboMax = round(float(max(metrics_values[0])), 3)
-	cboAvg = round(float(sum(metrics_values[0])) / len(metrics_values[0]), 3)
-	cboQ3 = round(float(np.percentile(metrics_values[0], 75)), 3)
-	wmcMin = round(float(min(metrics_values[1])), 3)
-	wmcMax = round(float(max(metrics_values[1])), 3)
-	wmcAvg = round(float(sum(metrics_values[1])) / len(metrics_values[1]), 3)
-	wmcQ3 = round(float(np.percentile(metrics_values[1], 75)), 3)
-	rfcMin = round(float(min(metrics_values[2])), 3)
-	rfcMax = round(float(max(metrics_values[2])), 3)
-	rfcAvg = round(float(sum(metrics_values[2])) / len(metrics_values[2]), 3)
-	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3)
+	cboMin = round(float(min(metrics_values[0])), 3) # The minimum cbo value rounded to 3 decimal places
+	cboMax = round(float(max(metrics_values[0])), 3) # The maximum cbo value rounded to 3 decimal places
+	cboAvg = round(float(sum(metrics_values[0])) / len(metrics_values[0]), 3) # The average cbo value rounded to 3 decimal places
+	cboQ3 = round(float(np.percentile(metrics_values[0], 75)), 3) # The third quartile cbo value rounded to 3 decimal places
+	wmcMin = round(float(min(metrics_values[1])), 3) # The minimum wmc value rounded to 3 decimal places
+	wmcMax = round(float(max(metrics_values[1])), 3) # The maximum wmc value rounded to 3 decimal places
+	wmcAvg = round(float(sum(metrics_values[1])) / len(metrics_values[1]), 3) # The average wmc value rounded to 3 decimal places
+	wmcQ3 = round(float(np.percentile(metrics_values[1], 75)), 3) # The third quartile wmc value rounded to 3 decimal places
+	rfcMin = round(float(min(metrics_values[2])), 3) # The minimum rfc value rounded to 3 decimal places
+	rfcMax = round(float(max(metrics_values[2])), 3) # The maximum rfc value rounded to 3 decimal places
+	rfcAvg = round(float(sum(metrics_values[2])) / len(metrics_values[2]), 3) # The average rfc value rounded to 3 decimal places
+	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3) # The third quartile rfc value rounded to 3 decimal places
 
 	# Write the metrics statistics to the csv file
 	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash])
@@ -710,9 +721,11 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 	with open(unsorted_metrics_filename, "w") as csvfile:
 		writer = csv.writer(csvfile)	
-		if PROCESS_CLASSES:
+		if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
+			# Write the header to the csv file but using the "Type" in the second column
 			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
 		else:
+			# Write the header to the csv file but using the "Method" in the second column
 			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
 
 		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
@@ -720,17 +733,16 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 			for identifier, metrics in metrics_track_record.items():
 				# Verify if the metrics changes is greater than the minimum changes
 				if metrics["changed"] < MINIMUM_CHANGES:
-					continue
+					continue # If the metrics changes is less than the minimum changes, then jump to the next iteration
 
-				# This stores the metrics values in a list of lists of each metric
-				metrics_values = []
-				for i in range(0, NUMBER_OF_METRICS):
+				metrics_values = [] # This stores the metrics values in a list of lists of each metric
+				for i in range(0, NUMBER_OF_METRICS): # For each metric in the metrics list
 					# This get the metrics values of each metric occurence in the method in order to, later on, be able to get the min, max, avg, and third quartile of each metric
 					metrics_values.append([sublist[i] for sublist in metrics["metrics"]])
 
-				# split the identifier to get the id and key which is separated by a space
-				id = identifier.split(" ")[0]
-				key = identifier.split(" ")[1]
+				# Split the identifier to get the id and key which is separated by a space
+				id = identifier.split(" ")[0] # Get the id of the method
+				key = identifier.split(" ")[1] # Get the key of the method
 
 				# Create a function to get the min, max, avg, and third quartile of each metric, the first commit hash and the last commit hash, and then write it to the csv file
 				write_method_metrics_statistics(writer, id, key, metrics, metrics_values, metrics_track_record[identifier]["commit_hashes"][0], metrics_track_record[identifier]["commit_hashes"][-1])
@@ -785,12 +797,12 @@ def main():
 	# Verify if the path constants contains whitespaces
 	if path_contains_whitespaces():
 		print(f"{BackgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
-		return
+		return # Exit the program
 	
 	# Verify if the refactoring miner tool exists in the specified path
 	if not verify_file(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH):
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
-		return
+		return # Exit the program
 
 	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN}! This tool is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
 	print(f"{BackgroundColors.GREEN}This script generates the {BackgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{BackgroundColors.GREEN} repositories based on the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN} generated by the {BackgroundColors.CYAN}./code_metrics.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}")
