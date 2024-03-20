@@ -549,15 +549,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			temp_commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]]
 			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[0], temp_commit_data[1], class_name)
 
-			# If we only want to store the desired refactorings, then verify if the current refactoring type is in the desired refactoring types
-			if DESIRED_REFACTORINGS_ONLY: 
-				# If the current refactoring type is in the desired refactoring types, then update the biggest_change list
-				if any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
-					# Update the biggest_change list
-					biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
-					commit_data = temp_commit_data # Update the commit data
-			else: # If not filtering by desired refactorings, store any type of refactoring.
-				# Update the biggest_change list
+			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
+			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
+				# Update the biggest_change list and commit data only if the conditions above are met.
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
 				commit_data = temp_commit_data # Update the commit data
 
