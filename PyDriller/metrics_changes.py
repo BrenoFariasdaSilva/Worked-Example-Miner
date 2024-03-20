@@ -224,11 +224,11 @@ def get_identifier_and_metrics(row):
 
 	return identifier, metrics # Return the identifier and metrics
 
-def was_file_modified(commit_dict, commit_hash, row):
+def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	"""
 	Verifies if the file was modified.
 
-	:param commit_dict: A dictionary containing the commit hashes as keys and the modified files list as values
+	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files paths list as values
 	:param commit_hash: The commit hash of the current row
 	:param row: The row of the csv file
 	:return: True if the file was modified, False otherwise
@@ -242,7 +242,7 @@ def was_file_modified(commit_dict, commit_hash, row):
 	repository_name = file_path.split("/")[0]
 	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/
 			
-	modified_files_paths = commit_dict[commit_hash] # Get the modified files list for the commit hash
+	modified_files_paths = commit_modified_files_dict[commit_hash] # Get the modified files list for the specified commit hash
 
 	for modified_file_path in modified_files_paths: # Iterate through the modified files paths
 		# If the modified file path is equal to the file path, then the file was modified
@@ -250,11 +250,11 @@ def was_file_modified(commit_dict, commit_hash, row):
 			return True # The file was modified
 	return False # The file was not modified
 
-def process_csv_file(commit_dict, file_path, metrics_track_record):
+def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record):
 	"""
 	Processes a csv file containing the metrics of a method nor class.
 
-	:param commit_dict: A dictionary containing the commit hashes as keys and the modified files list as values
+	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files list as values
 	:param file_path: The path to the csv file
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
 	:return: None
@@ -286,7 +286,7 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 			commit_hash = commit_number.split("-")[1]
 
 			# Verify if the file in the current row of the file path was actually modified
-			if (commit_hash not in commit_hashes or (ck_metrics not in metrics_changes)) and (was_file_modified(commit_dict, commit_hash, row)):
+			if (commit_hash not in commit_hashes or (ck_metrics not in metrics_changes)) and (was_file_modified(commit_modified_files_dict, commit_hash, row)):
 				# Append the metrics to the list
 				metrics_changes.append(ck_metrics)
 				# Increment the number of changes
@@ -294,26 +294,26 @@ def process_csv_file(commit_dict, file_path, metrics_track_record):
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
 
-def generate_commit_dict(repository_name):
+def generate_commit_modified_files_dict(repository_name):
 	"""
-	Generates the commit dictionary, which is a dictionary containing the modified files paths for each commit.
+	Generates a dictionary of the modified files path list for each commit.
 
 	:param repository_name: The name of the repository
-	:return: A dictionary containing the modified files paths for each commit
+	:return: A dictionary containing the modified files paths list for each commit
 	"""
 
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print(f"{BackgroundColors.GREEN}Generating the commit dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-	commit_dict = {} # A dictionary containing the commit hashes as keys and the modified files list as values
+	commit_modified_files_dict = {} # A dictionary containing the commit hashes as keys and the modified files path list as values
 
-	# Traverse the repository and get the modified files for each commit and store it in the commit_dict
+	# Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
 	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits():
-		commit_dict[commit.hash] = [] # Initialize the commit hash list
+		commit_modified_files_dict[commit.hash] = [] # Initialize the commit hash list
 		for modified_file in commit.modified_files: # For each modified file in the commit
-			commit_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff d
+			commit_modified_files_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff d
 
-	return commit_dict # Return the commit dictionary containing the modified files paths for each commit
+	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths for each commit
 
 def traverse_directory(repository_name, repository_ck_metrics_path):
 	"""
@@ -332,7 +332,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	progress_bar = None # Initialize the progress bar
 
 	# Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
-	commit_dict = generate_commit_dict(repository_name)
+	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name)
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
@@ -344,7 +344,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 					if file == CK_CSV_FILE: # If the file is the desired csv file
 						relative_file_path = os.path.join(dir, file) # Get the relative path to the csv file
 						file_path = os.path.join(root, relative_file_path) # Get the path to the csv file
-						process_csv_file(commit_dict, file_path, metrics_track_record) # Process the csv file
+						process_csv_file(commit_modified_files_dict, file_path, metrics_track_record) # Process the csv file
 						file_count += 1 # Increment the file count
 
 						if progress_bar is None: # If the progress bar is not initialized
