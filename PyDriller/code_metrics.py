@@ -72,14 +72,14 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
-def process_repositories_concurrently():
+def process_repositories_in_parallel():
    """
-   Processes each repository name concurrently, using threads.
+   Processes each repository in the DEFAULT_REPOSITORIES dictionary in parallel, using threads.
 
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Processing the repositories in {BackgroundColors.CYAN}{DEFAULT_REPOSITORIES.keys()}{BackgroundColors.GREEN} concurrently...{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}Processing each of the {BackgroundColors.CYAN}{DEFAULT_REPOSITORIES.keys()}{BackgroundColors.GREEN} repositories in parallel using threads...{Style.RESET_ALL}")
 
    threads = [] # The threads list
    # Loop through the default repositories
@@ -530,10 +530,10 @@ def main():
       return
 
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN}! This tool is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} concurrently.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used in the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}")
    
-   process_repositories_concurrently() # Process the repositories concurrently
+   process_repositories_in_parallel() # Process each of the repositories in parallel
 		
 if __name__ == '__main__':
    """
