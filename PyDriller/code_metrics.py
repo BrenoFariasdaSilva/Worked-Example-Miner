@@ -72,65 +72,87 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
-def process_repositories_in_parallel():
+def output_time(output_string, time):
    """
-   Processes each repository in the DEFAULT_REPOSITORIES dictionary in parallel, using threads.
+   Outputs time, considering the appropriate time unit.
 
+   :param output_string: String to be outputted.
+   :param time: Time to be outputted.
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Processing each of the {BackgroundColors.CYAN}{DEFAULT_REPOSITORIES.keys()}{BackgroundColors.GREEN} repositories in parallel using threads...{Style.RESET_ALL}")
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
 
-   threads = [] # The threads list
-   # Loop through the default repositories
-   for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
-      estimated_time_string = f"Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-      commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
-      output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
-      thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
-      threads.append(thread) # Append the thread to the threads list
-      thread.start() # Start the thread
+   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
+      time_unit = "seconds" # Set the time unit to seconds
+      time_value = time # Set the time value to time
+   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
+      time_unit = "minutes" # Set the time unit to minutes
+      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
+   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
+      time_unit = "hours" # Set the time unit to hours
+      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
+   else: # If the time is greater than or equal to 86400 seconds
+      time_unit = "days" # Set the time unit to days
+      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
 
-   # Wait for all threads to finish
-   for thread in threads:
-      thread.join() # Wait for the thread to finish
+   rounded_time = round(time_value, 2) # Round the time value to two decimal places
+   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
 
-def process_repository(repository_name, repository_url):
+def verify_ck_metrics_folder(repository_name):
    """
-   Processes the repository.
+   Verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder.
 
    :param repository_name: Name of the repository to be analyzed.
-   :param repository_url: URL of the repository to be analyzed.
+   :return: True if all the metrics are already calculated, False otherwise.
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated...{Style.RESET_ALL}")
+
+   data_path = os.path.join(START_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
+   repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
+   commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The name of the commit hashes file
+   commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
+
+   # Verify if the repository exists
+   if not os.path.exists(commit_file_path):
+      return False # Return False because the repository commit list does not exist
+
+   # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
+   commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
+
+   # Verify if the repository exists
+   for commit_hash in commit_hashes: # Loop through the commit hashes
+      commit_file_filename = commit_hash[0] # This removes the brackets from the commit hash
+      folder_path = os.path.join(repo_path, commit_file_filename) # Join the repo path with the folder name
+
+      if os.path.exists(folder_path): # Verify if the folder exists
+         for ck_metric_file in CK_METRICS_FILES: # Verify if all the ck metrics files exist inside the folder
+            ck_metric_file_path = os.path.join(folder_path, ck_metric_file)
+            if not os.path.exists(ck_metric_file_path): # If the file does not exist
+               return False # If the file does not exist, then the metrics are not calculated
+   return True # If all the metrics are already calculated
+
+def create_directory(full_directory_name, relative_directory_name):
+   """
+   Creates a directory.
+
+   :param full_directory_name: Name of the directory to be created.
+   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal.
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
 
-   # Verify if the metrics were already calculated
-   if verify_ck_metrics_folder(repository_name):
-      print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
-      return
-
-   # Create the ck metrics directory
-   create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
-   # Create the progress directory
-   create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH)
-   # Create the repositories directory
-   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
-
-   # Clone the repository
-   clone_repository(repository_name, repository_url)
-
-   # Get the number of commits, which is needed to traverse the repository
-   number_of_commits = len(list(Repository(repository_url).traverse_commits()))
-   # Traverse the repository to run ck for every commit hash in the repository
-   commits_info = traverse_repository(repository_name, repository_url, number_of_commits)
-
-   # Write the commits information to a csv file
-   write_commits_information_to_csv(repository_name, commits_info)
-
-   # Checkout the main branch
-   checkout_branch("main")
+   if os.path.isdir(full_directory_name): # Verify if the directory already exists
+      return # Return if the directory already exists
+   try: # Try to create the directory
+      os.makedirs(full_directory_name)
+   except OSError: # If the directory cannot be created
+      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
 def update_repository(repository_name):
    """
@@ -176,155 +198,6 @@ def clone_repository(repository_name, repository_url):
       # Wait for the thread to finish
       thread.wait()
       print(f"{BackgroundColors.GREEN}Successfully cloned the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository{Style.RESET_ALL}")
-
-def create_directory(full_directory_name, relative_directory_name):
-   """
-   Creates a directory.
-
-   :param full_directory_name: Name of the directory to be created.
-   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal.
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
-
-   if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return # Return if the directory already exists
-   try: # Try to create the directory
-      os.makedirs(full_directory_name)
-   except OSError: # If the directory cannot be created
-      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
-
-def verify_ck_metrics_folder(repository_name):
-   """
-   Verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder.
-
-   :param repository_name: Name of the repository to be analyzed.
-   :return: True if all the metrics are already calculated, False otherwise.
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated...{Style.RESET_ALL}")
-
-   data_path = os.path.join(START_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
-   repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
-   commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The name of the commit hashes file
-   commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
-
-   # Verify if the repository exists
-   if not os.path.exists(commit_file_path):
-      return False # Return False because the repository commit list does not exist
-
-   # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
-   commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
-
-   # Verify if the repository exists
-   for commit_hash in commit_hashes: # Loop through the commit hashes
-      commit_file_filename = commit_hash[0] # This removes the brackets from the commit hash
-      folder_path = os.path.join(repo_path, commit_file_filename) # Join the repo path with the folder name
-
-      if os.path.exists(folder_path): # Verify if the folder exists
-         for ck_metric_file in CK_METRICS_FILES: # Verify if all the ck metrics files exist inside the folder
-            ck_metric_file_path = os.path.join(folder_path, ck_metric_file)
-            if not os.path.exists(ck_metric_file_path): # If the file does not exist
-               return False # If the file does not exist, then the metrics are not calculated
-   return True # If all the metrics are already calculated
-
-def checkout_branch(branch_name):
-   """
-   Checks out a specific branch.
-
-   :param branch_name: Name of the branch to be checked out.
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Checking out the {BackgroundColors.CYAN}{branch_name}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
-
-   # Create a thread to checkout the branch
-   checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   # Wait for the thread to finish
-   checkout_thread.wait()
-
-def run_ck_metrics_generator(cmd):
-   """
-   Runs the CK metrics generator in a subprocess.
-
-   :param cmd: Command to be executed.
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Running the CK Metrics Generator Command...{Style.RESET_ALL}")
-
-   # Create a thread to run the cmd command
-   thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the cmd command in a subprocess
-   stdout, stderr = thread.communicate() # Get the stdout and stderr of the thread
-
-def generate_output_directory_paths(repository_name, commit_hash, commit_number):
-   """
-   Generates the output directory path for the CK metrics generator.
-
-   :param repository_name: Name of the repository to be analyzed.
-   :param commit_hash: Commit hash of the commit to be analyzed.
-   :param commit_number: Number of the commit to be analyzed.
-   :return: The output_directory and relative_output_directory paths.
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Generating the output directory paths...{Style.RESET_ALL}")
-
-   output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
-   relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
-   return output_directory, relative_output_directory # Return the output_directory and relative_output_directory paths
-
-def output_time(output_string, time):
-   """
-   Outputs time, considering the appropriate time unit.
-
-   :param output_string: String to be outputted.
-   :param time: Time to be outputted.
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
-
-   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
-      time_unit = "seconds" # Set the time unit to seconds
-      time_value = time # Set the time value to time
-   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
-      time_unit = "minutes" # Set the time unit to minutes
-      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
-   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
-      time_unit = "hours" # Set the time unit to hours
-      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
-   else: # If the time is greater than or equal to 86400 seconds
-      time_unit = "days" # Set the time unit to days
-      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
-
-   rounded_time = round(time_value, 2) # Round the time value to two decimal places
-   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
-
-def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
-   """
-   Shows the execution time of the CK metrics generator.
-
-   :param first_iteration_duration: Duration of the first iteration.
-   :param elapsed_time: Elapsed time of the execution.
-   :param number_of_commits: Number of commits to be analyzed.
-   :param repository_name: Name of the repository to be analyzed.
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Showing the execution time of the CK metrics generator...{Style.RESET_ALL}")
-
-   estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-   output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2)) # Output the estimated time for running all of the iterations for the repository
-   time_taken_string = f"Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
-   output_time(time_taken_string, round(elapsed_time, 2)) # Output the time taken to generate CK metrics for the commits in the repository
 
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
@@ -398,6 +271,73 @@ def generate_diffs(repository_name, commit, commit_number):
       # Save the diff file
       with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file:
          diff_file.write(file_diff) # Write the diff to the file
+
+def checkout_branch(branch_name):
+   """
+   Checks out a specific branch.
+
+   :param branch_name: Name of the branch to be checked out.
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Checking out the {BackgroundColors.CYAN}{branch_name}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
+
+   # Create a thread to checkout the branch
+   checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   # Wait for the thread to finish
+   checkout_thread.wait()
+
+def generate_output_directory_paths(repository_name, commit_hash, commit_number):
+   """
+   Generates the output directory path for the CK metrics generator.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param commit_hash: Commit hash of the commit to be analyzed.
+   :param commit_number: Number of the commit to be analyzed.
+   :return: The output_directory and relative_output_directory paths.
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Generating the output directory paths...{Style.RESET_ALL}")
+
+   output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
+   relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
+   return output_directory, relative_output_directory # Return the output_directory and relative_output_directory paths
+   
+def run_ck_metrics_generator(cmd):
+   """
+   Runs the CK metrics generator in a subprocess.
+
+   :param cmd: Command to be executed.
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Running the CK Metrics Generator Command...{Style.RESET_ALL}")
+
+   # Create a thread to run the cmd command
+   thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the cmd command in a subprocess
+   stdout, stderr = thread.communicate() # Get the stdout and stderr of the thread
+
+def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
+   """
+   Shows the execution time of the CK metrics generator.
+
+   :param first_iteration_duration: Duration of the first iteration.
+   :param elapsed_time: Elapsed time of the execution.
+   :param number_of_commits: Number of commits to be analyzed.
+   :param repository_name: Name of the repository to be analyzed.
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Showing the execution time of the CK metrics generator...{Style.RESET_ALL}")
+
+   estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+   output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2)) # Output the estimated time for running all of the iterations for the repository
+   time_taken_string = f"Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
+   output_time(time_taken_string, round(elapsed_time, 2)) # Output the time taken to generate CK metrics for the commits in the repository
 
 def traverse_repository(repository_name, repository_url, number_of_commits):
    """
@@ -492,6 +432,66 @@ def write_commits_information_to_csv(repository_name, commit_info):
       writer.writerow(["Commit Hash", "Commit Message", "Commit Date"])
       # Write the commit hashes
       writer.writerows(commit_info)
+
+def process_repository(repository_name, repository_url):
+   """
+   Processes the repository.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param repository_url: URL of the repository to be analyzed.
+   :return: None
+   """
+
+   print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+   # Verify if the metrics were already calculated
+   if verify_ck_metrics_folder(repository_name):
+      print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
+      return
+
+   # Create the ck metrics directory
+   create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
+   # Create the progress directory
+   create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH)
+   # Create the repositories directory
+   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
+
+   # Clone the repository
+   clone_repository(repository_name, repository_url)
+
+   # Get the number of commits, which is needed to traverse the repository
+   number_of_commits = len(list(Repository(repository_url).traverse_commits()))
+   # Traverse the repository to run ck for every commit hash in the repository
+   commits_info = traverse_repository(repository_name, repository_url, number_of_commits)
+
+   # Write the commits information to a csv file
+   write_commits_information_to_csv(repository_name, commits_info)
+
+   # Checkout the main branch
+   checkout_branch("main")
+
+def process_repositories_in_parallel():
+   """
+   Processes each repository in the DEFAULT_REPOSITORIES dictionary in parallel, using threads.
+
+   :return: None
+   """
+
+   print(f"{BackgroundColors.GREEN}Processing each of the {BackgroundColors.CYAN}{DEFAULT_REPOSITORIES.keys()}{BackgroundColors.GREEN} repositories in parallel using threads...{Style.RESET_ALL}")
+
+   threads = [] # The threads list
+   # Loop through the default repositories
+   for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
+      estimated_time_string = f"Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+      commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
+      output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
+      thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
+      threads.append(thread) # Append the thread to the threads list
+      thread.start() # Start the thread
+
+   # Wait for all threads to finish
+   for thread in threads:
+      thread.join() # Wait for the thread to finish
 
 def play_sound():
    """
