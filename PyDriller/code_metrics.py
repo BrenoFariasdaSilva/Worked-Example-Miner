@@ -168,7 +168,7 @@ def update_repository(repository_name):
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + "/" + repository_name
+   # Create a thread to update the repository located in f"{RELATIVE_REPOSITORY_DIRECTORY}/{repository_name}"
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
