@@ -1,6 +1,6 @@
 <div align="center">
    
-# [Scientific Research](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Icons/Bash.svg"  width="3%" height="3%">
+# [Worked-Example-Miner](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Icons/Bash.svg"  width="3%" height="3%">
 
 </div>
 
@@ -8,9 +8,9 @@
   
 ---
 
-Welcome to my Scientific Research Repository!
+Welcome to my Worked-Example-Miner Repository!
 
-This repository contains code and data related to my Scientific Research project. This project is massive and complex, containing multiple tools and exploring different goals and research questions. With that in mind, each of the directories in this repository has its own `README.md` file explaining it's purpose and how it contributes to the overall research project. 
+This repository contains code and data related to my Worked-Example-Miner project. This project is massive and complex, containing multiple tools and exploring different goals and research questions. With that in mind, each of the directories in this repository has its own `README.md` file explaining it's purpose and how it contributes to the overall research project. 
 
 The main tool is the Worked Example Miner, which is a comprehensive tool for Java repository analysis. This tool integrates CK, PyDriller, and RefactoringMiner to analyze Java repositories and generate data and metadata about the software evolution. The Word2Vec tool is also used to perform similarity analysis between various texts, such as code snippets and questions. This analysis aids in identifying patterns and relationships that may not be immediately evident.
 
@@ -36,7 +36,7 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
 </div>
 
 ## Table of Contents
-- [Scientific Research ](#Worked-Example-Miner-)
+- [Worked-Example-Miner ](#Worked-Example-Miner-)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Goals](#goals)
