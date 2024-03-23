@@ -19,7 +19,7 @@ dependencies:
 	$(PIP) install -r requirements.txt
 
 # Generate requirements.txt from the current venv
-generate-requirements:
+generate_requirements:
 	$(PIP) freeze > requirements.txt
 
 # Utility rule for cleaning the project
@@ -28,4 +28,4 @@ clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: clean repositories_refactors_script metrics_evolution_refactors_script dependencies generate-requirements
+.PHONY: clean repositories_refactors_script metrics_evolution_refactors_script dependencies generate_requirements

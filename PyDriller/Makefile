@@ -38,7 +38,7 @@ dependencies:
 	$(PIP) install -r requirements.txt
 
 # Generate requirements.txt from the current venv
-generate-requirements:
+generate_requirements:
 	$(PIP) freeze > requirements.txt
 
 # Utility rule for cleaning the project
@@ -47,4 +47,4 @@ clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extract_zip_files_script generate_short_zip_files_script generate_zip_files_script move_extracted_files_script track_files_script dependencies generate-requirements
+.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extract_zip_files_script generate_short_zip_files_script generate_zip_files_script move_extracted_files_script track_files_script dependencies generate_requirements
