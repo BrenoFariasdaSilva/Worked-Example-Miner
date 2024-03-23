@@ -14,8 +14,8 @@ metrics_changes_script: $(VENV)
 empty_folders_script: $(VENV)
 	clear; time $(PYTHON) Scripts/empty_folders.py
 
-extractZipFiles: $(VENV)
-	chmod +x Scripts/extractZipFiles.sh; clear; time ./Scripts/extractZipFiles.sh
+extract_zip_files_script: $(VENV)
+	chmod +x Scripts/extract_zip_files.sh; clear; time ./Scripts/extract_zip_files.sh
 
 generateZipFiles: $(VENV)
 	chmod +x Scripts/generateZipFiles.sh; clear; time ./Scripts/generateZipFiles.sh
@@ -44,4 +44,4 @@ clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extractZipFiles generateZipFiles moveExtractedFiles track_files_script dependencies generate-requirements
+.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extract_zip_files_script generateZipFiles moveExtractedFiles track_files_script dependencies generate-requirements

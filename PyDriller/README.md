@@ -428,7 +428,7 @@ make generate_zip_files_script
 
 #### Move Extracted Files
 
-This is a really simple script, which is used to run after you execute the `extractZipFiles.sh` script, as it will move the extracted files to the right directory, for example, the extracted `/kafka/ck_metrics` will be placed in `/ck_metrics/kafka`.
+This is a really simple script, which is used to run after you execute the `extract_zip_files.sh` script, as it will move the extracted files to the right directory, for example, the extracted `/kafka/ck_metrics` will be placed in `/ck_metrics/kafka`.
 
 ##### Run
 
