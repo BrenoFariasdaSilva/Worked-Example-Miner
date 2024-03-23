@@ -1,6 +1,6 @@
 <div align="center">
    
-# [Scientific Research](https://github.com/BrenoFariasdaSilva/Scientific-Research) <img src="https://github.com/BrenoFariasdaSilva/Scientific-Research/blob/main/.assets/Icons/Bash.svg"  width="3%" height="3%">
+# [Scientific Research](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Icons/Bash.svg"  width="3%" height="3%">
 
 </div>
 
@@ -20,12 +20,12 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
 
 <div align="center">
 
-![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/BrenoFariasdaSilva/Scientific-Research)
-![GitHub Last Commit](https://img.shields.io/github/last-commit/BrenoFariasdaSilva/Scientific-Research)
-![GitHub Forks](https://img.shields.io/github/forks/BrenoFariasDaSilva/Scientific-Research)
-![GitHub Language Count](https://img.shields.io/github/languages/count/BrenoFariasDaSilva/Scientific-Research)
-![GitHub License](https://img.shields.io/github/license/BrenoFariasdaSilva/Scientific-Research)
-![wakatime](https://wakatime.com/badge/github/BrenoFariasdaSilva/Scientific-Research.svg)
+![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/BrenoFariasdaSilva/Worked-Example-Miner)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/BrenoFariasdaSilva/Worked-Example-Miner)
+![GitHub Forks](https://img.shields.io/github/forks/BrenoFariasDaSilva/Worked-Example-Miner)
+![GitHub Language Count](https://img.shields.io/github/languages/count/BrenoFariasDaSilva/Worked-Example-Miner)
+![GitHub License](https://img.shields.io/github/license/BrenoFariasdaSilva/Worked-Example-Miner)
+![wakatime](https://wakatime.com/badge/github/BrenoFariasdaSilva/Worked-Example-Miner.svg)
 
 </div>
 
@@ -36,7 +36,7 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
 </div>
 
 ## Table of Contents
-- [Scientific Research ](#scientific-research-)
+- [Scientific Research ](#Worked-Example-Miner-)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Goals](#goals)
@@ -268,7 +268,7 @@ We thank the following people who contributed to this project:
   <tr>
     <td align="center">
       <a href="https://github.com/BrenoFariasdaSilva" title="Breno Farias da Silva">
-        <img src="https://github.com/BrenoFariasdaSilva/Scientific-Research/blob/main/.assets/Images/BrenoFarias.jpg" width="100px;" alt="My Profile Picture"/><br>
+        <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Images/BrenoFarias.jpg" width="100px;" alt="My Profile Picture"/><br>
         <sub>
           <b><a href="https://github.com/BrenoFariasdaSilva">Breno Farias da Silva</a></b>
         </sub>
@@ -276,7 +276,7 @@ We thank the following people who contributed to this project:
     </td>
     <td align="center">
       <a href="#" title="Marco Aurélio Graciotto Silva">
-        <img src="https://github.com/BrenoFariasdaSilva/Scientific-Research/blob/main/.assets/Images/Github.svg" width="100px;" alt="Profile Picture"/><br>
+        <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Images/Github.svg" width="100px;" alt="Profile Picture"/><br>
         <sub>
           <b><a href="https://github.com/MAGSilva">Marco Aurélio Graciotto Silva</a></b>
         </sub>

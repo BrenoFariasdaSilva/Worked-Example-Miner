@@ -1,6 +1,6 @@
 <div align="center">
   
-# [Refactoring Miner.](https://github.com/BrenoFariasdaSilva/Scientific-Research/tree/main/RefactoringMiner) <img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg"  width="3%" height="3%">
+# [Refactoring Miner.](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/tree/main/RefactoringMiner) <img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg"  width="3%" height="3%">
 
 </div>
 
@@ -155,7 +155,7 @@ In order to use the script for the analysis of the metrics evolution of a class 
 
 1. Make sure you have the PyDriller Metrics Evolution files that should be located as follows, otherwise it will not work:
   ```shell
-  Scientific-Research/PyDriller/metrics_evolution
+  Worked-Example-Miner/PyDriller/metrics_evolution
   ```
 2. If you have the PyDriller Metrics Evolution files, simply open a terminal in the `RefactoringMiner` directory and run the script using the following command:
 
@@ -239,7 +239,7 @@ If you encounter any issues while using the script, consider the following:
 
 - Verify if you have the PyDriller Metrics Evolution files that should be located as follows, otherwise it will not work:
   ```shell
-  Scientific-Research/PyDriller/metrics_evolution
+  Worked-Example-Miner/PyDriller/metrics_evolution
   ```
 
 ## Contributing
