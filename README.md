@@ -21,10 +21,12 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
 <div align="center">
 
 ![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/BrenoFariasdaSilva/Worked-Example-Miner)
+![GitHub Commits](https://img.shields.io/github/commit-activity/t/BrenoFariasDaSilva/Worked-Example-Miner/main)
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/BrenoFariasdaSilva/Worked-Example-Miner)
 ![GitHub Forks](https://img.shields.io/github/forks/BrenoFariasDaSilva/Worked-Example-Miner)
 ![GitHub Language Count](https://img.shields.io/github/languages/count/BrenoFariasDaSilva/Worked-Example-Miner)
 ![GitHub License](https://img.shields.io/github/license/BrenoFariasdaSilva/Worked-Example-Miner)
+![GitHub Stars](https://img.shields.io/github/stars/BrenoFariasdaSilva/Worked-Example-Miner)
 ![wakatime](https://wakatime.com/badge/github/BrenoFariasdaSilva/Worked-Example-Miner.svg)
 
 </div>
