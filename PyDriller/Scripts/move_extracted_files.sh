@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Run:
-# chmod +x ./moveExtractedFiles.sh
-# ./moveExtractedFiles.sh
+# chmod +x ./move_extracted_files.sh
+# ./move_extracted_files.sh
 
 # Get the current directory
 current_dir="$(pwd)"
@@ -12,7 +12,7 @@ echo "Current directory: ${current_dir}"
 
 # If the current_dir doesn't end with "/PyDriller", then exit
 if [[ "${current_dir}" != *"/PyDriller" ]]; then
-   echo "Please run the script from the '/PyDriller' with the command './Scripts/moveExtractedFiles.sh'."
+   echo "Please run the script from the '/PyDriller' with the command './Scripts/move_extracted_files.sh'."
    exit # Exit the script
 fi
 

@@ -23,8 +23,8 @@ generate_short_zip_files_script: $(VENV)
 generate_zip_files_script: $(VENV)
 	chmod +x Scripts/generate_zip_files.sh; clear; time ./Scripts/generate_zip_files.sh
 
-moveExtractedFiles: $(VENV)
-	chmod +x Scripts/moveExtractedFiles.sh; clear; time ./Scripts/moveExtractedFiles.sh
+move_extracted_files_script: $(VENV)
+	chmod +x Scripts/move_extracted_files.sh; clear; time ./Scripts/move_extracted_files.sh
 
 track_files_script: $(VENV)
 	clear; time $(PYTHON) Scripts/track_files.py
@@ -47,4 +47,4 @@ clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extract_zip_files_script generate_short_zip_files_script generate_zip_files_script moveExtractedFiles track_files_script dependencies generate-requirements
+.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extract_zip_files_script generate_short_zip_files_script generate_zip_files_script move_extracted_files_script track_files_script dependencies generate-requirements
