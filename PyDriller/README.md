@@ -354,7 +354,7 @@ This script is intended to streamline the setup process for analyzing the specif
 
 #### Generate Short Zip Files
 
-This script is used to generate the short zip files of the repositories. It is really usefull as i didn't want to reprocess the files, so i just packed them in zip files using the `generateShortZipFiles.sh`.
+This script is used to generate the short zip files of the repositories. It is really usefull as i didn't want to reprocess the files, so i just packed them in zip files using the `generate_short_zip_files.sh`.
 
 ##### Configuration
 
