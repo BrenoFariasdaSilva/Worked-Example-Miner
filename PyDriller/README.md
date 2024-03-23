@@ -315,7 +315,7 @@ make empty_folders_script
 
 #### Extract Zip Files
 
-This script is used to extract the zip files of the repositories. It is really usefull as i didn't want to reprocess the files, so i just packed them in zip files using the `generateZipFiles.sh`. 
+This script is used to extract the zip files of the repositories. It is really usefull as i didn't want to reprocess the files, so i just packed them in zip files using the `generate_zip_files.sh`. 
 
 ##### Configuration
 
@@ -391,7 +391,7 @@ make generate_short_zip_files_script
 
 #### Generate Zip Files
 
-This script is used to generate the zip files of the repositories. As mentioned in the script above, tt is really usefull as i didn't want to reprocess the files, so i just packed them in zip files using the `generateZipFiles.sh`.
+This script is used to generate the zip files of the repositories. As mentioned in the script above, tt is really usefull as i didn't want to reprocess the files, so i just packed them in zip files using the `generate_zip_files.sh`.
 
 ##### Configuration
 
