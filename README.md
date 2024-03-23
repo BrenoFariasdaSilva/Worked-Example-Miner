@@ -36,14 +36,14 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
 </div>
 
 ## Table of Contents
-- [Worked-Example-Miner ](#Worked-Example-Miner-)
+- [Worked-Example-Miner ](#worked-example-miner-)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Goals](#goals)
   - [Skills](#skills)
   - [Directories](#directories)
   - [Tools](#tools)
-    - [Worked Example Miner: A Comprehensive Tool for Java Repository Analysis](#worked-example-miner-a-comprehensive-tool-for-java-repository-analysis)
+    - [Worked Example Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories.](#worked-example-miner-wem-a-comprehensive-tool-for-analyzing-java-repositories)
     - [Word2Vec](#word2vec)
   - [Repositories](#repositories)
     - [Apache Commons-lang](#apache-commons-lang)
@@ -125,7 +125,7 @@ Each directory in this repository has its own README.md file explaining its purp
 
 ## Tools
 
-### Worked Example Miner: A Comprehensive Tool for Java Repository Analysis
+### Worked Example Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories.
 
 This project introduces the "Worked Example Miner", an innovative tool designed to streamline and enhance the analysis of Java repositories. By aggregating the capabilities of several established tools, it provides a robust framework for generating detailed data and metadata pivotal for examining repository evolution, identifying trends, and selecting prime candidates for creating worked examples. Here's how Worked Example Miner integrates these tools to offer a multifaceted analysis approach:
 
