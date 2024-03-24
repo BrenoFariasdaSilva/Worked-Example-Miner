@@ -73,22 +73,24 @@ Within this repository, you'll find a wealth of resources, from detailed code an
 
 ## Goals
 
-1. **Analyzing Code Evolution:**
-   - Analyze code that started with "bad" metrics and evolved over time.
+1. **Code Metrics Generation:**
+   - Traverse the repository commit history using PyDriller.
+   - Extract code metrics using CK (Chidamber & Kemerer) metrics for Java repositories.
+   - Extract refactoring patterns using RefactoringMiner for Java repositories.
+
+2. **Code Metrics Selection:**
+   - Identify relevant code quality metrics for analyzing Distributed Systems (DS) evolution.
+   - Evaluate the significance of selected metrics in reflecting code quality improvements.
+   - Analyze the correlation between code quality metrics and non-functional characteristics.
+
+3. **Analyzing Code Evolution:**
+   - Analyze code that started with "bad" values for the select metrics and evolved over time.
    - Identify good code examples that indicate what makes code better and what changes are typically made to improve it.
 
-2. **Similarity Analysis:**
-   - Explore different similarity algorithms, including Word2Vector, Yake, Sentence Bert, and TF-IDF, to evaluate the similarity between texts.
-   - Create datasets for storing solved and unsolved questions and recommend changes based on the similarity of these questions.
-
-3. **Enhancing Code Solutions:**
-   - Investigate the use of tools like ChatGPT and GitHub Copilot to improve students' code solutions when they are stuck.
-   - Utilize CK to generate Code Metrics for repositories like Apache Commons-lang and Jabref.
-   - Employ PyDriller to traverse the commit tree in the repository and run CK for every commit hash.
-
-4. **Providing Data to AI Tools:**
-   - Gather valuable data to provide to tools like ChatGPT and GitHub Copilot, showcasing what constitutes good code and why.
-   - Explore how contextual information, such as code samples, can assist these tools in suggesting better code improvements for students.
+4. **Educational Code Examples:**
+    - Develop a heuristic for selecting code examples that represent quality improvements in DS.
+    - Identify code segments that demonstrate effective practices for code improvement.
+    - Create worked examples that highlight the adaptation and evolution of DS code over time.
 
 ## Skills
 
