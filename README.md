@@ -96,25 +96,22 @@ Within this repository, you'll find a wealth of resources, from detailed code an
 
 Our research project involves expertise in the following areas:
 
-- Python Language
-- Python Libraries (Pandas, Matplotlib, NumPy, Scikit-Learn)
-- CK (Chidamber & Kemerer) Metrics
-- PyDriller
-- RefactoringMiner (Refactoring Detection)
-- Word2Vector
-- Software Engineering
-- Distributed Systems
-- Worked Examples
-- Statistical Data Analysis and Visualization (Min, Max, Average, Third Quartile, Median, Linear Regression)
-- Similarity Measures (Word2Vec, Yake, Sentence Bert, TF-IDF)
-- Apache Commons-lang (Java Library)
-- Apache Kafka (Distributed Messaging System)
-- Apache ZooKeeper (Distributed Coordination Service)
-- Jabref (Bibliography Reference Manager)
-- GitHub Repositories
-- Data Collection and Analysis
-- Makefile
-- Virtual Environment
+- Python Language.
+- Python Libraries (Pandas, Matplotlib, NumPy, Scikit-Learn).
+- Java Language.
+- CK (Chidamber & Kemerer) Metrics.
+- PyDriller.
+- RefactoringMiner (Refactoring Detection).
+- Software Engineering.
+- Distributed Systems.
+- Worked Examples.
+- Statistical Data Analysis and Visualization (Min, Max, Average, Third Quartile, Median, Linear Regression).
+- Apache Kafka (Distributed Messaging System).
+- Apache ZooKeeper (Distributed Coordination Service).
+- GitHub Repositories.
+- Data Collection and Analysis.
+- Makefile.
+- Virtual Environment.
 
 Feel free to explore the code and data in this repository. If you have any questions or suggestions, please don't hesitate to reach out to me.
 
