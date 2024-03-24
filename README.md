@@ -46,10 +46,8 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
   - [Skills](#skills)
   - [Directories](#directories)
   - [Repositories](#repositories)
-    - [Apache Commons-lang](#apache-commons-lang)
     - [Apache Kafka](#apache-kafka)
     - [Apache ZooKeeper](#apache-zookeeper)
-    - [JabRef](#jabref)
   - [Methodology](#methodology)
     - [Data Collection](#data-collection)
     - [Code Analysis](#code-analysis)
@@ -129,12 +127,7 @@ In essence, Worked Example Miner stands as a testament to the synergy of combini
 
 ## Repositories
 
-Our research encompasses a diverse set of open-source projects available on GitHub, chosen for their relevance and the rich insights they provide into various aspects of software development and maintenance. Below is a brief overview of each repository and its role in our study:
-
-### [Apache Commons-lang](https://github.com/apache/commons-lang)
-
-- **Purpose:** Apache Commons Lang is a library with helper utilities for the java.lang API, notably String manipulation methods, basic numerical methods, object reflection, and concurrency, among others.
-- **Usage in Research:** We leverage this repository to study code evolution and gather code metrics using CK. It serves as a prime example of library development practices and evolution in the Java ecosystem.
+Our research project focuses on analyzing the evolution of code in Java repositories, with a particular emphasis on Distributed Systems (DS). We have selected two prominent repositories, Apache Kafka and Apache ZooKeeper, to serve as case studies for our investigation. These repositories are renowned for their contributions to distributed messaging systems and coordination services, respectively, making them ideal candidates for studying code evolution in DS. Also, they are widely used in the industry and academia, are open-source, and are still actively maintained and developed.
 
 ### [Apache Kafka](https://github.com/apache/kafka)
 
@@ -146,12 +139,7 @@ Our research encompasses a diverse set of open-source projects available on GitH
 - **Purpose:** Apache ZooKeeper is a distributed coordination service widely used for large-scale internet systems. It offers a reliable and highly available environment for coordinating tasks across multiple nodes in a distributed cluster.
 - **Usage in Research:** ZooKeeper's role in providing a consensus service for distributed systems and its mechanisms for ensuring data consistency across nodes makes it invaluable for studying distributed service coordination, management, and the evolution of critical infrastructure components in distributed systems.
 
-### [JabRef](https://github.com/JabRef/jabref)
-
-- **Purpose:** JabRef is an open-source bibliography reference manager. It uses BibTeX as its native format, facilitating the organization of references for researchers and academicians.
-- **Usage in Research:** This repository is utilized to analyze code solutions, extract code metrics using CK, and understand the code evolution of a real-world application, offering insights into application development and maintenance practices.
-
-Feel free to explore these repositories to gain insights into our research and methodologies. Through the Worked Example Miner tool, we aim to aggregate the capabilities of CK, PyDriller, RefactoringMiner, and Word2Vec to analyze the Apache-Kafka and Apache-ZooKeeper repositories, as they are Distributed Systems (DS) that are used until today in many ways and are expected to represent firmly the state of art when talking about DS. 
+This are the main repositories that we are analyzing in this research project, but for future work, we can expand the analysis to other repositories in order to consolidade our methodology and improve the results.
 
 ## Methodology
 
