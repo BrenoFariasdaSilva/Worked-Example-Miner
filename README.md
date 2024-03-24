@@ -45,9 +45,6 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
   - [Goals](#goals)
   - [Skills](#skills)
   - [Directories](#directories)
-  - [Tools](#tools)
-    - [Worked Example Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories.](#worked-example-miner-wem-a-comprehensive-tool-for-analyzing-java-repositories)
-    - [Word2Vec](#word2vec)
   - [Repositories](#repositories)
     - [Apache Commons-lang](#apache-commons-lang)
     - [Apache Kafka](#apache-kafka)
@@ -119,26 +116,16 @@ Feel free to explore the code and data in this repository. If you have any quest
 
 Each directory in this repository has its own README.md file explaining its purpose. Please refer to individual README files for more details.
 
-## Tools
+- **PyDriller:** This Python library excels in mining software repositories. Within Worked Example Miner, PyDriller is harnessed to navigate through the commit tree of a repository, facilitating the execution of CK at every commit, thereby ensuring a comprehensive analysis across the development timeline.
+This directory will contains two main files: `code_metrics.py` and `metrics_changes.py`. The `code_metrics.py` file is responsible for extracting the CK metrics from the Java repositories, as well as generating commit diff files and a commit hashes list file. In the other hand, the `metrics_changes.py` file is responsible for reading the generated ck metrics files and generate the metrics statistics, linear regressions, detecting substantial changes, and identifying refactoring types.
 
-### Worked Example Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories.
-
-This project introduces the "Worked Example Miner", an innovative tool designed to streamline and enhance the analysis of Java repositories. By aggregating the capabilities of several established tools, it provides a robust framework for generating detailed data and metadata pivotal for examining repository evolution, identifying trends, and selecting prime candidates for creating worked examples. Here's how Worked Example Miner integrates these tools to offer a multifaceted analysis approach:
-
-- **CK (Chidamber & Kemerer):** Utilized for its adeptness in collecting and analyzing code metrics, CK plays a crucial role in our tool by generating essential code metrics for repositories such as Apache Commons-lang and Jabref.
-
-- **PyDriller:** This Python framework excels in mining software repositories. Within Worked Example Miner, PyDriller is harnessed to navigate through the commit tree of a repository, facilitating the execution of CK at every commit, thereby ensuring a comprehensive analysis across the development timeline.
-
-- **RefactoringMiner:** Renowned for its ability to detect refactorings within Git repositories, RefactoringMiner is incorporated to pinpoint code modifications that signify evolution. This insight is invaluable in understanding the adaptive measures taken throughout a project's lifecycle.
+- **RefactoringMiner:** This directory contains the RefactoringMiner tool, which specializes in detecting refactorings in Java repositories. By integrating RefactoringMiner into Worked Example Miner, we can identify and analyze refactorings that contribute to code evolution, highlighting changes that enhance code quality and maintainability. This directory will contains two main files: `metrics_evolution_refactors.py` and `repositories_refactors.py`. The `metrics_evolution_refactors.py` file is responsible for generating the refactorings files for the selected files in the Java repositories. The `repositories_refactors.py` file is responsible for generating the refactorings file for the selected repositories in the Java repositories.
 
 By leveraging the combined strengths of these tools, Worked Example Miner emerges as a powerhouse for Java repository analysis. It not only facilitates the generation of differential analyses for each commit but also meticulously tracks the historical progression of selected CK metrics at each stage of code development. Furthermore, the tool is equipped to conduct linear regression analyses, detect substantial changes, and identify refactoring types cataloged by RefactoringMiner.
 
 The integration of these capabilities allows Worked Example Miner to produce an array of outputs, from detailed commit diffs to analyses of repository evolution and potential trends. Such comprehensive data is instrumental in pinpointing exemplary candidates for the creation of worked examples, thus enriching educational resources and facilitating a deeper understanding of Java repository dynamics.
 
 In essence, Worked Example Miner stands as a testament to the synergy of combining specialized tools to achieve a greater understanding of software development practices by the code metrics evolution. Through its detailed analyses, educators, researchers, and developers are better equipped to study Java repositories, enabling the cultivation of rich, informative worked examples that highlight best practices and evolutionary insights in software development.
-
-### Word2Vec 
-As a technique rooted in natural language processing, Word2Vec is applied to perform similarity analysis between various texts, such as code snippets and questions. This analysis aids in identifying patterns and relationships that may not be immediately evident.
 
 ## Repositories
 
