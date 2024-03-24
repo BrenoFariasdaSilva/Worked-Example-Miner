@@ -54,6 +54,7 @@ The main tool is the Worked Example Miner, which is a comprehensive tool for Jav
   - [Research Questions](#research-questions)
   - [Proposed Approach](#proposed-approach)
     - [Software Metrics](#software-metrics)
+    - [Refactorings Patterns](#refactorings-patterns)
     - [Tools Utilized](#tools-utilized)
   - [Conclusion](#conclusion)
   - [Contributing](#contributing)
@@ -189,10 +190,20 @@ Additionally, the CK tool offers insights into other metrics that help understan
 
 - **Number of Children (NOC):** Counts the direct subclasses of a class, with higher values hinting at greater reusability and significance within the codebase, as it implies a foundational role due to other classes' dependency on it.
 
-Collectively, these metrics provide a comprehensive view of the codebase's complexity, quality, and maintainability. They serve as essential tools for developers to refine software design and architecture effectively. It's important to note that these metrics are derived from static code analysis, which involves evaluating the source code without executing the program. This approach allows for an in-depth understanding of the code's structural and qualitative aspects, facilitating targeted improvements and ensuring a more robust, maintainable, and efficient software system.
+### Refactorings Patterns
+
+Refactorings play a crucial role in software evolution, enabling developers to enhance code quality, maintainability, and extensibility. By detecting and analyzing refactorings, we can identify patterns of improvement and understand how code evolves to meet changing requirements and design goals. RefactoringMiner is a powerful tool that automates the detection of refactorings in Java repositories, providing valuable insights into code changes and their implications.
+
+Refactorings can be categorized into several types, each serving a specific purpose in code improvement, but these are the ones we use in our research:
+- **Extract Method:** Involves extracting a block of code into a new method to improve readability, maintainability, and reusability. This refactoring reduces code duplication and enhances modularity.
+- **Extract Class:** Separates part of a class into a new class to enhance cohesion and reduce complexity. This refactoring promotes a more focused and modular design, facilitating future changes and extensions.
+- **Extract Superclass:** Creates a superclass to encapsulate common behavior shared by multiple classes, promoting code reuse and modularity. This refactoring simplifies the inheritance hierarchy and enhances maintainability.
+- **Pull Up Method:** Moves a method from a subclass to a superclass to promote code reuse and simplify the inheritance hierarchy. This refactoring enhances modularity and reduces duplication.
+- **Push Down Method:** Transfers a method from a superclass to a subclass to enhance encapsulation and modularity. This refactoring ensures that methods are located closer to the data they operate on, improving code organization and maintainability and avoiding the "God class" anti-pattern. "God class" is a design flaw where a single class handles most of the system's functionality, breaking the Single Responsibility Principle and leading to poor maintainability and extensibility.
+
+Collectively, these metrics and refactorings provide a comprehensive view of the codebase's complexity, quality, and maintainability. They serve as essential tools for developers to refine software design and architecture effectively. It's important to note that these metrics are derived from static code analysis, which involves evaluating the source code without executing the program. This approach allows for an in-depth understanding of the code's structural and qualitative aspects, facilitating targeted improvements and ensuring a more robust, maintainable, and efficient software system.
 
 Dynamic code analysis complements our understanding by examining the code's behavior during execution. It sheds light on runtime characteristics, class communication, performance, and resource utilization, offering a holistic view of the software's operational efficiency. Despite the value of dynamic analysis, our research emphasizes static code analysis. This focus allows us to delve into the software quality's evolution within the domain of Distributed Systems (DS), providing insights into the code design changes and their impact on maintainability and reliability over time.
-
 
 ### Tools Utilized
 
