@@ -10,9 +10,9 @@
 
 Welcome to my Worked-Example-Miner Repository!
 
-This repository contains code and data related to my Worked-Example-Miner project. This project is massive and complex, containing multiple tools and exploring different goals and research questions. With that in mind, each of the directories in this repository has its own `README.md` file explaining it's purpose and how it contributes to the overall research project. 
+The [Worked-Example-Miner](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) is a comprehensive tool for Java repository analysis. This tool integrates [CK](https://github.com/mauricioaniche/ck), [PyDriller](https://github.com/ishepard/pydriller), and [RefactoringMiner](https://github.com/tsantalis/RefactoringMiner) to analyze Java repositories and generate data and metadata about the software evolution. The tool is designed to identify trends in how repositories evolve over time and select prime candidates for creating worked examples.
 
-The main tool is the Worked Example Miner, which is a comprehensive tool for Java repository analysis. This tool integrates CK, PyDriller, and RefactoringMiner to analyze Java repositories and generate data and metadata about the software evolution. The Word2Vec tool is also used to perform similarity analysis between various texts, such as code snippets and questions. This analysis aids in identifying patterns and relationships that may not be immediately evident.
+This project is massive and complex, containing multiple integrated tools and exploring different goals and research questions. With that in mind, each of the directories in this repository has its own `README.md` file explaining it's purpose and how it contributes to the overall project. 
 
 ---
 
