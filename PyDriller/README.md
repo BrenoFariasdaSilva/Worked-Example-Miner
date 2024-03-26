@@ -180,7 +180,11 @@ This command removes the `venv` directory and deletes any cached Python files in
 By following these instructions, you'll ensure that all project dependencies are correctly managed and isolated, leading to a more stable and consistent development environment.
 	
 ## How to use 
+
 ### Main Scripts
+
+In order to use the makefile rules, you must be in the `PyDriller/` directory.
+
 #### Code_Metrics
 
 This script is used to generate the ck metrics, commit diff files and commit hashes list of the repositories specified in the `DEFAULT_REPOSITORIES` dictionary. It is really usefull to generate the data that will be used in the `metrics_changes.py` script.
@@ -313,7 +317,7 @@ make metrics_changes_script
 
 ### Auxiliar Scripts
 
-There are also some auxiliar scripts, which are stored in the `Scripts/` directory, which are this ones:
+In order to use the makefile rules, you must be in the `PyDriller/Scrips` directory.
 
 #### Empty Folders
 
