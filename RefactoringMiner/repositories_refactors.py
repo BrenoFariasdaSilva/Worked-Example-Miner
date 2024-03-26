@@ -2,10 +2,11 @@ import atexit # For playing a sound when the program finishes
 import os # OS module in Python provides functions for interacting with the operating system
 import platform # For getting the operating system name
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
-import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
+from concurrent.futures import ThreadPoolExecutor # For managing threads
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
+from tqdm import tqdm # For creating progress bars
 
 # Macros:
 class BackgroundColors: # Colors for the terminal
@@ -112,20 +113,25 @@ def process_repositories_concurrently(repositories):
 
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Processing the repositories {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} concurrently...{Style.RESET_ALL}")
-   
-   threads = [] # The threads list
-   # Loop through the default repositories
-   for repository_name, repository_url in repositories.items():
-      estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for {BackgroundColors.CYAN}generating the refactoring{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-      commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
-      output_time(estimated_time_string, commits_number) # Output the estimated time for running all of the iterations for the repository
-      thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
-      threads.append(thread) # Append the thread to the threads list
-      thread.start() # Start the thread
 
-   # Wait for all threads to finish
-   for thread in threads:
-      thread.join() # Wait for the thread to finish
+   # Using ThreadPoolExecutor to manage threads and a tqdm progress bar
+   with ThreadPoolExecutor(max_workers=len(repositories)) as executor, tqdm(total=len(repositories), desc="Processing Repositories") as progress:
+      futures = [] # The list of futures (threads)
+
+      # Loop through the repositories
+      for repository_name, repository_url in repositories.items():
+         estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for {BackgroundColors.CYAN}generating the refactoring{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+         commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
+         output_time(estimated_time_string, commits_number) # Output the estimated time for running all of the iterations for the repository
+
+         # Schedule the execution of the process_repository function
+         future = executor.submit(process_repository, repository_name, repository_url)
+         future.add_done_callback(lambda p: progress.update(1)) # Update progress bar upon task completion
+         futures.append(future)
+
+      # Ensures all of the futures are completed
+      for future in futures:
+         future.result() # Wait for the thread (task) to finish
 
 def process_repository(repository_name, repository_url):
    """

@@ -9,5 +9,6 @@ python-dateutil==2.9.0.post0
 pytz==2024.1
 six==1.16.0
 smmap==5.0.1
+tqdm==4.66.2
 types-pytz==2024.1.0.20240203
 tzdata==2024.1
