@@ -29,6 +29,7 @@ With our objective to craft a compelling worked example for Software Engineering
     - [Cleaning Up](#cleaning-up)
   - [How to use](#how-to-use)
     - [Repositories Refactors](#repositories-refactors)
+      - [Configuration](#configuration)
     - [Metrics Evolution Refactors](#metrics-evolution-refactors)
     - [Cleaning Up](#cleaning-up-1)
   - [Workflow](#workflow)
@@ -149,17 +150,18 @@ By following these instructions, you'll ensure that all project dependencies are
 
 ## How to use
 
+In order to use the makefile rules, you must be in the `RefactoringMiner` directory.
+
 ### Repositories Refactors
 
-To use the script for repositories refactor analysis, follow these steps:
+This script is used to generate the refactoring script of an entire repository. It will generate the refactoring script for each commit of the speficied repositories in the `DEFAULT_REPOSITORIES` dictionary.
 
-1. Open a terminal in the `RefactoringMiner` directory.
+#### Configuration
 
-2. Run the script using the following command:
+In order to run this code as you want, you must modify the following constants:
 
-  ```shell
-  make repositories_refactors_script
-  ```
+1. `VERBOSE`: If you want to see the progress bar and the print statements, you must set the `VERBOSE` constant to `True`. If not, then a more clean output will be shown, with only the progress bar of the script execution, which is the default value of the `VERBOSE` constant.
+2. `DEFAULT_REPOSITORIES` dictionary in the `code_metrics.py` file, in which you must specify the repository name and the repository url.
 
 ### Metrics Evolution Refactors
 
