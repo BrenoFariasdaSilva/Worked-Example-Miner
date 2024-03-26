@@ -37,7 +37,6 @@ With our objective to craft a compelling worked example for Software Engineering
       - [Run](#run-1)
       - [Workflow](#workflow-1)
     - [RefactoringMiner JSON Output](#refactoringminer-json-output)
-  - [Troubleshooting](#troubleshooting)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -227,22 +226,6 @@ make metrics_evolution_refactors_script
 ### RefactoringMiner JSON Output
 
 The script generates JSON files containing refactoring data for commits in the specified classes or methods of the repository. These files are organized in the `json_files` directory, following the repository's structure.
-
-## Troubleshooting
-
-If you encounter any issues while using the script, consider the following:
-
-- Ensure that you have the required prerequisites installed and available in your system.
-
-- Check the repository URL and make sure it is accessible.
-
-- Verify that the paths specified in the script are correct, and the necessary directories exist.
-
-- Verify if you have the PyDriller Metrics Evolution files that should be located as follows, otherwise it will not work:
-
-  ```shell
-  Worked-Example-Miner/PyDriller/metrics_evolution
-  ```
 
 ## Contributing
 
