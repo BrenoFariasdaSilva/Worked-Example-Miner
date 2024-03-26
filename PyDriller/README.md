@@ -540,7 +540,17 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
 ### Commit Diff Files 
 
-   This directory contains the diffs of the repositories, which are stored in the `./diffs/repository_name/commit_number-commit_hash` directory. The `commit_number-commit_hash` directory contains the diffs of the files of the repository for the specified commit hash.
+   This directory contains the diffs files of the repositories, which are stored in the `./diffs/repository_name/commit_number-commit_hash/` directory. The `commit_number-commit_hash/` directory contains the diffs of the files of the repository for the specified commit hash.
+
+   The `.diff` files have a similar structure to the `git diff` command output, which is as follows:
+
+   ```diff
+   def say_hi():
+   -    print("Hello, World!")
+   +    print("Hi!")
+   ```
+
+   The `-` symbol at the beginning of the line indicates that the line was removed, while the `+` symbol indicates that the line was added. The lines that don't have any symbol at the beginning of the line are the lines that are in the same state in both commits.
 
 ### Metrics Data  
 
