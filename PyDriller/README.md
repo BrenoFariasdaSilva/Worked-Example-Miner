@@ -526,6 +526,8 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    | file | class | class | cbo | cbo modified | fanin | fanout | wmc | dit | noc | rfc | lcom | lcom* | tcc | lcc | totalMethodsQty | staticMethodsQty | publicMethodsQty | privateMethodsQty | protectedMethodsQty | defaultMethodsQty | visibleMethodsQty | abstractMethodsQty | finalMethodsQty | synchronizedMethodsQty | totalFieldsQty | staticFieldsQty | publicFieldsQty | privateFieldsQty | protectedFieldsQty | defaultFieldsQty | finalFieldsQty | synchronizedFieldsQty | nosi | loc | returnQty | loopQty | comparisonsQty | tryCatchQty | parenthesizedExpsQty | stringLiteralsQty | numbersQty | assignmentsQty | mathOperationsQty | variablesQty | maxNestedBlocksQty | anonymousClassesQty | innerClassesQty | lambdasQty | uniqueWordsQty | modifiers | logStatementsQty |
    ```
 
+   That's a visual representation of the header structure of the `class.csv` and `method.csv` files, which contains the ck metrics of the classes and methods of the repository for the specified commit hash. The lines that comes below the header structure are the values of the metrics for each class or method of the repository in that current commit hash.
+
    The main difference from the `class.csv` and `method.csv` files is that the third attribute in the csv header is the `method name` in the `method.csv` file and the `class type` in the `class.csv` file.
 
    The header structure of the `repository_name-commits_list.csv` file is the following:
@@ -533,6 +535,8 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    ```csv
    | Commit Hash | Commit Message | Commit Date |
    ```
+
+   That's a visual representation of the header structure of the `repository_name-commits_list.csv` file, which contains the list of the commit hashes, commit messages and commit dates of the repository. The lines that comes below the header structure are the values of the commit hashes, commit messages and commit dates of the repository for each commit.
 
 ### Commit Diff Files 
 
