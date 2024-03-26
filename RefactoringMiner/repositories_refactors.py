@@ -64,24 +64,24 @@ def path_contains_whitespaces():
 
 def verify_refactorings():
    """
-   Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated.
+   Verify if the RefactoringMiner Refactorings were already processed for the DEFAULT_REPOSITORIES and return the repositories that weren't processed yet.
 
-   :return: Returns a new dictionary with the DEFAULT_REFACTORINGS that were not generated
+   :return: Returns a new dictionary with the repositories that weren't processed yet
    """
 
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}Refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}DEFAULT_REFACTORINGS{BackgroundColors.GREEN} were already generated...{Style.RESET_ALL}")
    
-   refactorings = {} # The refactorings dictionary
+   repositories = {} # The repositories dictionary
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
       json_repository_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
       # Verify if the JSON file already exists
       if not os.path.isfile(json_repository_filepath):
-         refactorings[repository_name] = repository_url # Add the repository to the refactorings dictionary
+         repositories[repository_name] = repository_url # Add the repository to the repositories dictionary
       else:
          print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository were already generated.{Style.RESET_ALL}")
-   return refactorings # Return the refactorings dictionary
+   return repositories # Return the repositories dictionary
 
 def create_directory(full_directory_name, relative_directory_name):
    """
@@ -118,7 +118,7 @@ def process_repositories_concurrently(repositories):
    for repository_name, repository_url in repositories.items():
       estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for {BackgroundColors.CYAN}generating the refactoring{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
       commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
-      output_time(estimated_time_string, round(((commits_number / 1000) * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
+      output_time(estimated_time_string, commits_number) # Output the estimated time for running all of the iterations for the repository
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
       threads.append(thread) # Append the thread to the threads list
       thread.start() # Start the thread
@@ -275,8 +275,10 @@ def main():
       return
       
    repositories = verify_refactorings() # Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
+
+   # Verify if the repositories dictionary is empty
    if not repositories:
-      return
+      return # Return if the repositories dictionary is empty
    
    print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate de refactors{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 
