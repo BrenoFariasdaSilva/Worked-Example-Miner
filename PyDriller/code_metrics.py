@@ -50,7 +50,6 @@ RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of th
 
 # Default values:
 DEFAULT_REPOSITORIES = {"zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
-ITERATIONS_DURATION = {"commons-lang": 4, "jabref": 20, "kafka": 18, "zookeeper": 12} # The duration of the iterations for each repository
 FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
 FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # The full path of the progress file
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
@@ -239,7 +238,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
             percentage_progress = round((last_commit_number / number_of_commits) * 100, 2) # Calculate the percentage progress
             print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
             execution_time = f"Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
-            output_time(execution_time, round((ITERATIONS_DURATION[repository_name] * (number_of_commits - last_commit_number)), 2))
+            output_time(execution_time, round(((number_of_commits / 1000) * (number_of_commits - last_commit_number)), 2))
             
    else: # If there is no saved progress file, create one and write the header
       with open(saved_progress_file, "w") as progress_file:
@@ -484,7 +483,7 @@ def process_repositories_in_parallel():
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
       estimated_time_string = f"Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
       commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
-      output_time(estimated_time_string, round((ITERATIONS_DURATION[repository_name] * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
+      output_time(estimated_time_string, round(((commits_number / 1000) * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
       threads.append(thread) # Append the thread to the threads list
       thread.start() # Start the thread
