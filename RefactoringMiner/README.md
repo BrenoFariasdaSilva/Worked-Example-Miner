@@ -30,6 +30,7 @@ With our objective to craft a compelling worked example for Software Engineering
   - [How to use](#how-to-use)
     - [Repositories Refactors](#repositories-refactors)
       - [Configuration](#configuration)
+      - [Run](#run)
     - [Metrics Evolution Refactors](#metrics-evolution-refactors)
     - [Cleaning Up](#cleaning-up-1)
   - [Workflow](#workflow)
@@ -162,6 +163,15 @@ In order to run this code as you want, you must modify the following constants:
 
 1. `VERBOSE`: If you want to see the progress bar and the print statements, you must set the `VERBOSE` constant to `True`. If not, then a more clean output will be shown, with only the progress bar of the script execution, which is the default value of the `VERBOSE` constant.
 2. `DEFAULT_REPOSITORIES` dictionary in the `code_metrics.py` file, in which you must specify the repository name and the repository url.
+
+#### Run
+
+Now that you have set the constants, you can run the following command to execute the `repositories_refactors.py` file:
+
+  ```shell
+  make repositories_refactors_script
+  ```
+
 
 ### Metrics Evolution Refactors
 
