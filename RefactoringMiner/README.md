@@ -156,7 +156,7 @@ In order to use the makefile rules, you must be in the `RefactoringMiner` direct
 
 ### Repositories Refactors
 
-This script is used to generate the refactoring script of an entire repository. It will generate the refactoring script for each commit of the speficied repositories in the `DEFAULT_REPOSITORIES` dictionary.
+This script is used to generate the refactorings json file of an entire repository. It will generate the refactorings for each commit of the specified repositories in the `DEFAULT_REPOSITORIES` dictionary, in case they were not already generated.
 
 #### Configuration
 
