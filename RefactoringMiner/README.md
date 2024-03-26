@@ -234,32 +234,26 @@ The generated files for both the `repositories_refactors.py` and `metrics_evolut
 ```json
 {
   "commits": [
-    {
+   {
       "repository": "the_repository_name",
-      "refactorings": [
-         {
-            "commit": "the_commit_hash",
-            "refactorings": [
-            {
-               "type": "the_refactoring_type",
-               "description": "the_refactoring_description",
-               "leftSideLocations": {
-                  "filePath": "the_file_path",
-                  "startLine": "the_start_line",
-                  "endLine": "the_end_line"
-               },
-               "rightSideLocations": {
-                  "filePath": "the_file_path",
-                  "startLine": "the_start_line",
-                  "endLine": "the_end_line"
-               }
-            }
-            ]
+      "sha1": "the_commit_hash",
+      "url": "the_commit_url",
+      "refactorings": [{
+         "type": "the_refactoring_type",
+         "description": "the_refactoring_description",
+         "leftSideLocations": {
+            "filePath": "the_file_path",
+            "startLine": "the_start_line",
+            "endLine": "the_end_line"
+         },
+         "rightSideLocations": {
+            "filePath": "the_file_path",
+            "startLine": "the_start_line",
+            "endLine": "the_end_line"
          }
-      ]
-      }
-    }
-  ]
+      }]
+   }]
+}
 ```
 
 Below is a breakdown of what each field in these files represents:
