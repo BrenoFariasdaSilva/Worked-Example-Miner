@@ -233,8 +233,7 @@ The generated files for both the `repositories_refactors.py` and `metrics_evolut
 
 ```json
 {
-  "commits": [
-   {
+  "commits": [{
       "repository": "the_repository_name",
       "sha1": "the_commit_hash",
       "url": "the_commit_url",
