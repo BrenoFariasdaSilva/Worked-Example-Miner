@@ -5,6 +5,7 @@ import subprocess # The subprocess module allows you to spawn new processes, con
 import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
+from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 
 # Macros:
 class BackgroundColors: # Colors for the terminal
@@ -116,7 +117,8 @@ def process_repositories_concurrently(repositories):
    # Loop through the default repositories
    for repository_name, repository_url in repositories.items():
       estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for {BackgroundColors.CYAN}generating the refactoring{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-      output_time(estimated_time_string, round((COMMITS_NUMBER[repository_name]/(ITERATIONS_PER_SECOND[repository_name])), 2))
+      commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
+      output_time(estimated_time_string, round(((commits_number / 1000) * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
       threads.append(thread) # Append the thread to the threads list
       thread.start() # Start the thread
