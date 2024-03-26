@@ -584,7 +584,7 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    
    This directory contains the metrics linear regressions of the repositories, which are stored in the `metrics_predictions/repository_name` directory. The `repository_name` directory contains the `classes` and `methods` directories, which contains photos in the `.png` file format for each of the selected metrics of the classes and methods of the repository. The photos contains the linear regression graphics of the metrics values of the classes and methods of the repository.
 
-   [org.apache.zookeeper.server.quorum.Follower Class CBO Metric Linear Regression](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/Outputs-Examples/PyDriller/Output-Examples/LinearRegression-CBO-org.apache.zookeeper.server.quorum.Follower.png)
+   ![org.apache.zookeeper.server.quorum.Follower Class CBO Metric Linear Regression](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/Outputs-Examples/PyDriller/Output-Examples/LinearRegression-CBO-org.apache.zookeeper.server.quorum.Follower.png)
 
 ### Metrics Statistics 
 
