@@ -10,6 +10,7 @@ from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSIT
 from repositories_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
 
 # Constants:
+DESIRED_REFACTORINGS_ONLY = True # If True, only the desired refactoring types will be considered
 DESIRED_REFACTORING_TYPES = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactoring types
 
 # Default values:
@@ -106,8 +107,9 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
       # Wait for the thread to finish
       thread.wait()
 
-      # Filter the JSON file
-      filter_json_file(classname, json_filepath, json_filtered_filepath)
+      # Filter the JSON file according to the desired refactoring types if DESIRED_REFACTORINGS_ONLY is set to True
+      if DESIRED_REFACTORINGS_ONLY:
+         filter_json_file(classname, json_filepath, json_filtered_filepath)
 
 def filter_json_file(classname, json_filepath, json_filtered_filepath):
    """
