@@ -65,6 +65,7 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
     - [Metrics Predictions](#metrics-predictions)
     - [Metrics Statistics](#metrics-statistics)
     - [Progress Files](#progress-files)
+    - [Refactorings Files](#refactorings-files)
     - [Repositories](#repositories)
   - [Contributing](#contributing)
   - [License](#license)
@@ -616,6 +617,36 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    ```
 
    In the lines that comes below the header, it will store the history of all of the commits that were processed by the `code_metrics.py` script, in order to, in case of the script execution stops in the middle of the execution, you can continue the execution from the last commit hash that was processed.
+
+### Refactorings Files
+
+   This directory contains the refactorings of the repositories, which are stored in the `refactorings/repository_name/` directory. Inside the `repository_name` directory, there are the `commit_number-commit_hash.json` files, which contains the refactorings information of the repository for the specified commit hash.
+
+   Here is an example of the `commit_number-commit_hash.json` file structure:
+
+   ```json
+   {
+   "commits": [{
+         "repository": "the_repository_name",
+         "sha1": "the_commit_hash",
+         "url": "the_commit_url",
+         "refactorings": [{
+            "type": "the_refactoring_type",
+            "description": "the_refactoring_description",
+            "leftSideLocations": {
+               "filePath": "the_file_path",
+               "startLine": "the_start_line",
+               "endLine": "the_end_line"
+            },
+            "rightSideLocations": {
+               "filePath": "the_file_path",
+               "startLine": "the_start_line",
+               "endLine": "the_end_line"
+            }
+         }]
+      }]
+   }
+   ```
 
 ### Repositories 
     
