@@ -118,19 +118,19 @@ This will also be handled by the `Makefile` during the dependencies installation
    
    The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `repositories_refactors.py` file, use:
 
-  ```
-  make repositories_refactors_script
-  ```
+   ```
+   make repositories_refactors_script
+   ```
 
-  This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
+   This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
 
 4. **Generate the requirements.txt file**
 
    If you changed the project dependencies and want to update the `requirements.txt` file, you can run the following command:
 
-   ```
-   make generate_requirements
-   ```
+      ```
+      make generate_requirements
+      ```
 
    This command will generate the `requirements.txt` file in the root of the tool directory (PyDriller or RefactoringMiner), which will contain all the dependencies used in the virtual environment of the project.
 
