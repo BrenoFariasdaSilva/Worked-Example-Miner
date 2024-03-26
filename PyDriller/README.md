@@ -569,7 +569,15 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
 ### Metrics Evolution  
    
-   This directory contains the metrics evolution of the repositories, which are stored in the `metrics_evolution/repository_name` directory. The `repository_name` directory contains the `classes` and `methods` directories, which contains the metrics evolution of each classes and methods of the repository. In the csv file of each class or method, it contains the metrics values for each state (commit) of the repository.
+   This directory contains the metrics evolution of the repositories, which are stored in the `metrics_evolution/repository_name` directory. The `repository_name` directory contains the `classes` and `methods` directories, which contains the metrics evolution of each classes and methods of the repository. In the csv file of each class or method, it contains the metrics values for each state (commit) of the repository where the class or method was modified.
+
+   The header structure of the `class.csv` and `method.csv` files are the following:
+
+   ```csv
+   | Class | Commit Hash | CBO | WMC | RFC |
+   ```
+
+   That's a visual representation of the header structure of the `class.csv` and `method.csv` files, which contains the metrics evolution of the classes and methods of the repository. The lines that comes below the header structure are the values of the commit hash and metrics for each class or method of the repository where the class or method was modified.
 
 ### Metrics Predictions  
    
