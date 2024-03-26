@@ -135,7 +135,7 @@ This will also be handled by the `Makefile` during the dependencies installation
     make dependencies
     ```
 
-  This command performs the following actions:
+   This command performs the following actions:
   - Initializes a new virtual environment by running `python3 -m venv venv`.
   - Installs the project's dependencies within the virtual environment using `pip` based on the `requirements.txt` file. The `requirements.txt` file contains a list of all required packages and their versions. This is the recommended way to manage dependencies in Python projects, as it allows for consistent and reproducible installations across different environments.
 
@@ -143,11 +143,11 @@ This will also be handled by the `Makefile` during the dependencies installation
    
    The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `code_metrics.py` file, use:
 
-  ```
-  make code_metrics_script
-  ```
+   ```
+   make code_metrics_script
+   ```
 
-  This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
+   This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
 
 4. **Generate the requirements.txt file:**
 
@@ -189,7 +189,7 @@ In order to run this code as you want, you must modify the following constants:
    ```
 
    The repository example above is a small repository that contains only 1 java file and only 9 commits, so it is a good example to see how the tool works.
-   
+
    After that, you can select the repositories that you want to generate the data and metadata. The `DEFAULT_REPOSITORIES` dictionary is a dictionary in which the key is the repository name and the value is the repository url. For example, if you want to generate the data and metadata of the `zookeeper` repository, you must add the following key-value pair to the `DEFAULT_REPOSITORIES` dictionary.
 
 3. `ITERATIONS_DURATION` constant, which represents a simbolic time duration of the iterations of the `code_metrics.py` script for each repository. It is used to calculate the estimated time of the script execution. If you don't know, just kinda ignore it, but be aware that the bigger the repository is, the longer it will take to execute the script.
