@@ -34,6 +34,7 @@ With our objective to craft a compelling worked example for Software Engineering
       - [Workflow](#workflow)
     - [Metrics Evolution Refactors](#metrics-evolution-refactors)
       - [Configuration](#configuration-1)
+      - [Run](#run-1)
     - [RefactoringMiner JSON Output](#refactoringminer-json-output)
   - [Troubleshooting](#troubleshooting)
   - [Contributing](#contributing)
@@ -201,6 +202,14 @@ In order to run this code as you want, you must modify the following constants:
 4. `DEFAULT_REPOSITORY`: The repository name that has the classes or methods to be analyzed.  
 5. `DEFAULT_REPOSITORIES`: A dictionary to store the repository name and the repository url. The `DEFAULT_REPOSITORY` must be one of the keys of this dictionary. This constant is imported from the `repositories_refactors.py` file.
 6. `FILES_TO_ANALYZE`: A dictionary to store the files to analyze in the repository. It's keys (class name) and value (method name) must be the names of classes or methods that you want to analyze deeper after selecting them from the analysis of the PyDriller generated data and metadata.
+
+#### Run
+
+Now that you have set the constants, you can run the following command to execute the `metrics_evolution_refactors.py` file:
+
+```shell
+make metrics_evolution_refactors_script
+```
 
 ### RefactoringMiner JSON Output
 
