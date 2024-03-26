@@ -521,23 +521,23 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
    This directory contains the ck metrics for each commit of the repositories, which are stored in the `./ck_metrics/repository_name/commit_number-commit_hash` directory. Each `commit_number-commit_hash` directory contains the `class.csv` and `method.csv` files, which contains the ck metrics of the classes and methods of the repository for the specified commit hash. The `ck_metrics` directory also contains the `repository_name-commits_list.csv` file, which contains the list of the commit hashes, commit messages and commit dates of the repository.
 
-   The header structure of the `class.csv` and `method.csv` files are the following:
+   The CSV header of the `class.csv` and `method.csv` files are the following:
 
    ```csv
    | file | class | class | cbo | cbo modified | fanin | fanout | wmc | dit | noc | rfc | lcom | lcom* | tcc | lcc | totalMethodsQty | staticMethodsQty | publicMethodsQty | privateMethodsQty | protectedMethodsQty | defaultMethodsQty | visibleMethodsQty | abstractMethodsQty | finalMethodsQty | synchronizedMethodsQty | totalFieldsQty | staticFieldsQty | publicFieldsQty | privateFieldsQty | protectedFieldsQty | defaultFieldsQty | finalFieldsQty | synchronizedFieldsQty | nosi | loc | returnQty | loopQty | comparisonsQty | tryCatchQty | parenthesizedExpsQty | stringLiteralsQty | numbersQty | assignmentsQty | mathOperationsQty | variablesQty | maxNestedBlocksQty | anonymousClassesQty | innerClassesQty | lambdasQty | uniqueWordsQty | modifiers | logStatementsQty |
    ```
 
-   That's a visual representation of the header structure of the `class.csv` and `method.csv` files, which contains the ck metrics of the classes and methods of the repository for the specified commit hash. The lines that comes below the header structure are the values of the metrics for each class or method of the repository in that current commit hash.
+   That's a visual representation of the CSV header of the `class.csv` and `method.csv` files, which contains the ck metrics of the classes and methods of the repository for the specified commit hash. The lines that comes below the CSV header are the values of the metrics for each class or method of the repository in that current commit hash.
 
    The main difference from the `class.csv` and `method.csv` files is that the third attribute in the csv header is the `method name` in the `method.csv` file and the `class type` in the `class.csv` file.
 
-   The header structure of the `repository_name-commits_list.csv` file is the following:
+   The CSV header of the `repository_name-commits_list.csv` file is the following:
 
    ```csv
    | Commit Hash | Commit Message | Commit Date |
    ```
 
-   That's a visual representation of the header structure of the `repository_name-commits_list.csv` file, which contains the list of the commit hashes, commit messages and commit dates of the repository. The lines that comes below the header structure are the values of the commit hashes, commit messages and commit dates of the repository for each commit.
+   That's a visual representation of the CSV header of the `repository_name-commits_list.csv` file, which contains the list of the commit hashes, commit messages and commit dates of the repository. The lines that comes below the CSV header are the values of the commit hashes, commit messages and commit dates of the repository for each commit.
 
 ### Commit Diff Files 
 
@@ -572,13 +572,13 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    
    This directory contains the metrics evolution of the repositories, which are stored in the `metrics_evolution/repository_name` directory. The `repository_name` directory contains the `classes` and `methods` directories, which contains the metrics evolution of each classes and methods of the repository. In the csv file of each class or method, it contains the metrics values for each state (commit) of the repository where the class or method was modified.
 
-   The header structure of the `class.csv` and `method.csv` files are the following:
+   The CSV header of the `class.csv` and `method.csv` files are the following:
 
    ```csv
    | Class | Commit Hash | CBO | WMC | RFC |
    ```
 
-   That's a visual representation of the header structure of the `class.csv` and `method.csv` files, which contains the metrics evolution of the classes and methods of the repository. The lines that comes below the header structure are the values of the commit hash and metrics for each class or method of the repository where the class or method was modified.
+   That's a visual representation of the CSV header of the `class.csv` and `method.csv` files, which contains the metrics evolution of the classes and methods of the repository. The lines that comes below the CSV header are the values of the commit hash and metrics for each class or method of the repository where the class or method was modified.
 
 ### Metrics Predictions  
    
@@ -590,7 +590,7 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
    This directory contains the metrics statistics and the substantial changes of the repositories, which are stored in the `metrics_statistics/repository_name` directory. The `repository_name/class_changes.csv` file stores the classes that, in descending order, changed the most times according to the tuple of selected metrics (CBO, WMC and RFC). The `repository_name/substantial_metric_name_classes_changes.csv` file stores the substantial changes of the classes of the repository, which contains the class name, variable attribute, from metric value, to metric value, percentual variation, commit number, commit hash, refactorings types and file path informations. The `repository_name/substantial_metric_name_classes_changes.csv` file stores the substantial changes of the methods of the repository, which contains the method name, variable attribute, from metric value, to metric value, percentual variation, commit number, commit hash, refactorings types and file path informations.
 
-   The header structure of the `class_changes.csv` and `method_changes.csv` files are the following:
+   The CSV header of the `class_changes.csv` and `method_changes.csv` files are the following:
 
    ```csv
    | Class | Type | Changed | CBO Min | CBO Max | CBO Avg | CBO Q3 | WMC Min | WMC Max | WMC Avg | WMC Q3 | RFC Min | RFC Max | RFC Avg | RFC Q3 | First Commit Hash | Last Commit Hash | 
@@ -598,7 +598,7 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
    And the lines that comes below the CSV header are the occurrences of the classes the changed the most. The difference between the `class_changes.csv` and `method_changes.csv` files is that the `Type` attribute in the `class_changes.csv` file is the `class name` and the `Type` attribute in the `method_changes.csv` file is the `class_name` and `method name`.
 
-   The header structure of the `substantial_metric_name_classes_changes.csv` and `substantial_metric_name_methods_changes.csv` files are the following:
+   The CSV header of the `substantial_metric_name_classes_changes.csv` and `substantial_metric_name_methods_changes.csv` files are the following:
 
    ```csv
    | Class Name | Variable Attribute | From Metric Value | To Metric Value | Percentual Variation | Commit Number | Commit Hash | Refactorings Types | File Path |
