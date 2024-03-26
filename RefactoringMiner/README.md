@@ -27,7 +27,7 @@ With our objective to craft a compelling worked example for Software Engineering
       - [Windows](#windows)
     - [Requirements](#requirements)
     - [Cleaning Up](#cleaning-up)
-  - [Usage](#usage)
+  - [How to use](#how-to-use)
     - [Repositories Refactors](#repositories-refactors)
     - [Metrics Evolution Refactors](#metrics-evolution-refactors)
     - [Cleaning Up](#cleaning-up-1)
@@ -89,6 +89,7 @@ This project depends on the following libraries:
 
 - [NumPy](https://numpy.org/) -> NumPy is used to generate the linear prediction of the linear regression and to many operations in the list of the metrics.
 - [Pandas](https://pandas.pydata.org/) -> Pandas is used maintly to read and write the csv files.
+- [PyDriller](https://pydriller.readthedocs.io/en/latest/) -> PyDriller is used to get the number of commits of the repositories.
 - [TQDM](https://tqdm.github.io/) -> TQDM is used to show the progress bar of the scripts.
 
 Futhermore, this project requires a virtual environment to ensure all dependencies are installed and managed in an isolated manner. A virtual environment is a self-contained directory tree that contains a Python installation for a particular version of Python, plus a number of additional packages. Using a virtual environment helps avoid conflicts between project dependencies and system-wide Python packages. 
@@ -114,7 +115,7 @@ This will also be handled by the `Makefile` during the dependencies installation
    - Initializes a new virtual environment by running `python3 -m venv venv`.
    - Installs the project's dependencies within the virtual environment using `pip` based on the `requirements.txt` file. The `requirements.txt` file contains a list of all required packages and their versions. This is the recommended way to manage dependencies in Python projects, as it allows for consistent and reproducible installations across different environments.
 
-3. **Running Scripts**
+2. **Running Scripts**
    
    The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `repositories_refactors.py` file, use:
 
@@ -124,7 +125,7 @@ This will also be handled by the `Makefile` during the dependencies installation
 
    This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
 
-4. **Generate the requirements.txt file**
+3. **Generate the requirements.txt file**
 
    If you changed the project dependencies and want to update the `requirements.txt` file, you can run the following command:
 
@@ -146,7 +147,7 @@ This command removes the `venv` directory and deletes any cached Python files in
 
 By following these instructions, you'll ensure that all project dependencies are correctly managed and isolated, leading to a more stable and consistent development environment.
 
-## Usage
+## How to use
 
 ### Repositories Refactors
 
