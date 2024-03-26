@@ -34,8 +34,6 @@ JSON_FILE_FORMAT = "json" # The extension of the generated file by the Refactori
 
 # Default values:
 DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
-COMMITS_NUMBER = {"commons-lang": 8000, "jabref": 20000, "kafka": 12000, "zookeeper": 3000} # The number of commits of each repository
-ITERATIONS_PER_SECOND = {"commons-lang": 4, "jabref": 4, "kafka": 4, "zookeeper": 4} # The duration of the iterations for each repository
 
 # Relative paths:
 RELATIVE_REFACTORING_MINER_PATH = "/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner Tool
