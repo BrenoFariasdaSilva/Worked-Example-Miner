@@ -31,9 +31,10 @@ With our objective to craft a compelling worked example for Software Engineering
     - [Repositories Refactors](#repositories-refactors)
       - [Configuration](#configuration)
       - [Run](#run)
+      - [Workflow](#workflow)
     - [Metrics Evolution Refactors](#metrics-evolution-refactors)
     - [Cleaning Up](#cleaning-up-1)
-  - [Workflow](#workflow)
+  - [Workflow](#workflow-1)
   - [Python Scripts](#python-scripts)
     - [Metrics Evolution Refactors](#metrics-evolution-refactors-1)
     - [Repositories Refactors](#repositories-refactors-1)
@@ -172,6 +173,23 @@ Now that you have set the constants, you can run the following command to execut
   make repositories_refactors_script
   ```
 
+#### Workflow
+
+1. As for every file in this project, the first thing it will do is verify if you don't have whitespaces in the path of the project, if you have, it will not work.  
+2. In this step, the main function will call the `verify_refactorings()` to verify if the RefactoringMiner refactorings for the DEFAULT_REPOSITORIES were already generated. If not, it will generate them. This verification is done by verifying if the RefactoringMiner json output file is located in the `{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}` directory. If the file is not found, it will add the repository url to the `repositories` dictionary, using the repository name as the key.  
+3. Now, in case there are repositories to be analyzed, it will create the json output directory and the repository directory if they don't exist.
+4. Now it calls `process_repositories_concurrently(repositories)`, which will do the following steps:
+   
+   1. This function will loop through each of the repositories in the `repositories` dictionary.
+   2. Inside this loop, it will output an estimated time of the script execution, based on the number of commits of the repository.
+   3. Then, it will create a thread for handling the analysis of each repository, executing the `process_repository(repository_name, repository_url)` function.
+   
+5. Inside the `process_repository(repository_name, repository_url)` function, it will do the following steps: 
+   1. It calls the `clone_repository(repository_name, repository_url)` function, which will clone or update the repository, depending on whether it already exists or not.
+   2. In the next step, it will call the `generate_commit_refactors(repository_name)` function, which will generate the refactorings for each of the commits in the repository using the `-a` parameter of the `RefactoringMiner` tool and save the output in the `{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}` filepath.
+   3. Lastly, it will output the execution time of the script, based on the start time and the end time of the script execution.
+   
+6. Now, the thread will finish and the script will wait for all the threads to finish, and output a end of the execution message.
 
 ### Metrics Evolution Refactors
 
