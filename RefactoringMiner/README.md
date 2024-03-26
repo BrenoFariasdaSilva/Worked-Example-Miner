@@ -8,7 +8,7 @@
   
 ---
 
-Welcome to the Refactoring Miner directory, in which you will find the scripts that generates the refactoring script of an specific commit of a class or method of a repository and the script that generates the refactorings for an entire repository. The scripts that are located in this directory are part of the Worked Example Miner (WEM) Tool.
+Welcome to the Refactoring Miner directory, in which you will find the scripts that generates the refactoring script of an specific commit of a class or method of a repository and the script that generates the refactorings for an entire repository. The scripts that are located in this directory are part of the [Worked-Example-Miner (WEM)](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) Tool.
 
 RefactoringMiner stands out as an instrument for the analysis of software maintenance and evolution, empowering both developers and researchers with deep insights into the dynamics of code evolution via refactorings. The tool captures refactorings, cataloging them in JSON files. These files serve as a codebase analyses, enabling the identification of significant refactoring patterns and trends that mark the software's evolutionary journey. Such insights are crucial for comprehensively understanding the ramifications of refactorings on the codebase, shedding light on their influence on the software's quality and maintainability.
 
