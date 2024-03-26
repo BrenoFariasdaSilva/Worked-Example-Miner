@@ -35,6 +35,7 @@ With our objective to craft a compelling worked example for Software Engineering
     - [Metrics Evolution Refactors](#metrics-evolution-refactors)
       - [Configuration](#configuration-1)
       - [Run](#run-1)
+      - [Workflow](#workflow-1)
     - [RefactoringMiner JSON Output](#refactoringminer-json-output)
   - [Troubleshooting](#troubleshooting)
   - [Contributing](#contributing)
@@ -210,6 +211,18 @@ Now that you have set the constants, you can run the following command to execut
 ```shell
 make metrics_evolution_refactors_script
 ```
+
+#### Workflow
+
+1. The first thing this script does is verify if the path contains whitespace, if so, it will not work, so it will ask the user to remove the whitespace from the path and then run the script again.
+2. Now it will create the json output directory and the repository directory if they don't exist.
+3. Now it calls `process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])`, which will do the following steps:
+   
+   1. Call the `clone_repository(repository_name, repository_url)` to clone or update the repository, depending on whether it already exists or not.
+   2. Then, it calls `generate_refactorings_concurrently(repository_name)` where, for each of the items in the `FILES_TO_ANALYZE` dictionary, creating a thread for handling the analysis of each file. The target function of the thread is the `generate_commit_refactors_for_class_or_methods(repository_name, classname, variable_attribute)`.
+        1. In this function, it will loop through each of the commit hashes in the csv from the `PyDriller/metrics_evolution` directory and generate the refactorings for the commit hashes where that specified classes or method was modified using the `-c` parameter of the `RefactoringMiner` tool and save the output in the `json_files` directory.
+        2. Lastly, it calls the `filter_json_file(classname, json_filepath, json_filtered_filepath)` that will read the generated json file and filter the refactorings by the `DESIRED_REFACTORING_TYPES` variable and save the filtered refactorings in the `json_files` directory.
+4. Finally, it will output the execution time of the script and wait for all the threads to finish to output a end of the execution message.
 
 ### RefactoringMiner JSON Output
 
