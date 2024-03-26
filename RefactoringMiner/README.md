@@ -41,6 +41,7 @@ With our objective to craft a compelling worked example for Software Engineering
   - [License](#license)
 
 ## Important Notes
+
 - Make sure you don't have whitespaces in the path of the project, otherwise it will not work.
 - All of the Scripts have a `VERBOSE` constant, which is set to `False` by default, so it will only print the progress bar of the script execution. If you want to see the progress bar and the print statements, you must set the `VERBOSE` constant to `True`.
 - All of the Scripts have a `Makefile`that handles virtual environment creation, dependencies installation and script execution. You can run the scripts by using the `make` command, as shown in the `How to use` section.
@@ -96,12 +97,12 @@ To set up and use a virtual environment for this project, we leverage Python's b
 
 Follow these steps to prepare your environment:
 
-1. **Create and Activate the Virtual Environment:** 
+1. **Create and Activate the Virtual Environment** 
    
    The project uses a `makefile` to streamline the creation and activation of a virtual environment named `venv`. This environment is where all required packages, such as `numpy`, `pandas` and `tqdm`, will be installed.
 This will also be handled by the `Makefile` during the dependencies installation process, so no command must be executed in order to create the virtual environment.
 
-1. **Install Dependencies:** 
+1. **Install Dependencies** 
    
    Run the following command to set up the virtual environment and install all necessary dependencies on it:
 
@@ -113,7 +114,7 @@ This will also be handled by the `Makefile` during the dependencies installation
    - Initializes a new virtual environment by running `python3 -m venv venv`.
    - Installs the project's dependencies within the virtual environment using `pip` based on the `requirements.txt` file. The `requirements.txt` file contains a list of all required packages and their versions. This is the recommended way to manage dependencies in Python projects, as it allows for consistent and reproducible installations across different environments.
 
-3. **Running Scripts:**
+3. **Running Scripts**
    
    The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `repositories_refactors.py` file, use:
 
@@ -123,7 +124,7 @@ This will also be handled by the `Makefile` during the dependencies installation
 
   This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
 
-4. **Generate the requirements.txt file:**
+4. **Generate the requirements.txt file**
 
    If you changed the project dependencies and want to update the `requirements.txt` file, you can run the following command:
 
@@ -163,24 +164,26 @@ To use the script for repositories refactor analysis, follow these steps:
 
 In order to use the script for the analysis of the metrics evolution of a class or method, follow these steps:
 
-1. Make sure you have the PyDriller Metrics Evolution files that should be located as follows, otherwise it will not work:
+1. Make sure you have the PyDriller Metrics Evolution files that should be located as follows, otherwise it will not work.
+
   ```shell
   Worked-Example-Miner/PyDriller/metrics_evolution
   ```
-2. If you have the PyDriller Metrics Evolution files, simply open a terminal in the `RefactoringMiner` directory and run the script using the following command:
+
+2. If you have the PyDriller Metrics Evolution files, simply open a terminal in the `RefactoringMiner` directory and run the script using the following command.
 
   ```shell
   make metrics_evolution_refactors_script
   ```
 
-**Running Scripts:** The `makefile` handles for each of the python code to run with the virtual environment's Python interpreter. So, this ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
-
 ### Cleaning Up
 
-To clean your project directory from the virtual environment and Python cache files, use the `clean` rule defined in the `makefile`:
+To clean your project directory from the virtual environment and Python cache files, use the `clean` rule defined in the `makefile`.
+
 ```shell
 make clean
 ```
+
 This command removes the `venv` directory and deletes all compiled Python files in the project directory, helping maintain a clean workspace.
 
 By following these instructions, you'll ensure that all project dependencies are correctly managed and isolated, leading to a more stable and consistent development environment.
@@ -204,6 +207,7 @@ Here's a brief overview of how the script works:
 In this section, we provide explanations for each function in the provided Python script and introduce RefactoringMiner, an essential tool used by the script.
 
 ### Metrics Evolution Refactors
+
 Before running the script, be sure to modify the following variables to suit your needs:  
 `DESIRED_REFACTORING_TYPES` - The refactoring types to be analyzed. Must names of the refactorings detected by RefactoringMiner. See more [here](https://github.com/tsantalis/RefactoringMiner#general-info).  
 `DEFAULT_REPOSITORY` - The default repository to clone or update. Must be a value that is in the DEFAULT_REPOSITORIES dictionary.  
@@ -219,6 +223,7 @@ Before running the script, be sure to modify the following variables to suit you
 4. Lastly, it will output the execution time of the script.
 
 ### Repositories Refactors
+
 Before running the script, be sure to modify the following variables to suit your needs:  
 `DEFAULT_REPOSITORIES` - The repositories to be analyzed. Must be a dictionary with the name of the repository as the key and the URL of the repository as the value.  
 `COMMITS_NUMBER` - The number of commits that the corresponding repository have. It is useful for calculing the estimated time of the script.  
@@ -248,6 +253,7 @@ If you encounter any issues while using the script, consider the following:
 - Verify that the paths specified in the script are correct, and the necessary directories exist.
 
 - Verify if you have the PyDriller Metrics Evolution files that should be located as follows, otherwise it will not work:
+
   ```shell
   Worked-Example-Miner/PyDriller/metrics_evolution
   ```
