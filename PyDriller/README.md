@@ -556,6 +556,17 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
    This directory contains the metrics data of the repositories, which are stored in the `metrics_data/repository_name` directory. The `repository_name` directory contains the `classes_track_record.txt` and/or `methods_track_record` files, which contains the data structure of the `metrics_track_record` dictionary, which contains the metrics evolution of the classes and methods of the repository.
 
+   The `classes_track_record.txt` and `methods_track_record.txt` files have a similar structure to the `metrics_track_record` dictionary, which is as follows:
+
+   ```txt
+   Class name: 
+      Metrics: [(CBO Value, RFC Value, WMC Value), (CBO Value 2, RFC Value 2, WMC Value 2), ... , (CBO Value N, RFC Value N, WMC Value N)]
+      Commit Hashes: ['Commit Number 1 - Commit Hash 1', 'Commit Number 2 - Commit Hash 2', ... , 'Commit Number N - Commit Hash N']
+      Changed: Number of times that the metrics changed (N)
+   ```
+
+   The above example is a short representation of the `metrics_track_record` dictionary, which contains the metrics evolution of the classes and methods of the repository. The example showed is what the `classes_track_record.txt` and `methods_track_record.txt` files contains, which (most likely) is various occurrences of the above example in the same file.
+
 ### Metrics Evolution  
    
    This directory contains the metrics evolution of the repositories, which are stored in the `metrics_evolution/repository_name` directory. The `repository_name` directory contains the `classes` and `methods` directories, which contains the metrics evolution of each classes and methods of the repository. In the csv file of each class or method, it contains the metrics values for each state (commit) of the repository.
