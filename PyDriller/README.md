@@ -520,6 +520,20 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
    This directory contains the ck metrics for each commit of the repositories, which are stored in the `./ck_metrics/repository_name/commit_number-commit_hash` directory. Each `commit_number-commit_hash` directory contains the `class.csv` and `method.csv` files, which contains the ck metrics of the classes and methods of the repository for the specified commit hash. The `ck_metrics` directory also contains the `repository_name-commits_list.csv` file, which contains the list of the commit hashes, commit messages and commit dates of the repository.
 
+   The header structure of the `class.csv` and `method.csv` files are the following:
+
+   ```csv
+   | file | class | class | cbo | cbo modified | fanin | fanout | wmc | dit | noc | rfc | lcom | lcom* | tcc | lcc | totalMethodsQty | staticMethodsQty | publicMethodsQty | privateMethodsQty | protectedMethodsQty | defaultMethodsQty | visibleMethodsQty | abstractMethodsQty | finalMethodsQty | synchronizedMethodsQty | totalFieldsQty | staticFieldsQty | publicFieldsQty | privateFieldsQty | protectedFieldsQty | defaultFieldsQty | finalFieldsQty | synchronizedFieldsQty | nosi | loc | returnQty | loopQty | comparisonsQty | tryCatchQty | parenthesizedExpsQty | stringLiteralsQty | numbersQty | assignmentsQty | mathOperationsQty | variablesQty | maxNestedBlocksQty | anonymousClassesQty | innerClassesQty | lambdasQty | uniqueWordsQty | modifiers | logStatementsQty |
+   ```
+
+   The main difference from the `class.csv` and `method.csv` files is that the third attribute in the csv header is the `method name` in the `method.csv` file and the `class type` in the `class.csv` file.
+
+   The header structure of the `repository_name-commits_list.csv` file is the following:
+
+   ```csv
+   | Commit Hash | Commit Message | Commit Date |
+   ```
+
 ### Commit Diff Files 
 
    This directory contains the diffs of the repositories, which are stored in the `./diffs/repository_name/commit_number-commit_hash` directory. The `commit_number-commit_hash` directory contains the diffs of the files of the repository for the specified commit hash.
