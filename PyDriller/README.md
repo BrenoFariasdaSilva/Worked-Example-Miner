@@ -66,7 +66,7 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
     - [Metrics Statistics](#metrics-statistics)
     - [Progress Files](#progress-files)
     - [Refactorings Files](#refactorings-files)
-    - [Repositories](#repositories)
+    - [Repositories Files](#repositories-files)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -648,9 +648,9 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    }
    ```
 
-### Repositories 
+### Repositories Files
     
-   This directory contains the repositories of the repositories, which are stored in the `repositories/repository_name` directory. The `repository_name` directory contains the repository files.
+   This directory contains the cloned repositories, which are stored in the `repositories/repository_name` directory. We need this files locally to extract the ck metrics of the repositories.
 
 ## Contributing
 
