@@ -200,8 +200,6 @@ In order to run this code as you want, you must modify the following constants:
 
    After that, you can select the repositories that you want to generate the data and metadata. The `DEFAULT_REPOSITORIES` dictionary is a dictionary in which the key is the repository name and the value is the repository url. For example, if you want to generate the data and metadata of the `zookeeper` repository, you must add the following key-value pair to the `DEFAULT_REPOSITORIES` dictionary.
 
-3. `ITERATIONS_DURATION` constant, which represents a simbolic time duration of the iterations of the `code_metrics.py` script for each repository. It is used to calculate the estimated time of the script execution. If you don't know, just kinda ignore it, but be aware that the bigger the repository is, the longer it will take to execute the script.
-
 ##### Run
 
 Now that you have set the constants, you can run the following command to execute the `code_metrics.py` file:
