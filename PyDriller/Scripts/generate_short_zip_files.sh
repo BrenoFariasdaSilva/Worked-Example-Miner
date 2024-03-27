@@ -4,6 +4,9 @@
 # chmod +x ./generate_short_zip_files.sh
 # ./generate_short_zip_files.sh
 
+# Echo welcome message
+echo "Welcome to the Generate Short Zip Files script!"
+
 # Get the current directory
 current_dir="$(pwd)"
 
@@ -59,4 +62,4 @@ else
 fi
 
 # Print a success message
-echo "Zip files created successfully."
+echo "Short Zip Files created successfully."
