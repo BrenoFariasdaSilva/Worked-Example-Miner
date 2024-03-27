@@ -541,7 +541,7 @@ def main():
    process_repositories_in_parallel() # Process each of the repositories in parallel
 
    # Print the message that the CK metrics generator has finished processing the repositories
-   print(f"\n\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}")
+   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}")
 		
 if __name__ == '__main__':
    """
