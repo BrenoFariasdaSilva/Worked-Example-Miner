@@ -6,7 +6,7 @@ import threading # The threading module provides a high-level interface for runn
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 from repositories_refactors import BackgroundColors # Import the BackgroundColors class
-from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, ABSOLUTE_REFACTORING_MINER_PATH, ABSOLUTE_JSON_FILES_DIRECTORY_PATH, ABSOLUTE_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
+from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REFACTORING_MINER_PATH, FULL_JSON_FILES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
 from repositories_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
 from tqdm import tqdm  # Import tqdm for the progress bar functionality
 
@@ -94,19 +94,19 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
    commits_hashes = csv_file["Commit Hash"].tolist()
 
    # Create the output directory for the JSON files
-   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}")
-   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered")
+   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}")
+   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered")
 
-   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    for commit_hash in commits_hashes: # For each commit, generate the JSON file
       # Split the commit_hash into two parts, the substring before the first hyphen and the substring after the first hyphen, and store them in two variables: index and commit_hash
       index, commit_hash = commit_hash.split("-", 1)
 
-      json_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the output JSON file
-      json_filtered_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the filtered JSON file
+      json_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the output JSON file
+      json_filtered_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the filtered JSON file
 
-      # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -c REPOSITORY_DIRECTORY_PATH COMMIT_HASH -json JSON_FILES_DIRECTORY_PATH 
-      thread = subprocess.Popen([f"{ABSOLUTE_REFACTORING_MINER_PATH}", "-c", f"{repository_directory_path}", f"{commit_hash}", "-json", f"{json_filepath}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      # Run the Refactoring Miner Command: REFACTORING_MINER_FULL_PATH -c REPOSITORY_DIRECTORY_PATH COMMIT_HASH -json JSON_FILES_DIRECTORY_PATH 
+      thread = subprocess.Popen([f"{FULL_REFACTORING_MINER_PATH}", "-c", f"{repository_directory_path}", f"{commit_hash}", "-json", f"{json_filepath}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
 
@@ -167,9 +167,9 @@ def main():
    print(f"{BackgroundColors.GREEN}This Script will generate de refactors for the commits in {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{DEFAULT_REPOSITORY}{BackgroundColors.GREEN} repository that were selected by analyzing the generated data from {BackgroundColors.CYAN}PyDriller/metrics_changes.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}")
 
    # Create the json directory
-   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
+   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
    # Create the repositories directory
-   create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
+   create_directory(f"{FULL_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
 
    # Process the repository
    process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])
