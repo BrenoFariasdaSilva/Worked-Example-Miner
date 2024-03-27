@@ -18,11 +18,12 @@ class BackgroundColors: # Colors for the terminal
    UNDERLINE = "\033[4m" # Underline
    CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
     
+# Default values that can be changed:
+VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
+DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
+   
 # Default paths:
 START_PATH = os.getcwd() # Get the current working directory
-
-# Output Constants:
-VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
 
 # Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} 
@@ -33,9 +34,6 @@ TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, second
 
 # File Formats:
 JSON_FILE_FORMAT = "json" # The extension of the generated file by the RefactoringMiner Tool.
-
-# Default values:
-DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
 
 # Relative paths:
 RELATIVE_REFACTORING_MINER_PATH = "/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner Tool
