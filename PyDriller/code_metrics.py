@@ -533,9 +533,10 @@ def main():
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used by the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}", end="\n\n")   
+   
    process_repositories_in_parallel() # Process each of the repositories in parallel
 
-   print(f"\n\n {BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}")
+   print(f"\n\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}")
 		
 if __name__ == '__main__':
    """
