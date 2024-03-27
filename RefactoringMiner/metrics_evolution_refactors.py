@@ -8,7 +8,7 @@ from colorama import Style # For coloring the terminal
 from repositories_refactors import BackgroundColors # Import the BackgroundColors class
 from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REFACTORING_MINER_PATH, FULL_JSON_FILES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
 from repositories_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
-from tqdm import tqdm  # Import tqdm for the progress bar functionality
+from tqdm import tqdm # Import tqdm for the progress bar functionality
 
 # Constants:
 DESIRED_REFACTORINGS_ONLY = True # If True, only the desired refactoring types will be considered
@@ -63,7 +63,7 @@ def generate_refactorings_concurrently(repository_name):
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Generating the refactoring instances concurrently for the {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   threads = []  # List of threads
+   threads = [] # List of threads
    # For each class or method to be analyzed, wrap the iteration with tqdm for a progress bar
    for classname, variable_attribute in tqdm(FILES_TO_ANALYZE.items(), desc="Processing Refactorings", unit="file"):
       thread = threading.Thread(target=generate_commit_refactors_for_class_or_methods, args=(repository_name, classname, variable_attribute,)) # Create a thread
@@ -134,17 +134,18 @@ def filter_json_file(classname, json_filepath, json_filtered_filepath):
    filtered_json_data = [] # Initialize the filtered JSON data
 
    # Filter out refactoring instances that are not in the desired types
-   for commit in json_data["commits"]:
-      for refactoring in commit["refactorings"]:
-         if refactoring["type"] in DESIRED_REFACTORING_TYPES:
-            for rightSideLocation, leftSideLocation in zip(refactoring["rightSideLocations"], refactoring["leftSideLocations"]):
-               file_classname = classname.replace(".", "/")
-               file_classname = f"{file_classname}.java"
-               if file_classname in rightSideLocation["filePath"] or file_classname in leftSideLocation["filePath"]:
-                  filtered_json_data.append(refactoring)
+   for commit in json_data["commits"]: # For each commit
+      for refactoring in commit["refactorings"]: # For each refactoring instance
+         if refactoring["type"] in DESIRED_REFACTORING_TYPES: # If the refactoring type is in the desired refactoring types
+            for rightSideLocation, leftSideLocation in zip(refactoring["rightSideLocations"], refactoring["leftSideLocations"]): # For each rightSideLocation and leftSideLocation
+               file_classname = classname.replace(".", "/") # Replace the dots with slashes
+               file_classname = f"{file_classname}.java" # Append the Java file extension
+               if file_classname in rightSideLocation["filePath"] or file_classname in leftSideLocation["filePath"]: # If the file_classname is in the rightSideLocation or leftSideLocation
+                  filtered_json_data.append(refactoring) # Append the refactoring instance to the filtered JSON data
 
    # Write the filtered JSON data to the file if it is not empty
    if filtered_json_data:
+      # Open the JSON file for writing
       with open(json_filtered_filepath, "w") as json_file:
          json.dump(filtered_json_data, json_file, indent=1) # Write the filtered JSON data to the file
 
