@@ -4,6 +4,9 @@
 # chmod +x ./generate_zip_files.sh
 # ./generate_zip_files.sh
 
+# Echo welcome message
+echo "Welcome to the Generate Zip Files script!"
+
 # Get the current directory
 current_dir="$(pwd)"
 
