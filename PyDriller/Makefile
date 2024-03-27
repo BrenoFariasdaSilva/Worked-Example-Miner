@@ -3,6 +3,8 @@ VENV := venv
 PYTHON := $(VENV)/bin/python3
 PIP := $(VENV)/bin/pip
 
+# Activate the virtual environment: source venv/bin/activate
+
 # Main Scripts:
 code_metrics_script: $(VENV)
 	clear; time $(PYTHON) code_metrics.py
