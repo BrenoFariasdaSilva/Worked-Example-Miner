@@ -276,7 +276,7 @@ def main():
    # Verify if the path contains whitespaces
    if path_contains_whitespaces():
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
-      return
+      return # Exit the program
       
    repositories = verify_refactorings() # Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
 
