@@ -4,6 +4,9 @@
 # chmod +x ./move_extracted_files.sh
 # ./move_extracted_files.sh
 
+# Echo welcome message
+echo "Welcome to the Move Extracted Files script!"
+
 # Get the current directory
 current_dir="$(pwd)"
 
@@ -47,4 +50,4 @@ else
 fi
 
 # Print a success message
-echo "Files moved and source folders deleted successfully."
+echo "Files Moved and Source Folders deleted successfully."
