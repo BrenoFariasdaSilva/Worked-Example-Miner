@@ -476,6 +476,32 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 
 		return refactorings_info # Return the refactorings types list
 
+def verify_refactoring_file(refactoring_file_path):
+	"""
+	Validates if the refactoring file was created successfully.
+
+	:param refactoring_file_path: The path to the refactoring file
+	:return: A tuple (bool, str) where the bool indicates if the file is valid, and the str provides a message.
+	"""
+
+	# Verify if the file exists
+	if not os.path.isfile(refactoring_file_path):
+		return False, "File does not exist."
+
+	# Verify if the file is not empty
+	if os.path.getsize(refactoring_file_path) == 0:
+		return False, "File is empty."
+
+	# Try to load the JSON content of the file
+	try:
+		with open(refactoring_file_path, "r") as file:
+			data = json.load(file)
+	except json.JSONDecodeError:
+		return False, "File contains invalid JSON."
+
+	# If all checks pass, the file is considered valid
+	return True, "File is valid."
+
 def generate_refactoring_file(repository_name, commit_number, commit_hash):
 	"""
 	Generates the refactoring file for a specific commit hash in a specific repository.
@@ -506,7 +532,14 @@ def generate_refactoring_file(repository_name, commit_number, commit_hash):
 		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c {RELATIVE_REPOSITORIES_DIRECTORY_PATH}{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1"
 		os.system(command) # Run the command to get the RefactoringMiner data
 
-	return refactoring_file_path # Return the refactoring file path
+	# Verify if the refactoring file was properly generated
+	is_valid, message = verify_refactoring_file(refactoring_file_path)
+
+	if is_valid: # If the refactoring file was properly generated
+		return refactoring_file_path # Return the refactoring file path
+	else:
+		print(f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
+		return None # Return None
 
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, metric_name, repository_name):
 	"""
