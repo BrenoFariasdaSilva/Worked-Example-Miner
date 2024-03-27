@@ -115,8 +115,14 @@ This will also be handled by the `Makefile` during the dependencies installation
       ```
 
    This command performs the following actions:
-   - Initializes a new virtual environment by running `python3 -m venv venv`.
+   - Creates a new virtual environment by running `python3 -m venv venv`.
    - Installs the project's dependencies within the virtual environment using `pip` based on the `requirements.txt` file. The `requirements.txt` file contains a list of all required packages and their versions. This is the recommended way to manage dependencies in Python projects, as it allows for consistent and reproducible installations across different environments.
+
+      If you need to manually activate the virtual environment, you can do so by running the following command:
+
+      ```
+      source venv/bin/activate
+      ```
 
 2. **Running Scripts**
    

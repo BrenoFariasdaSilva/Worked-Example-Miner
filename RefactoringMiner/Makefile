@@ -3,6 +3,8 @@ VENV := venv
 PYTHON := $(VENV)/bin/python3
 PIP := $(VENV)/bin/pip
 
+# Activate the virtual environment: source venv/bin/activate
+
 # Scripts:
 repositories_refactors_script: $(VENV)
 	clear; time $(PYTHON) repositories_refactors.py
