@@ -11,7 +11,7 @@ class BackgroundColors: # Colors for the terminal
 	UNDERLINE = "\033[4m" # Underline
 	CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
-# Constants:
+# Default values that can be changed:
 DATA_FOLDERS = ["ck_metrics", "diffs", "metrics_evolution", "metrics_predictions", "metrics_statistics"] # The Data Folders
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
 
@@ -47,6 +47,9 @@ def main():
 
    :return: None
    """
+
+	# Print the welcome message
+	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Empty Folders Finder{BackgroundColors.GREEN}! This tool is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}", end="\n\n")
 	
 	print(f"{BackgroundColors.GREEN}Current working directory: {BackgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
 	initial_directory = input(f"{BackgroundColors.GREEN}Enter the initial directory {BackgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
@@ -72,6 +75,8 @@ def main():
 			print(f"")
 		else: # If no empty folders are found
 			print(f"{BackgroundColors.GREEN}No empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+
+	print(f"\n\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Empty Folders Finder{BackgroundColors.GREEN} has finished running. Thank you for using it!{Style.RESET_ALL}")
 
 if __name__ == '__main__':
    """
