@@ -79,6 +79,9 @@ def main():
 
    :return: None
    """
+
+	# Print the welcome message
+	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CLEAR_TERMINAL}Track Files{BackgroundColors.GREEN} script! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}", end="\n\n")
 	
    # Directory to start the search from (current directory)
 	current_directory = os.getcwd()
@@ -110,6 +113,9 @@ def main():
 
 		# Write the file paths to a text file
 		write_file_paths(found_file_paths, found_files_count, repository_name, current_directory)
+
+	# Print the completion message
+	print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Track Files{BackgroundColors.GREEN} script has completed!{Style.RESET_ALL}")
  
 if __name__ == '__main__':
    """
