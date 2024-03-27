@@ -4,10 +4,11 @@
 # chmod +x ./extract_zip_files.sh
 # ./extract_zip_files.sh
 
+# Echo welcome message
+echo "Welcome to the Extract Zip Files script!"
+
 # Get the current directory
 current_dir="$(pwd)"
-
-echo "Welcome to the Extract Zip Files script!"
 
 # Print the current directory
 echo "Current directory: ${current_dir}"
