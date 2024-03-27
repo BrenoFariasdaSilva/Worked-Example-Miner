@@ -75,7 +75,7 @@ def process_all_repositories():
 
 	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"") # Print an empty line
-		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{CLASSES_OR_METHODS} metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} of the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name) # Process the current repository
 		print(f"------------------------------------------------------------") # Print a separator
 
