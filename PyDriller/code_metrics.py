@@ -97,7 +97,7 @@ def output_time(output_string, time):
       time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
 
    rounded_time = round(time_value, 2) # Round the time value to two decimal places
-   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 def verify_ck_metrics_folder(repository_name):
    """
@@ -196,7 +196,7 @@ def clone_repository(repository_name, repository_url):
       thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       # Wait for the thread to finish
       thread.wait()
-      print(f"{BackgroundColors.GREEN}Successfully cloned the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}Successfully cloned the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository.{Style.RESET_ALL}")
 
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
@@ -360,7 +360,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    commits_info, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits-last_commit, unit=f" {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commits{Style.RESET_ALL}", unit_scale=True) as pbar:
+   with tqdm(total=number_of_commits-last_commit, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url).traverse_commits(): # Loop through the commits of the repository
          if commit_number < last_commit: # If the current commit number is less than the last commit number
             commit_number += 1 # Increment the commit number
@@ -476,7 +476,7 @@ def process_repositories_in_parallel():
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Processing each of the {BackgroundColors.CYAN}{DEFAULT_REPOSITORIES.keys()}{BackgroundColors.GREEN} repositories in parallel using threads...{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using threads...{Style.RESET_ALL}")
 
    threads = [] # The threads list
    # Loop through the default repositories
@@ -530,11 +530,12 @@ def main():
       print(f"{BackgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{BackgroundColors.RED}.{Style.RESET_ALL}")
       return
 
-   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN}! This tool is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used in the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}")
-   
+   print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used by the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}", end="\n\n")   
    process_repositories_in_parallel() # Process each of the repositories in parallel
+
+   print(f"\n\n {BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}")
 		
 if __name__ == '__main__':
    """
