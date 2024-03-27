@@ -7,6 +7,8 @@
 # Get the current directory
 current_dir="$(pwd)"
 
+echo "Welcome to the Extract Zip Files script!"
+
 # Print the current directory
 echo "Current directory: ${current_dir}"
 
@@ -63,4 +65,4 @@ else
 fi
 
 # Print a success message
-echo "Files unzipped successfully."
+echo "Files extracted successfully."
