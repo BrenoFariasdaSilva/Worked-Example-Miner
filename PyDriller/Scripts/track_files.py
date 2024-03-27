@@ -12,14 +12,10 @@ class BackgroundColors: # Colors for the terminal
 	UNDERLINE = "\033[4m" # Underline
 	CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
-# Constants:
+# Default values that can be changed:
+REPOSITORIES = ["commons-lang", "jabref", "kafka", "zookeeper"] # The list of repositories
+TARGET_FILENAMES = {"commons-lang": "", "jabref": "", "kafka": "", "zookeeper": "CHANGES.txt.diff"} # The target file names
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
-
-# List of target file names
-TARGET_FILENAMES = {"commons-lang": "", "jabref": "", "kafka": "", "zookeeper": "CHANGES.txt.diff"}
-
-# Repositories List
-REPOSITORIES = ["commons-lang", "jabref", "kafka", "zookeeper"]
 
 def search_files(search_directory, search_string):
 	"""
@@ -36,11 +32,12 @@ def search_files(search_directory, search_string):
 
 	found_files_count = 0 # Counter for the number of files found
 	found_file_paths = [] # List to store the paths of the found files
+
 	# Walk through the directory
 	for root, _, files in os.walk(search_directory):
-		# Search for the target files
-		for file in files:
+		for file in files: # Loop through the files
 			file_path = os.path.join(root, file)
+
 			# Verify if the file name matches the target file name
 			if search_string in file:
 				found_files_count += 1 # Increment the counter
@@ -67,8 +64,9 @@ def write_file_paths(found_file_paths, found_files_count, repository_name, curre
 		print(f"{BackgroundColors.RED}No files found in {BackgroundColors.CYAN}{repository_name}{Style.RESET_ALL}")
 		return # Exit the function
 
-	# Write the found file paths to a text file
+	# Open the text file
 	with open(output_file_path, "w") as file:
+		# Write the found file paths to a text file
 		file.write(f"Found files in PyDriller/diffs/{repository_name}: {found_files_count}\n")
 
 		# For each file path in the list
