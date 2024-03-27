@@ -76,6 +76,7 @@ def main():
 		else: # If no empty folders are found
 			print(f"{BackgroundColors.GREEN}No empty folders found in {BackgroundColors.CYAN}{directory}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
+	# Print the end message
 	print(f"\n\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Empty Folders Finder{BackgroundColors.GREEN} has finished running. Thank you for using it!{Style.RESET_ALL}")
 
 if __name__ == '__main__':
