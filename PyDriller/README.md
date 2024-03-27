@@ -372,7 +372,7 @@ make extract_zip_files_script
 
 ##### Workflow
 
-1. **Check the Execution Directory:** The script first verifies that it's being run from the `/PyDriller` directory. If not, it exits with a message instructing the user to run it from the correct location.
+1. **Verify the Execution Directory:** The script first verifies that it's being run from the `/PyDriller` directory. If not, it exits with a message instructing the user to run it from the correct location.
 
 2. **Directory Setup:** It ensures that a directory named `compressed` exists within the current working directory. If this directory does not exist, the script creates it.
 
@@ -411,7 +411,7 @@ make generate_short_zip_files_script
 
 ##### Workflow
 
-1. **Check the Execution Directory:** The script first verifies that it's being run from the `/PyDriller` directory. If not, it exits with a message instructing the user to run it from the correct location.
+1. **Verify the Execution Directory:** The script first verifies that it's being run from the `/PyDriller` directory. If not, it exits with a message instructing the user to run it from the correct location.
 
 2. **Directory Setup:** It ensures that a directory named `compressed` exists within the current working directory. If this directory does not exist, the script creates it.
 
