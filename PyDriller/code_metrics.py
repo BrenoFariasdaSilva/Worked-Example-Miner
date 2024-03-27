@@ -129,7 +129,7 @@ def verify_ck_metrics_folder(repository_name):
 
       if os.path.exists(folder_path): # Verify if the folder exists
          for ck_metric_file in CK_METRICS_FILES: # Verify if all the ck metrics files exist inside the folder
-            ck_metric_file_path = os.path.join(folder_path, ck_metric_file)
+            ck_metric_file_path = os.path.join(folder_path, ck_metric_file) # Join the folder path with the ck metric file
             if not os.path.exists(ck_metric_file_path): # If the file does not exist
                return False # If the file does not exist, then the metrics are not calculated
    return True # If all the metrics are already calculated
@@ -149,7 +149,7 @@ def create_directory(full_directory_name, relative_directory_name):
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
       return # Return if the directory already exists
    try: # Try to create the directory
-      os.makedirs(full_directory_name)
+      os.makedirs(full_directory_name) # Create the directory
    except OSError: # If the directory cannot be created
       print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
@@ -186,6 +186,7 @@ def clone_repository(repository_name, repository_url):
       print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
       update_repository(repository_name) # Update the repository
@@ -194,8 +195,7 @@ def clone_repository(repository_name, repository_url):
       print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
       # Create a thread to clone the repository
       thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      # Wait for the thread to finish
-      thread.wait()
+      thread.wait() # Wait for the thread to finish
       print(f"{BackgroundColors.GREEN}Successfully cloned the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository.{Style.RESET_ALL}")
 
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
@@ -216,33 +216,39 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
 
    # Verify if there is a saved progress file
    if os.path.exists(saved_progress_file):
+      # Open the saved progress file
       with open(saved_progress_file, "r") as progress_file:
-         lines = progress_file.readlines()
-         # remove the last two lines
-         lines = lines[:-2]
+         lines = progress_file.readlines() # Read the lines of the progress file
+         lines = lines[:-2] # Remove the last two lines
+
          # Clear the saved progress file
          with open(saved_progress_file, "w") as progress_file:
             progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
-         # If it only has one line, then it is just the header
+
+         # If there are more than 3 lines in the progress file, then there is at least one commit that was already processed
          if len(lines) > 3:
             last_commit_number = int(lines[-1].split(",")[0]) # Get the last commit number
             last_commit_hash = 0 # The last commit hash
+            
             with open(saved_progress_file, "w") as progress_file: # Open the saved progress file
                for line in lines: # Loop through the lines
                   progress_file.write(line) # Write the line to the progress file
+            
             # Fill the commit_hashes list with the commits that were already processed
             for line in lines[1:]: # Loop through the lines
                current_tuple = (line.split(",")[1], line.split(",")[2], line.split(",")[3]) # Store the commit hash, commit message and commit date in one line of the list, separated by commas
                last_commit_hash = line.split(",")[1] # Get the last commit hash
                commits_info.append(current_tuple) # Append the current tuple to the commit_hashes list
             percentage_progress = round((last_commit_number / number_of_commits) * 100, 2) # Calculate the percentage progress
+            
             print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+
             execution_time = f"Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
-            output_time(execution_time, round(((number_of_commits / 1000) * (number_of_commits - last_commit_number)), 2))
+            output_time(execution_time, round(((number_of_commits / 1000) * (number_of_commits - last_commit_number)), 2)) # Output the estimated time for running the remaining iterations for the repository
             
    else: # If there is no saved progress file, create one and write the header
-      with open(saved_progress_file, "w") as progress_file:
-         progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
+      with open(saved_progress_file, "w") as progress_file: # Open the saved progress file
+         progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n") # Write the header to the progress file
 
    return commits_info, last_commit_number # Return the commit_hashes list and the last commit number
 
@@ -266,8 +272,9 @@ def generate_diffs(repository_name, commit, commit_number):
 
       # Validate if the directory exists, if not, create it
       if not os.path.exists(diff_file_directory):
-         os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
-      # Save the diff file
+         os.makedirs(diff_file_directory, exist_ok=True) # Create the directory]
+
+      # Open the diff file to write the diff
       with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file:
          diff_file.write(file_diff) # Write the diff to the file
 
@@ -284,8 +291,7 @@ def checkout_branch(branch_name):
 
    # Create a thread to checkout the branch
    checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   # Wait for the thread to finish
-   checkout_thread.wait()
+   checkout_thread.wait() # Wait for the thread to finish
 
 def generate_output_directory_paths(repository_name, commit_hash, commit_number):
    """
@@ -302,6 +308,7 @@ def generate_output_directory_paths(repository_name, commit_hash, commit_number)
 
    output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
+
    return output_directory, relative_output_directory # Return the output_directory and relative_output_directory paths
    
 def run_ck_metrics_generator(cmd):
@@ -374,9 +381,8 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          # Save the diff of the modified files of the current commit
          generate_diffs(repository_name, commit, commit_number)
 
-         # Change working directory to the repository directory
-         workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"
-         os.chdir(workdir)    
+         workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+         os.chdir(workdir) # Change working directory to the repository directory
 
          # Checkout the current commit hash branch to run ck
          checkout_branch(commit.hash)
@@ -386,12 +392,11 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          # Create the ck_metrics directory
          create_directory(output_directory, relative_output_directory)
 
-         # Change working directory to the repository directory
-         os.chdir(output_directory)
+         os.chdir(output_directory) # Change working directory to the repository directory
 
          # Run ck metrics for the current commit hash
          cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
-         run_ck_metrics_generator(cmd)
+         run_ck_metrics_generator(cmd) # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
@@ -406,8 +411,8 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    # Remove the saved progress file when processing is complete
    os.remove(saved_progress_file)
 
-   elapsed_time = time.time() - start_time # Calculate elapsed time
    # Show the execution time of the CK metrics generator
+   elapsed_time = time.time() - start_time # Calculate elapsed time
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
 
    return commits_info # Return the commits information list
@@ -426,11 +431,9 @@ def write_commits_information_to_csv(repository_name, commit_info):
    
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
    with open(file_path, "w", newline="") as csv_file:
-      writer = csv.writer(csv_file)
-      # Write the header
-      writer.writerow(["Commit Hash", "Commit Message", "Commit Date"])
-      # Write the commit hashes
-      writer.writerows(commit_info)
+      writer = csv.writer(csv_file) # Create a csv writer
+      writer.writerow(["Commit Hash", "Commit Message", "Commit Date"]) # Write the header
+      writer.writerows(commit_info) # Write the commit hashes
 
 def process_repository(repository_name, repository_url):
    """
@@ -533,7 +536,7 @@ def main():
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used by the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}", end="\n\n")   
-   
+
    process_repositories_in_parallel() # Process each of the repositories in parallel
 
    print(f"\n\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}")
