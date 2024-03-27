@@ -41,10 +41,10 @@ RELATIVE_JSON_FILES_DIRECTORY_PATH = "/json_files" # The relative path of the di
 RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH = "/repositories_refactors" # The relative path of the directory that contains the generated JSON files 
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
-# Absolute paths:
-ABSOLUTE_REFACTORING_MINER_PATH = START_PATH + RELATIVE_REFACTORING_MINER_PATH # The absolute path to the RefactoringMiner Tool
-ABSOLUTE_JSON_FILES_DIRECTORY_PATH = START_PATH + RELATIVE_JSON_FILES_DIRECTORY_PATH # The absolute path of the directory that contains the generated JSON files
-ABSOLUTE_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The absolute path of the directory that contains the repositories
+# Full paths:
+FULL_REFACTORING_MINER_PATH = START_PATH + RELATIVE_REFACTORING_MINER_PATH # The Full path to the RefactoringMiner Tool
+FULL_JSON_FILES_DIRECTORY_PATH = START_PATH + RELATIVE_JSON_FILES_DIRECTORY_PATH # The Full path of the directory that contains the generated JSON files
+FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The Full path of the directory that contains the repositories
 
 def path_contains_whitespaces():
    """
@@ -74,7 +74,7 @@ def verify_refactorings():
    repositories = {} # The repositories dictionary
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
-      json_repository_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+      json_repository_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
       # Verify if the JSON file already exists
       if not os.path.isfile(json_repository_filepath):
          repositories[repository_name] = repository_url # Add the repository to the repositories dictionary
@@ -169,7 +169,7 @@ def clone_repository(repository_name, repository_url):
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
-   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
       update_repository(repository_name) # Update the repository
@@ -191,7 +191,7 @@ def update_repository(repository_name):
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
-   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
    # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
@@ -210,11 +210,11 @@ def generate_commit_refactors(repository_name):
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Generating the {BackgroundColors.CYAN}refactoring instances{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
-   repository_directory_path = f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   json_output_filepath = f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   json_output_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
 
-   # Run the Refactoring Miner Command: REFACTORING_MINER_ABSOLUTE_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
-   thread = subprocess.Popen([ABSOLUTE_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_output_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   # Run the Refactoring Miner Command: REFACTORING_MINER_FULL_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
+   thread = subprocess.Popen([FULL_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_output_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    stdout, stderr = thread.communicate() # Get the output of the thread
 
 def output_time(output_string, time):
@@ -287,9 +287,9 @@ def main():
    print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate de refactors{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 
    # Create the json directory
-   create_directory(f"{ABSOLUTE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}")
+   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}")
    # Create the repositories directory
-   create_directory(f"{ABSOLUTE_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
+   create_directory(f"{FULL_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
 
    # Process the repositories concurrently
    process_repositories_concurrently(repositories)
