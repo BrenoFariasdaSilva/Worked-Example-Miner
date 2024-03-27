@@ -151,7 +151,7 @@ def create_directory(full_directory_name, relative_directory_name):
    try: # Try to create the directory
       os.makedirs(full_directory_name) # Create the directory
    except OSError: # If the directory cannot be created
-      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
 
 def update_repository(repository_name):
    """
@@ -448,7 +448,7 @@ def process_repository(repository_name, repository_url):
 
    # Verify if the metrics were already calculated
    if verify_ck_metrics_folder(repository_name):
-      print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated!{Style.RESET_ALL}")
       return
 
    # Create the ck metrics directory
@@ -541,7 +541,7 @@ def main():
    process_repositories_in_parallel() # Process each of the repositories in parallel
 
    # Print the message that the CK metrics generator has finished processing the repositories
-   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}", end="\n\n")
+   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}", end="\n\n")
 		
 if __name__ == '__main__':
    """
