@@ -49,7 +49,7 @@ def main():
    """
 
 	# Print the welcome message
-	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Empty Folders Finder{BackgroundColors.GREEN}! This tool is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}", end="\n\n")
+	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Empty Folders Finder{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}", end="\n\n")
 	
 	print(f"{BackgroundColors.GREEN}Current working directory: {BackgroundColors.CYAN}{os.getcwd()}{Style.RESET_ALL}")
 	initial_directory = input(f"{BackgroundColors.GREEN}Enter the initial directory {BackgroundColors.CYAN}(default, relative/absolute paths): {Style.RESET_ALL}")
