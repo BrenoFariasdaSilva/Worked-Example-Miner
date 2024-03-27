@@ -41,7 +41,7 @@ RELATIVE_JSON_FILES_DIRECTORY_PATH = "/json_files" # The relative path of the di
 RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH = "/repositories_refactors" # The relative path of the directory that contains the generated JSON files 
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
-# Full paths:
+# Full paths (Start Path + Relative Paths):
 FULL_REFACTORING_MINER_PATH = START_PATH + RELATIVE_REFACTORING_MINER_PATH # The Full path to the RefactoringMiner Tool
 FULL_JSON_FILES_DIRECTORY_PATH = START_PATH + RELATIVE_JSON_FILES_DIRECTORY_PATH # The Full path of the directory that contains the generated JSON files
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The Full path of the directory that contains the repositories
@@ -95,7 +95,7 @@ def create_directory(full_directory_name, relative_directory_name):
       print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
    
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return
+      return # Return if the directory already exists
    try: # Try to create the directory
       os.makedirs(full_directory_name)
    except OSError: # If the directory cannot be created
@@ -125,7 +125,7 @@ def process_repositories_concurrently(repositories):
          # Schedule the execution of the process_repository function
          future = executor.submit(process_repository, repository_name, repository_url)
          future.add_done_callback(lambda p: progress.update(1)) # Update progress bar upon task completion
-         futures.append(future)
+         futures.append(future) # Add the future to the list
 
       # Ensures all of the futures are completed
       for future in futures:
@@ -173,7 +173,7 @@ def clone_repository(repository_name, repository_url):
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
       update_repository(repository_name) # Update the repository
-      return
+      return # Return if the repository directory already exists and is not empty
    else:
       # Create a thread to clone the repository
       thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -219,31 +219,31 @@ def generate_commit_refactors(repository_name):
 
 def output_time(output_string, time):
    """
-   Output the time, considering the appropriate time unit.
+   Outputs time, considering the appropriate time unit.
 
-   :param output_string: String to be outputted
-   :param time: Time to be outputted
+   :param output_string: String to be outputted.
+   :param time: Time to be outputted.
    :return: None
    """
 
    if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Outputting the {BackgroundColors.CYAN}time{BackgroundColors.GREEN} needed...{Style.RESET_ALL}")
-   
-   if float(time) < int(TIME_UNITS[0]):
-      time_unit = "seconds"
-      time_value = time
-   elif float(time) < float(TIME_UNITS[1]):
-      time_unit = "minutes"
-      time_value = time / TIME_UNITS[0]
-   elif float(time) < float(TIME_UNITS[2]):
-      time_unit = "hours"
-      time_value = time / TIME_UNITS[1]
-   else:
-      time_unit = "days"
-      time_value = time / TIME_UNITS[2]
+      print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
 
-   rounded_time = round(time_value, 2)
-   print(f"{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{Style.RESET_ALL}")
+   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
+      time_unit = "seconds" # Set the time unit to seconds
+      time_value = time # Set the time value to time
+   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
+      time_unit = "minutes" # Set the time unit to minutes
+      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
+   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
+      time_unit = "hours" # Set the time unit to hours
+      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
+   else: # If the time is greater than or equal to 86400 seconds
+      time_unit = "days" # Set the time unit to days
+      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
+
+   rounded_time = round(time_value, 2) # Round the time value to two decimal places
+   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 def play_sound():
    """
