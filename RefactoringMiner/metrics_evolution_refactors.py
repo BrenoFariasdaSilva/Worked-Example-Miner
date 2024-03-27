@@ -8,6 +8,7 @@ from colorama import Style # For coloring the terminal
 from repositories_refactors import BackgroundColors # Import the BackgroundColors class
 from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, ABSOLUTE_REFACTORING_MINER_PATH, ABSOLUTE_JSON_FILES_DIRECTORY_PATH, ABSOLUTE_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
 from repositories_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
+from tqdm import tqdm  # Import tqdm for the progress bar functionality
 
 # Constants:
 DESIRED_REFACTORINGS_ONLY = True # If True, only the desired refactoring types will be considered
@@ -62,12 +63,14 @@ def generate_refactorings_concurrently(repository_name):
    if VERBOSE: # If the VERBOSE constant is set to True
       print(f"{BackgroundColors.GREEN}Generating the refactoring instances concurrently for the {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   threads = [] # List of threads
-   for classname, variable_attribute in FILES_TO_ANALYZE.items(): # For each class or method to be analyzed
-      thread = threading.Thread(target=generate_commit_refactors_for_class_or_methods, args=(repository_name,classname,variable_attribute,)) # Create a thread
+   threads = []  # List of threads
+   # For each class or method to be analyzed, wrap the iteration with tqdm for a progress bar
+   for classname, variable_attribute in tqdm(FILES_TO_ANALYZE.items(), desc="Processing Refactorings", unit="file"):
+      thread = threading.Thread(target=generate_commit_refactors_for_class_or_methods, args=(repository_name, classname, variable_attribute,)) # Create a thread
       threads.append(thread) # Append the thread to the list of threads
       thread.start() # Start the thread
-   for thread in threads: # For each thread
+   
+   for thread in tqdm(threads, desc="Joining Threads", unit="thread"): # For each thread, also show progress for joining
       thread.join() # Wait for the thread to finish
 
 def generate_commit_refactors_for_class_or_methods(repository_name, classname, variable_attribute):
