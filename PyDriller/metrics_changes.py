@@ -416,23 +416,6 @@ def get_clean_id(id):
 	else:
 		return id # Return the id
 
-def verify_and_create_folder(folder_path):
-	"""
-	Verifies if a specified folder exists, if not, it creates it.
-
-	:param folder_path: The path to the folder
-	:return: True if the folder already exists, False otherwise
-	"""
-
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Verifying and creating the folder for {BackgroundColors.CYAN}{folder_path}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
-	
-	# If the folder does not exist, then create it
-	if not os.path.exists(folder_path):
-		os.makedirs(folder_path) # Create the folder
-		return False # Return False
-	return True # Return True
-
 def verify_file(file_path):
 	"""
 	Verifies if a specified file exists.
@@ -498,7 +481,7 @@ def generate_refactoring_file(repository_name, commit_number, commit_hash):
 		print(f"{BackgroundColors.GREEN}Generating the refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	# Create the "refactorings" directory if it does not exist
-	verify_and_create_folder(f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}")
+	create_directory(f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}")
 
 	# Get the refactoring file path
 	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}.json"
@@ -636,7 +619,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		plt.legend() # Show the legend
 
 		# Create the Class/Method linear prediction directory if it does not exist
-		verify_and_create_folder(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}")
+		create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}")
 
 		# Save the plot to a PNG file
 		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{metric_name}{PNG_FILE_EXTENSION}")
@@ -663,7 +646,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 			mkdir_path = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/" # The path to the directory where the csv file will be stored
-			verify_and_create_folder(mkdir_path) # Create the directory where the csv file will be stored
+			create_directory(mkdir_path) # Create the directory where the csv file will be stored
 			metrics_filename = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}{CSV_FILE_EXTENSION}"
 
 			# Open the csv file and write the metrics to it
