@@ -20,7 +20,7 @@ class BackgroundColors: # Colors for the terminal
     
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
-DEFAULT_REPOSITORIES = {"commons-lang": "https://github.com/apache/commons-lang", "jabref": "https://github.com/JabRef/jabref", "kafka": "https://github.com/apache/kafka", "zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
+DEFAULT_REPOSITORIES = {"zookeeper": "https://github.com/apache/zookeeper"} # The default repositories to be analyzed
    
 # Default paths:
 START_PATH = os.getcwd() # Get the current working directory
