@@ -633,17 +633,27 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 	if not metrics and VERBOSE:
 		print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
 		return
+	
+	try:
+		metrics_array = np.array(metrics, dtype=float) # Safely convert to NumPy array for flexibility in handling
+	except:
+		if VERBOSE:
+			print(f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
+		return
 
 	# Verify for invalid values in the metrics
-	if np.isnan(metrics).any() or np.isinf(metrics).any():
-		print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} contains invalid values!{Style.RESET_ALL}")
-		return # Return if the metrics list contains invalid values
+	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_POSITION):
+		if VERBOSE:
+			print(f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
+		return # Return if the metrics structure is not as expected
 	
 	# Loop through the metrics_position dictionary
 	for metric_name, metric_position in METRICS_POSITION.items():
 		# Extract the metrics values
-		commit_number = np.arange(len(metrics)) # Create an array with the order of the commits numbers
-		metric_values = np.array(metrics)[:, metric_position] # Considering the metric in the value variable for linear regression
+		commit_number = np.arange(metrics_array.shape[0]) # Create the commit number array
+		if not commit_number.any(): # If the commit number is empty
+			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
+		metric_values = metrics_array[:, metric_position] # Extract the metrics values from the metrics array in the specified position (column)
 
 		# For the CBO metric, verify if there occurred any substantial decrease in the metric
 		if metric_name == SUBSTANTIAL_CHANGE_METRIC:
