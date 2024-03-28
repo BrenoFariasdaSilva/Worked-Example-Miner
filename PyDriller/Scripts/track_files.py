@@ -13,8 +13,8 @@ class BackgroundColors: # Colors for the terminal
 	CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
 # Default values that can be changed:
-REPOSITORIES = ["commons-lang", "jabref", "kafka", "zookeeper"] # The list of repositories
-TARGET_FILENAMES = {"commons-lang": "", "jabref": "", "kafka": "", "zookeeper": "CHANGES.txt.diff"} # The target file names
+REPOSITORIES = ["zookeeper"] # The list of repositories
+TARGET_FILENAMES = {"zookeeper": "CHANGES.txt.diff"} # The target file names
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
 
 def search_files(search_directory, search_string):
