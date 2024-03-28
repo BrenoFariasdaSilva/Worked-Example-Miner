@@ -453,15 +453,15 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 	# Get the refactoring file path
 	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # The refactoring file path
 
-	# Verify if the refactoring file exists
-	if not verify_file(refactoring_file_path): # If the refactoring file does not exist
+	# If the files does not exist or is empty, generate the refactoring file
+	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0:
 		# Call the generate_refactoring_file function to generate the refactoring file
-		generate_refactoring_file(repository_name, commit_number, commit_hash)
+		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path)
 
 	# Open the refactoring file
 	with open(refactoring_file_path, "r") as file:
-		refactorings_info = {"types": [],"filePath": []} # The refactorings information dictionary
 		data = json.load(file) # Load the json data
+		refactorings_info = {"types": [],"filePath": []} # The refactorings information dictionary
 		# Loop through the refactorings in the data
 		for commit in data["commits"]:
 			if commit["sha1"] == commit_hash: # If the commit hash is equal to the specified commit hash
@@ -502,13 +502,13 @@ def verify_refactoring_file(refactoring_file_path):
 	# If all checks pass, the file is considered valid
 	return True, "File is valid."
 
-def generate_refactoring_file(repository_name, commit_number, commit_hash):
+def generate_refactoring_file(repository_name, commit_hash, refactoring_file_path):
 	"""
 	Generates the refactoring file for a specific commit hash in a specific repository.
 
 	:param repository_name: The name of the repository
-	:param commit_number: The commit number of the current linear regression
 	:param commit_hash: The commit hash of the current linear regression
+	:param refactoring_file_path: The path to the refactoring file
 	:return: The refactoring file path
 	"""
 
@@ -520,16 +520,13 @@ def generate_refactoring_file(repository_name, commit_number, commit_hash):
 	full_refactorings_directory_path = f"{START_PATH}/{relatively_refactorings_directory_path}"
 	create_directory(full_refactorings_directory_path, relatively_refactorings_directory_path)
 
-	# Get the refactoring file path
-	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}.json"
-
 	# Verify if the refactoring file exists
-	if not verify_file(refactoring_file_path): # If the refactoring file does not exist
+	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # If the refactoring file does not exist
 		# Determine the system's null device to discard output
 		null_device = "NUL" if platform.system() == "Windows" else "/dev/null"
 		
 		# Run RefactoringMiner to get the refactoring data, hiding its output
-		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c {RELATIVE_REPOSITORIES_DIRECTORY_PATH}{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1"
+		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c .{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1"
 		os.system(command) # Run the command to get the RefactoringMiner data
 
 	# Verify if the refactoring file was properly generated
