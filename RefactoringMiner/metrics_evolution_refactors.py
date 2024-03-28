@@ -165,8 +165,8 @@ def main():
       return
       
    # Print the welcome message
-   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Evolution Refactors{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}", end="\n\n")
-   print(f"{BackgroundColors.GREEN}This Script will generate de refactors for the commits in {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{DEFAULT_REPOSITORY}{BackgroundColors.GREEN} repository that were selected by analyzing the generated data from {BackgroundColors.CYAN}PyDriller/metrics_changes.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Evolution Refactors{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}This Script will generate de refactors for the commits in {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{DEFAULT_REPOSITORY}{BackgroundColors.GREEN} repository that were selected by analyzing the generated data from {BackgroundColors.CYAN}PyDriller/metrics_changes.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}", end="\n\n")
 
    # Create the json directory
    create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
@@ -177,7 +177,7 @@ def main():
    process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])
 
    # Output the message that the script has finished
-   print(f"\n\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Evolution Refactors{BackgroundColors.GREEN} script has finished!{Style.RESET_ALL}")
+   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Evolution Refactors{BackgroundColors.GREEN} script has finished!{Style.RESET_ALL}")
 
 if __name__ == '__main__':
    """
