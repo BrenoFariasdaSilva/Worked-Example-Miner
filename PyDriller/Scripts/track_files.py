@@ -81,7 +81,7 @@ def main():
    """
 
 	# Print the welcome message
-	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Track Files{BackgroundColors.GREEN} script! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}", end="\n\n")
+	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Track Files{BackgroundColors.GREEN} script! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
 	print(f"{BackgroundColors.GREEN}This script searches for {BackgroundColors.CYAN}specific files (README.md, for example){BackgroundColors.GREEN} in the specified repositories and writes the file paths to a text file stored in the {BackgroundColors.CYAN}metrics_data{BackgroundColors.GREEN} directory.{Style.RESET_ALL}", end="\n\n")
 	
    # Directory to start the search from (current directory)
