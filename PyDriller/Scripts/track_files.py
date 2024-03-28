@@ -106,7 +106,7 @@ def main():
 		# Call the function to start the search
 		found_file_paths, found_files_count = search_files(search_directory, TARGET_FILENAMES[repository_name])
 
-		print(f"{BackgroundColors.GREEN}Number of {BackgroundColors.CYAN}{TARGET_FILENAMES[repository_name]} {BackgroundColors.GREEN}files found in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {BackgroundColors.CYAN}{file_counts}{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Number of {BackgroundColors.CYAN}{TARGET_FILENAMES[repository_name]} {BackgroundColors.GREEN}files found in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {BackgroundColors.CYAN}{found_files_count}{Style.RESET_ALL}")
 
 		# Sort the file paths based on the numeric value
 		found_file_paths.sort(key=lambda path: int(re.search(rf"{repository_name}/(\d+)-", path).group(1)))
@@ -115,7 +115,7 @@ def main():
 		write_file_paths(found_file_paths, found_files_count, repository_name, current_directory)
 
 	# Print the completion message
-	print(f"\n\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Track Files{BackgroundColors.GREEN} script has completed!{Style.RESET_ALL}")
+	print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Track Files{BackgroundColors.GREEN} script has completed!{Style.RESET_ALL}")
  
 if __name__ == '__main__':
    """
