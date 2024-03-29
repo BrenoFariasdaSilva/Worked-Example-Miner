@@ -286,7 +286,7 @@ def main():
    
    # Print the welcome message
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} script! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate de refactors{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
+   print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate the refactors{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
 
    # Create the json directory
    create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}")
