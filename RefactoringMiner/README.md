@@ -209,8 +209,7 @@ In order to run this code as you want, you must modify the following constants:
 2. `DESIRED_REFACTORINGS_ONLY`: A boolean that indicates if you want to filter the refactorings by the ones listed on the `DESIRED_REFACTORING_TYPE` list. If set to `True`, it will filter the refactorings by the `DESIRED_REFACTORING_TYPE` variable. If set to `False`, it will not filter the refactorings by the `DESIRED_REFACTORING_TYPE` variable.
 3. `DESIRED_REFACTORING_TYPE`: This must only be modified if the `DESIRED_REFACTORINGS_ONLY` is set to `True`. This is a list of the refactoring types that you are interested in. It must contain the names of the refactorings detected by RefactoringMiner. See more [here](https://github.com/tsantalis/RefactoringMiner?tab=readme-ov-file#general-info).  
 4. `DEFAULT_REPOSITORY`: The repository name that has the classes or methods to be analyzed.  
-5. `DEFAULT_REPOSITORIES`: A dictionary to store the repository name and the repository url. The `DEFAULT_REPOSITORY` must be one of the keys of this dictionary. This constant is imported from the `repositories_refactors.py` file.
-6. `FILES_TO_ANALYZE`: A dictionary to store the files to analyze in the repository. It's keys (class name) and value (method name) must be the names of classes or methods that you want to analyze deeper after selecting them from the analysis of the PyDriller generated data and metadata.
+5. `FILES_TO_ANALYZE`: A dictionary to store the files to analyze in the repository. It's keys (class name) and value (method name) must be the names of classes or methods that you want to analyze deeper after selecting them from the analysis of the PyDriller generated data and metadata.
 
 #### Run
 
