@@ -28,17 +28,17 @@ With our objective to craft a compelling worked example for Software Engineering
     - [Requirements](#requirements)
     - [Cleaning Up](#cleaning-up)
   - [How to use](#how-to-use)
-    - [Repositories Refactors](#repositories-refactors)
+    - [Metrics Evolution Refactorings](#metrics-evolution-refactorings)
       - [Configuration](#configuration)
       - [Run](#run)
       - [Workflow](#workflow)
-    - [Metrics Evolution Refactors](#metrics-evolution-refactors)
+    - [Repositories Refactorings](#repositories-refactorings)
       - [Configuration](#configuration-1)
       - [Run](#run-1)
       - [Workflow](#workflow-1)
   - [Generated Data](#generated-data)
-    - [Repositories Refactors](#repositories-refactors-1)
-    - [Metrics Evolution Refactors](#metrics-evolution-refactors-1)
+    - [Metrics Evolution Refactorings](#metrics-evolution-refactorings-1)
+    - [Repositories Refactorings](#repositories-refactorings-1)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -126,10 +126,10 @@ This will also be handled by the `Makefile` during the dependencies installation
 
 2. **Running Scripts**
    
-   The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `repositories_refactors.py` file, use:
+   The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `repositories_refactorings.py` file, use:
 
    ```
-   make repositories_refactors_script
+   make repositories_refactorings_script
    ```
 
    This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
@@ -160,7 +160,41 @@ By following these instructions, you'll ensure that all project dependencies are
 
 In order to use the makefile rules, you must be in the `RefactoringMiner` directory.
 
-### Repositories Refactors
+### Metrics Evolution Refactorings
+
+This script is used to generate the refactorings json file of an specific commit of a class or method stored in the `FILES_TO_ANALYZE` dictionary for the repository name stored in the `DEFAULT_REPOSITORY`dictionary, in case they were not already generated. In order to run this script, you must have already executed the PyDriller `code_metrics.py` and `metrics_evolution.py` scripts, as the classes and methods to be analyzed are the ones selected by the result of the analysis of the PyDriller generated data and metadata.
+
+#### Configuration
+
+In order to run this code as you want, you must modify the following constants:
+
+1. `VERBOSE`: If you want to see the progress bar and the print statements, you must set the `VERBOSE` constant to `True`. If not, then a more clean output will be shown, with only the progress bar of the script execution, which is the default value of the `VERBOSE` constant. This constant is imported from the `repositories_refactorings.py` file.  
+2. `DESIRED_REFACTORINGS_ONLY`: A boolean that indicates if you want to filter the refactorings by the ones listed on the `DESIRED_REFACTORING_TYPE` list. If set to `True`, it will filter the refactorings by the `DESIRED_REFACTORING_TYPE` variable. If set to `False`, it will not filter the refactorings by the `DESIRED_REFACTORING_TYPE` variable.
+3. `DESIRED_REFACTORING_TYPE`: This must only be modified if the `DESIRED_REFACTORINGS_ONLY` is set to `True`. This is a list of the refactoring types that you are interested in. It must contain the names of the refactorings detected by RefactoringMiner. See more [here](https://github.com/tsantalis/RefactoringMiner?tab=readme-ov-file#general-info).  
+4. `DEFAULT_REPOSITORY`: The repository name that has the classes or methods to be analyzed.  
+5. `FILES_TO_ANALYZE`: A dictionary to store the files to analyze in the repository. It's keys (class name) and value (method name) must be the names of classes or methods that you want to analyze deeper after selecting them from the analysis of the PyDriller generated data and metadata.
+
+#### Run
+
+Now that you have set the constants, you can run the following command to execute the `metrics_evolution_refactorings.py` file:
+
+```shell
+make metrics_evolution_refactorings_script
+```
+
+#### Workflow
+
+1. The first thing this script does is verify if the path contains whitespace, if so, it will not work, so it will ask the user to remove the whitespace from the path and then run the script again.
+2. Now it will create the json output directory and the repository directory if they don't exist.
+3. Now it calls `process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])`, which will do the following steps:
+   
+   1. Call the `clone_repository(repository_name, repository_url)` to clone or update the repository, depending on whether it already exists or not.
+   2. Then, it calls `generate_refactorings_concurrently(repository_name)` where, for each of the items in the `FILES_TO_ANALYZE` dictionary, creating a thread for handling the analysis of each file. The target function of the thread is the `generate_commit_refactorings_for_class_or_methods(repository_name, classname, variable_attribute)`.
+        1. In this function, it will loop through each of the commit hashes in the csv from the `PyDriller/metrics_evolution` directory and generate the refactorings for the commit hashes where that specified classes or method was modified using the `-c` parameter of the `RefactoringMiner` tool and save the output in the `json_files` directory.
+        2. Lastly, it calls the `filter_json_file(classname, json_filepath, json_filtered_filepath)` that will read the generated json file and filter the refactorings by the `DESIRED_REFACTORING_TYPES` variable and save the filtered refactorings in the `json_files` directory.
+4. Finally, it will output the execution time of the script and wait for all the threads to finish to output a end of the execution message.
+
+### Repositories Refactorings
 
 This script is used to generate the refactorings json file of an entire repository. It will generate the refactorings for each commit of the specified repositories in the `DEFAULT_REPOSITORIES` dictionary, in case they were not already generated.
 
@@ -173,16 +207,16 @@ In order to run this code as you want, you must modify the following constants:
 
 #### Run
 
-Now that you have set the constants, you can run the following command to execute the `repositories_refactors.py` file:
+Now that you have set the constants, you can run the following command to execute the `repositories_refactorings.py` file:
 
   ```shell
-  make repositories_refactors_script
+  make repositories_refactorings_script
   ```
 
 #### Workflow
 
 1. As for every file in this project, the first thing it will do is verify if you don't have whitespaces in the path of the project, if you have, it will not work.  
-2. In this step, the main function will call the `verify_refactorings()` to verify if the RefactoringMiner refactorings for the DEFAULT_REPOSITORIES were already generated. If not, it will generate them. This verification is done by verifying if the RefactoringMiner json output file is located in the `{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}` directory. If the file is not found, it will add the repository url to the `repositories` dictionary, using the repository name as the key.  
+2. In this step, the main function will call the `verify_refactorings()` to verify if the RefactoringMiner refactorings for the DEFAULT_REPOSITORIES were already generated. If not, it will generate them. This verification is done by verifying if the RefactoringMiner json output file is located in the `{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}` directory. If the file is not found, it will add the repository url to the `repositories` dictionary, using the repository name as the key.  
 3. Now, in case there are repositories to be analyzed, it will create the json output directory and the repository directory if they don't exist.
 4. Now it calls `process_repositories_concurrently(repositories)`, which will do the following steps:
    
@@ -192,50 +226,16 @@ Now that you have set the constants, you can run the following command to execut
    
 5. Inside the `process_repository(repository_name, repository_url)` function, it will do the following steps: 
    1. It calls the `clone_repository(repository_name, repository_url)` function, which will clone or update the repository, depending on whether it already exists or not.
-   2. In the next step, it will call the `generate_commit_refactors(repository_name)` function, which will generate the refactorings for each of the commits in the repository using the `-a` parameter of the `RefactoringMiner` tool and save the output in the `{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}` filepath.
+   2. In the next step, it will call the `generate_commit_refactorings(repository_name)` function, which will generate the refactorings for each of the commits in the repository using the `-a` parameter of the `RefactoringMiner` tool and save the output in the `{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}` filepath.
    3. Lastly, it will output the execution time of the script, based on the start time and the end time of the script execution.
    
 6. Now, the thread will finish and the script will wait for all the threads to finish, and output a end of the execution message.
-
-### Metrics Evolution Refactors
-
-This script is used to generate the refactorings json file of an specific commit of a class or method stored in the `FILES_TO_ANALYZE` dictionary for the repository name stored in the `DEFAULT_REPOSITORY`dictionary, in case they were not already generated. In order to run this script, you must have already executed the PyDriller `code_metrics.py` and `metrics_evolution.py` scripts, as the classes and methods to be analyzed are the ones selected by the result of the analysis of the PyDriller generated data and metadata.
-
-#### Configuration
-
-In order to run this code as you want, you must modify the following constants:
-
-1. `VERBOSE`: If you want to see the progress bar and the print statements, you must set the `VERBOSE` constant to `True`. If not, then a more clean output will be shown, with only the progress bar of the script execution, which is the default value of the `VERBOSE` constant. This constant is imported from the `repositories_refactors.py` file.  
-2. `DESIRED_REFACTORINGS_ONLY`: A boolean that indicates if you want to filter the refactorings by the ones listed on the `DESIRED_REFACTORING_TYPE` list. If set to `True`, it will filter the refactorings by the `DESIRED_REFACTORING_TYPE` variable. If set to `False`, it will not filter the refactorings by the `DESIRED_REFACTORING_TYPE` variable.
-3. `DESIRED_REFACTORING_TYPE`: This must only be modified if the `DESIRED_REFACTORINGS_ONLY` is set to `True`. This is a list of the refactoring types that you are interested in. It must contain the names of the refactorings detected by RefactoringMiner. See more [here](https://github.com/tsantalis/RefactoringMiner?tab=readme-ov-file#general-info).  
-4. `DEFAULT_REPOSITORY`: The repository name that has the classes or methods to be analyzed.  
-5. `FILES_TO_ANALYZE`: A dictionary to store the files to analyze in the repository. It's keys (class name) and value (method name) must be the names of classes or methods that you want to analyze deeper after selecting them from the analysis of the PyDriller generated data and metadata.
-
-#### Run
-
-Now that you have set the constants, you can run the following command to execute the `metrics_evolution_refactors.py` file:
-
-```shell
-make metrics_evolution_refactors_script
-```
-
-#### Workflow
-
-1. The first thing this script does is verify if the path contains whitespace, if so, it will not work, so it will ask the user to remove the whitespace from the path and then run the script again.
-2. Now it will create the json output directory and the repository directory if they don't exist.
-3. Now it calls `process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])`, which will do the following steps:
-   
-   1. Call the `clone_repository(repository_name, repository_url)` to clone or update the repository, depending on whether it already exists or not.
-   2. Then, it calls `generate_refactorings_concurrently(repository_name)` where, for each of the items in the `FILES_TO_ANALYZE` dictionary, creating a thread for handling the analysis of each file. The target function of the thread is the `generate_commit_refactors_for_class_or_methods(repository_name, classname, variable_attribute)`.
-        1. In this function, it will loop through each of the commit hashes in the csv from the `PyDriller/metrics_evolution` directory and generate the refactorings for the commit hashes where that specified classes or method was modified using the `-c` parameter of the `RefactoringMiner` tool and save the output in the `json_files` directory.
-        2. Lastly, it calls the `filter_json_file(classname, json_filepath, json_filtered_filepath)` that will read the generated json file and filter the refactorings by the `DESIRED_REFACTORING_TYPES` variable and save the filtered refactorings in the `json_files` directory.
-4. Finally, it will output the execution time of the script and wait for all the threads to finish to output a end of the execution message.
 
 ## Generated Data
 
 The outputs (generated data) of the scripts are JSON files containing the refactorings identified by RefactoringMiner. These files are stored in the `json_files` directory.
 
-The generated files for both the `repositories_refactors.py` and `metrics_evolution_refactors.py` scripts are structured in a similar way, with the main difference being where they are stored, their size, and if they represent the refactorings of an entire repository or the refactorings of a specific commit of a class or method. With that in mind, the json files are similar to the following example:
+The generated files for both the `repositories_refactorings.py` and `metrics_evolution_refactorings.py` scripts are structured in a similar way, with the main difference being where they are stored, their size, and if they represent the refactorings of an entire repository or the refactorings of a specific commit of a class or method. With that in mind, the json files are similar to the following example:
 
 ```json
 {
@@ -287,13 +287,13 @@ Below is a breakdown of what each field in these files represents:
 
 This structure allows for a comprehensive overview of refactorings within a repository, making it easier to track and analyze changes over time.
 
-### Repositories Refactors
+### Metrics Evolution Refactorings
 
-As mentioned before, the structure of the json files generated by the `repositories_refactors.py` script is similar to the one above, but it will contain the refactorings of an entire repository, instead of the refactorings of a specific commit of a class or method. The `repositories_refactors.py` script generates the refactorings for each commit of the specified repositories and are stored in the `json_files/repositories_refactors` directory, using the the `{repository_name}.{JSON_FILE_FORMAT}` filename.
+Just like the json file structure mentioned above, the json files generated by the `metrics_evolution_refactorings.py` script are similar, but they will contain the refactorings of the specific commits where a specified class or method where modified. The `metrics_evolution_refactorings.py` script generated data are stored in the `json_files/metrics_evolution_refactorings` directory, using the `{repository_name}/{CLASS OR METHODS}/{classname}/{commit_number-commit_hash}.{JSON_FILE_FORMAT}` filename.
 
-### Metrics Evolution Refactors
+### Repositories Refactorings
 
-Just like the json file structure mentioned above, the json files generated by the `metrics_evolution_refactors.py` script are similar, but they will contain the refactorings of the specific commits where a specified class or method where modified. The `metrics_evolution_refactors.py` script generated data are stored in the `json_files/metrics_evolution_refactors` directory, using the `{repository_name}/{CLASS OR METHODS}/{classname}/{commit_number-commit_hash}.{JSON_FILE_FORMAT}` filename.
+As mentioned before, the structure of the json files generated by the `repositories_refactorings.py` script is similar to the one above, but it will contain the refactorings of an entire repository, instead of the refactorings of a specific commit of a class or method. The `repositories_refactorings.py` script generates the refactorings for each commit of the specified repositories and are stored in the `json_files/repositories_refactorings` directory, using the the `{repository_name}.{JSON_FILE_FORMAT}` filename.
 
 ## Contributing
 

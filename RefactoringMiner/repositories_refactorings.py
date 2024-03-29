@@ -38,7 +38,7 @@ JSON_FILE_FORMAT = "json" # The extension of the generated file by the Refactori
 # Relative paths:
 RELATIVE_REFACTORING_MINER_PATH = "/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner Tool
 RELATIVE_JSON_FILES_DIRECTORY_PATH = "/json_files" # The relative path of the directory that contains the generated JSON files
-RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH = "/repositories_refactors" # The relative path of the directory that contains the generated JSON files 
+RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH = "/repositories_refactorings" # The relative path of the directory that contains the generated JSON files 
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
 # Full paths (Start Path + Relative Paths):
@@ -74,7 +74,7 @@ def verify_refactorings():
    repositories = {} # The repositories dictionary
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
-      json_repository_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+      json_repository_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
       # Verify if the JSON file already exists
       if not os.path.isfile(json_repository_filepath):
          repositories[repository_name] = repository_url # Add the repository to the repositories dictionary
@@ -149,7 +149,7 @@ def process_repository(repository_name, repository_url):
    clone_repository(repository_name, repository_url)
 
    # Run the RefactoringMiner command to generate the JSON files
-   generate_commit_refactors(repository_name)
+   generate_commit_refactorings(repository_name)
 
    end_time = time.time() # Get the end time
 
@@ -199,7 +199,7 @@ def update_repository(repository_name):
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
 
-def generate_commit_refactors(repository_name):
+def generate_commit_refactorings(repository_name):
    """
    Generate the refactoring instances for the repository.
 
@@ -211,7 +211,7 @@ def generate_commit_refactors(repository_name):
       print(f"{BackgroundColors.GREEN}Generating the {BackgroundColors.CYAN}refactoring instances{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   json_output_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+   json_output_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
 
    # Run the Refactoring Miner Command: REFACTORING_MINER_FULL_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
    thread = subprocess.Popen([FULL_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_output_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -286,18 +286,18 @@ def main():
    
    # Print the welcome message
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} script! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate the refactors{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
+   print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate the refactoring file{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
 
    # Create the json directory
-   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORS_DIRECTORY_PATH}")
+   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}")
    # Create the repositories directory
    create_directory(f"{FULL_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
 
    # Process the repositories concurrently
    process_repositories_concurrently(repositories)
 
-   # Output the message that the refactors for the repositories were generated
-   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}refactors{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories were generated.{Style.RESET_ALL}")
+   # Output the message that the refactorings for the repositories were generated
+   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories were generated.{Style.RESET_ALL}")
     		
 if __name__ == '__main__':
    """

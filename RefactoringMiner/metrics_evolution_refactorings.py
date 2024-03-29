@@ -5,9 +5,9 @@ import subprocess # The subprocess module allows you to spawn new processes, con
 import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
-from repositories_refactors import BackgroundColors # Import the BackgroundColors class
-from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REFACTORING_MINER_PATH, FULL_JSON_FILES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
-from repositories_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
+from repositories_refactorings import BackgroundColors # Import the BackgroundColors class
+from repositories_refactorings import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REFACTORING_MINER_PATH, FULL_JSON_FILES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
+from repositories_refactorings import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
 from tqdm import tqdm # Import tqdm for the progress bar functionality
 
 # Default values that can be changed:
@@ -21,7 +21,7 @@ CLASSES_TYPE = {"class", "interface", "enum", "innerclass", "anonymous"} # The t
 CLASSES_OR_METHODS = "classes" if any(class_type in FILES_TO_ANALYZE.values() for class_type in CLASSES_TYPE) else "methods" # The default class or method to be analyzed
 
 # Relative paths:
-RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH = "/metrics_evolution_refactors" # The relative path of the directory that contains the metrics evolution refactors files
+RELATIVE_METRICS_EVOLUTION_REFACTORINGS_DIRECTORY_PATH = "/metrics_evolution_refactorings" # The relative path of the directory that contains the metrics evolution refactorings files
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "../PyDriller/metrics_evolution" # The relative path of the directory that contains the metrics evolution files
 
 # Functions:
@@ -43,7 +43,7 @@ def process_repository(repository_name, repository_url):
    # Clone the repository or update it if it already exists
    clone_repository(repository_name, repository_url)
 
-   # Create a thread and call the generate_commit_refactors_for_class_or_methods for each FILES_TO_ANALYZE
+   # Create a thread and call the generate_commit_refactorings_for_class_or_methods for each FILES_TO_ANALYZE
    generate_refactorings_concurrently(repository_name)
 
    end_time = time.time() # Get the end time
@@ -66,14 +66,14 @@ def generate_refactorings_concurrently(repository_name):
    threads = [] # List of threads
    # For each class or method to be analyzed, wrap the iteration with tqdm for a progress bar
    for classname, variable_attribute in tqdm(FILES_TO_ANALYZE.items(), desc="Processing Refactorings", unit="file"):
-      thread = threading.Thread(target=generate_commit_refactors_for_class_or_methods, args=(repository_name, classname, variable_attribute,)) # Create a thread
+      thread = threading.Thread(target=generate_commit_refactorings_for_class_or_methods, args=(repository_name, classname, variable_attribute,)) # Create a thread
       threads.append(thread) # Append the thread to the list of threads
       thread.start() # Start the thread
    
    for thread in tqdm(threads, desc="Joining Threads", unit="thread"): # For each thread, also show progress for joining
       thread.join() # Wait for the thread to finish
 
-def generate_commit_refactors_for_class_or_methods(repository_name, classname, variable_attribute):
+def generate_commit_refactorings_for_class_or_methods(repository_name, classname, variable_attribute):
    """
    Generate the refactoring instances for the class or method.
 
@@ -94,16 +94,16 @@ def generate_commit_refactors_for_class_or_methods(repository_name, classname, v
    commits_hashes = csv_file["Commit Hash"].tolist()
 
    # Create the output directory for the JSON files
-   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}")
-   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered")
+   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}")
+   create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered")
 
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    for commit_hash in commits_hashes: # For each commit, generate the JSON file
       # Split the commit_hash into two parts, the substring before the first hyphen and the substring after the first hyphen, and store them in two variables: index and commit_hash
       index, commit_hash = commit_hash.split("-", 1)
 
-      json_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the output JSON file
-      json_filtered_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the filtered JSON file
+      json_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the output JSON file
+      json_filtered_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_METRICS_EVOLUTION_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}-filtered/{index}-{commit_hash}.{JSON_FILE_FORMAT}" # The path to the filtered JSON file
 
       # Run the Refactoring Miner Command: REFACTORING_MINER_FULL_PATH -c REPOSITORY_DIRECTORY_PATH COMMIT_HASH -json JSON_FILES_DIRECTORY_PATH 
       thread = subprocess.Popen([f"{FULL_REFACTORING_MINER_PATH}", "-c", f"{repository_directory_path}", f"{commit_hash}", "-json", f"{json_filepath}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -165,8 +165,8 @@ def main():
       return
       
    # Print the welcome message
-   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Evolution Refactors{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}This Script will generate the refactors for the commits in {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{DEFAULT_REPOSITORY}{BackgroundColors.GREEN} repository that were selected by analyzing the generated data from {BackgroundColors.CYAN}PyDriller/metrics_changes.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}", end="\n\n")
+   print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Evolution Refactorings{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}This Script will generate the refactorings for the commits in {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{DEFAULT_REPOSITORY}{BackgroundColors.GREEN} repository that were selected by analyzing the generated data from {BackgroundColors.CYAN}PyDriller/metrics_changes.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}", end="\n\n")
 
    # Create the json directory
    create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}")
@@ -177,7 +177,7 @@ def main():
    process_repository(DEFAULT_REPOSITORY, DEFAULT_REPOSITORIES[DEFAULT_REPOSITORY])
 
    # Output the message that the script has finished
-   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Evolution Refactors{BackgroundColors.GREEN} script has finished!{Style.RESET_ALL}")
+   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Evolution Refactorings{BackgroundColors.GREEN} script has finished!{Style.RESET_ALL}")
 
 if __name__ == '__main__':
    """

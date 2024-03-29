@@ -6,11 +6,11 @@ PIP := $(VENV)/bin/pip
 # Activate the virtual environment: source venv/bin/activate
 
 # Scripts:
-repositories_refactors_script: $(VENV)
-	clear; time $(PYTHON) repositories_refactors.py
+metrics_evolution_refactorings_script: $(VENV)
+	clear; time $(PYTHON) metrics_evolution_refactorings.py
 
-metrics_evolution_refactors_script: $(VENV)
-	clear; time $(PYTHON) metrics_evolution_refactors.py
+repositories_refactorings_script: $(VENV)
+	clear; time $(PYTHON) repositories_refactorings.py
 
 # Setup Virtual Environment and Install Dependencies
 $(VENV): dependencies
@@ -30,4 +30,4 @@ clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: clean repositories_refactors_script metrics_evolution_refactors_script dependencies generate_requirements
+.PHONY: clean metrics_evolution_refactorings_script repositories_refactorings_script dependencies generate_requirements
