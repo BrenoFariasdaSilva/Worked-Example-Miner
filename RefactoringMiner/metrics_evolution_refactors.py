@@ -10,14 +10,14 @@ from repositories_refactors import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSIT
 from repositories_refactors import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
 from tqdm import tqdm # Import tqdm for the progress bar functionality
 
-# Constants:
+# Default values that can be changed:
 DESIRED_REFACTORINGS_ONLY = True # If True, only the desired refactoring types will be considered
 DESIRED_REFACTORING_TYPES = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactoring types
-
-# Default values:
 DEFAULT_REPOSITORY = "zookeeper" # The default repository to be analyzed
-CLASSES_TYPE = {"class", "interface", "enum", "innerclass", "anonymous"} # The types of classes.
 FILES_TO_ANALYZE = {"org.apache.zookeeper.server.quorum.Leader": "lead", "org.apache.zookeeper.server.quorum.LeaderElection": "lookForLeader", "org.apache.zookeeper.server.quorum.Follower": "followLeader"} # The desired methods of each repository
+
+# Constants:
+CLASSES_TYPE = {"class", "interface", "enum", "innerclass", "anonymous"} # The types of classes.
 CLASSES_OR_METHODS = "classes" if any(class_type in FILES_TO_ANALYZE.values() for class_type in CLASSES_TYPE) else "methods" # The default class or method to be analyzed
 
 # Relative paths:
