@@ -208,7 +208,7 @@ Dynamic code analysis complements our understanding by examining the code's beha
 
 ### Tools Utilized
 
-- **[CK Tool](https://github.com/mauricioaniche/ck):** For static code analysis in Java projects, assessing metrics related to complexity, coupling, and cohesion.
+- **[CK Tool](https://github.com/mauricioaniche/ck) (with Enhancements):** This repository includes a fork of the original CK tool, tailored for static code analysis in Java projects. The CK tool is instrumental in assessing various software metrics related to complexity, coupling, and cohesion among others. Our version extends the original functionality by addressing Java dependencies issues that were causing build failures. Additionally, we've introduced new features to track the instantiation frequency of classes and the invocation frequency of methods across the codebase. These enhancements aim to provide deeper insights into object creation patterns and method usage within Java applications, further aiding in the evaluation of code quality and design.
 - **[PyDriller](https://github.com/ishepard/pydriller):** A Python library for mining software repositories, facilitating the extraction of changes, contributions, and evolution of code.
 - **[RefactoringMiner](https://github.com/tsantalis/RefactoringMiner):** Specialized in identifying and analyzing source code refactorings in Java repositories, providing insights into code evolution and quality improvement.
 
