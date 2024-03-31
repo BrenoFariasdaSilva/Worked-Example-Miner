@@ -43,6 +43,10 @@ This project is massive and complex, containing multiple integrated tools and ex
 - [Worked-Example-Miner ](#worked-example-miner-)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
+  - [Setup](#setup)
+    - [Clone without Submodule](#clone-without-submodule)
+    - [Clone with Submodule](#clone-with-submodule)
+    - [Clone Submodule](#clone-submodule)
   - [Goals](#goals)
   - [Skills](#skills)
   - [Directories](#directories)
@@ -67,6 +71,33 @@ This project is massive and complex, containing multiple integrated tools and ex
 The [Worked-Example-Miner](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) project is a comprehensive research endeavor that delves into the evolution of code in Java repositories, focusing on Distributed Systems (DS). By integrating specialized tools and metrics, we aim to analyze code quality, identify patterns of improvement, and select exemplary code segments for educational purposes. Our research explores the intricacies of software engineering, emphasizing the importance of code metrics, refactoring, and code evolution in enhancing software design quality and maintainability
 
 Within this repository, you'll find a wealth of resources, from detailed code analyses and data sets to insightful findings and theoretical advancements. Whether you're a researcher seeking to deepen your understanding of software evolution, a developer looking for proven practices in distributed systems, or an educator aiming to enrich your curriculum, this documentation offers valuable knowledge and tools to support your goals.
+
+## Setup
+
+### Clone without Submodule
+
+In order to clone this repository without the submodule (CK), you can use the following command:
+
+```bash
+git clone https://github.com/BrenoFariasdaSilva/Worked-Example-Miner
+```
+
+### Clone with Submodule
+
+In order to clone this repository with the submodule (CK), you can use the following command:
+
+```bash
+git clone --recurse-submodules https://github.com/BrenoFariasdaSilva/Worked-Example-Miner.git
+```
+
+### Clone Submodule
+
+In case you have already cloned the repository and forgot to clone the submodule (CK), you can use the following command to clone the submodule:
+
+```bash
+git submodule init
+git submodule update
+```
 
 ## Goals
 
