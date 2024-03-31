@@ -50,6 +50,7 @@ RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of th
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 
 # Full paths (Start Path + Relative Paths):
+FULL_CK_JAR_PATH = START_PATH.replace("PyDriller", "") + RELATIVE_CK_JAR_PATH.replace("../", "") # The full path of the CK JAR file
 FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
 FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # The full path of the progress file
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
@@ -109,7 +110,7 @@ def ensure_ck_jar_exists():
    if os.path.exists(RELATIVE_CK_JAR_PATH):
       print(f"{RELATIVE_CK_JAR_PATH.split('/')[-1]} already exists in {RELATIVE_CK_JAR_PATH[:RELATIVE_CK_JAR_PATH.rfind('/')]}")
    
-   # If not, run 'make package' from the Makefile directory
+   # If not, run "make package" from the Makefile directory
    makefile_dir = os.path.abspath("../ck")
    subprocess.run(["make", "package"], cwd=makefile_dir, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
    
@@ -444,7 +445,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          os.chdir(output_directory) # Change working directory to the repository directory
 
          # Run ck metrics for the current commit hash
-         cmd = f"java -jar {RELATIVE_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
+         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
          run_ck_metrics_generator(cmd) # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
