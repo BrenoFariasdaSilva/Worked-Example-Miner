@@ -105,7 +105,7 @@ def ensure_ck_jar_exists():
    if not init_and_update_submodules():
       return # Return if the Git submodules could not be initialized and updated
 
-   # Check if the jar exists in the ck directory
+   # Verify if the jar exists in the ck directory
    if os.path.exists(RELATIVE_CK_JAR_PATH):
       print(f"{RELATIVE_CK_JAR_PATH.split('/')[-1]} already exists in {RELATIVE_CK_JAR_PATH[:RELATIVE_CK_JAR_PATH.rfind('/')]}")
    
@@ -113,9 +113,12 @@ def ensure_ck_jar_exists():
    makefile_dir = os.path.abspath("../ck")
    subprocess.run(["make", "package"], cwd=makefile_dir, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
    
-   # Check if the jar now exists in the target directory
-   if not os.path.exists(RELATIVE_CK_JAR_PATH):
-      raise FileNotFoundError(f"{BackgroundColors.RED}The CK JAR file was not found in the target directory.{Style.RESET_ALL}")
+   # Verify if the jar now exists in the target directory
+   if os.path.exists(RELATIVE_CK_JAR_PATH):
+      return True # Return True if the CK JAR file was found in the target directory
+   else:
+      print(f"{BackgroundColors.RED}The CK JAR file was not found in the target directory.{Style.RESET_ALL}")
+      return False # Return False if the CK JAR file was not found in the target directory
 
 def output_time(output_string, time):
    """
