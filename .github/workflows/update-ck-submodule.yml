@@ -30,8 +30,8 @@ jobs:
       - name: Forcefully update CK submodule to latest version
         run: |
           cd ck
-          git fetch origin main
-          git reset --hard origin/main
+          git fetch origin master
+          git reset --hard origin/master
 
       - name: Commit and push if changes are detected
         run: |
