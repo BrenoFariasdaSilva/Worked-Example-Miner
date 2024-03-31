@@ -70,6 +70,30 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
+def init_and_update_submodules():
+   '''
+   Initialize and update Git submodules
+
+   :return: None
+   '''
+
+   try:
+      if VERBOSE:
+         print(f"{BackgroundColors['GREEN']}Initializing and updating the CK Git Submodule...{Style['RESET_ALL']}")
+
+      # Adjust path as necessary for reliability across environments
+      submodule_path = os.path.abspath("../ck/.git")
+
+      if not os.path.exists(submodule_path):
+         subprocess.run(["git", "submodule", "init"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+         subprocess.run(["git", "submodule", "update"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+      else:
+         subprocess.run(["git", "submodule", "update", "--remote"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   except subprocess.CalledProcessError as e:
+      print(f"{BackgroundColors.RED}An error occurred while initializing and updating the CK Git Submodule: {e}{Style.RESET_ALL}")
+      return False # Return False if the Git submodules could not be initialized and updated
+   return True # Return True if the Git submodules were initialized and updated successfully
+
 def ensure_ck_jar_exists():
    '''
    Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
