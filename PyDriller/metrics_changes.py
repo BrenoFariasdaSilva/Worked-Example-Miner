@@ -212,10 +212,10 @@ def get_class_package_name(file_name):
 
 def get_identifier_and_metrics(row):
 	"""
-	Gets the identifier and metrics of the method or class from the row.
+	Gets the identifier and metrics of the class or method.
 
 	:param row: The row of the csv file
-	:return: The identifier and metrics of the method or class
+	:return: The identifier, metrics and occurrences_counter of the class or method
 	"""
 
 	if VERBOSE: # If the VERBOSE constant is set to True
@@ -232,12 +232,13 @@ def get_identifier_and_metrics(row):
 	cbo = float(row["cbo"]) # Get the cbo metric from the row as a float
 	wmc = float(row["wmc"]) # Get the wmc metric from the row as a float
 	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
+	occurrences_counter = int(row["classOccurrences"]) if PROCESS_CLASSES else int(row["methodOccurrences"]) # Get the occurrences_counter metric from the row as an integer
 
 	# Create a tuple containing the metrics
 	metrics = (cbo, wmc, rfc) # The metrics tuple
 	identifier = f"{class_name} {variable_attribute}" # The identifier of the method or class
 
-	return identifier, metrics # Return the identifier and metrics
+	return identifier, metrics, occurrences_counter # Return the identifier, metrics and occurrences_counter of the method or class
 
 def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	"""
@@ -285,11 +286,11 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 		# Iterate through each row, that is, for each method in the csv file
 		for row in reader:
 			# Get the identifier and metrics of the method
-			identifier, ck_metrics = get_identifier_and_metrics(row)
+			identifier, ck_metrics, occurrences_counter = get_identifier_and_metrics(row)
 
 			# If the identifier is not in the dictionary, then add it
 			if identifier not in metrics_track_record:
-				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0}
+				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0, "occurrences": occurrences_counter}
 
 			# Get the metrics_changes list for the method
 			metrics_changes = metrics_track_record[identifier]["metrics"]
@@ -408,6 +409,7 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 			file.write(f"\tMetrics: {value['metrics']}\n") # Write the metrics
 			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n") # Write the commit hashes
 			file.write(f"\tChanged: {value['changed']}\n") # Write the changed value
+			file.write(f"\tOccurrences: {value['occurrences']}\n") # Write the occurrences value
 			file.write(f"\n") # Write a new line
 
 def get_clean_id(id):
@@ -542,7 +544,7 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 		print(f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
 		return None # Return None
 
-def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric.
 
@@ -550,6 +552,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	:param class_name: The class name of the current linear regression
 	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 	:param commit_hashes: The commit hashes list for the speficied class_name
+	:param occurrences: The occurrences counter of the class_name
 	:param metric_name: The name of the metric
 	:param repository_name: The name of the repository
 	:return: None
@@ -578,9 +581,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile) # Create the csv writer
 			if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True, then we're processing the classes
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Occurrences", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
 			else: # If the PROCESS_CLASSES constant is set to False, then we're processing the methods
-				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
+				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Occurrences", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = [0, 0] # The commit data [commit_number, commit_hash]
@@ -611,9 +614,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
 			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), commit_data[0], commit_data[1], refactorings_info["types"], refactorings_info["filePath"]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), occurrences, commit_data[0], commit_data[1], refactorings_info["types"], refactorings_info["filePath"]])
 	 
-def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, raw_variable_attribute, repository_name):
+def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, occurrences, raw_variable_attribute, repository_name):
 	"""
 	Perform linear regression on the given metrics and save the plot to a PNG file.
 
@@ -621,6 +624,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
 	:param commit_hashes: A list of the commit_hashes for the specified class_name/identifier.
+	:param occurrences: The number of occurrences of the class or method
 	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 	:param repository_name: The name of the repository
 	:return: None
@@ -657,7 +661,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 
 		# For the CBO metric, verify if there occurred any substantial decrease in the metric
 		if metric_name == SUBSTANTIAL_CHANGE_METRIC:
-			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, metric_name, repository_name)
+			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name)
 			
 		# Verify for sufficient data points for regression
 		if len(commit_number) < 2 or len(metric_values) < 2:
@@ -715,19 +719,19 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				writer = csv.writer(csvfile) # Create the csv writer
 				if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 					unique_identifier = class_name # The unique identifier is the class name
-					writer.writerow(["Class", "Commit Hash", "CBO", "WMC", "RFC"]) # Write the header to the csv file
+					writer.writerow(["Class", "Commit Hash", "Occurrences", "CBO", "WMC", "RFC"]) # Write the header to the csv file
 				else: # If the PROCESS_CLASSES constant is set to False
 					unique_identifier = variable_attribute # The unique identifier is the method name
-					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC"]) # Write the header to the csv file
+					writer.writerow(["Method", "Commit Hash", "Occurrences", "CBO", "WMC", "RFC"]) # Write the header to the csv file
 				
 				# Get the len of the metrics list
 				metrics_len = len(metrics)
 				for i in range(metrics_len): # For each metric in the metrics list
 					# Write the unique identifier, the commit hash, and the metrics to the csv file
-					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2]])
+					writer.writerow([unique_identifier, record["commit_hashes"][i], record["occurrences"], metrics[i][0], metrics[i][1], metrics[i][2]])
 
 			# Perform linear regression and generate graphics for the metrics
-			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], identifier.split(" ")[1], repository_name)
+			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["occurrences"], identifier.split(" ")[1], repository_name)
 			progress_bar.update(1) # Update the progress bar
 
 def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values, first_commit_hash, last_commit_hash):
