@@ -29,7 +29,7 @@ jobs:
 
       - name: Forcefully update CK submodule to latest version
         run: |
-          cd CK
+          cd ck
           git fetch origin main
           git reset --hard origin/main
 
