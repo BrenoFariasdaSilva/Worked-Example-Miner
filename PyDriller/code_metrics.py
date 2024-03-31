@@ -42,7 +42,7 @@ TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, second
  
 # Relative paths:
 SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound file
-RELATIVE_CK_JAR_PATH = "/ck/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The relative path of the CK JAR file
+RELATIVE_CK_JAR_PATH = "../ck/target/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The relative path of the CK JAR file
 RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path of the directory that contains the CK generated files
 RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory that contains the diffs
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
@@ -54,7 +54,6 @@ FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH
 FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # The full path of the progress file
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
-FULL_CK_JAR_PATH = START_PATH + RELATIVE_CK_JAR_PATH # The full path of the CK JAR file
 
 def path_contains_whitespaces():
    """
@@ -70,6 +69,29 @@ def path_contains_whitespaces():
    if " " in START_PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
+
+def ensure_ck_jar_exists():
+   '''
+   Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
+
+   :return: None
+   '''
+
+   # Initialize and update Git submodules
+   if not init_and_update_submodules():
+      return # Return if the Git submodules could not be initialized and updated
+
+   # Check if the jar exists in the ck directory
+   if os.path.exists(RELATIVE_CK_JAR_PATH):
+      print(f"{RELATIVE_CK_JAR_PATH.split('/')[-1]} already exists in {RELATIVE_CK_JAR_PATH[:RELATIVE_CK_JAR_PATH.rfind('/')]}")
+   
+   # If not, run 'make package' from the Makefile directory
+   makefile_dir = os.path.abspath("../ck")
+   subprocess.run(["make", "package"], cwd=makefile_dir, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   
+   # Check if the jar now exists in the target directory
+   if not os.path.exists(RELATIVE_CK_JAR_PATH):
+      raise FileNotFoundError(f"{BackgroundColors.RED}The CK JAR file was not found in the target directory.{Style.RESET_ALL}")
 
 def output_time(output_string, time):
    """
@@ -395,7 +417,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          os.chdir(output_directory) # Change working directory to the repository directory
 
          # Run ck metrics for the current commit hash
-         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
+         cmd = f"java -jar {RELATIVE_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
          run_ck_metrics_generator(cmd) # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
@@ -526,12 +548,12 @@ def main():
    # Verify if the path constants contains whitespaces
    if path_contains_whitespaces():
       print(f"{BackgroundColors.RED}The {START_PATH} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
-      return
+      return # Return if the path constants contains whitespaces
    
    # Verify if the CK JAR file exists
-   if not os.path.exists(FULL_CK_JAR_PATH):
-      print(f"{BackgroundColors.RED}The CK JAR file does not exist. Please download it and place it in {BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[0:RELATIVE_CK_JAR_PATH.find('/', 1)]}/{BackgroundColors.RED}.{Style.RESET_ALL}")
-      return
+   if not os.path.exists(RELATIVE_CK_JAR_PATH):
+      ensure_ck_jar_exists() # Ensure that the CK JAR file exists
+      return # Return if the CK JAR file does not exist
 
    # Print the welcome message
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
