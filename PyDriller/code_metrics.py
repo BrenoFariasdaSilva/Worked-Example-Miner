@@ -74,7 +74,7 @@ def init_and_update_submodules():
    '''
    Initialize and update Git submodules
 
-   :return: None
+   :return: True if the Git submodules were initialized and updated successfully, False otherwise.
    '''
 
    try:
@@ -98,7 +98,7 @@ def ensure_ck_jar_exists():
    '''
    Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
 
-   :return: None
+   :return: True if the CK JAR file was found in the target directory, False otherwise.
    '''
 
    # Initialize and update Git submodules
