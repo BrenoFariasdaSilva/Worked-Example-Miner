@@ -70,9 +70,9 @@ def verify_file(file_path):
 	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
 
 def update_global_variables():
-	'''
+	"""
 	Updates the global variables PROCESS_CLASSES and CLASSES_OR_METHODS according to the user input.
-	'''
+	"""
 
 	global PROCESS_CLASSES, CK_CSV_FILE, CLASSES_OR_METHODS, UNSORTED_CHANGED_METHODS_CSV_FILENAME, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME
 	PROCESS_CLASSES = input(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}").strip().lower() == "true"

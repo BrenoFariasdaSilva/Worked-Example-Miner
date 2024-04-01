@@ -88,11 +88,11 @@ def path_contains_whitespaces():
    return False # Return False if the PATH constant does not contain whitespaces
 
 def init_and_update_submodules():
-   '''
+   """
    Initialize and update Git submodules
 
    :return: True if the Git submodules were initialized and updated successfully, False otherwise.
-   '''
+   """
 
    try:
       verbose_output(true_string=f"{BackgroundColors.GREEN}Initializing and updating the CK Git Submodule...{Style.RESET_ALL}")
@@ -111,11 +111,11 @@ def init_and_update_submodules():
    return True # Return True if the Git submodules were initialized and updated successfully
 
 def ensure_ck_jar_exists():
-   '''
+   """
    Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
 
    :return: True if the CK JAR file was found in the target directory, False otherwise.
-   '''
+   """
 
    # Initialize and update Git submodules
    if not init_and_update_submodules():
