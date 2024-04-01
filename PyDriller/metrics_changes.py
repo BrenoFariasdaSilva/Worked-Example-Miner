@@ -15,7 +15,7 @@ from tqdm import tqdm # For progress bar
 # Import from the main.py file
 from code_metrics import BackgroundColors # For coloring the terminal outputs
 from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Importing constants from the code_metrics.py file
-from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
+from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verbose_mode, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
 
 # Default values that can be changed:
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
@@ -65,8 +65,7 @@ def verify_file(file_path):
 	:return: True if the file already exists, False otherwise
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Verifying the file for {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Verifying if the file {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN} exists...{Style.RESET_ALL}")
 	
 	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
 
@@ -91,8 +90,7 @@ def get_directory_path(repository_name):
 	:return: The path to the directory of the CK metrics related to the repository
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Getting the directory path for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Getting the directory path for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	# Get the directory path for the specified repository name
 	repository_ck_metrics_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
@@ -107,8 +105,7 @@ def create_directories(repository_name):
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Creating the desired directories for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Creating the desired directories for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
 	# Create the output METRICS_DATA directories if they does not exist
 	create_directory(FULL_METRICS_DATA_DIRECTORY_PATH, RELATIVE_METRICS_DATA_DIRECTORY_PATH)
@@ -134,8 +131,7 @@ def generate_commit_modified_files_dict(repository_name):
 	:return: A dictionary containing the modified files paths list for each commit
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Generating the commit dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Generating the commit dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
 	commit_modified_files_dict = {} # A dictionary containing the commit hashes as keys and the modified files path list as values
 
@@ -155,8 +151,7 @@ def valid_class_name(class_name):
 	:return: True if the class name is valid, False otherwise
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Validating the class name...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Validating the class name...{Style.RESET_ALL}")
 	
 	return "." in class_name # If the class name contains a dot, then it is valid (it is a package name) and returns True
 
@@ -168,8 +163,7 @@ def get_class_package_name(file_name):
 	:return: The package name of the class
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Getting the package name of the class...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Getting the package name of the class...{Style.RESET_ALL}")
 	
 	start_substring = "/src/" # The start substring
 	package_name = file_name[file_name.find(start_substring) + len(start_substring):file_name.rfind(".")] # Get the substring that comes after the: /src/ and before the last dot
@@ -187,8 +181,7 @@ def get_identifier_and_metrics(row):
 	:return: The identifier, metrics and occurrences_counter of the class or method
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Getting the identifier and metrics of the method or class...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Getting the identifier and metrics of the method or class...{Style.RESET_ALL}")
 	
 	class_name = row["class"] # Get the class name from the row
 	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
@@ -219,8 +212,7 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	:return: True if the file was modified, False otherwise
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Verifying if the file was modified...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Verifying if the file was modified...{Style.RESET_ALL}")
 	
 	# The file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/
 	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
@@ -245,8 +237,7 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Processing the csv file containing the metrics of a method nor class...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Processing the csv file containing the metrics of a method nor class...{Style.RESET_ALL}")
 
 	# Open the csv file
 	with open(file_path, "r") as csvfile:
@@ -288,8 +279,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	:return: A dictionary containing the metrics of each class and method combination
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Traversing the directory and processing all the csv files for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Traversing the directory and processing all the csv files for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	metrics_track_record = {} # Dictionary containing the track record of the metrics of each method nor class. The key is the identifier and the value is a dictionary containing the metrics, commit hashes and the number of times the metrics changed.
 	file_count = 0 # Initialize the file count
@@ -347,8 +337,7 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
 
 	# Open the txt file and write the metrics_track_record to it
 	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
@@ -368,8 +357,7 @@ def get_clean_id(id):
 	:return: ID of the class or method to be analyzed without the slashes
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Getting the clean id for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Getting the clean id for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 	
 	# If the id contains slashes, remove them
 	if "/" in id:
@@ -413,8 +401,7 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 	:return: The refactoring file path
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Generating the refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Generating the refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	# Create the "refactorings" directory if it does not exist
 	relatively_refactorings_directory_path = f"{RELATIVE_REFACTORINGS_DIRECTORY_PATH}/{repository_name}"
@@ -450,8 +437,7 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 	:return: The dictionary containing the specific informations about the refactorings
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Getting the specific informations about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Getting the specific informations about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	# Get the refactoring file path
 	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # The refactoring file path
@@ -475,8 +461,7 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 							refactorings_info["types"].append(refactoring["type"]) # Append the refactoring type to the refactorings list
 							if location["filePath"] not in refactorings_info["filePath"]: # If the file path is not in the refactorings_info["filePath"] list
 								refactorings_info["filePath"].append(location["filePath"])
-								if VERBOSE:
-									print(f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
+								verbose_mode(true_string=f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
 
 		return refactorings_info # Return the refactorings types list
 
@@ -494,8 +479,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Verifying if the class or method has had a substantial decrease in the {BackgroundColors.CYAN}{metric_name}{BackgroundColors.GREEN} metric...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Verifying if the class or method has had a substantial decrease in the {BackgroundColors.CYAN}{metric_name}{BackgroundColors.GREEN} metric...{Style.RESET_ALL}")
 	
 	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS):
 		return # If any of the class name ignore keywords is found in the class name, return
@@ -566,8 +550,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Performing linear regression on the given metrics and saving the plot to a PNG file for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Performing linear regression on the given metrics and saving the plot to a PNG file for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	# Verify for empty metrics list
 	if not metrics and VERBOSE:
@@ -577,14 +560,12 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 	try:
 		metrics_array = np.array(metrics, dtype=float) # Safely convert to NumPy array for flexibility in handling
 	except:
-		if VERBOSE:
-			print(f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
+		verbose_mode(true_string=f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
 		return
 
 	# Verify for invalid values in the metrics
 	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_POSITION):
-		if VERBOSE:
-			print(f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
+		verbose_mode(true_string=f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
 		return # Return if the metrics structure is not as expected
 	
 	# Loop through the metrics_position dictionary
@@ -637,8 +618,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Writing the metrics evolution for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a csv file...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Writing the metrics evolution for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a csv file...{Style.RESET_ALL}")
 	
 	# For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
 	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar:
@@ -684,8 +664,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Calculating the minimum, maximum, average, and third quartile of each metric and writing it to a csv file for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Calculating the minimum, maximum, average, and third quartile of each metric and writing it to a csv file for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 	
 	cboMin = round(float(min(metrics_values[0])), 3) # The minimum cbo value rounded to 3 decimal places
 	cboMax = round(float(max(metrics_values[0])), 3) # The maximum cbo value rounded to 3 decimal places
@@ -714,8 +693,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 	:return: None
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Processing the metrics in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to calculate the minimum, maximum, average, and third quartile of each metric and writing it to a csv file...{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Processing the metrics in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to calculate the minimum, maximum, average, and third quartile of each metric and writing it to a csv file...{Style.RESET_ALL}")
 	
 	# Open the csv file and process the metrics of each method
 	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
@@ -756,8 +734,7 @@ def sort_csv_by_changes(repository_name):
 	:return: None
 	"""
 	
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}metrics statistics files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}number of changes{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}metrics statistics files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}number of changes{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}")
@@ -774,8 +751,7 @@ def sort_csv_by_percentual_variation(repository_name):
 	:return: None
 	"""
 	
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+	verbose_mode(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 	# Read the csv file
 	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}")
