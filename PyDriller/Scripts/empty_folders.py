@@ -15,6 +15,23 @@ class BackgroundColors: # Colors for the terminal
 DATA_FOLDERS = ["ck_metrics", "diffs", "metrics_evolution", "metrics_predictions", "metrics_statistics"] # The Data Folders
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
 
+def verbose_output(true_string="", false_string=""):
+   """
+   Outputs a message if the VERBOSE constant is set to True.
+
+   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
+   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
+   :return: None
+   """
+
+   if true_string == "" and false_string == "": # If the false_string and true_string are not set
+      return # Return if the false_string is not set
+   
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(true_string) # Output the true statement string
+   else:
+      print(false_string) # Output the false statement string
+
 def search_empty_folders(directory):
 	"""
 	Search for empty folders in the given directory.
@@ -24,8 +41,7 @@ def search_empty_folders(directory):
 	
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Searching for empty folders in {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Searching for empty folders in {BackgroundColors.CYAN}{directory}{Style.RESET_ALL}")
 
 	empty_folders = [] # The list of empty folders
 
