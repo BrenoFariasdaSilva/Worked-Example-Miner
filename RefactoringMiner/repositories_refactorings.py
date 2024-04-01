@@ -101,6 +101,120 @@ def create_directory(full_directory_name, relative_directory_name):
    except OSError: # If the directory cannot be created
       print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed{Style.RESET_ALL}")
 
+def output_time(output_string, time):
+   """
+   Outputs time, considering the appropriate time unit.
+
+   :param output_string: String to be outputted.
+   :param time: Time to be outputted.
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
+
+   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
+      time_unit = "seconds" # Set the time unit to seconds
+      time_value = time # Set the time value to time
+   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
+      time_unit = "minutes" # Set the time unit to minutes
+      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
+   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
+      time_unit = "hours" # Set the time unit to hours
+      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
+   else: # If the time is greater than or equal to 86400 seconds
+      time_unit = "days" # Set the time unit to days
+      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
+
+   rounded_time = round(time_value, 2) # Round the time value to two decimal places
+   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+
+def update_repository(repository_name):
+   """
+   Update the repository using "git pull".
+
+   :param repository_name: Name of the repository to be analyzed
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
+   
+   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
+   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   update_thread.wait() # Wait for the thread to finish
+   os.chdir(START_PATH) # Change the current working directory to the default one
+
+def clone_repository(repository_name, repository_url):
+   """
+   Clone the repository to the repository directory.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   # Verify if the repository directory already exists and if it is not empty
+   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
+      update_repository(repository_name) # Update the repository
+      return # Return if the repository directory already exists and is not empty
+   else:
+      # Create a thread to clone the repository
+      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      # Wait for the thread to finish
+      thread.wait()
+
+def generate_commit_refactorings(repository_name):
+   """
+   Generate the refactoring instances for the repository.
+
+   :param repository_name: Name of the repository to be analyzed
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Generating the {BackgroundColors.CYAN}refactoring instances{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   json_output_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
+
+   # Run the Refactoring Miner Command: REFACTORING_MINER_FULL_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
+   thread = subprocess.Popen([FULL_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_output_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   stdout, stderr = thread.communicate() # Get the output of the thread
+
+def process_repository(repository_name, repository_url):
+   """
+   Process the repository.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   :return: None
+   """
+
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
+   start_time = time.time() # Get the start time
+
+   # Clone the repository or update it if it already exists
+   clone_repository(repository_name, repository_url)
+
+   # Run the RefactoringMiner command to generate the JSON files
+   generate_commit_refactorings(repository_name)
+
+   end_time = time.time() # Get the end time
+
+   # Output the time needed to generate the JSON files for the repository
+   output_string = f"{BackgroundColors.GREEN}Time needed to {BackgroundColors.CYAN}generate the JSON files {BackgroundColors.GREEN}for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+   output_time(output_string, end_time - start_time)
+
 def process_repositories_concurrently(repositories):
    """
    Process the repositories concurrently.
@@ -130,120 +244,6 @@ def process_repositories_concurrently(repositories):
       # Ensures all of the futures are completed
       for future in futures:
          future.result() # Wait for the thread (task) to finish
-
-def process_repository(repository_name, repository_url):
-   """
-   Process the repository.
-
-   :param repository_name: Name of the repository to be analyzed
-   :param repository_url: URL of the repository to be analyzed
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-   
-   start_time = time.time() # Get the start time
-
-   # Clone the repository or update it if it already exists
-   clone_repository(repository_name, repository_url)
-
-   # Run the RefactoringMiner command to generate the JSON files
-   generate_commit_refactorings(repository_name)
-
-   end_time = time.time() # Get the end time
-
-   # Output the time needed to generate the JSON files for the repository
-   output_string = f"{BackgroundColors.GREEN}Time needed to {BackgroundColors.CYAN}generate the JSON files {BackgroundColors.GREEN}for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-   output_time(output_string, end_time - start_time)
-
-def clone_repository(repository_name, repository_url):
-   """
-   Clone the repository to the repository directory.
-
-   :param repository_name: Name of the repository to be analyzed
-   :param repository_url: URL of the repository to be analyzed
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-   
-   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   # Verify if the repository directory already exists and if it is not empty
-   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
-      update_repository(repository_name) # Update the repository
-      return # Return if the repository directory already exists and is not empty
-   else:
-      # Create a thread to clone the repository
-      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      # Wait for the thread to finish
-      thread.wait()
-
-def update_repository(repository_name):
-   """
-   Update the repository using "git pull".
-
-   :param repository_name: Name of the repository to be analyzed
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-   
-   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
-   
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
-   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   update_thread.wait() # Wait for the thread to finish
-   os.chdir(START_PATH) # Change the current working directory to the default one
-
-def generate_commit_refactorings(repository_name):
-   """
-   Generate the refactoring instances for the repository.
-
-   :param repository_name: Name of the repository to be analyzed
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Generating the {BackgroundColors.CYAN}refactoring instances{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-   
-   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   json_output_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
-
-   # Run the Refactoring Miner Command: REFACTORING_MINER_FULL_PATH -a REPOSITORY_DIRECTORY_PATH -json JSON_FILES_DIRECTORY_PATH
-   thread = subprocess.Popen([FULL_REFACTORING_MINER_PATH, "-a", repository_directory_path, "-json", json_output_filepath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   stdout, stderr = thread.communicate() # Get the output of the thread
-
-def output_time(output_string, time):
-   """
-   Outputs time, considering the appropriate time unit.
-
-   :param output_string: String to be outputted.
-   :param time: Time to be outputted.
-   :return: None
-   """
-
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
-
-   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
-      time_unit = "seconds" # Set the time unit to seconds
-      time_value = time # Set the time value to time
-   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
-      time_unit = "minutes" # Set the time unit to minutes
-      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
-   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
-      time_unit = "hours" # Set the time unit to hours
-      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
-   else: # If the time is greater than or equal to 86400 seconds
-      time_unit = "days" # Set the time unit to days
-      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
-
-   rounded_time = round(time_value, 2) # Round the time value to two decimal places
-   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 def play_sound():
    """
