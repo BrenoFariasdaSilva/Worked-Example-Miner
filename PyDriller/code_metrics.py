@@ -580,8 +580,8 @@ def main():
    
    # Verify if the CK JAR file exists
    if not os.path.exists(RELATIVE_CK_JAR_PATH):
-      ensure_ck_jar_exists() # Ensure that the CK JAR file exists
-      return # Return if the CK JAR file does not exist
+      if not ensure_ck_jar_exists(): # Ensure that the CK JAR file exists
+         return # Return if the CK JAR file does not exist
 
    # Print the welcome message
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
