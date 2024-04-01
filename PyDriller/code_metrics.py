@@ -56,6 +56,23 @@ FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # T
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 
+def verbose_mode(true_string="", false_string=""):
+   """
+   Outputs a message if the VERBOSE constant is set to True.
+
+   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
+   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
+   :return: None
+   """
+
+   if true_string == "" and false_string == "": # If the false_string and true_string are not set
+      return # Return if the false_string is not set
+   
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(true_string) # Output the true statement string
+   else:
+      print(false_string) # Output the false statement string
+
 def path_contains_whitespaces():
    """
    Verifies if the PATH constant contains whitespaces.
@@ -63,8 +80,7 @@ def path_contains_whitespaces():
    :return: True if the PATH constant contains whitespaces, False otherwise.
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
    
    # Verify if the PATH constant contains whitespaces
    if " " in START_PATH: # If the PATH constant contains whitespaces
@@ -79,8 +95,7 @@ def init_and_update_submodules():
    '''
 
    try:
-      if VERBOSE:
-         print(f"{BackgroundColors['GREEN']}Initializing and updating the CK Git Submodule...{Style['RESET_ALL']}")
+      verbose_mode(true_string=f"{BackgroundColors.GREEN}Initializing and updating the CK Git Submodule...{Style.RESET_ALL}")
 
       # Adjust path as necessary for reliability across environments
       submodule_path = os.path.abspath("../ck/.git")
@@ -130,8 +145,7 @@ def output_time(output_string, time):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
 
    if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
       time_unit = "seconds" # Set the time unit to seconds
@@ -157,8 +171,7 @@ def verify_ck_metrics_folder(repository_name):
    :return: True if all the metrics are already calculated, False otherwise.
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated...{Style.RESET_ALL}")
 
    data_path = os.path.join(START_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
    repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
@@ -193,8 +206,7 @@ def create_directory(full_directory_name, relative_directory_name):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
 
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
       return # Return if the directory already exists
@@ -211,8 +223,7 @@ def update_repository(repository_name):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
@@ -232,8 +243,7 @@ def clone_repository(repository_name, repository_url):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
 
@@ -258,8 +268,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    :return: The commits_info and last_commit_number.
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    commits_info = [] # The commit information list containing the commit hashes, commit messages and commit dates
    last_commit_number = 0 # The last commit number
@@ -312,8 +321,7 @@ def generate_diffs(repository_name, commit, commit_number):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Generating the diffs for the {BackgroundColors.CYAN}{commit_number}º{BackgroundColors.GREEN} commit of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Generating the diffs for the {BackgroundColors.CYAN}{commit_number}º{BackgroundColors.GREEN} commit of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    for modified_file in commit.modified_files: # Loop through the modified files of the commit
       file_diff = modified_file.diff # Get the diff of the modified file
@@ -336,8 +344,7 @@ def checkout_branch(branch_name):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Checking out the {BackgroundColors.CYAN}{branch_name}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Checking out the {BackgroundColors.CYAN}{branch_name}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
 
    # Create a thread to checkout the branch
    checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -353,8 +360,7 @@ def generate_output_directory_paths(repository_name, commit_hash, commit_number)
    :return: The output_directory and relative_output_directory paths.
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Generating the output directory paths...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Generating the output directory paths...{Style.RESET_ALL}")
 
    output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
    relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
@@ -369,8 +375,7 @@ def run_ck_metrics_generator(cmd):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Running the CK Metrics Generator Command...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Running the CK Metrics Generator Command...{Style.RESET_ALL}")
 
    # Create a thread to run the cmd command
    thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the cmd command in a subprocess
@@ -387,8 +392,7 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Showing the execution time of the CK metrics generator...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Showing the execution time of the CK metrics generator...{Style.RESET_ALL}")
 
    estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2)) # Output the estimated time for running all of the iterations for the repository
@@ -405,8 +409,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    :return: The commit information of the repository.
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to run CK for every commit hash...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to run CK for every commit hash...{Style.RESET_ALL}")
 
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
@@ -476,8 +479,7 @@ def write_commits_information_to_csv(repository_name, commit_info):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Writing the commit information to a csv file...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Writing the commit information to a csv file...{Style.RESET_ALL}")
    
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
    with open(file_path, "w", newline="") as csv_file:
@@ -552,8 +554,7 @@ def play_sound():
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Playing a sound when the program finishes...{Style.RESET_ALL}")
+   verbose_mode(true_string=f"{BackgroundColors.GREEN}Playing a sound when the program finishes...{Style.RESET_ALL}")
    
    if os.path.exists(SOUND_FILE):
       if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
