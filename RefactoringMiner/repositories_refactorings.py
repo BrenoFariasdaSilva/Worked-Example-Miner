@@ -285,15 +285,15 @@ def main():
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return # Exit the program
       
-   repositories = verify_refactorings() # Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
+   unprocessed_repositories = verify_refactorings() # Verify if the RefactoringMiner for the DEFAULT_REFACTORINGS were already generated
 
-   # Verify if the repositories dictionary is empty
-   if not repositories:
+   # Verify if the unprocessed repositories dictionary is empty
+   if not unprocessed_repositories:
       return # Return if the repositories dictionary is empty
    
    # Print the welcome message
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} script! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate the refactoring file{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
+   print(f"{BackgroundColors.GREEN}This script will {BackgroundColors.CYAN}generate the refactoring file{BackgroundColors.GREEN} using {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(unprocessed_repositories.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
 
    # Create the json directory
    create_directory(f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}", f"{RELATIVE_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}")
@@ -301,10 +301,10 @@ def main():
    create_directory(f"{FULL_REPOSITORIES_DIRECTORY_PATH}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}")
 
    # Process the repositories concurrently
-   process_repositories_concurrently(repositories)
+   process_repositories_concurrently(unprocessed_repositories)
 
    # Output the message that the refactorings for the repositories were generated
-   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} repositories were generated.{Style.RESET_ALL}")
+   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(unprocessed_repositories.keys())}{BackgroundColors.GREEN} repositories were generated.{Style.RESET_ALL}")
     		
 if __name__ == '__main__':
    """
