@@ -142,17 +142,16 @@ def output_time(output_string, time):
    rounded_time = round(time_value, 2) # Round the time value to two decimal places
    print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-def update_repository(repository_name):
+def update_repository(repository_directory_path):
    """
    Update the repository using "git pull".
 
-   :param repository_name: Name of the repository to be analyzed
+   :param repository_directory_path: The path to the repository directory
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
-   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
    # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
@@ -160,27 +159,39 @@ def update_repository(repository_name):
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
 
-def clone_repository(repository_name, repository_url):
+def clone_repository(repository_directory_path, repository_url):
    """
    Clone the repository to the repository directory.
 
-   :param repository_name: Name of the repository to be analyzed
+   :param repository_directory_path: The path to the repository directory
    :param repository_url: URL of the repository to be analyzed
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
+   # Create a thread to clone the repository
+   thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   # Wait for the thread to finish
+   thread.wait()
+
+def setup_repository(repository_name, repository_url):
+   """"
+   Setup the repository by cloning it or updating it if it already exists.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
-      update_repository(repository_name) # Update the repository
-      return # Return if the repository directory already exists and is not empty
+      update_repository(repository_directory_path) # Update the repository
    else:
-      # Create a thread to clone the repository
-      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      # Wait for the thread to finish
-      thread.wait()
+      clone_repository(repository_directory_path, repository_url) # Clone the repository
 
 def generate_commit_refactorings(repository_name):
    """
@@ -212,8 +223,8 @@ def process_repository(repository_name, repository_url):
    
    start_time = time.time() # Get the start time
 
-   # Clone the repository or update it if it already exists
-   clone_repository(repository_name, repository_url)
+   # Setup the repository
+   setup_repository(repository_name, repository_url)
 
    # Run the RefactoringMiner command to generate the JSON files
    generate_commit_refactorings(repository_name)
