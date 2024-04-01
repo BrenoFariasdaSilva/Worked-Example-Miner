@@ -46,6 +46,23 @@ FULL_REFACTORING_MINER_PATH = START_PATH + RELATIVE_REFACTORING_MINER_PATH # The
 FULL_JSON_FILES_DIRECTORY_PATH = START_PATH + RELATIVE_JSON_FILES_DIRECTORY_PATH # The Full path of the directory that contains the generated JSON files
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The Full path of the directory that contains the repositories
 
+def verbose_output(true_string="", false_string=""):
+   """
+   Outputs a message if the VERBOSE constant is set to True.
+
+   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
+   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
+   :return: None
+   """
+
+   if true_string == "" and false_string == "": # If the false_string and true_string are not set
+      return # Return if the false_string is not set
+   
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(true_string) # Output the true statement string
+   else:
+      print(false_string) # Output the false statement string
+
 def path_contains_whitespaces():
    """
    Verify if the PATH constant contains whitespaces.
@@ -53,8 +70,7 @@ def path_contains_whitespaces():
    :return: True if the PATH constant contains whitespaces, False otherwise
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
 
    # Verify if the PATH constant contains whitespaces
    if " " in START_PATH: # If the PATH constant contains whitespaces
@@ -68,8 +84,7 @@ def verify_refactorings():
    :return: Returns a new dictionary with the repositories that weren't processed yet
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}Refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}DEFAULT_REFACTORINGS{BackgroundColors.GREEN} were already generated...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}Refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}DEFAULT_REFACTORINGS{BackgroundColors.GREEN} were already generated...{Style.RESET_ALL}")
    
    repositories = {} # The repositories dictionary
    # Loop through the default repositories
@@ -91,8 +106,7 @@ def create_directory(full_directory_name, relative_directory_name):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
    
    if os.path.isdir(full_directory_name): # Verify if the directory already exists
       return # Return if the directory already exists
@@ -110,8 +124,7 @@ def output_time(output_string, time):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
 
    if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
       time_unit = "seconds" # Set the time unit to seconds
@@ -137,8 +150,7 @@ def update_repository(repository_name):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
@@ -157,8 +169,7 @@ def clone_repository(repository_name, repository_url):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    # Verify if the repository directory already exists and if it is not empty
@@ -179,8 +190,7 @@ def generate_commit_refactorings(repository_name):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Generating the {BackgroundColors.CYAN}refactoring instances{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the {BackgroundColors.CYAN}refactoring instances{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    json_output_filepath = f"{FULL_JSON_FILES_DIRECTORY_PATH}{RELATIVE_REPOSITORIES_REFACTORINGS_DIRECTORY_PATH}/{repository_name}.{JSON_FILE_FORMAT}" # The path to the json directory
@@ -198,8 +208,7 @@ def process_repository(repository_name, repository_url):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    start_time = time.time() # Get the start time
 
@@ -223,8 +232,7 @@ def process_repositories_concurrently(repositories):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Processing the repositories {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} concurrently...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the repositories {BackgroundColors.CYAN}{list(repositories.keys())}{BackgroundColors.GREEN} concurrently...{Style.RESET_ALL}")
 
    # Using ThreadPoolExecutor to manage threads and a tqdm progress bar
    with ThreadPoolExecutor(max_workers=len(repositories)) as executor, tqdm(total=len(repositories), desc="Processing Repositories") as progress:
@@ -252,8 +260,7 @@ def play_sound():
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Playing a {BackgroundColors.CYAN}sound{BackgroundColors.GREEN} when the program finishes...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Playing a {BackgroundColors.CYAN}sound{BackgroundColors.GREEN} when the program finishes...{Style.RESET_ALL}")
 
    if os.path.exists(SOUND_FILE):
       if platform.system() in SOUND_COMMANDS: # if the platform.system() is in the SOUND_COMMANDS dictionary
