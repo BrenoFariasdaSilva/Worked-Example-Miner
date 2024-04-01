@@ -223,7 +223,12 @@ make code_metrics_script
 ##### Workflow
 
 1. As for every file in this project, the first thing it will do is verify if you don't have whitespaces in the path of the project, if you have, it will not work.  
-2. Next, it will also verify if the `ck` jar file exists in the `FULL_CK_JAR_PATH` directory.
+2. Next, the main function ensures that the `ck` jar file is present in the `FULL_CK_JAR_PATH` directory. This verification is critical for the execution of the CK metrics. The process unfolds as follows:
+
+   - Initially, the script checks for the existence of the `ck` jar file at the specified `RELATIVE_CK_JAR_PATH`. If the file is not found, the script proceeds to invoke `ensure_ck_jar_exists()`, which is tasked with verifying and potentially rectifying the absence of the `ck` jar file. So, at first, it verifies the `ck` submodule's presence and updates it if necessary by calling `init_and_update_submodules()`.
+   - After that, if the `ck` jar is still missing, `ensure_ck_jar_exists()` proceeds with the build process. It executes a `make package` command within the CK directory, aiming to compile the necessary source into a runnable jar. This step is critical for ensuring that all tools required for metrics calculation are readily available and also avoids us storing the jar file (compiled code) in the repository.
+
+   If the `ck` jar file was successfully compiled or was already present, the script proceeds to the next step. Otherwise, it outputs an error message and exits the program.
 3. Now, it calls `process_repositories_in_parallel()` which will create a thread for each of the repositories inside the `DEFAULT_REPOSITORIES` dictionary and process it's ck metrics and save each commit file diff. Each thread has as it's target the `process_repository(repository_name, repository_url)` function.
 4. Inside the `process_repository(repository_name, repository_url)` function, the `verify_ck_metrics_folder(repository_name)` function is called to verify if the ck metrics are already calculated. That verification is done by:
    
