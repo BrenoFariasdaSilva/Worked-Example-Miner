@@ -17,6 +17,23 @@ REPOSITORIES = ["zookeeper"] # The list of repositories
 TARGET_FILENAMES = {"zookeeper": "CHANGES.txt.diff"} # The target file names
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function.
 
+def verbose_output(true_string="", false_string=""):
+   """
+   Outputs a message if the VERBOSE constant is set to True.
+
+   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
+   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
+   :return: None
+   """
+
+   if true_string == "" and false_string == "": # If the false_string and true_string are not set
+      return # Return if the false_string is not set
+   
+   if VERBOSE: # If the VERBOSE constant is set to True
+      print(true_string) # Output the true statement string
+   else:
+      print(false_string) # Output the false statement string
+
 def search_files(search_directory, search_string):
 	"""
 	Search for files in the given directory.
@@ -27,8 +44,7 @@ def search_files(search_directory, search_string):
 	:return: found_files_count: A dictionary containing the number of files found
 	"""
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Searching for {BackgroundColors.CYAN}{search_string} {BackgroundColors.GREEN}files in {BackgroundColors.CYAN}{search_directory}{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Searching for {BackgroundColors.CYAN}{search_string} {BackgroundColors.GREEN}files in {BackgroundColors.CYAN}{search_directory}{Style.RESET_ALL}")
 
 	found_files_count = 0 # Counter for the number of files found
 	found_file_paths = [] # List to store the paths of the found files
