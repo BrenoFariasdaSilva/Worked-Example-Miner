@@ -7,7 +7,7 @@ import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 from repositories_refactorings import BackgroundColors # Import the BackgroundColors class
 from repositories_refactorings import START_PATH, JSON_FILE_FORMAT, DEFAULT_REPOSITORIES, RELATIVE_JSON_FILES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REFACTORING_MINER_PATH, FULL_JSON_FILES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Import the constants
-from repositories_refactorings import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound # Import the functions
+from repositories_refactorings import clone_repository, create_directory, output_time, path_contains_whitespaces, play_sound, verbose_output # Import the functions
 from tqdm import tqdm # Import tqdm for the progress bar functionality
 
 # Default values that can be changed:
@@ -36,8 +36,7 @@ def filter_json_file(classname, json_filepath, json_filtered_filepath):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Filtering the JSON file {BackgroundColors.CYAN}{json_filepath}{BackgroundColors.GREEN} according to the desired refactoring types...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Filtering the JSON file {BackgroundColors.CYAN}{json_filepath}{BackgroundColors.GREEN} according to the desired refactoring types...{Style.RESET_ALL}")
    
    # Read the JSON data from the file
    with open(json_filepath, "r") as json_file:
@@ -71,8 +70,7 @@ def generate_commit_refactorings_for_class_or_methods(repository_name, classname
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Generating the refactoring instances for the {BackgroundColors.CYAN}{classname}{BackgroundColors.GREEN} {CLASSES_OR_METHODS} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the refactoring instances for the {BackgroundColors.CYAN}{classname}{BackgroundColors.GREEN} {CLASSES_OR_METHODS} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    # Open the metrics_evolutions desired file
    csv_file_path = f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{classname}/{variable_attribute}.csv"
@@ -110,8 +108,7 @@ def generate_refactorings_concurrently(repository_name):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Generating the refactoring instances concurrently for the {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the refactoring instances concurrently for the {BackgroundColors.CYAN}{list(FILES_TO_ANALYZE.items())} {CLASSES_OR_METHODS}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    threads = [] # List of threads
    # For each class or method to be analyzed, wrap the iteration with tqdm for a progress bar
@@ -132,8 +129,7 @@ def process_repository(repository_name, repository_url):
    :return: None
    """
 
-   if VERBOSE: # If the VERBOSE constant is set to True
-      print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    start_time = time.time() # Get the start time
 
