@@ -57,6 +57,19 @@ FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTIO
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
 
+def verify_file(file_path):
+	"""
+	Verifies if a specified file exists.
+
+	:param file_path: The path to the file
+	:return: True if the file already exists, False otherwise
+	"""
+
+	if VERBOSE: # If the VERBOSE constant is set to True
+		print(f"{BackgroundColors.GREEN}Verifying the file for {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+	
+	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
+
 def update_global_variables():
 	'''
 	Updates the global variables PROCESS_CLASSES and CLASSES_OR_METHODS according to the user input.
@@ -69,71 +82,6 @@ def update_global_variables():
 	UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}"
 	SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}"
 	SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}"
-
-def process_all_repositories():
-	"""
-	Processes all the repositories in the DEFAULT_REPOSITORY_NAMES list.
-
-	:return: None
-	"""
-
-	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
-		print(f"") # Print an empty line
-		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-		process_repository(repository_name) # Process the current repository
-		print(f"------------------------------------------------------------") # Print a separator
-
-def process_repository(repository_name):
-	"""
-	Processes the specified repository.
-
-	:param repository_name: The name of the repository to be analyzed
-	:return: None
-	"""
-
-	# Start the timer
-	start_time = time.time()
-
-	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
-	if not verify_ck_metrics_folder(repository_name):
-		print(f"{BackgroundColors.RED}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} were not calculated. Please run the {BackgroundColors.CYAN}code_metrics.py{BackgroundColors.RED} file first{Style.RESET_ALL}")
-		return # Return if the ck metrics were not calculated
-
-	# Get the directory path for the specified repository name
-	repository_ck_metrics_path = get_directory_path(repository_name)
-	
-	# Create the desired directory if it does not exist
-	create_directories(repository_name)
-
-	# Traverse the directory and get the method metrics
-	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path)
-
-	# Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
-	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record)
-
-	# Write the metrics_track_record to a txt file
-	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record)
-
-	# Write, for each identifier, the metrics evolution values to a csv file
-	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record)
-
-	# Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
-	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record)
-
-	# Sort the csv file by the number of changes
-	sort_csv_by_changes(repository_name)
-
-	# Remove the old csv file
-	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
-	os.remove(old_csv_file_path)
-
-	# Sort the interesting changes csv file by the percentual variation of the metric
-	sort_csv_by_percentual_variation(repository_name)
-
-	# Output the elapsed time to process this repository
-	elapsed_time = time.time() - start_time # Calculate the elapsed time
-	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
 
 def get_directory_path(repository_name):
 	"""
@@ -177,6 +125,27 @@ def create_directories(repository_name):
 	# Create the output RELATIVE_METRICS_PREDICTION directories if they does not exist
 	create_directory(FULL_METRICS_PREDICTION_DIRECTORY_PATH, RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
+
+def generate_commit_modified_files_dict(repository_name):
+	"""
+	Generates a dictionary of the modified files path list for each commit.
+
+	:param repository_name: The name of the repository
+	:return: A dictionary containing the modified files paths list for each commit
+	"""
+
+	if VERBOSE: # If the VERBOSE constant is set to True
+		print(f"{BackgroundColors.GREEN}Generating the commit dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+	commit_modified_files_dict = {} # A dictionary containing the commit hashes as keys and the modified files path list as values
+
+	# Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
+	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits():
+		commit_modified_files_dict[commit.hash] = [] # Initialize the commit hash list
+		for modified_file in commit.modified_files: # For each modified file in the commit
+			commit_modified_files_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff d
+
+	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths for each commit
 
 def valid_class_name(class_name):
 	"""
@@ -310,27 +279,6 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
 
-def generate_commit_modified_files_dict(repository_name):
-	"""
-	Generates a dictionary of the modified files path list for each commit.
-
-	:param repository_name: The name of the repository
-	:return: A dictionary containing the modified files paths list for each commit
-	"""
-
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Generating the commit dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-
-	commit_modified_files_dict = {} # A dictionary containing the commit hashes as keys and the modified files path list as values
-
-	# Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
-	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits():
-		commit_modified_files_dict[commit.hash] = [] # Initialize the commit hash list
-		for modified_file in commit.modified_files: # For each modified file in the commit
-			commit_modified_files_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff d
-
-	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths for each commit
-
 def traverse_directory(repository_name, repository_ck_metrics_path):
 	"""
 	Traverses a directory and processes all the csv files.
@@ -429,59 +377,6 @@ def get_clean_id(id):
 	else: # If the id does not contain slashes, simply return the id
 		return id # Return the id
 
-def verify_file(file_path):
-	"""
-	Verifies if a specified file exists.
-
-	:param file_path: The path to the file
-	:return: True if the file already exists, False otherwise
-	"""
-
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Verifying the file for {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
-	
-	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
-
-def get_refactorings_info(repository_name, commit_number, commit_hash, class_name):
-	"""
-	Gets specific informations about the refactorings of the commit hash and class name from RefactoringMiner.
-
-	:param repository_name: The name of the repository
-	:param commit_number: The commit number of the current linear regression
-	:param commit_hash: The commit hash of the current linear regression
-	:param class_name: The class name of the current linear regression
-	:return: The dictionary containing the specific informations about the refactorings
-	"""
-
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print(f"{BackgroundColors.GREEN}Getting the specific informations about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-	
-	# Get the refactoring file path
-	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # The refactoring file path
-
-	# If the files does not exist or is empty, generate the refactoring file
-	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0:
-		# Call the generate_refactoring_file function to generate the refactoring file
-		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path)
-
-	# Open the refactoring file
-	with open(refactoring_file_path, "r") as file:
-		data = json.load(file) # Load the json data
-		refactorings_info = {"types": [],"filePath": []} # The refactorings information dictionary
-		# Loop through the refactorings in the data
-		for commit in data["commits"]:
-			if commit["sha1"] == commit_hash: # If the commit hash is equal to the specified commit hash
-				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
-					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Loop through the locations in the refactoring
-						# If the class name is in the file path, then append the refactoring type to the refactorings list
-						if class_name.replace(".", "/") in location["filePath"]:
-							refactorings_info["types"].append(refactoring["type"]) # Append the refactoring type to the refactorings list
-							if location["filePath"] not in refactorings_info["filePath"]: # If the file path is not in the refactorings_info["filePath"] list
-								# print(f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
-								refactorings_info["filePath"].append(location["filePath"])
-
-		return refactorings_info # Return the refactorings types list
-
 def verify_refactoring_file(refactoring_file_path):
 	"""
 	Validates if the refactoring file was created successfully.
@@ -543,6 +438,47 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 	else:
 		print(f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
 		return None # Return None
+
+def get_refactorings_info(repository_name, commit_number, commit_hash, class_name):
+	"""
+	Gets specific informations about the refactorings of the commit hash and class name from RefactoringMiner.
+
+	:param repository_name: The name of the repository
+	:param commit_number: The commit number of the current linear regression
+	:param commit_hash: The commit hash of the current linear regression
+	:param class_name: The class name of the current linear regression
+	:return: The dictionary containing the specific informations about the refactorings
+	"""
+
+	if VERBOSE: # If the VERBOSE constant is set to True
+		print(f"{BackgroundColors.GREEN}Getting the specific informations about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	
+	# Get the refactoring file path
+	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # The refactoring file path
+
+	# If the files does not exist or is empty, generate the refactoring file
+	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0:
+		# Call the generate_refactoring_file function to generate the refactoring file
+		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path)
+
+	# Open the refactoring file
+	with open(refactoring_file_path, "r") as file:
+		data = json.load(file) # Load the json data
+		refactorings_info = {"types": [],"filePath": []} # The refactorings information dictionary
+		# Loop through the refactorings in the data
+		for commit in data["commits"]:
+			if commit["sha1"] == commit_hash: # If the commit hash is equal to the specified commit hash
+				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
+					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Loop through the locations in the refactoring
+						# If the class name is in the file path, then append the refactoring type to the refactorings list
+						if class_name.replace(".", "/") in location["filePath"]:
+							refactorings_info["types"].append(refactoring["type"]) # Append the refactoring type to the refactorings list
+							if location["filePath"] not in refactorings_info["filePath"]: # If the file path is not in the refactorings_info["filePath"] list
+								refactorings_info["filePath"].append(location["filePath"])
+								if VERBOSE:
+									print(f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
+
+		return refactorings_info # Return the refactorings types list
 
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name):
 	"""
@@ -691,7 +627,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		
 		# Close the plot
 		plt.close()
-   
+
 def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 	"""
 	Writes the metrics evolution to a csv file.
@@ -847,6 +783,71 @@ def sort_csv_by_percentual_variation(repository_name):
 	data = data.sort_values(by=["Percentual Variation"], ascending=False)
 	# Write the sorted csv file to a new csv file
 	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}", index=False)
+
+def process_repository(repository_name):
+	"""
+	Processes the specified repository.
+
+	:param repository_name: The name of the repository to be analyzed
+	:return: None
+	"""
+
+	# Start the timer
+	start_time = time.time()
+
+	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
+	if not verify_ck_metrics_folder(repository_name):
+		print(f"{BackgroundColors.RED}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} were not calculated. Please run the {BackgroundColors.CYAN}code_metrics.py{BackgroundColors.RED} file first{Style.RESET_ALL}")
+		return # Return if the ck metrics were not calculated
+
+	# Get the directory path for the specified repository name
+	repository_ck_metrics_path = get_directory_path(repository_name)
+	
+	# Create the desired directory if it does not exist
+	create_directories(repository_name)
+
+	# Traverse the directory and get the method metrics
+	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path)
+
+	# Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
+	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record)
+
+	# Write the metrics_track_record to a txt file
+	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record)
+
+	# Write, for each identifier, the metrics evolution values to a csv file
+	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record)
+
+	# Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
+	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record)
+
+	# Sort the csv file by the number of changes
+	sort_csv_by_changes(repository_name)
+
+	# Remove the old csv file
+	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
+	os.remove(old_csv_file_path)
+
+	# Sort the interesting changes csv file by the percentual variation of the metric
+	sort_csv_by_percentual_variation(repository_name)
+
+	# Output the elapsed time to process this repository
+	elapsed_time = time.time() - start_time # Calculate the elapsed time
+	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
+
+def process_all_repositories():
+	"""
+	Processes all the repositories in the DEFAULT_REPOSITORY_NAMES list.
+
+	:return: None
+	"""
+
+	for repository_name in DEFAULT_REPOSITORY_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
+		print(f"") # Print an empty line
+		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}metrics evolution history, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+		process_repository(repository_name) # Process the current repository
+		print(f"------------------------------------------------------------") # Print a separator
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
