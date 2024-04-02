@@ -48,6 +48,7 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Clone with Submodule](#clone-with-submodule)
     - [Clone Submodule](#clone-submodule)
   - [Paper Submissions](#paper-submissions)
+    - [EduComp 2024 - Ideas Laboratory (UPDATE)](#educomp-2024---ideas-laboratory-update)
   - [Goals](#goals)
   - [Skills](#skills)
   - [Directories](#directories)
@@ -103,6 +104,10 @@ git submodule update
 ## Paper Submissions
 
 This research project aims to contribute to the field of Software Engineering (SE) and Distributed Systems (DS) by exploring the evolution of code quality in Java repositories. Our research findings and insights will be shared through academic papers, conference presentations, and educational resources. We are committed to advancing knowledge in software development practices and improve the educational quality of worked examples in SE.
+
+### EduComp 2024 - Ideas Laboratory (UPDATE)
+
+We are excited to announce that we will be submitting a paper to the [EduComp 2024](http://educompbrasil.org) conference. EduComp is a premier conference that focuses on educational computing, providing a platform for researchers, educators, and practitioners to share their insights and innovations in the field of educational technology. Our paper will highlight the significance of code quality metrics in enhancing software engineering education and the importance of worked examples in illustrating code evolution and improvement. You can our paper submission here [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE).
 
 ## Goals
 
