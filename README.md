@@ -49,6 +49,7 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Clone Submodule](#clone-submodule)
   - [Paper Submissions](#paper-submissions)
     - [EduComp 2024 - Ideas Laboratory (UPDATE)](#educomp-2024---ideas-laboratory-update)
+    - [SBES 2024 (UPDATE)](#sbes-2024-update)
   - [Goals](#goals)
   - [Skills](#skills)
   - [Directories](#directories)
@@ -108,6 +109,10 @@ This research project aims to contribute to the field of Software Engineering (S
 ### EduComp 2024 - Ideas Laboratory (UPDATE)
 
 We are excited to announce that our paper's submission to the [EduComp 2024](http://educompbrasil.org) conference was accepted! EduComp is a premier conference that focuses on educational computing, providing a platform for researchers, educators, and practitioners to share their insights and innovations in the field of educational technology. Our paper will highlight the significance of code quality metrics in enhancing software engineering education and the importance of worked examples in illustrating code evolution and improvement. You can our paper submission here [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE).
+
+### SBES 2024 (UPDATE)
+
+We are also planning to submit a paper to the [SBES 2024](https://cbsoft.sbc.org.br/2024/sbes/) conference. SBES is the Brazilian Symposium on Software Engineering, a prestigious event that brings together researchers, practitioners, and students to discuss the latest trends and advancements in software engineering. Our paper will delve into the evolution of code quality metrics in Java repositories, focusing on Distributed Systems (DS) and the implications for software design and maintainability. You can our paper submission here [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE).
 
 ## Goals
 
