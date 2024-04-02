@@ -65,12 +65,9 @@ def verbose_output(true_string="", false_string=""):
    :return: None
    """
 
-   if true_string == "" and false_string == "": # If the false_string and true_string are not set
-      return # Return if the false_string is not set
-   
-   if VERBOSE: # If the VERBOSE constant is set to True
+   if VERBOSE and true_string != "": # If the VERBOSE constant is set to True and the true_string is set
       print(true_string) # Output the true statement string
-   else:
+   elif false_string != "":
       print(false_string) # Output the false statement string
 
 def path_contains_whitespaces():
