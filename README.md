@@ -47,6 +47,7 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Clone without Submodule](#clone-without-submodule)
     - [Clone with Submodule](#clone-with-submodule)
     - [Clone Submodule](#clone-submodule)
+  - [Paper Submissions](#paper-submissions)
   - [Goals](#goals)
   - [Skills](#skills)
   - [Directories](#directories)
@@ -98,6 +99,10 @@ In case you have already cloned the repository and forgot to clone the submodule
 git submodule init
 git submodule update
 ```
+
+## Paper Submissions
+
+This research project aims to contribute to the field of Software Engineering (SE) and Distributed Systems (DS) by exploring the evolution of code quality in Java repositories. Our research findings and insights will be shared through academic papers, conference presentations, and educational resources. We are committed to advancing knowledge in software development practices and improve the educational quality of worked examples in SE.
 
 ## Goals
 
