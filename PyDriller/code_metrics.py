@@ -120,7 +120,7 @@ def ensure_ck_jar_exists():
 
    # Verify if the jar exists in the ck directory
    if os.path.exists(RELATIVE_CK_JAR_PATH):
-      print(f"{RELATIVE_CK_JAR_PATH.split('/')[-1]} already exists in {RELATIVE_CK_JAR_PATH[:RELATIVE_CK_JAR_PATH.rfind('/')]}")
+      print(f"{BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH.split('/')[-1]}{BackgroundColors.GREEN} already exists in {BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[:RELATIVE_CK_JAR_PATH.rfind('/')]}{Style.RESET_ALL}")
    
    # If not, run "make package" from the Makefile directory
    makefile_dir = os.path.abspath("../ck")
@@ -307,7 +307,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
             
             print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-            execution_time = f"Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
+            execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
             output_time(execution_time, round(((number_of_commits / 1000) * (number_of_commits - last_commit_number)), 2)) # Output the estimated time for running the remaining iterations for the repository
             
    else: # If there is no saved progress file, create one and write the header
@@ -399,9 +399,9 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Showing the execution time of the CK metrics generator...{Style.RESET_ALL}")
 
-   estimated_time_string = f"Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+   estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for running all the of the iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
    output_time(estimated_time_string, round(first_iteration_duration * number_of_commits, 2)) # Output the estimated time for running all of the iterations for the repository
-   time_taken_string = f"Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
+   time_taken_string = f"{BackgroundColors.GREEN}Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
    output_time(time_taken_string, round(elapsed_time, 2)) # Output the time taken to generate CK metrics for the commits in the repository
 
 def traverse_repository(repository_name, repository_url, number_of_commits):
@@ -541,7 +541,7 @@ def process_repositories_in_parallel():
    threads = [] # The threads list
    # Loop through the default repositories
    for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
-      estimated_time_string = f"Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+      estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
       commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
       output_time(estimated_time_string, round(((commits_number / 1000) * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
       thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
