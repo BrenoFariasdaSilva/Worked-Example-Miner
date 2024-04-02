@@ -457,6 +457,7 @@ def get_refactorings_info(repository_name, commit_number, commit_hash, class_nam
 				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
 					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Loop through the locations in the refactoring
 						# If the class name is in the file path, then append the refactoring type to the refactorings list
+						class_name = class_name.split("$")[0] # Remove the $ from the class name as it represents an inner class
 						if class_name.replace(".", "/") in location["filePath"]:
 							refactorings_info["types"].append(refactoring["type"]) # Append the refactoring type to the refactorings list
 							if location["filePath"] not in refactorings_info["filePath"]: # If the file path is not in the refactorings_info["filePath"] list
