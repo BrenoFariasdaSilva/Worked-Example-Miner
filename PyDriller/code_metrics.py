@@ -215,48 +215,56 @@ def create_directory(full_directory_name, relative_directory_name):
    except OSError: # If the directory cannot be created
       print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
 
-def update_repository(repository_name):
+def update_repository(repository_directory_path):
    """
-   Updates the repository using "git pull".
+   Update the repository using "git pull".
 
-   :param repository_name: Name of the repository to be analyzed.
+   :param repository_directory_path: The path to the repository directory
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-
-   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
-   # Create a thread to update the repository located in f"{RELATIVE_REPOSITORY_DIRECTORY}/{repository_name}"
+   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
 
-def clone_repository(repository_name, repository_url):
+def clone_repository(repository_directory_path, repository_url):
    """
-   Clones the repository to the repository directory.
+   Clone the repository to the repository directory.
 
-   :param repository_name: Name of the repository to be analyzed.
-   :param repository_url: URL of the repository to be analyzed.
-
+   :param repository_directory_path: The path to the repository directory
+   :param repository_url: URL of the repository to be analyzed
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
+   # Create a thread to clone the repository
+   thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   # Wait for the thread to finish
+   thread.wait()
 
+def setup_repository(repository_name, repository_url):
+   """"
+   Setup the repository by cloning it or updating it if it already exists.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-
+   
    # Verify if the repository directory already exists and if it is not empty
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
-      update_repository(repository_name) # Update the repository
-      return # Return if the repository directory already exists and if it is not empty
+      update_repository(repository_directory_path) # Update the repository
    else:
-      print(f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-      # Create a thread to clone the repository
-      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      thread.wait() # Wait for the thread to finish
-      print(f"{BackgroundColors.GREEN}Successfully cloned the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository.{Style.RESET_ALL}")
+      clone_repository(repository_directory_path, repository_url) # Clone the repository
 
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
@@ -510,8 +518,8 @@ def process_repository(repository_name, repository_url):
    # Create the repositories directory
    create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
 
-   # Clone the repository
-   clone_repository(repository_name, repository_url)
+   # Setup the repository
+   setup_repository(repository_name, repository_url)
 
    # Get the number of commits, which is needed to traverse the repository
    number_of_commits = len(list(Repository(repository_url).traverse_commits()))
