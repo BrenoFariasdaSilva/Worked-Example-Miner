@@ -114,7 +114,7 @@ The study introduces a heuristic based on metrics to examine the evolution of co
 
 Our findings reveal that this methodology can effectively contribute to the selection of worked examples for Distributed Systems, highlighting improvements in modularization, cohesion, and code reusability. Such examples are instrumental in enhancing learning and understanding in software engineering education.
 
-For further details on our approach and findings, you can read our paper submission here: [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE).
+For further details on our approach and findings, you can read our paper submission here: [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE) and watch our presentation at EduComp 2024 on April 25 available on [YouTube](https://youtu.be/g_5z_1xqKKU?si=L2e6s5mQ2xs-w9aZ).
 
 EduComp24, April 22-27, 2024, São Paulo, São Paulo, Brazil (Online)
 
