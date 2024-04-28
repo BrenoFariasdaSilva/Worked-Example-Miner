@@ -522,7 +522,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
 			# Fetch commit data to retrieve refactoring information
 			temp_commit_data = [commit_hashes[i - 1], commit_hashes[i]] # The commit data [from_commit_hash, to_commit_hash]
-			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[0], temp_commit_data[1], class_name) # Get the refactorings information
+			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1], class_name)
 
 			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
 			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
