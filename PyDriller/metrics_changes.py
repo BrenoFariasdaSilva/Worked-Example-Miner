@@ -1,3 +1,5 @@
+# TODO: Modify the occurrences_counter = row["methodInvocations"] if PROCESS_CLASSES else 0 at line 197 to get the methodInvocationsCounter when CK Jar has it implemented.
+
 import atexit # For playing a sound when the program finishes
 import csv # For reading csv files
 import matplotlib.pyplot as plt # For plotting the graphs
@@ -194,7 +196,7 @@ def get_identifier_and_metrics(row):
 	cbo = float(row["cbo"]) # Get the cbo metric from the row as a float
 	wmc = float(row["wmc"]) # Get the wmc metric from the row as a float
 	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
-	occurrences_counter = int(row["classOccurrences"]) if PROCESS_CLASSES else int(row["methodOccurrences"]) # Get the occurrences_counter metric from the row as an integer
+	occurrences_counter = row["methodInvocations"] if PROCESS_CLASSES else 0 # Get the occurrences_counter metric from the row as an integer
 
 	# Create a tuple containing the metrics
 	metrics = (cbo, wmc, rfc) # The metrics tuple
