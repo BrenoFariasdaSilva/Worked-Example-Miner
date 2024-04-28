@@ -453,7 +453,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          os.chdir(output_directory) # Change working directory to the repository directory
 
          # Run ck metrics for the current commit hash
-         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory}"
+         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory} true"
          run_ck_metrics_generator(cmd) # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
