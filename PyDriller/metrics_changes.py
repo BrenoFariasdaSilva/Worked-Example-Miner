@@ -473,7 +473,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	:param metrics_values: A list containing the metrics values for linear regression
 	:param class_name: The class name of the current linear regression
 	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
-	:param commit_hashes: The commit hashes list for the speficied class_name
+	:param commit_hashes: The commit hashes list for the specified class_name
 	:param occurrences: The occurrences counter of the class_name
 	:param metric_name: The name of the metric
 	:param repository_name: The name of the repository
@@ -507,7 +507,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Occurrences", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
-	commit_data = [0, 0] # The commit data [commit_number, commit_hash]
+	commit_data = ['', '', '', ''] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
 
 	# Loop through the metrics values
 	for i in range(1, len(metrics_values)):
@@ -518,24 +518,24 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		# Calculate the current percentual variation
 		current_percentual_variation = round((metrics_values[i - 1] - metrics_values[i]) / metrics_values[i - 1], 3)
 
-		# If the current percentual variation is bigger than the desired decreased, then update the biggest_change list
+		# If the current percentual variation is bigger than the desired decrease, then update the biggest_change list
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
 			# Fetch commit data to retrieve refactoring information
-			temp_commit_data = [commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1]] # The commit data [commit_number, commit_hash]
+			temp_commit_data = [commit_hashes[i - 1], commit_hashes[i]] # The commit data [from_commit_hash, to_commit_hash]
 			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[0], temp_commit_data[1], class_name) # Get the refactorings information
 
 			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
 			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
 				# Update the biggest_change list and commit data only if the conditions above are met.
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
-				commit_data = temp_commit_data # Update the commit data
+				commit_data = [temp_commit_data[0].split('-')[0], temp_commit_data[0].split('-')[1], temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1]] # Splitting commit hash to get commit number and hash
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
 	if biggest_change[2] > DESIRED_DECREASED:
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
 			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), occurrences, commit_data[0], commit_data[1], refactorings_info["types"], refactorings_info["filePath"]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), occurrences, f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", biggest_change[3], biggest_change[4]])
 	 
 def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, occurrences, raw_variable_attribute, repository_name):
 	"""
