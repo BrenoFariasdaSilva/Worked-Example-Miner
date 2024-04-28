@@ -602,23 +602,23 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 
 ### Metrics Statistics 
 
-   This directory contains the metrics statistics and the substantial changes of the repositories, which are stored in the `metrics_statistics/repository_name` directory. The `repository_name/class_changes.csv` file stores the classes that, in descending order, changed the most times according to the tuple of selected metrics (CBO, WMC and RFC). The `repository_name/substantial_metric_name_classes_changes.csv` file stores the substantial changes of the classes of the repository, which contains the class name, variable attribute, from metric value, to metric value, percentual variation, commit number, commit hash, refactorings types and file path informations. The `repository_name/substantial_metric_name_classes_changes.csv` file stores the substantial changes of the methods of the repository, which contains the method name, variable attribute, from metric value, to metric value, percentual variation, commit number, commit hash, refactorings types and file path informations.
+   This directory contains the metrics statistics and the substantial changes of the repositories, which are stored in the `metrics_statistics/repository_name` directory. The `repository_name/class_changes.csv` file stores the classes that, in descending order, changed the most times according to the tuple of selected metrics (CBO, WMC and RFC). The `repository_name/substantial_metric_name_classes_changes.csv` file stores the substantial changes of the classes of the repository, which contains the class name, variable attribute, from metric value, to metric value, percentual variation, from -> to commit number, from -> to commit hash, refactorings types, and file path information. The `repository_name/substantial_metric_name_methods_changes.csv` file stores the substantial changes of the methods of the repository, which contains the method name, variable attribute, from metric value, to metric value, percentual variation, from -> to commit number, from -> to commit hash, refactorings types, and file path information.
 
    The CSV header of the `class_changes.csv` and `method_changes.csv` files are the following:
 
    ```csv
-   | Class | Type | Changed | CBO Min | CBO Max | CBO Avg | CBO Q3 | WMC Min | WMC Max | WMC Avg | WMC Q3 | RFC Min | RFC Max | RFC Avg | RFC Q3 | First Commit Hash | Last Commit Hash | 
+   | Class | Type | Changed | CBO Min | CBO Max | CBO Avg | CBO Q3 | WMC Min | WMC Max | WMC Avg | WMC Q3 | RFC Min | RFC Max | RFC Avg | RFC Q3 | First Commit Hash | Last Commit Hash |
    ```
 
-   And the lines that comes below the CSV header are the occurrences of the classes the changed the most. The difference between the `class_changes.csv` and `method_changes.csv` files is that the `Type` attribute in the `class_changes.csv` file is the `class name` and the `Type` attribute in the `method_changes.csv` file is the `class_name` and `method name`.
+   And the lines that come below the CSV header are the occurrences of the classes that changed the most. The difference between the `class_changes.csv` and `method_changes.csv` files is that the `Type` attribute in the class_changes.csv file is the class name and the Type attribute in the method_changes.csv file is the `method` name.
 
-   The CSV header of the `substantial_metric_name_classes_changes.csv` and `substantial_metric_name_methods_changes.csv` files are the following:
+   The CSV header of the substantial_metric_name_classes_changes.csv and substantial_metric_name_methods_changes.csv files are the following:
 
    ```csv
-   | Class Name | Variable Attribute | From Metric Value | To Metric Value | Percentual Variation | Commit Number | Commit Hash | Refactorings Types | File Path |
+   | Class Name | Variable Attribute | From Metric Value | To Metric Value | Percentual Variation | From -> To Commit Number | From -> To Commit Hash | Refactorings Types | File Path |
    ```
 
-   And the lines that comes below the CSV header are the occurrences of the substantial changes of the classes or methods of the repository.
+   And the lines that come below the CSV header are the occurrences of the substantial changes of the classes or methods of the repository.
 
 ### Progress Files  
    
