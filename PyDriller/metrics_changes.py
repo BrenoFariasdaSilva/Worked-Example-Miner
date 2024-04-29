@@ -536,7 +536,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 				refactorings_summary = " ".join(f"{filepath}: {types}" for filepath, types in refactorings_info.items())
 
 				# Update the biggest_change list and commit data only if the conditions above are met.
-				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary]
+				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary.replace("'", "")]
 				commit_data = [temp_commit_data[0].split('-')[0], temp_commit_data[0].split('-')[1], temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1]] # Splitting commit hash to get commit number and hash
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
