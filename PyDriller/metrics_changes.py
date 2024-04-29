@@ -508,9 +508,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile) # Create the csv writer
 			if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True, then we're processing the classes
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings"])
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Detected Refactorings"])
 			else: # If the PROCESS_CLASSES constant is set to False, then we're processing the methods
-				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings"])
+				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Detected Refactorings"])
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = ['', '', '', ''] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
@@ -645,16 +645,16 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				writer = csv.writer(csvfile) # Create the csv writer
 				if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 					unique_identifier = class_name # The unique identifier is the class name
-					writer.writerow(["Class", "Commit Hash", "Occurrences", "CBO", "WMC", "RFC"]) # Write the header to the csv file
+					writer.writerow(["Class", "Commit Hash", "CBO", "WMC", "RFC", "Method Invocations"]) # Write the header to the csv file
 				else: # If the PROCESS_CLASSES constant is set to False
 					unique_identifier = variable_attribute # The unique identifier is the method name
-					writer.writerow(["Method", "Commit Hash", "Occurrences", "CBO", "WMC", "RFC"]) # Write the header to the csv file
+					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC", "Occurrences"]) # Write the header to the csv file
 				
 				# Get the len of the metrics list
 				metrics_len = len(metrics)
 				for i in range(metrics_len): # For each metric in the metrics list
 					# Write the unique identifier, the commit hash, and the metrics to the csv file
-					writer.writerow([unique_identifier, record["commit_hashes"][i], record["occurrences"], metrics[i][0], metrics[i][1], metrics[i][2]])
+					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["occurrences"]])
 
 			# Perform linear regression and generate graphics for the metrics
 			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["occurrences"], identifier.split(" ")[1], repository_name)
@@ -692,7 +692,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3) # The third quartile rfc value rounded to 3 decimal places
 
 	# Write the metrics statistics to the csv file
-	csv_writer.writerow([id, key, metrics["changed"], metrics["occurrences"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash])
+	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["occurrences"]])
 
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	"""
@@ -711,10 +711,10 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 		writer = csv.writer(csvfile)	
 		if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 			# Write the header to the csv file but using the "Type" in the second column
-			writer.writerow(["Class", "Type", "Changed", "Occurrences", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
+			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"])
 		else:
 			# Write the header to the csv file but using the "Method" in the second column
-			writer.writerow(["Class", "Method", "Changed", "Occurrences", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash"])
+			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Occurrences"])
 
 		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
 		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
