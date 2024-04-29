@@ -531,8 +531,8 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
 			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
 				# Convert list of refactoring types to a CSV-friendly format (string)
-				refactorings_string = str(refactorings_info["types"]).replace(',', ';')
-				refactoring_file_path_string = str(refactorings_info["filePath"]).replace(',', ';')
+				refactorings_string = str(refactorings_info["types"]).replace(',', ';').replace("'", '')
+				refactoring_file_path_string = str(refactorings_info["filePath"]).replace(',', ';').replace("'", '')
 
 				# Update the biggest_change list and commit data only if the conditions above are met.
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_string, refactoring_file_path_string]
