@@ -504,9 +504,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile) # Create the csv writer
 			if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True, then we're processing the classes
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Occurrences", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings Types", "File Path"])
 			else: # If the PROCESS_CLASSES constant is set to False, then we're processing the methods
-				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Occurrences", "Commit Number", "Commit Hash", "Refactorings Types", "File Path"])
+				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings Types", "File Path"])
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = ['', '', '', ''] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
@@ -528,8 +528,12 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 
 			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
 			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
+				# Convert list of refactoring types to a CSV-friendly format (string)
+				refactorings_string = '"' + str(refactorings_info["types"]).replace('"', '""') + '"'
+				refactoring_file_path_string = '"' + str(refactorings_info["filePath"]).replace('"', '""') + '"'
+
 				# Update the biggest_change list and commit data only if the conditions above are met.
-				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_info["types"], refactorings_info["filePath"]]
+				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_string, refactoring_file_path_string]
 				commit_data = [temp_commit_data[0].split('-')[0], temp_commit_data[0].split('-')[1], temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1]] # Splitting commit hash to get commit number and hash
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
@@ -537,7 +541,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
 			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), occurrences, f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", biggest_change[3], biggest_change[4]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, biggest_change[3], biggest_change[4]])
 	 
 def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, occurrences, raw_variable_attribute, repository_name):
 	"""
