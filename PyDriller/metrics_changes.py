@@ -430,45 +430,47 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 		print(f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
 		return None # Return None
 
-def get_refactorings_info(repository_name, commit_number, commit_hash, class_name):
+def get_refactoring_info(repository_name, commit_number, commit_hash, class_name):
 	"""
-	Gets specific informations about the refactorings of the commit hash and class name from RefactoringMiner.
+	Gets specific information about the refactorings of the commit hash and class name from RefactoringMiner.
 
 	:param repository_name: The name of the repository
 	:param commit_number: The commit number of the current linear regression
 	:param commit_hash: The commit hash of the current linear regression
 	:param class_name: The class name of the current linear regression
-	:return: The dictionary containing the specific informations about the refactorings
+	:return: A dictionary containing the file paths and their corresponding refactoring types
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the specific informations about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the specific information about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	# Get the refactoring file path
-	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # The refactoring file path
+	# Define the refactoring file path
+	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}"
 
-	# If the files does not exist or is empty, generate the refactoring file
+	# Generate the refactoring file if it does not exist or is empty
 	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0:
-		# Call the generate_refactoring_file function to generate the refactoring file
 		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path)
 
-	# Open the refactoring file
+	# Initialize the dictionary to hold file paths and their corresponding refactoring types
+	refactorings_by_filepath = {}
+
+	# Open and read the refactoring file
 	with open(refactoring_file_path, "r") as file:
-		data = json.load(file) # Load the json data
-		refactorings_info = {"types": [],"filePath": []} # The refactorings information dictionary
+		data = json.load(file)  # Load the JSON data
 		# Loop through the refactorings in the data
 		for commit in data["commits"]:
-			if commit["sha1"] == commit_hash: # If the commit hash is equal to the specified commit hash
-				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
-					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Loop through the locations in the refactoring
-						# If the class name is in the file path, then append the refactoring type to the refactorings list
-						class_name = class_name.split("$")[0] # Remove the $ from the class name as it represents an inner class
-						if class_name.replace(".", "/") in location["filePath"]:
-							refactorings_info["types"].append(refactoring["type"]) # Append the refactoring type to the refactorings list
-							if location["filePath"] not in refactorings_info["filePath"]: # If the file path is not in the refactorings_info["filePath"] list
-								refactorings_info["filePath"].append(location["filePath"])
-								verbose_output(true_string=f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
+			if commit["sha1"] == commit_hash:  # Check if the commit hash matches the specified one
+				for refactoring in commit["refactorings"]:  # Loop through the refactorings in the commit
+					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]:  # Combine and loop through both left and right side locations
+						# Check if the class name is in the file path
+						simplified_class_name = class_name.split("$")[0].replace(".", "/")  # Simplify the class name and adapt it to the path format
+						if simplified_class_name in location["filePath"]:
+							# If the file path is already in the dictionary, append the refactoring type to its list
+							if location["filePath"] not in refactorings_by_filepath:
+								refactorings_by_filepath[location["filePath"]] = []
+							refactorings_by_filepath[location["filePath"]].append(refactoring["type"])
+							verbose_output(true_string=f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
 
-		return refactorings_info # Return the refactorings types list
+	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types
 
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name):
 	"""
@@ -485,7 +487,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the class or method has had a substantial decrease in the {BackgroundColors.CYAN}{metric_name}{BackgroundColors.GREEN} metric...{Style.RESET_ALL}")
-	
+
 	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS):
 		return # If any of the class name ignore keywords is found in the class name, return
 
@@ -506,9 +508,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile) # Create the csv writer
 			if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True, then we're processing the classes
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings Types", "File Path"])
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings"])
 			else: # If the PROCESS_CLASSES constant is set to False, then we're processing the methods
-				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings Types", "File Path"])
+				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactorings"])
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = ['', '', '', ''] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
@@ -526,16 +528,15 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
 			# Fetch commit data to retrieve refactoring information
 			temp_commit_data = [commit_hashes[i - 1], commit_hashes[i]] # The commit data [from_commit_hash, to_commit_hash]
-			refactorings_info = get_refactorings_info(repository_name, temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1], class_name)
+			refactorings_info = get_refactoring_info(repository_name, temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1], class_name)
 
 			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
-			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring in refactorings_info["types"]):
-				# Convert list of refactoring types to a CSV-friendly format (string)
-				refactorings_string = str(refactorings_info["types"]).replace(',', ';').replace("'", '')
-				refactoring_file_path_string = str(refactorings_info["filePath"]).replace(',', ';').replace("'", '')
+			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list):
+				# Convert the dictionary of the list of refactoring types for each file path to a string
+				refactorings_summary = " ".join(f"{filepath}: {types}" for filepath, types in refactorings_info.items())
 
 				# Update the biggest_change list and commit data only if the conditions above are met.
-				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_string, refactoring_file_path_string]
+				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary]
 				commit_data = [temp_commit_data[0].split('-')[0], temp_commit_data[0].split('-')[1], temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1]] # Splitting commit hash to get commit number and hash
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
@@ -543,7 +544,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
 			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, biggest_change[3], biggest_change[4]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, biggest_change[3]])
 	 
 def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, occurrences, raw_variable_attribute, repository_name):
 	"""
