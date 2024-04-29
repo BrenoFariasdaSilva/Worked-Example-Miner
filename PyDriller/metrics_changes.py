@@ -17,7 +17,7 @@ from tqdm import tqdm # For progress bar
 # Import from the main.py file
 from code_metrics import BackgroundColors # For coloring the terminal outputs
 from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Importing constants from the code_metrics.py file
-from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, verbose_output, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
+from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, verbose_output, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
 
 # Default values that can be changed:
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
@@ -414,6 +414,8 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # If the refactoring file does not exist
 		# Determine the system's null device to discard output
 		null_device = "NUL" if platform.system() == "Windows" else "/dev/null"
+
+		setup_repository(repository_name, DEFAULT_REPOSITORIES[repository_name])
 		
 		# Run RefactoringMiner to get the refactoring data, hiding its output
 		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c .{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1"
