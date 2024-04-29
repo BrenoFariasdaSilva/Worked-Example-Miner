@@ -508,7 +508,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "w") as csvfile:
 			writer = csv.writer(csvfile) # Create the csv writer
 			if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True, then we're processing the classes
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Detected Refactorings"])
+				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Method Invocations", "Detected Refactorings"])
 			else: # If the PROCESS_CLASSES constant is set to False, then we're processing the methods
 				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Detected Refactorings"])
 

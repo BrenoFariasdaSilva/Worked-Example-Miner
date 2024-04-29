@@ -589,7 +589,7 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    The CSV header of the `class.csv` and `method.csv` files are the following:
 
    ```csv
-   | Class | Commit Hash | CBO | WMC | RFC |
+   | Class | Commit Hash | CBO | WMC | RFC | Method Invocations |
    ```
 
    That's a visual representation of the CSV header of the `class.csv` and `method.csv` files, which contains the metrics evolution of the classes and methods of the repository. The lines that comes below the CSV header are the values of the commit hash and metrics for each class or method of the repository where the class or method was modified.
@@ -607,7 +607,7 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    The CSV header of the `class_changes.csv` and `method_changes.csv` files are the following:
 
    ```csv
-   | Class | Type | Changed | CBO Min | CBO Max | CBO Avg | CBO Q3 | WMC Min | WMC Max | WMC Avg | WMC Q3 | RFC Min | RFC Max | RFC Avg | RFC Q3 | First Commit Hash | Last Commit Hash |
+   | Class | Type | Changed | CBO Min | CBO Max | CBO Avg | CBO Q3 | WMC Min | WMC Max | WMC Avg | WMC Q3 | RFC Min | RFC Max | RFC Avg | RFC Q3 | First Commit Hash | Last Commit Hash | Method Invocations |
    ```
 
    And the lines that come below the CSV header are the occurrences of the classes that changed the most. The difference between the `class_changes.csv` and `method_changes.csv` files is that the `Type` attribute in the class_changes.csv file is the class name and the Type attribute in the method_changes.csv file is the `method` name.
@@ -615,7 +615,7 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
    The CSV header of the substantial_metric_name_classes_changes.csv and substantial_metric_name_methods_changes.csv files are the following:
 
    ```csv
-   | Class Name | Variable Attribute | From Metric Value | To Metric Value | Percentual Variation | From -> To Commit Number | From -> To Commit Hash | Refactorings Types | File Path |
+   | Class Name | Variable Attribute | From Metric Value | To Metric Value | Percentual Variation | From -> To Commit Number | From -> To Commit Hash | Method Invocations | Detected Refactorings |
    ```
 
    And the lines that come below the CSV header are the occurrences of the substantial changes of the classes or methods of the repository.
