@@ -260,7 +260,7 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 			identifier, ck_metrics, occurrences_counter = get_identifier_and_metrics(row)
 
 			# If the identifier is not in the dictionary, then add it
-			if identifier not in metrics_track_record:
+			if identifier not in metrics_track_record.keys():
 				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0, "occurrences": occurrences_counter}
 
 			# Get the metrics_changes list for the method
@@ -273,13 +273,15 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 			commit_hash = commit_number.split("-")[1]
 
 			# Verify if the file in the current row of the file path was actually modified
-			if (commit_hash not in commit_hashes or (ck_metrics not in metrics_changes)) and (was_file_modified(commit_modified_files_dict, commit_hash, row)):
+			if (commit_number not in commit_hashes or (ck_metrics not in metrics_changes)) and (was_file_modified(commit_modified_files_dict, commit_hash, row)):
 				# Append the metrics to the list
 				metrics_changes.append(ck_metrics)
 				# Increment the number of changes
 				metrics_track_record[identifier]["changed"] += 1
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
+				# Update the metrics_track_record dictionary
+				metrics_track_record[identifier]["metrics"] = metrics_changes
 
 def traverse_directory(repository_name, repository_ck_metrics_path):
 	"""
