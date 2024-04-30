@@ -215,13 +215,22 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the file was modified...{Style.RESET_ALL}")
-	
-	# The file_path is the substring that comes after the: FULL_REPOSITORIES_DIRECTORY_PATH/repository_name/
-	file_path = row["file"][row["file"].find(FULL_REPOSITORIES_DIRECTORY_PATH) + len(FULL_REPOSITORIES_DIRECTORY_PATH) + 1:]
-	repository_name = file_path.split("/")[0] # Get the repository name
-	file_path = file_path[len(repository_name) + 1:] # Get the substring that comes after the: repository_name/
-			
+
 	modified_files_paths = commit_modified_files_dict[commit_hash] # Get the modified files list for the specified commit hash
+
+	if not modified_files_paths: # If the modified files paths list is empty
+		return False # Return False
+	
+	file_path = row["file"] # Get the file path from the row
+
+	# Calculate the file path starting after the specified directory
+	path_index = file_path.find(RELATIVE_REPOSITORIES_DIRECTORY_PATH)
+
+	if path_index != -1:
+		file_path = file_path[path_index + len(RELATIVE_REPOSITORIES_DIRECTORY_PATH) + 1:]
+	
+	repository_name = file_path.split("/")[0] # Get the repository name
+	file_path = file_path[len(repository_name) + 1:] # Get the file path starting after the repository name
 
 	for modified_file_path in modified_files_paths: # Iterate through the modified files paths
 		# If the modified file path is equal to the file path, then the file was modified
