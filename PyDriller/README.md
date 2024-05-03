@@ -120,6 +120,7 @@ Great, you now have python3 and pip installed. Now, we need to install the proje
 
 This project depends on the following libraries:
 
+- [Git](https://git-scm.com/) -> Git is used to clone the repositories and do operations in the repositories, such as switching branches, so it is a critical dependency for the code execution. As the installation process varies depending on the operating system, please refer to the official Git documentation for detailed instructions on how to install it on your machine. You can probably install it using the package manager of your operating system, like `sudo apt install git -y` in Linux, `brew install git` in MacOS and `choco install git` in Windows.
 - [PyDriller](https://pydriller.readthedocs.io/en/latest/) -> PyDriller is the core of this project, as it is used to traverse the commits tree of the repositories and get many informations about it, like the commit hash, commit message, commit date and many other things.
 - [MatPlotLib](https://matplotlib.org/) -> MatPlotLib is used to generate the graphics of the metrics evolution and the linear prediction.
 - [NumPy](https://numpy.org/) -> NumPy is used to generate the linear prediction of the linear regression and to many operations in the list of the metrics.
