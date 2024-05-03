@@ -108,6 +108,22 @@ def init_and_update_submodules():
       return False # Return False if the Git submodules could not be initialized and updated
    return True # Return True if the Git submodules were initialized and updated successfully
 
+def verify_git():
+   """
+   Verify if Git is installed.
+
+   :return: True if Git is installed, False otherwise.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if Git is installed...{Style.RESET_ALL}")
+
+   try:
+      subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   except subprocess.CalledProcessError as e:
+      print(f"{BackgroundColors.RED}An error occurred while verifying if Git is installed: {BackgroundColors.YELLOW}{e}{BackgroundColors.RED}. Please install Git!{Style.RESET_ALL}")
+      return False # Return False if Git is not installed
+   return True # Return True if Git is installed
+
 def switch_ck_branch():
    """
    Ensure that the 'ck' repository is on the correct branch as defined by CK_BRANCH.
@@ -615,6 +631,10 @@ def main():
    if path_contains_whitespaces():
       print(f"{BackgroundColors.RED}The {START_PATH} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return # Return if the path constants contains whitespaces
+   
+   # Verify if Git is installed
+   if not verify_git():
+      return # Return if Git is not installed
    
    # Verify if the CK JAR file exists
    if not os.path.exists(RELATIVE_CK_JAR_PATH):
