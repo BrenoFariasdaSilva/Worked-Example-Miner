@@ -142,6 +142,8 @@ def ensure_ck_jar_exists():
    :return: True if the CK JAR file was found in the target directory, False otherwise.
    """
 
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Ensuring that the CK JAR file exists in the target directory...{Style.RESET_ALL}")
+
    # Initialize and update Git submodules
    if not init_and_update_submodules():
       return # Return if the Git submodules could not be initialized and updated
