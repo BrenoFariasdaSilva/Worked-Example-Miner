@@ -498,9 +498,9 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 
 	# Converts the nested dictionary into a formatted string with the file paths and their corresponding refactoring types and occurrences
 	refactorings_summary = " ".join(
-		f"{filepath}: [{'; '.join(f'{refactoring_type} ({occurrences})' for refactoring_type, occurrences in types.items())}]"
-		for filepath, types in refactorings_info.items()
-	)
+        f"{filepath}: [{' '.join(f'{refactoring_type}({occurrences})' for refactoring_type, occurrences in sorted(types.items(), key=lambda item: item[1], reverse=True))}]"
+        for filepath, types in refactorings_info.items()
+    )
 
 	return refactorings_summary # Return the formatted string containing the refactorings information
 
