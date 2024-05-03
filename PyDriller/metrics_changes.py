@@ -449,7 +449,7 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 	:param commit_number: The commit number of the current linear regression
 	:param commit_hash: The commit hash of the current linear regression
 	:param class_name: The class name of the current linear regression
-	:return: A dictionary containing the file paths and their corresponding refactoring types
+	:return: A dictionary containing the file paths and their corresponding refactoring types and occurrences
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the specific information about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
@@ -466,22 +466,25 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 
 	# Open and read the refactoring file
 	with open(refactoring_file_path, "r") as file:
-		data = json.load(file)  # Load the JSON data
+		data = json.load(file) # Load the JSON data
 		# Loop through the refactorings in the data
 		for commit in data["commits"]:
-			if commit["sha1"] == commit_hash:  # Check if the commit hash matches the specified one
-				for refactoring in commit["refactorings"]:  # Loop through the refactorings in the commit
-					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]:  # Combine and loop through both left and right side locations
+			if commit["sha1"] == commit_hash: # Check if the commit hash matches the specified one
+				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
+					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Combine and loop through both left and right side locations
 						# Check if the class name is in the file path
-						simplified_class_name = class_name.split("$")[0].replace(".", "/")  # Simplify the class name and adapt it to the path format
+						simplified_class_name = class_name.split("$")[0].replace(".", "/") # Simplify the class name and adapt it to the path format
 						if simplified_class_name in location["filePath"]:
 							# If the file path is already in the dictionary, append the refactoring type to its list
 							if location["filePath"] not in refactorings_by_filepath:
-								refactorings_by_filepath[location["filePath"]] = []
-							refactorings_by_filepath[location["filePath"]].append(refactoring["type"])
-							verbose_output(true_string=f"{BackgroundColors.YELLOW}Refactoring: {json.dumps(refactoring, indent=4)}{Style.RESET_ALL}")
+								refactorings_by_filepath[location["filePath"]] = {} # Initialize the dictionary for the file path
+							refactoring_type = refactoring["type"] # Get the refactoring type
+							if refactoring_type not in refactorings_by_filepath[location["filePath"]]: # If the refactoring type is not in the dictionary, add it
+								refactorings_by_filepath[location["filePath"]][refactoring_type] = 0 # Initialize the refactoring type counter
+							refactorings_by_filepath[location["filePath"]][refactoring_type] += 1 # Increment the refactoring type counter
+							verbose_output(true_string=f"Refactoring: {json.dumps(refactoring, indent=4)}")
 
-	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types
+	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types and occurrences
 
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name):
 	"""
