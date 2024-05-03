@@ -120,7 +120,7 @@ def ensure_ck_jar_exists():
 
    # Verify if the jar exists in the ck directory
    if os.path.exists(RELATIVE_CK_JAR_PATH):
-      print(f"{BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH.split('/')[-1]}{BackgroundColors.GREEN} already exists in {BackgroundColors.CYAN}{RELATIVE_CK_JAR_PATH[:RELATIVE_CK_JAR_PATH.rfind('/')]}{Style.RESET_ALL}")
+      return True # Return True if the CK JAR file was found in the target directory
    
    # If not, run "mvn clean package -DskipTests" in the ck directory to generate the jar file
    makefile_dir = os.path.abspath("../ck")
