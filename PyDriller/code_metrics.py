@@ -108,10 +108,10 @@ def init_and_update_submodules():
       return False # Return False if the Git submodules could not be initialized and updated
    return True # Return True if the Git submodules were initialized and updated successfully
 
-def verify_and_set_ck_branch():
+def switch_ck_branch():
    """
    Ensure that the 'ck' repository is on the correct branch as defined by CK_BRANCH.
-   If CK_BRANCH does not exist, revert to 'master' branch.
+   If CK_BRANCH does not exist, revert to the branch defined in the standard_branch variable.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying and setting the CK branch...{Style.RESET_ALL}")
@@ -123,17 +123,17 @@ def verify_and_set_ck_branch():
    current_branch = result.stdout.strip()
    
    if current_branch == CK_BRANCH:
-      return True
+      return True # Return True if the current branch is the CK branch
    
    # Check if CK_BRANCH exists and switch to it
    result = subprocess.run(["git", "checkout", CK_BRANCH], capture_output=True, text=True)
    if result.returncode == 0:
       verbose_output(true_string=f"{BackgroundColors.GREEN}The CK branch {BackgroundColors.CYAN}{CK_BRANCH}{BackgroundColors.GREEN} exists and was successfully checked out.{Style.RESET_ALL}")
-      return True
+      return True # Return True if the CK branch exists and was successfully checked out
    else:
       print(f"{BackgroundColors.YELLOW}The CK branch {BackgroundColors.CYAN}{CK_BRANCH}{BackgroundColors.YELLOW} doesn't exist. Reverting to {BackgroundColors.CYAN}{standard_branch}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
       subprocess.run(["git", "checkout", standard_branch], check=True)
-      return False
+      return False # Return False if the CK branch does not exist
 
 def ensure_ck_jar_exists():
    """
@@ -146,8 +146,7 @@ def ensure_ck_jar_exists():
    if not init_and_update_submodules():
       return # Return if the Git submodules could not be initialized and updated
    
-   # Verify and set the CK branch
-   verify_and_set_ck_branch()
+   switch_ck_branch() # Switch to the desired CK branch if it exists
 
    # Verify if the jar exists in the ck directory
    if os.path.exists(RELATIVE_CK_JAR_PATH):
