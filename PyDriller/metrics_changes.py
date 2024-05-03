@@ -486,6 +486,24 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 
 	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types and occurrences
 
+def convert_refactorings_dictionary_to_string(refactorings_info):
+	"""
+	Converts the refactorings dictionary into a string.
+
+	:param refactorings_info: A dictionary containing the file paths and their corresponding refactoring types and occurrences
+	:return: A formatted string containing the refactorings information
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Formatting the refactorings summary...{Style.RESET_ALL}")
+
+	# Converts the nested dictionary into a formatted string with the file paths and their corresponding refactoring types and occurrences
+	refactorings_summary = " ".join(
+		f"{filepath}: [{'; '.join(f'{refactoring_type} ({occurrences})' for refactoring_type, occurrences in types.items())}]"
+		for filepath, types in refactorings_info.items()
+	)
+
+	return refactorings_summary # Return the formatted string containing the refactorings information
+
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric.
@@ -546,8 +564,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 
 			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
 			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list):
-				# Convert the dictionary of the list of refactoring types for each file path to a string
-				refactorings_summary = " ".join(f"{filepath}: {types}" for filepath, types in refactorings_info.items())
+				refactorings_summary = convert_refactorings_dictionary_to_string(refactorings_info) # Convert the refactorings dictionary into a string
 
 				# Update the biggest_change list and commit data only if the conditions above are met.
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary.replace("'", "")]
