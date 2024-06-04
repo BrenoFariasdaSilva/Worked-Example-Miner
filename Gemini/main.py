@@ -150,6 +150,14 @@ def print_output(output):
 	
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Response:{BackgroundColors.GREEN}\n{output.text}{Style.RESET_ALL}", end="\n") # Output the output
 
+def write_output_to_file(output, file_path=OUTPUT_FILE):
+	"""
+	Writes the chat output to a specified file.
+	"""
+
+	with open(file_path, "w") as file: # Open the file in write mode
+		file.write(output) # Write the output to the file
+
 def main():
 	"""
 	Main function.
