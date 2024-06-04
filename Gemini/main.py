@@ -117,6 +117,24 @@ def load_csv_file(file_path):
 	filtered_data = df[DESIRED_HEADER].to_string(index=False) # Filter the data and convert it to a string
 	return filtered_data # Return the filtered data
 
+def start_chat_session(model, initial_user_message):
+	"""
+	Start a chat session with the model.
+	"""
+
+	chat_session = model.start_chat(
+		history=[
+			{
+				"role": "user",
+				"parts": [
+					initial_user_message,
+				],
+			}
+		]
+	)
+
+	return chat_session # Return the chat session
+
 def main():
 	"""
 	Main function.
