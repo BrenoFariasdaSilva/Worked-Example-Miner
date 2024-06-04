@@ -95,6 +95,28 @@ def configure_model(api_key):
 
 	return model # Return the model
 
+def load_csv_file(file_path):
+	"""
+	Load and filter the CSV file by "Class" and "Method Invocations" fields.
+	:param file_path: Path to the CSV file.
+	:return: Filtered data as a string.
+	"""
+
+	if not os.path.exists(file_path):
+		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CSV file{BackgroundColors.RED} not found at {BackgroundColors.CYAN}{file_path}{Style.RESET_ALL}")
+		sys.exit(1) # Exit the program
+
+	df = pd.read_csv(file_path) # Load the CSV file
+
+	missing_columns = [col for col in DESIRED_HEADER if col not in df.columns] # Get the missing columns
+	if missing_columns: # If there are missing columns
+		print(f"{BackgroundColors.RED}The CSV file must contain {BackgroundColors.CYAN}{', '.join(missing_columns)}{BackgroundColors.RED} columns.{Style.RESET_ALL}")
+		sys.exit(1) # Exit the program
+
+	# Filter the data
+	filtered_data = df[DESIRED_HEADER].to_string(index=False) # Filter the data and convert it to a string
+	return filtered_data # Return the filtered data
+
 def main():
 	"""
 	Main function.
