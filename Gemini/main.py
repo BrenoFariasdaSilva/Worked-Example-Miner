@@ -71,6 +71,30 @@ def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
 
 	return api_key # Return the value of the key
 
+def configure_model(api_key):
+	"""
+	Configure the generative AI model.
+	"""
+
+	genai.configure(api_key=api_key) # Configure the Google AI Python SDK
+
+	# Generation configuration
+	generation_config = {
+		"temperature": 1, # Controls the randomness of the output. Values can range from [0.0, 2.0].
+		"top_p": 0.95, # Optional. The maximum cumulative probability of tokens to consider when sampling.
+		"top_k": 64, # Optional. The maximum number of tokens to consider when sampling.
+		"max_output_tokens": 8192, # Set the maximum number of output tokens
+		"output_mime_type": "text/plain", # Optional. Output output mimetype of the generated candidate text. Supported mimetype: text/plain: (default) Text output. application/json: JSON output in the candidates.
+	}
+
+	# Create the model
+	model = genai.GenerativeModel(
+		model_name="gemini-1.5-flash", # Set the model name
+		generation_config=generation_config, # Set the generation configuration
+	)
+
+	return model # Return the model
+
 def main():
 	"""
 	Main function.
