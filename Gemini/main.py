@@ -135,6 +135,14 @@ def start_chat_session(model, initial_user_message):
 
 	return chat_session # Return the chat session
 
+def send_message(chat_session, user_message):
+	"""
+	Send a message in the chat session and get the output.
+	"""
+
+	output = chat_session.send_message(user_message) # Send the message
+	return output # Return the output
+
 def main():
 	"""
 	Main function.
