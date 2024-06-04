@@ -166,6 +166,34 @@ def main():
 
 	print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Google Gemini API Integration{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the Welcome message
 
+	# Verify .env file and load API key
+	api_key = verify_env_file(ENV_PATH, ENV_VARIABLE)
+
+	# Configure the model
+	model = configure_model(api_key)
+
+	# Load and filter the CSV file
+	csv_data = load_csv_file(JSON_INPUT_FILE)
+
+	# Start chat session and send message
+	start_message = f"""
+	Hi, Gemini. I will provide you a CSV file containing the following header:
+	'Class' field, which is the name of the corresponding class;
+	'Method Invocations' field, which is a list following the format: 'method_name of the current class[ invoked_method_name():number_of_invocations ... ]';
+	
+	With that in mind, i want you to analyze each line of the CSV and try to relate the terms of the method invocations with topics of Distributed Systems education.
+	Here is the CSV data:
+	{csv_data}
+	"""
+
+	# Start chat session with initial start message
+	chat_session = start_chat_session(model, start_message)
+
+	output = send_message(chat_session, "Please analyze the provided data.") # Send the message
+
+	print_output(output) # Print the output and the token count
+
+	write_output_to_file(output.text, OUTPUT_FILE) # Write the output to a file
 
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
