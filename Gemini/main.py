@@ -21,6 +21,17 @@ class BackgroundColors: # Colors for the terminal
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
 SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound file
 
+# .Env Constants:
+ENV_PATH = "../.env" # The path to the .env file
+ENV_VARIABLE = "GEMINI_API_KEY" # The environment variable to load
+
+# File Path Constants:
+JSON_INPUT_FILE = "../PyDriller/metrics_statistics/zookeeper/substantial_CBO_classes_changes.csv" # The path to the input JSON file
+OUTPUT_FILE = "./output.txt" # The path to the output file
+
+# Header Constants:
+DESIRED_HEADER = ["Class", "Method Invocations"] # The desired header of the CSV file
+
 def play_sound():
 	"""
 	Plays a sound when the program finishes.
