@@ -148,15 +148,19 @@ def print_output(output):
 	Print the output text and the token count.
 	"""
 	
-	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Response:{BackgroundColors.GREEN}\n{output.text}{Style.RESET_ALL}", end="\n") # Output the output
+	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Output:{BackgroundColors.GREEN}\n{output.text}{Style.RESET_ALL}", end="\n") # Output the output
 
 def write_output_to_file(output, file_path=OUTPUT_FILE):
 	"""
 	Writes the chat output to a specified file.
 	"""
 
-	with open(file_path, "w") as file: # Open the file in write mode
-		file.write(output) # Write the output to the file
+	with open(file_path, "w") as file:
+		# Verify if output has a "text" attribute and write it to the file
+		if hasattr(output, "text"):
+			file.write(output.text)
+		else:
+			file.write(str(output)) # Convert the output to a string and write it to the file
 
 def main():
 	"""
@@ -193,7 +197,7 @@ def main():
 
 	print_output(output) # Print the output and the token count
 
-	write_output_to_file(output.text, OUTPUT_FILE) # Write the output to a file
+	write_output_to_file(output, OUTPUT_FILE) # Write the output to a file
 
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
