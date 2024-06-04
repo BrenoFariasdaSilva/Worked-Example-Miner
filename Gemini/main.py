@@ -84,7 +84,6 @@ def configure_model(api_key):
 		"top_p": 0.95, # Optional. The maximum cumulative probability of tokens to consider when sampling.
 		"top_k": 64, # Optional. The maximum number of tokens to consider when sampling.
 		"max_output_tokens": 8192, # Set the maximum number of output tokens
-		"output_mime_type": "text/plain", # Optional. Output output mimetype of the generated candidate text. Supported mimetype: text/plain: (default) Text output. application/json: JSON output in the candidates.
 	}
 
 	# Create the model
