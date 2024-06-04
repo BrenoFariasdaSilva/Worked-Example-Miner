@@ -212,3 +212,6 @@ Jabref/.github/*
 *.7z
 *.tar.gz
 *.zip
+
+# Ignore the .env file
+.env
