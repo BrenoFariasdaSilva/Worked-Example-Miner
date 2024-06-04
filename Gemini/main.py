@@ -143,6 +143,13 @@ def send_message(chat_session, user_message):
 	output = chat_session.send_message(user_message) # Send the message
 	return output # Return the output
 
+def print_output(output):
+	"""
+	Print the output text and the token count.
+	"""
+	
+	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Response:{BackgroundColors.GREEN}\n{output.text}{Style.RESET_ALL}", end="\n") # Output the output
+
 def main():
 	"""
 	Main function.
