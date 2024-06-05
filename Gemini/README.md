@@ -1,6 +1,6 @@
 <div align="center">
 
-# [Google Gemini API.](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/tree/main/Gemini)  <img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg"  width="3%" height="3%">
+# [Google Gemini.](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/tree/main/Gemini)  <img src="https://github.com/devicons/devicon/blob/master/icons/python/python-original.svg"  width="3%" height="3%">
 
 </div>
 
@@ -8,14 +8,13 @@
   
 ---
 
-Welcome to the Google Gemini directory, in which you will find the script used to interact with the Google Gemini API in order to help analyze the good candidatessin order to generate a worked example for the classes of Software Engineering courses, as this is the main goals of this project.
- The scripts that are located in this directory are part of the [Worked-Example-Miner (WEM)](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) Tool.
+Welcome to the Google Gemini API integration directory, in which you will find the script used to interact with the Google Gemini API in order to help analyze the good candidates in order to generate a worked example for the classes of Software Engineering courses, as this is the main goals of this project. The scripts that are located in this directory are part of the [Worked-Example-Miner (WEM)](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) Tool.
 
 ---
 
 </div>
 
-- [Google Gemini API.  ](#google-gemini-api--)
+- [Google Gemini.  ](#google-gemini--)
   - [Important Notes](#important-notes)
   - [Setup](#setup)
     - [Python and Pip](#python-and-pip)
