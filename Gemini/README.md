@@ -24,7 +24,7 @@ Welcome to the Google Gemini API integration directory, in which you will find t
     - [Requirements](#requirements)
     - [Cleaning Up](#cleaning-up)
   - [How to use](#how-to-use)
-    - [Code\_Metrics](#code_metrics)
+    - [gemini\_script](#gemini_script)
       - [Configuration](#configuration)
       - [Run](#run)
       - [Workflow](#workflow)
@@ -38,9 +38,6 @@ Welcome to the Google Gemini API integration directory, in which you will find t
 - Make sure you don't have whitespaces in the path of the project, otherwise it will not work.
 - To enhance the readability of the code, please note that the files adhere to a Bottom-Up approach in function ordering. This means that each function is defined above the function that calls it.
 - All of the Scripts have a `Makefile`that handles virtual environment creation, dependencies installation and script execution. You can run the scripts by using the `make` command, as shown in the `How to use` section.
-- All of the Scripts usually output an estimated time of the script execution, based on things like the number of commits of the repository, the number of classes or methods to be analyzed, etc. But this is just an estimate, the actual time does vary a lot depending on the machine you're using, on what is running on the machine, and many other factors.
-- The execution of this scripts will take a long time and store a lot of data, so make sure you have enough space in your disk and be patient. Example: Running all the scrips only for `Apache Kafka` generates a total of 115 GB of data.
-- Why is `metrics_changes.py` isn't fully parallelized? Because, for example, for running for `Apache Kafka` it uses so much CPU and RAM that it crashed in my Ryzen 7 3800X with 32GB of RAM and there is also a lot of I/O to the disk. I tried creating a thread for process each repository, just like i did for `code_metrics.py`, but most of the times it just crashes after a minute running. Talking about the `code_metrics.py`, the most performance i could take from it was, as said, to create a thread to process each repository, therefore it isn't possible to parallelize inside the processing of the repository, as the result of the iteration number `x` depends on the result since the `first iteration until x-1`. If you want to parallelize something in order to improve performance, feel free to do it, i'll be glad aproving your pull request. Also, if the `code_metrics.py` crashes in the middle of the execution, you can just run it again, as it will verify if the ck metrics are already calculated and where it stopped, so it will continue from where it stopped.
 
 ## Setup
 
@@ -83,13 +80,9 @@ Great, you now have python3 and pip installed. Now, we need to install the proje
 
 This project depends on the following libraries:
 
-- [Git](https://git-scm.com/) -> Git is used to clone the repositories and do operations in the repositories, such as switching branches, so it is a critical dependency for the code execution. As the installation process varies depending on the operating system, please refer to the official Git documentation for detailed instructions on how to install it on your machine. You can probably install it using the package manager of your operating system, like `sudo apt install git -y` in Linux, `brew install git` in MacOS and `choco install git` in Windows.
-- [Gemini](https://Gemini.readthedocs.io/en/latest/) -> Gemini is the core of this project, as it is used to traverse the commits tree of the repositories and get many informations about it, like the commit hash, commit message, commit date and many other things.
-- [MatPlotLib](https://matplotlib.org/) -> MatPlotLib is used to generate the graphics of the metrics evolution and the linear prediction.
-- [NumPy](https://numpy.org/) -> NumPy is used to generate the linear prediction of the linear regression and to many operations in the list of the metrics.
-- [Pandas](https://pandas.pydata.org/) -> Pandas is used maintly to read and write the csv files.
-- [SciKit-Learn](https://scikit-learn.org/stable/) -> SciKit-Learn is used to generate the linear prediction of the linear regression.
-- [TQDM](https://tqdm.github.io/) -> TQDM is used to show the progress bar of the scripts.
+- [Gemini GenAI](https://pypi.org/project/google-generativeai/) -> Gemini is the core of this project. It analyzes good candidates to generate worked examples for Software Engineering course classes.
+- [Pandas](https://pandas.pydata.org/) -> Pandas is used primarily to read and write CSV files.
+- [Python dotenv Module](https://pypi.org/project/python-dotenv/) -> The dotenv module is used for loading environment variables from .env files in order to read the Google Gemini API Key.
 
 Futhermore, this project requires a virtual environment to ensure all dependencies are installed and managed in an isolated manner. A virtual environment is a self-contained directory tree that contains a Python installation for a particular version of Python, plus a number of additional packages. Using a virtual environment helps avoid conflicts between project dependencies and system-wide Python packages. 
 
@@ -99,10 +92,10 @@ Follow these steps to prepare your environment:
 
 1. **Create and Activate the Virtual Environment:** 
    
-   The project uses a `makefile` to streamline the creation and activation of a virtual environment named `venv`. This environment is where all required packages, such as `matplotlib`, `numpy`, `pandas`, `Gemini`, `scikit-learn` and `tqdm`, will be installed.
+   The project uses a `makefile` to streamline the creation and activation of a virtual environment named `venv`. This environment is where all required packages, such as `dotEnv`, `Gemini` and `pandas` will be installed.
 This will also be handled by the `Makefile` during the dependencies installation process, so no command must be executed in order to create the virtual environment.
 
-2. **Install Dependencies:** 
+1. **Install Dependencies:** 
    
    Run the following command to set up the virtual environment and install all necessary dependencies on it:
 
@@ -120,17 +113,17 @@ This will also be handled by the `Makefile` during the dependencies installation
       source venv/bin/activate
       ```
 
-1. **Running Scripts:**
+2. **Running Scripts:**
    
-   The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `code_metrics.py` file, use:
+   The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `gemini_script.py` file, use:
 
    ```
-   make code_metrics_script
+   make gemini_script
    ```
 
    This ensures that the script runs using the Python interpreter and packages installed in the `venv` directory.
 
-2. **Generate the requirements.txt file:**
+3. **Generate the requirements.txt file:**
 
    If you changed the project dependencies and want to update the `requirements.txt` file, you can run the following command:
 
@@ -156,7 +149,7 @@ By following these instructions, you'll ensure that all project dependencies are
 
 In order to use the makefile rules, you must be in the `Gemini/` directory.
 
-### Code_Metrics
+### gemini_script
 
 This script is used to generate the ck metrics, commit diff files and commit hashes list of the repositories specified in the `DEFAULT_REPOSITORIES` dictionary. It is really usefull to generate the data that will be used in the `metrics_changes.py` script.
 
@@ -165,7 +158,7 @@ This script is used to generate the ck metrics, commit diff files and commit has
 In order to run this code as you want, you must modify the following constants:
 
 1. `VERBOSE`: If you want to see the progress bar and the print statements, you must set the `VERBOSE` constant to `True`. If not, then a more clean output will be shown, with only the progress bar of the script execution, which is the default value of the `VERBOSE` constant.
-2. `DEFAULT_REPOSITORIES` dictionary in the `code_metrics.py` file, in which you must specify the repository name and the repository url. As this and the `metrics_changes.py` python files, they are responsible for generating the data and metadata of this tool, so, in a first run, select a very small Java repository just to see how it works and get a good idea of the data generated by the tool. As a suggestion, define the constant as follows:
+2. `DEFAULT_REPOSITORIES` dictionary in the `gemini_script.py` file, in which you must specify the repository name and the repository url. As this and the `metrics_changes.py` python files, they are responsible for generating the data and metadata of this tool, so, in a first run, select a very small Java repository just to see how it works and get a good idea of the data generated by the tool. As a suggestion, define the constant as follows:
    
    ```python
    DEFAULT_REPOSITORIES = {"MacOS-Calculator-Clone": "https://github.com/muhammadbadrul1234/MacOS-Calculator-Clone"}
@@ -177,10 +170,10 @@ In order to run this code as you want, you must modify the following constants:
 
 #### Run
 
-Now that you have set the constants, you can run the following command to execute the `code_metrics.py` file:
+Now that you have set the constants, you can run the following command to execute the `gemini_script.py` file:
 
 ```
-make code_metrics_script
+make gemini_script
 ```
 
 #### Workflow
@@ -218,7 +211,7 @@ make code_metrics_script
     
 11. Now that we have the list of tuples containing the commit hashes, commit message and commit date for each commit, we must store those values in the `CK_METRICS_DIRECTORY_PATH/repository_name-commits_list.csv` file by calling the `write_commits_information_to_csv` function.
 12. And lastly, we must call `checkout_branch` function passing the `main` branch as parameter, in order to return to the main branch of the repository.
-13. After everything is done, the `code_metrics.py` script will be done and play a sound to notify you that the script has finished.
+13. After everything is done, the `gemini_script.py` script will be done and play a sound to notify you that the script has finished.
 
 ## Generated Data
 
