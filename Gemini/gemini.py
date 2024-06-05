@@ -26,7 +26,7 @@ ENV_PATH = "../.env" # The path to the .env file
 ENV_VARIABLE = "GEMINI_API_KEY" # The environment variable to load
 
 # File Path Constants:
-JSON_INPUT_FILE = "../PyDriller/metrics_statistics/zookeeper/substantial_CBO_classes_changes.csv" # The path to the input JSON file
+CSV_INPUT_FILE = "../PyDriller/metrics_statistics/zookeeper/substantial_CBO_classes_changes.csv" # The path to the input JSON file
 OUTPUT_FILE = "./output.txt" # The path to the output file
 
 # Header Constants:
@@ -176,7 +176,7 @@ def main():
 	model = configure_model(api_key)
 
 	# Load and filter the CSV file
-	csv_data = load_csv_file(JSON_INPUT_FILE)
+	csv_data = load_csv_file(CSV_INPUT_FILE)
 
 	# Start chat session and send message
 	start_message = f"""
