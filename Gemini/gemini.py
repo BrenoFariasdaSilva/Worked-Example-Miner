@@ -21,6 +21,9 @@ class BackgroundColors: # Colors for the terminal
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
 SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound file
 
+# Execution Constants:
+VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
+
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
 ENV_VARIABLE = "GEMINI_API_KEY" # The environment variable to load
@@ -48,6 +51,20 @@ def play_sound():
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
+def verbose_output(true_string="", false_string=""):
+   """
+   Outputs a message if the VERBOSE constant is set to True.
+
+   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
+   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
+   :return: None
+   """
+
+   if VERBOSE and true_string != "": # If the VERBOSE constant is set to True and the true_string is set
+      print(true_string) # Output the true statement string
+   elif false_string != "":
+      print(false_string) # Output the false statement string
+
 def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
 	"""
 	Verify if the .env file exists and if the desired key is present.
@@ -55,6 +72,8 @@ def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
 	:param key: The key to get in the .env file.
 	:return: The value of the key if it exists.
 	"""
+ 
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying the .env file...{Style.RESET_ALL}")
 
 	# Verify if the .env file exists
 	if not os.path.exists(env_path):
@@ -75,6 +94,8 @@ def configure_model(api_key):
 	"""
 	Configure the generative AI model.
 	"""
+ 
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Configuring the Gemini Model...{Style.RESET_ALL}")
 
 	genai.configure(api_key=api_key) # Configure the Google AI Python SDK
 
@@ -100,6 +121,8 @@ def load_csv_file(file_path):
 	:param file_path: Path to the CSV file.
 	:return: Filtered data as a string.
 	"""
+ 
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Loading the CSV file...{Style.RESET_ALL}")
 
 	if not os.path.exists(file_path):
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CSV file{BackgroundColors.RED} not found at {BackgroundColors.CYAN}{file_path}{Style.RESET_ALL}")
@@ -120,6 +143,8 @@ def start_chat_session(model, initial_user_message):
 	"""
 	Start a chat session with the model.
 	"""
+ 
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Starting the chat session...{Style.RESET_ALL}")
 
 	chat_session = model.start_chat(
 		history=[
@@ -138,13 +163,15 @@ def send_message(chat_session, user_message):
 	"""
 	Send a message in the chat session and get the output.
 	"""
+ 
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Sending the message...{Style.RESET_ALL}")
 
 	output = chat_session.send_message(user_message) # Send the message
 	return output # Return the output
 
 def print_output(output):
 	"""
-	Print the output text and the token count.
+	Print the output text.
 	"""
 	
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Output:{BackgroundColors.GREEN}\n{output.text}{Style.RESET_ALL}", end="\n") # Output the output
@@ -153,6 +180,8 @@ def write_output_to_file(output, file_path=OUTPUT_FILE):
 	"""
 	Writes the chat output to a specified file.
 	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the output to the file...{Style.RESET_ALL}")
 
 	with open(file_path, "w") as file:
 		# Verify if output has a "text" attribute and write it to the file
@@ -194,7 +223,8 @@ def main():
 
 	output = send_message(chat_session, "Please analyze the provided data.") # Send the message
 
-	print_output(output) # Print the output and the token count
+	if VERBOSE: # If the VERBOSE constant is set to True
+		print_output(output) # Print the output
 
 	write_output_to_file(output, OUTPUT_FILE) # Write the output to a file
 
