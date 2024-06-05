@@ -115,7 +115,7 @@ This will also be handled by the `Makefile` during the dependencies installation
 
 2. **Running Scripts:**
    
-   The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `gemini_script.py` file, use:
+   The `makefile` also defines commands to run every script with the virtual environment's Python interpreter. For example, to run the `gemini.py` file, use:
 
    ```
    make gemini_script
@@ -164,7 +164,7 @@ In order to run this code as you want, you must modify the following constants:
 
 #### Run
 
-Now that you have set the constants, you can run the following command to execute the `gemini_script.py` file:
+Now that you have set the constants, you can run the following command to execute the `gemini.py` file:
 
 ```
 make gemini_script
