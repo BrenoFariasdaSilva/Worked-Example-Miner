@@ -6,8 +6,8 @@ PIP := $(VENV)/bin/pip
 # Activate the virtual environment: source venv/bin/activate
 
 # Main Scripts:
-main_script: $(VENV)
-	clear; time $(PYTHON) ./main.py
+gemini_script: $(VENV)
+	clear; time $(PYTHON) ./gemini.py
 
 # Setup Virtual Environment and Install Dependencies
 $(VENV): dependencies
@@ -27,4 +27,4 @@ clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: main_script clean dependencies generate_requirements
+.PHONY: gemini_script clean dependencies generate_requirements
