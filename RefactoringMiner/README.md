@@ -91,7 +91,7 @@ Great, you now have python3 and pip installed. Now, we need to install the proje
 This project depends on the following libraries:
 
 - [NumPy](https://numpy.org/) -> NumPy is used to generate the linear prediction of the linear regression and to many operations in the list of the metrics.
-- [Pandas](https://pandas.pydata.org/) -> Pandas is used maintly to read and write the csv files.
+- [Pandas](https://pandas.pydata.org/) -> Pandas is used mainly to read and write the csv files.
 - [PyDriller](https://pydriller.readthedocs.io/en/latest/) -> PyDriller is used to get the number of commits of the repositories.
 - [TQDM](https://tqdm.github.io/) -> TQDM is used to show the progress bar of the scripts.
 

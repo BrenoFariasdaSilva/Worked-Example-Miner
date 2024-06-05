@@ -124,7 +124,7 @@ This project depends on the following libraries:
 - [PyDriller](https://pydriller.readthedocs.io/en/latest/) -> PyDriller is the core of this project, as it is used to traverse the commits tree of the repositories and get many informations about it, like the commit hash, commit message, commit date and many other things.
 - [MatPlotLib](https://matplotlib.org/) -> MatPlotLib is used to generate the graphics of the metrics evolution and the linear prediction.
 - [NumPy](https://numpy.org/) -> NumPy is used to generate the linear prediction of the linear regression and to many operations in the list of the metrics.
-- [Pandas](https://pandas.pydata.org/) -> Pandas is used maintly to read and write the csv files.
+- [Pandas](https://pandas.pydata.org/) -> Pandas is used mainly to read and write the csv files.
 - [SciKit-Learn](https://scikit-learn.org/stable/) -> SciKit-Learn is used to generate the linear prediction of the linear regression.
 - [TQDM](https://tqdm.github.io/) -> TQDM is used to show the progress bar of the scripts.
 
