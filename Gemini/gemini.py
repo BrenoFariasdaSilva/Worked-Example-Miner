@@ -37,6 +37,7 @@ ENV_VARIABLE = "GEMINI_API_KEY" # The environment variable to load
 # File Path Constants:
 CSV_INPUT_FILE = "../PyDriller/metrics_statistics/zookeeper/substantial_CBO_classes_changes.csv" # The path to the input JSON file
 OUTPUT_FILE = "./output.txt" # The path to the output file
+MOST_COMMON_OUTPUT_FILE = "./most_common_output.txt" # The path to the most common output file
 
 # Header Constants:
 DESIRED_HEADER = ["Class", "Method Invocations"] # The desired header of the CSV file
@@ -255,13 +256,14 @@ def main():
 		for future in as_completed(future_to_run):
 			run = future_to_run[future]
 			try:
-				output = future.result()
+				output = future.result() # Get the output from the future
 				if RUNS > 1: # If the number of runs is greater than 1
 					print(f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Finished.{Style.RESET_ALL}")
 
 				if VERBOSE: # If the VERBOSE constant is set to True
 					print_output(output) # Print the output
 
+				write_output_to_file(output, f"{OUTPUT_FILE.split('.')[0]}.{OUTPUT_FILE.split('.')[1]}_{run+1}.{OUTPUT_FILE.split('.')[2]}") # Write the output to a file
 				outputs.append(output) # Add the output
 			except Exception as exc:
 				print(f"{BackgroundColors.RED}Run {run} generated an exception: {exc}{Style.RESET_ALL}")
@@ -271,7 +273,7 @@ def main():
 	most_frequent_output = output_counts.most_common(1)[0][0]
 
 	# Write the most frequent output to a file
-	write_output_to_file(most_frequent_output, OUTPUT_FILE) # Write the output to a file
+	write_output_to_file(most_frequent_output, MOST_COMMON_OUTPUT_FILE) # Write the output to a file
 
 	if RUNS > 1: # If the number of runs is greater than 1
 		avg_similarity = calculate_similarity(outputs) # Calculate the average similarity between the outputs
