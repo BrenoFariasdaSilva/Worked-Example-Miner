@@ -210,6 +210,15 @@ def calculate_similarity(outputs):
 
 	return avg_similarity # Return the average similarity
 
+def perform_run(model, start_message):
+	"""
+	Perform a single run of starting a chat session and sending a message.
+	"""
+
+	chat_session = start_chat_session(model, start_message)
+	output = send_message(chat_session, "Please analyze the provided data.")
+	return output.text
+
 def main():
 	"""
 	Main function.
@@ -240,19 +249,21 @@ def main():
 
 	outputs = [] # List to store the outputs generated
 
-	for run in range(RUNS): # Loop through the number of runs
-		if RUNS > 1: # If the number of runs is greater than 1
-			print(f"{BackgroundColors.YELLOW}Run {run + 1}/{RUNS}{Style.RESET_ALL}")
+	with ThreadPoolExecutor() as executor:
+		future_to_run = {executor.submit(perform_run, model, start_message): run for run in range(RUNS)}
+		for future in as_completed(future_to_run):
+			run = future_to_run[future]
+			try:
+				output = future.result()
+				if RUNS > 1: # If the number of runs is greater than 1
+					print(f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Finished.{Style.RESET_ALL}")
 
-		# Start chat session with initial start message
-		chat_session = start_chat_session(model, start_message)
+				if VERBOSE: # If the VERBOSE constant is set to True
+					print_output(output) # Print the output
 
-		output = send_message(chat_session, "Please analyze the provided data.") # Send the message
-
-		if VERBOSE: # If the VERBOSE constant is set to True
-			print_output(output) # Print the output
-
-		outputs.append(output.text) # Add the output
+				outputs.append(output) # Add the output
+			except Exception as exc:
+				print(f"{BackgroundColors.RED}Run {run} generated an exception: {exc}{Style.RESET_ALL}")
 
 	write_output_to_file(output, OUTPUT_FILE) # Write the output to a file
 
