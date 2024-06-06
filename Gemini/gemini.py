@@ -1,11 +1,15 @@
 import atexit # For playing a sound when the program finishes
 import google.generativeai as genai # Import the Google AI Python SDK
+import numpy as np # For handling numerical data
 import os # For running a command in the terminal
 import pandas as pd # For handling CSV files
 import platform # For getting the operating system name
 import sys # For exiting the program
 from colorama import Style # For coloring the terminal
+from concurrent.futures import ThreadPoolExecutor, as_completed # For parallel execution
 from dotenv import load_dotenv # For loading .env files
+from sklearn.feature_extraction.text import TfidfVectorizer # For text similarity
+from sklearn.metrics.pairwise import cosine_similarity # For text similarity
 
 # Macros:
 class BackgroundColors: # Colors for the terminal
@@ -23,6 +27,7 @@ SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound f
 
 # Execution Constants:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
+RUNS = 5 # Number of runs to perform
 
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
@@ -218,13 +223,21 @@ def main():
 	{csv_data}
 	"""
 
-	# Start chat session with initial start message
-	chat_session = start_chat_session(model, start_message)
+	outputs = [] # List to store the outputs generated
 
-	output = send_message(chat_session, "Please analyze the provided data.") # Send the message
+	for run in range(RUNS): # Loop through the number of runs
+		if RUNS > 1: # If the number of runs is greater than 1
+			print(f"{BackgroundColors.YELLOW}Run {run + 1}/{RUNS}{Style.RESET_ALL}")
 
-	if VERBOSE: # If the VERBOSE constant is set to True
-		print_output(output) # Print the output
+		# Start chat session with initial start message
+		chat_session = start_chat_session(model, start_message)
+
+		output = send_message(chat_session, "Please analyze the provided data.") # Send the message
+
+		if VERBOSE: # If the VERBOSE constant is set to True
+			print_output(output) # Print the output
+
+		outputs.append(output.text) # Add the output
 
 	write_output_to_file(output, OUTPUT_FILE) # Write the output to a file
 
