@@ -195,6 +195,21 @@ def write_output_to_file(output, file_path=OUTPUT_FILE):
 		else:
 			file.write(str(output)) # Convert the output to a string and write it to the file
 
+def calculate_similarity(outputs):
+	"""
+	Calculate the similarity between multiple outputs.
+	:param outputs: List of output texts.
+	:return: Average similarity score.
+	"""
+
+	vectorizer = TfidfVectorizer().fit_transform(outputs) # Get the vectorizer
+	vectors = vectorizer.toarray() # Get the vectors
+	cosine_matrix = cosine_similarity(vectors) # Get the cosine matrix
+	np.fill_diagonal(cosine_matrix, 0) # Ignore self-similarity
+	avg_similarity = cosine_matrix.mean() # Get the average similarity
+
+	return avg_similarity # Return the average similarity
+
 def main():
 	"""
 	Main function.
@@ -240,6 +255,10 @@ def main():
 		outputs.append(output.text) # Add the output
 
 	write_output_to_file(output, OUTPUT_FILE) # Write the output to a file
+
+	if RUNS > 1: # If the number of runs is greater than 1
+		avg_similarity = calculate_similarity(outputs) # Calculate the average similarity between the outputs
+		print(f"\n{BackgroundColors.BOLD}{BackgroundColors.CYAN}Average Similarity between Runs: {avg_similarity:.2f}{Style.RESET_ALL}", end="\n\n")
 
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
