@@ -80,9 +80,19 @@ Great, you now have python3 and pip installed. Now, we need to install the proje
 
 This project depends on the following libraries:
 
-- [Gemini GenAI](https://pypi.org/project/google-generativeai/) -> Gemini is the core of this project. It analyzes good candidates to generate worked examples for Software Engineering course classes.
-- [Pandas](https://pandas.pydata.org/) -> Pandas is used primarily to read and write CSV files.
-- [Python dotenv Module](https://pypi.org/project/python-dotenv/) -> The dotenv module is used for loading environment variables from .env files in order to read the Google Gemini API Key.
+- [Gemini GenAI](https://pypi.org/project/google-generativeai/) -> Gemini, now called Google GenerativeAI, is the core of this project. It analyzes candidates to generate worked examples for Software Engineering course classes.
+- [Pandas](https://pandas.pydata.org/) -> Used primarily to read and write CSV files.
+- [NumPy](https://numpy.org/) -> For handling numerical data efficiently.
+- [Python dotenv Module](https://pypi.org/project/python-dotenv/) -> Used for loading environment variables from `.env` files, crucial for reading the Google GenerativeAI API Key.
+- [Colorama](https://pypi.org/project/colorama/) -> For adding color and style to terminal outputs, enhancing the readability of command-line feedback.
+- [Scikit-learn](https://scikit-learn.org/stable/) -> Utilized for text similarity assessments using TfidfVectorizer and cosine similarity metrics.
+- [Concurrent.futures](https://docs.python.org/3/library/concurrent.futures.html) -> For parallel execution of the Runs, improving the efficiency of processing tasks.
+- Standard Libraries:
+    - [atexit](https://docs.python.org/3/library/atexit.html) -> For executing cleanup functions when the program terminates.
+    - [os](https://docs.python.org/3/library/os.html) -> For interacting with the operating system, like running terminal commands.
+    - [sys](https://docs.python.org/3/library/sys.html) -> For accessing system-specific parameters and functions, such as exiting the program.
+    - [platform](https://docs.python.org/3/library/platform.html) -> For obtaining the name of the operating system.
+    - [collections.Counter](https://docs.python.org/3/library/collections.html#collections.Counter) -> For counting hashable objects in an efficient way.
 
 Futhermore, this project requires a virtual environment to ensure all dependencies are installed and managed in an isolated manner. A virtual environment is a self-contained directory tree that contains a Python installation for a particular version of Python, plus a number of additional packages. Using a virtual environment helps avoid conflicts between project dependencies and system-wide Python packages. 
 
@@ -131,7 +141,7 @@ This will also be handled by the `Makefile` during the dependencies installation
    make generate_requirements
    ```
 
-   This command will generate the `requirements.txt` file in the root of the tool directory (Gemini or RefactoringMiner), which will contain all the dependencies used in the virtual environment of the project.
+   This command will generate the `requirements.txt` file in the root of the tool directory (`Gemini/`), which will contain all the dependencies used in the virtual environment of the project.
 
 ### Cleaning Up
 
