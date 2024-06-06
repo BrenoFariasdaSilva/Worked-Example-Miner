@@ -5,6 +5,7 @@ import os # For running a command in the terminal
 import pandas as pd # For handling CSV files
 import platform # For getting the operating system name
 import sys # For exiting the program
+from collections import Counter # For counting frequencies
 from colorama import Style # For coloring the terminal
 from concurrent.futures import ThreadPoolExecutor, as_completed # For parallel execution
 from dotenv import load_dotenv # For loading .env files
@@ -197,10 +198,14 @@ def write_output_to_file(output, file_path=OUTPUT_FILE):
 
 def calculate_similarity(outputs):
 	"""
-	Calculate the similarity between multiple outputs.
-	:param outputs: List of output texts.
-	:return: Average similarity score.
+	Calculate the average similarity between multiple outputs.
 	"""
+ 
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating the similarity between the outputs...{Style.RESET_ALL}")
+
+	# If there are no outputs or only one output, return 0 similarity
+	if not outputs or len(outputs) == 1:
+		return 0.0 # No similarity
 
 	vectorizer = TfidfVectorizer().fit_transform(outputs) # Get the vectorizer
 	vectors = vectorizer.toarray() # Get the vectors
@@ -265,7 +270,12 @@ def main():
 			except Exception as exc:
 				print(f"{BackgroundColors.RED}Run {run} generated an exception: {exc}{Style.RESET_ALL}")
 
-	write_output_to_file(output, OUTPUT_FILE) # Write the output to a file
+	# Count the frequency of each output
+	output_counts = Counter(outputs)
+	most_frequent_output = output_counts.most_common(1)[0][0]
+
+	# Write the most frequent output to a file
+	write_output_to_file(most_frequent_output, OUTPUT_FILE) # Write the output to a file
 
 	if RUNS > 1: # If the number of runs is greater than 1
 		avg_similarity = calculate_similarity(outputs) # Calculate the average similarity between the outputs
