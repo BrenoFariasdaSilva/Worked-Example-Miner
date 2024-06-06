@@ -142,7 +142,7 @@ This will also be handled by the `Makefile` during the dependencies installation
       make generate_requirements
       ```
 
-   This command will generate the `requirements.txt` file in the root of the tool directory (PyDriller or RefactoringMiner), which will contain all the dependencies used in the virtual environment of the project.
+   This command will generate the `requirements.txt` file in the root of the tool directory (`RefactoringMiner/`) which will contain all the dependencies used in the virtual environment of the project.
 
 ### Cleaning Up
 
