@@ -36,8 +36,9 @@ ENV_VARIABLE = "GEMINI_API_KEY" # The environment variable to load
 
 # File Path Constants:
 CSV_INPUT_FILE = "../PyDriller/metrics_statistics/zookeeper/substantial_CBO_classes_changes.csv" # The path to the input JSON file
-OUTPUT_FILE = "./output.txt" # The path to the output file
-MOST_COMMON_OUTPUT_FILE = "./most_common_output.txt" # The path to the most common output file
+OUTPUT_DIRECTORY = "./Outputs/" # The path to the output directory
+OUTPUT_FILE = f"{OUTPUT_DIRECTORY}output.txt" # The path to the output file
+MOST_COMMON_OUTPUT_FILE = f"{OUTPUT_DIRECTORY}most_common_output.txt" # The path to the most common output file
 
 # Header Constants:
 DESIRED_HEADER = ["Class", "Method Invocations"] # The desired header of the CSV file
@@ -96,6 +97,24 @@ def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
 		sys.exit(1) # Exit the program
 
 	return api_key # Return the value of the key
+
+def create_directory(full_directory_name, relative_directory_name):
+   """
+   Creates a directory.
+
+   :param full_directory_name: Name of the directory to be created.
+   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal.
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
+
+   if os.path.isdir(full_directory_name): # Verify if the directory already exists
+      return # Return if the directory already exists
+   try: # Try to create the directory
+      os.makedirs(full_directory_name) # Create the directory
+   except OSError: # If the directory cannot be created
+      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
 
 def configure_model(api_key):
 	"""
@@ -231,6 +250,9 @@ def main():
 
 	# Verify .env file and load API key
 	api_key = verify_env_file(ENV_PATH, ENV_VARIABLE)
+
+	# OUTPUT_DIRECTORY.replace(".", "").replace("/", "")
+	create_directory(os.path.abspath(OUTPUT_DIRECTORY), OUTPUT_DIRECTORY.replace(".", "")) # Create the output directory
 
 	# Configure the model
 	model = configure_model(api_key)
