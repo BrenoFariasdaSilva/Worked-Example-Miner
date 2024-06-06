@@ -28,7 +28,7 @@ SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound f
 
 # Execution Constants:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
-RUNS = 10 # Number of runs to perform
+RUNS = 5 # Number of runs to perform
 
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
