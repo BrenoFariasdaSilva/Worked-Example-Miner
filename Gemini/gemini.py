@@ -28,7 +28,7 @@ SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound f
 
 # Execution Constants:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
-RUNS = 5 # Number of runs to perform
+RUNS = 10 # Number of runs to perform
 
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
@@ -180,7 +180,7 @@ def print_output(output):
 	Print the output text.
 	"""
 	
-	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Output:{BackgroundColors.GREEN}\n{output.text}{Style.RESET_ALL}", end="\n") # Output the output
+	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Output:{BackgroundColors.GREEN}\n{output}{Style.RESET_ALL}", end="\n") # Output the output
 
 def write_output_to_file(output, file_path=OUTPUT_FILE):
 	"""
@@ -190,11 +190,7 @@ def write_output_to_file(output, file_path=OUTPUT_FILE):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the output to the file...{Style.RESET_ALL}")
 
 	with open(file_path, "w") as file:
-		# Verify if output has a "text" attribute and write it to the file
-		if hasattr(output, "text"):
-			file.write(output.text)
-		else:
-			file.write(str(output)) # Convert the output to a string and write it to the file
+		file.write(output) # Write the output to the file
 
 def calculate_similarity(outputs):
 	"""
