@@ -204,15 +204,16 @@ make gemini_script
    - Prepares an initial message for the chat session explaining the format and content of the CSV data.
    - Calls `start_chat_session()` with the initial message to begin a chat session with the AI model.
 
-6. **Send Message for Analysis:**
-   - Calls `send_message()` to send a follow-up message asking the model to analyze the provided CSV data.
-   - Receives the AI model's analysis as output.
+6. **Perform Multiple Runs:**
+   - Executes the process `RUNS` times to engage with the model using parallel execution, where each run starts a chat session and sends a message requesting the analysis of the provided CSV data.
+   - Each response is collected and the similarity between all responses is computed to assess consistency.
 
-7. **Print Output:**
+7. **Print and Save Outputs:**
    - Calls `print_output()` to print the AI model's response to the terminal.
-
-8. **Write Output to File:**
    - Calls `write_output_to_file()` to save the AI model's response to the specified output file (`OUTPUT_FILE`).
+
+8. **Compute Similarity Between Runs:**
+   - After collecting outputs from multiple runs, calculates the similarity of outputs to assess the consistency using cosine similarity metrics.
 
 9. **Play Sound on Completion:**
    - When the script finishes, it plays a notification sound to indicate completion, using the `play_sound()` function registered with `atexit`.
