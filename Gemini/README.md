@@ -102,7 +102,7 @@ Follow these steps to prepare your environment:
 
 1. **Create and Activate the Virtual Environment:** 
    
-   The project uses a `makefile` to streamline the creation and activation of a virtual environment named `venv`. This environment is where all required packages, such as `Gemini`, `Pandas`, `Numpy`, and `Scikit-learn` will be installed.
+   The project uses a `makefile` to streamline the creation and activation of a virtual environment named `venv`. This environment is where all required packages, such as `Gemini`, `Numpy`, `Pandas`, and `Scikit-learn` will be installed.
 This will also be handled by the `Makefile` during the dependencies installation process, so no command must be executed in order to create the virtual environment.
 
 1. **Install Dependencies:** 
