@@ -219,7 +219,7 @@ make gemini_script
 
 ## Generated Data
 
-The output of the scripts are stored in the `Gemini/` directory, which are the following:
+The outputs of the scripts are stored in the `Gemini/Outputs/` directory, which are the following:
 
 ### Output  
 
