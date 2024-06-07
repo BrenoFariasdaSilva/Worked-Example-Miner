@@ -10,6 +10,7 @@ from collections import Counter # For counting frequencies
 from colorama import Style # For coloring the terminal
 from concurrent.futures import ThreadPoolExecutor, as_completed # For parallel execution
 from dotenv import load_dotenv # For loading .env files
+from scipy import stats # For calculating statistics
 from sklearn.feature_extraction.text import TfidfVectorizer # For text similarity
 from sklearn.metrics.pairwise import cosine_similarity # For text similarity
 
@@ -213,24 +214,30 @@ def write_output_to_file(output, file_path=OUTPUT_FILE):
 	with open(file_path, "w") as file:
 		file.write(output) # Write the output to the file
 
-def calculate_similarity(outputs):
+def calculate_similarity_and_confidence(outputs, confidence=0.95):
 	"""
-	Calculate the average similarity between multiple outputs.
+	Calculate the average similarity between multiple outputs and the confidence interval.
 	"""
- 
+
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating the similarity between the outputs...{Style.RESET_ALL}")
 
-	# If there are no outputs or only one output, return 0 similarity
-	if not outputs or len(outputs) == 1:
-		return 0.0 # No similarity
+	if not outputs or len(outputs) == 1: # If there are no outputs or only one output
+		return 0.0, (0.0, 0.0) # No similarity or undefined confidence interval
 
-	vectorizer = TfidfVectorizer().fit_transform(outputs) # Get the vectorizer
-	vectors = vectorizer.toarray() # Get the vectors
-	cosine_matrix = cosine_similarity(vectors) # Get the cosine matrix
+	vectorizer = TfidfVectorizer().fit_transform(outputs) # Fit the vectorizer and transform the outputs
+	vectors = vectorizer.toarray() # Convert the vectors to an array
+	cosine_matrix = cosine_similarity(vectors) # Calculate the cosine similarity matrix
 	np.fill_diagonal(cosine_matrix, 0) # Ignore self-similarity
-	avg_similarity = cosine_matrix.mean() # Get the average similarity
 
-	return avg_similarity # Return the average similarity
+	# Get upper triangle of the matrix, ignoring the diagonal
+	upper_tri_indices = np.triu_indices_from(cosine_matrix, k=1)
+	similarities = cosine_matrix[upper_tri_indices]
+
+	avg_similarity = similarities.mean() # Calculate the average similarity
+	sem = stats.sem(similarities) # Calculate the standard error of the mean
+	ci = stats.t.interval(confidence, len(similarities)-1, loc=avg_similarity, scale=sem) # Calculate the confidence interval
+
+	return avg_similarity, ci # Return the average similarity and confidence interval
 
 def perform_run(model, start_message, run_number, retries=3, backoff_factor=0.5):
 	"""
@@ -311,8 +318,9 @@ def main():
 	write_output_to_file(most_frequent_output, MOST_COMMON_OUTPUT_FILE) # Write the output to a file
 
 	if RUNS > 1: # If the number of runs is greater than 1
-		avg_similarity = calculate_similarity(outputs) # Calculate the average similarity between the outputs
+		avg_similarity, confidence_interval = calculate_similarity_and_confidence(outputs, 0.95) # Calculate the average similarity between the outputs
 		print(f"\n{BackgroundColors.BOLD}{BackgroundColors.CYAN}Average Similarity between Runs: {avg_similarity:.2f}{Style.RESET_ALL}", end="\n\n")
+		print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}95% Confidence Interval for Similarity: ({confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}){Style.RESET_ALL}", end="\n\n")
 
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
