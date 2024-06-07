@@ -129,7 +129,7 @@ def configure_model(api_key):
 
 	# Generation configuration
 	generation_config = {
-		"temperature": 1, # Controls the randomness of the output. Values can range from [0.0, 2.0].
+		"temperature": 0.1, # Controls the randomness of the output. Values can range from [0.0, 2.0].
 		"top_p": 0.95, # Optional. The maximum cumulative probability of tokens to consider when sampling.
 		"top_k": 64, # Optional. The maximum number of tokens to consider when sampling.
 		"max_output_tokens": 8192, # Set the maximum number of output tokens
