@@ -5,6 +5,7 @@ import os # For running a command in the terminal
 import pandas as pd # For handling CSV files
 import platform # For getting the operating system name
 import sys # For exiting the program
+import time # For sleeping the program
 from collections import Counter # For counting frequencies
 from colorama import Style # For coloring the terminal
 from concurrent.futures import ThreadPoolExecutor, as_completed # For parallel execution
@@ -231,14 +232,27 @@ def calculate_similarity(outputs):
 
 	return avg_similarity # Return the average similarity
 
-def perform_run(model, start_message):
+def perform_run(model, start_message, run_number, retries=3, backoff_factor=0.5):
 	"""
 	Perform a single run of starting a chat session and sending a message.
+	Implements a retry mechanism with exponential backoff in case of server errors.
 	"""
 
-	chat_session = start_chat_session(model, start_message)
-	output = send_message(chat_session, "Please analyze the provided data.")
-	return output.text
+	attempt = 0 # Set the attempt to 0
+	while attempt <= retries: # While the attempt is less than or equal to the number of retries
+		try:
+			chat_session = start_chat_session(model, start_message) # Start the chat session
+			output = send_message(chat_session, "Please analyze the provided data.") # Send the message
+			return output.text # Return the output text
+		except Exception as exc: # If an exception occurs
+			attempt += 1 # Increment the attempt
+			if attempt > retries: # If the attempt is greater than the number of retries
+				raise exc # Raise the exception
+			wait_time = backoff_factor * (2 ** (attempt - 1)) # Calculate the wait time
+			verbose_output(true_string=f"{BackgroundColors.YELLOW}Run {run_number} generated an exception: {exc}. Retrying in {wait_time:.2f} seconds...{Style.RESET_ALL}")
+			time.sleep(wait_time) # Sleep the program
+
+	raise Exception(f"{BackgroundColors.RED}Failed to perform run after {BackgroundColors.CYAN}{retries}{BackgroundColors.GREEN} retries.{Style.RESET_ALL}") # Raise an exception
 
 def main():
 	"""
@@ -251,7 +265,6 @@ def main():
 	# Verify .env file and load API key
 	api_key = verify_env_file(ENV_PATH, ENV_VARIABLE)
 
-	# OUTPUT_DIRECTORY.replace(".", "").replace("/", "")
 	create_directory(os.path.abspath(OUTPUT_DIRECTORY), OUTPUT_DIRECTORY.replace(".", "")) # Create the output directory
 
 	# Configure the model
@@ -265,7 +278,7 @@ def main():
 	Hi, Gemini. I will provide you a CSV file containing the following header:
 	'Class' field, which is the name of the corresponding class;
 	'Method Invocations' field, which is a list following the format: 'method_name of the current class[ invoked_method_name():number_of_invocations ... ]';
-	
+
 	With that in mind, i want you to analyze each line of the CSV and try to relate the terms of the method invocations with topics of Distributed Systems education.
 	Here is the CSV data:
 	{csv_data}
@@ -274,7 +287,7 @@ def main():
 	outputs = [] # List to store the outputs generated
 
 	with ThreadPoolExecutor() as executor:
-		future_to_run = {executor.submit(perform_run, model, start_message): run for run in range(RUNS)}
+		future_to_run = {executor.submit(perform_run, model, start_message, run): run for run in range(RUNS)}
 		for future in as_completed(future_to_run):
 			run = future_to_run[future]
 			try:
