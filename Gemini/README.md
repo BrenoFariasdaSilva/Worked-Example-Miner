@@ -86,12 +86,14 @@ This project depends on the following libraries:
 - [Python dotenv Module](https://pypi.org/project/python-dotenv/) -> Used for loading environment variables from `.env` files, crucial for reading the Google GenerativeAI API Key.
 - [Colorama](https://pypi.org/project/colorama/) -> For adding color and style to terminal outputs, enhancing the readability of command-line feedback.
 - [Scikit-learn](https://scikit-learn.org/stable/) -> Utilized for text similarity assessments using TfidfVectorizer and cosine similarity metrics.
+- [SciPy](https://scipy.org) -> For calculating statistics, particularly useful for generating confidence intervals.
 - [Concurrent.futures](https://docs.python.org/3/library/concurrent.futures.html) -> For parallel execution of the Runs, improving the efficiency of processing tasks.
 - Standard Libraries:
     - [atexit](https://docs.python.org/3/library/atexit.html) -> For executing cleanup functions when the program terminates.
     - [os](https://docs.python.org/3/library/os.html) -> For interacting with the operating system, like running terminal commands.
     - [sys](https://docs.python.org/3/library/sys.html) -> For accessing system-specific parameters and functions, such as exiting the program.
     - [platform](https://docs.python.org/3/library/platform.html) -> For obtaining the name of the operating system.
+    - [time](https://docs.python.org/3/library/time.html) -> For handling time-related tasks, like sleeping the program to implement the retry mechanism with exponential backoff.
     - [collections.Counter](https://docs.python.org/3/library/collections.html#collections.Counter) -> For counting hashable objects in an efficient way.
 
 Futhermore, this project requires a virtual environment to ensure all dependencies are installed and managed in an isolated manner. A virtual environment is a self-contained directory tree that contains a Python installation for a particular version of Python, plus a number of additional packages. Using a virtual environment helps avoid conflicts between project dependencies and system-wide Python packages. 
