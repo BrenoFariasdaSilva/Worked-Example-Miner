@@ -320,7 +320,7 @@ def main():
 	if RUNS > 1: # If the number of runs is greater than 1
 		avg_similarity, confidence_interval = calculate_similarity_and_confidence(outputs, 0.95) # Calculate the average similarity between the outputs
 		print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Average Similarity between {BackgroundColors.CYAN}{RUNS}{BackgroundColors.GREEN} Runs: {BackgroundColors.CYAN}{avg_similarity:.2f}{Style.RESET_ALL}", end="\n")
-		print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}95% Confidence Interval for the Gemini's Output Similarity: {BackgroundColors.CYAN}[{confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}]{Style.RESET_ALL}", end="\n\n")
+		print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}95% Confidence Interval for the Gemini's Output Similarity: {BackgroundColors.CYAN}({confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}){Style.RESET_ALL}", end="\n\n")
 
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
