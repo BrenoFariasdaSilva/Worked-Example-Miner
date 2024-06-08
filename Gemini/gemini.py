@@ -13,6 +13,7 @@ from dotenv import load_dotenv # For loading .env files
 from scipy import stats # For calculating statistics
 from sklearn.feature_extraction.text import TfidfVectorizer # For text similarity
 from sklearn.metrics.pairwise import cosine_similarity # For text similarity
+from threading import Semaphore # For limiting the number of threads
 
 # Macros:
 class BackgroundColors: # Colors for the terminal
@@ -31,6 +32,7 @@ SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound f
 # Execution Constants:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
 RUNS = 5 # Number of runs to perform
+MAX_THREADS = 2 # Maximum number of threads to run concurrently
 
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
@@ -293,8 +295,14 @@ def main():
 
 	outputs = [] # List to store the outputs generated
 
-	with ThreadPoolExecutor() as executor:
-		future_to_run = {executor.submit(perform_run, model, start_message, run): run for run in range(RUNS)}
+	semaphore = Semaphore(MAX_THREADS) # Create a semaphore to limit the number of threads
+
+	def limited_thread_function(run): # Function to limit the number of threads
+		with semaphore: # Use the semaphore
+			return perform_run(model, start_message, run) # Perform the run
+
+	with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+		future_to_run = {executor.submit(limited_thread_function, run): run for run in range(RUNS)}
 		for future in as_completed(future_to_run):
 			run = future_to_run[future]
 			try:
