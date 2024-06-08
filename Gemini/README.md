@@ -212,14 +212,24 @@ make gemini_script
    - Executes the process `RUNS` times to engage with the model using parallel execution, where each run starts a chat session and sends a message requesting the analysis of the provided CSV data.
    - Implements a retry mechanism with exponential backoff in case of server errors.
    - Each response is collected and the similarity between all responses is computed to assess consistency.
+   - **Function Calls:**
+     - `perform_runs_with_threading(model, context_message)`
+     - `limited_thread_function(model, semaphore, message, run)`
+     - `perform_run(model, context_message, run_number, retries=3, backoff_factor=0.5)`
 
 7. **Print and Save Outputs:**
    - Calls `print_output()` to print the AI model's response to the terminal.
    - Calls `write_output_to_file()` to save the AI model's response to the specified output file (`OUTPUT_FILE`).
+   - **Function Calls:**
+     - `analyze_outputs(outputs)`
+     - `write_output_to_file(most_frequent_output, MOST_COMMON_OUTPUT_FILE)`
 
 8. **Compute Similarity Between Runs:**
    - After collecting outputs from multiple runs, calculates the similarity of outputs to assess the consistency using cosine similarity metrics.
    - Computes the average similarity and a 95% confidence interval for the similarity to provide a measure of the reliability of the responses.
+   - **Function Calls:**
+     - `calculate_similarity_and_confidence(outputs, confidence=0.95)`
+     - `report_run_statistics(outputs)`
 
 9. **Play Sound on Completion:**
    - When the script finishes, it plays a notification sound to indicate completion, using the `play_sound()` function registered with `atexit`.
