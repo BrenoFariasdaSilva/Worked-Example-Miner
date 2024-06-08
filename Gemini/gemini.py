@@ -52,6 +52,7 @@ def play_sound():
 	Plays a sound when the program finishes.
 	:return: None
 	"""
+
 	if os.path.exists(SOUND_FILE):
 		if platform.system() in SOUND_COMMANDS: # If the platform.system() is in the SOUND_COMMANDS dictionary
 			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
@@ -169,6 +170,25 @@ def load_csv_file(file_path):
 	filtered_data = df[DESIRED_HEADER].to_string(index=False) # Filter the data and convert it to a string
 	return filtered_data # Return the filtered data
 
+def prepare_context_message(csv_data):
+	"""
+	Prepare the context message for the chat session.
+	:param csv_data: The CSV data to be included in the message.
+	:return: The context message.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Preparing the context message...{Style.RESET_ALL}")
+
+	return f"""
+	Hi, Gemini. I will provide you a CSV file containing the following header:
+	'Class' field, which is the name of the corresponding class;
+	'Method Invocations' field, which is a list following the format: 'method_name of the current class[ invoked_method_name():number_of_invocations ... ]';
+
+	With that in mind, i want you to analyze each line of the CSV and try to relate the terms of the method invocations with topics of Distributed Systems education.
+	Here is the CSV data:
+	{csv_data}
+	"""
+
 def start_chat_session(model, initial_user_message):
 	"""
 	Start a chat session with the model.
@@ -241,7 +261,7 @@ def calculate_similarity_and_confidence(outputs, confidence=0.95):
 
 	return avg_similarity, ci # Return the average similarity and confidence interval
 
-def perform_run(model, start_message, run_number, retries=3, backoff_factor=0.5):
+def perform_run(model, context_message, run_number, retries=3, backoff_factor=0.5):
 	"""
 	Perform a single run of starting a chat session and sending a message.
 	Implements a retry mechanism with exponential backoff in case of server errors.
@@ -250,7 +270,7 @@ def perform_run(model, start_message, run_number, retries=3, backoff_factor=0.5)
 	attempt = 0 # Set the attempt to 0
 	while attempt <= retries: # While the attempt is less than or equal to the number of retries
 		try:
-			chat_session = start_chat_session(model, start_message) # Start the chat session
+			chat_session = start_chat_session(model, context_message) # Start the chat session
 			output = send_message(chat_session, "Please analyze the provided data.") # Send the message
 			return output.text # Return the output text
 		except Exception as exc: # If an exception occurs
@@ -282,16 +302,7 @@ def main():
 	# Load and filter the CSV file
 	csv_data = load_csv_file(CSV_INPUT_FILE)
 
-	# Start chat session and send message
-	start_message = f"""
-	Hi, Gemini. I will provide you a CSV file containing the following header:
-	'Class' field, which is the name of the corresponding class;
-	'Method Invocations' field, which is a list following the format: 'method_name of the current class[ invoked_method_name():number_of_invocations ... ]';
-
-	With that in mind, i want you to analyze each line of the CSV and try to relate the terms of the method invocations with topics of Distributed Systems education.
-	Here is the CSV data:
-	{csv_data}
-	"""
+	context_message = prepare_context_message(csv_data) # Start chat session and send message
 
 	outputs = [] # List to store the outputs generated
 
@@ -299,7 +310,7 @@ def main():
 
 	def limited_thread_function(run): # Function to limit the number of threads
 		with semaphore: # Use the semaphore
-			return perform_run(model, start_message, run) # Perform the run
+			return perform_run(model, context_message, run) # Perform the run
 
 	with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
 		future_to_run = {executor.submit(limited_thread_function, run): run for run in range(RUNS)}
