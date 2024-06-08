@@ -189,6 +189,76 @@ def prepare_context_message(csv_data):
 	{csv_data}
 	"""
 
+def limited_thread_function(model, semaphore, message, run):
+	"""
+	Perform a single run of starting a chat session and sending a message with a semaphore.
+	:param model: The generative AI model.
+	:param semaphore: The semaphore to limit the number of threads.
+	:param message: The message to be sent.
+	:param run: The run number.
+	:return: The output text.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Started.{Style.RESET_ALL}")
+
+	with semaphore: # Use the semaphore
+		return perform_run(model, message, run) # Perform the run
+
+def handle_output(run, output):
+	"""
+	Handle the output of a run.
+	:param run: The run number.
+	:param output: The output text.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Handling the output of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}...{Style.RESET_ALL}")
+
+	if RUNS > 1: # If the number of runs is greater than 1
+		print(f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Finished.{Style.RESET_ALL}")
+	if VERBOSE: # If the VERBOSE constant is set to True
+		print_output(output) # Print the output
+	
+	# Write the output to a file
+	filename = f"{OUTPUT_FILE.split('.')[0]}.{OUTPUT_FILE.split('.')[1]}_{run+1}.{OUTPUT_FILE.split('.')[2]}"
+	write_output_to_file(output, filename) # Write the output to a file
+
+def process_future_output(future, run, outputs):
+	"""
+	Process the output of a future.
+	:param future: The future to process.
+	:param run: The run number.
+	:param outputs: The outputs list.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Finished.{Style.RESET_ALL}")
+
+	try: # Try to get the result of the future
+		output = future.result() # Get the output from the future
+		outputs.append(output) # Add the output
+		handle_output(run, output) # Handle the output
+	except Exception as exc: # If an exception occurs
+		print(f"{BackgroundColors.RED}Run {run} generated an exception: {exc}{Style.RESET_ALL}")
+
+def perform_runs_with_threading(model, context_message):
+	"""
+	Perform multiple runs of starting a chat session and sending a message with threading.
+	:param model: The generative AI model.
+	:param context_message: The context message to be sent.
+	:return: The outputs of the runs.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Performing the runs with threading...{Style.RESET_ALL}")
+
+	outputs = [] # Initialize the outputs list
+	semaphore = Semaphore(MAX_THREADS) # Create a semaphore to limit the number of threads
+	with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+		future_to_run = {executor.submit(limited_thread_function, model, semaphore, context_message, run): run for run in range(RUNS)} # Create a future to run dictionary
+		for future in as_completed(future_to_run): # For each future in the completed futures
+			run = future_to_run[future] # Get the run from the future
+			process_future_output(future, run, outputs) # Process the future output
+
+	return outputs # Return the outputs
+
 def start_chat_session(model, initial_user_message):
 	"""
 	Start a chat session with the model.
@@ -303,8 +373,7 @@ def main():
 	csv_data = load_csv_file(CSV_INPUT_FILE)
 
 	context_message = prepare_context_message(csv_data) # Start chat session and send message
-
-	outputs = [] # List to store the outputs generated
+	outputs = perform_runs_with_threading(model, context_message) # Perform the runs with threading
 
 	semaphore = Semaphore(MAX_THREADS) # Create a semaphore to limit the number of threads
 
