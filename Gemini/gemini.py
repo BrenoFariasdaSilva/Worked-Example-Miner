@@ -124,6 +124,8 @@ def create_directory(full_directory_name, relative_directory_name):
 def configure_model(api_key):
 	"""
 	Configure the generative AI model.
+	:param api_key: The API key to configure the model.
+	:return: The configured model.
 	"""
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Configuring the Gemini Model...{Style.RESET_ALL}")
@@ -251,6 +253,7 @@ def perform_runs_with_threading(model, context_message):
 
 	outputs = [] # Initialize the outputs list
 	semaphore = Semaphore(MAX_THREADS) # Create a semaphore to limit the number of threads
+
 	with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
 		future_to_run = {executor.submit(limited_thread_function, model, semaphore, context_message, run): run for run in range(RUNS)} # Create a future to run dictionary
 		for future in as_completed(future_to_run): # For each future in the completed futures
@@ -262,6 +265,9 @@ def perform_runs_with_threading(model, context_message):
 def start_chat_session(model, initial_user_message):
 	"""
 	Start a chat session with the model.
+	:param model: The generative AI model.
+	:param initial_user_message: The initial user message.
+	:return: The chat session.
 	"""
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Starting the chat session...{Style.RESET_ALL}")
@@ -282,6 +288,9 @@ def start_chat_session(model, initial_user_message):
 def send_message(chat_session, user_message):
 	"""
 	Send a message in the chat session and get the output.
+	:param chat_session: The chat session.
+	:param user_message: The user message to send.
+	:return: The output.
 	"""
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sending the message...{Style.RESET_ALL}")
@@ -292,6 +301,7 @@ def send_message(chat_session, user_message):
 def print_output(output):
 	"""
 	Print the output text.
+	:param output: The output text.
 	"""
 	
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Output:{BackgroundColors.GREEN}\n{output}{Style.RESET_ALL}", end="\n") # Output the output
@@ -299,6 +309,9 @@ def print_output(output):
 def write_output_to_file(output, file_path=OUTPUT_FILE):
 	"""
 	Writes the chat output to a specified file.
+	:param output: The output to write.
+	:param file_path: The path to the file.
+	:return: None
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the output to the file...{Style.RESET_ALL}")
@@ -309,6 +322,9 @@ def write_output_to_file(output, file_path=OUTPUT_FILE):
 def calculate_similarity_and_confidence(outputs, confidence=0.95):
 	"""
 	Calculate the average similarity between multiple outputs and the confidence interval.
+	:param outputs: The outputs to calculate the similarity.
+	:param confidence: The confidence level.
+	:return: The average similarity and confidence interval.
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating the similarity between the outputs...{Style.RESET_ALL}")
@@ -335,6 +351,12 @@ def perform_run(model, context_message, run_number, retries=3, backoff_factor=0.
 	"""
 	Perform a single run of starting a chat session and sending a message.
 	Implements a retry mechanism with exponential backoff in case of server errors.
+	:param model: The generative AI model.
+	:param context_message: The context message to be sent.
+	:param run_number: The run number.
+	:param retries: The number of retries.
+	:param backoff_factor: The backoff factor.
+	:return: The output text.
 	"""
 
 	attempt = 0 # Set the attempt to 0
@@ -372,7 +394,7 @@ def report_run_statistics(outputs):
 	"""
 
 	avg_similarity, confidence_interval = calculate_similarity_and_confidence(outputs, 0.95) # Calculate the average similarity and confidence interval
-	
+
 	print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Average Similarity between {BackgroundColors.CYAN}{RUNS}{BackgroundColors.GREEN} Runs: {BackgroundColors.CYAN}{avg_similarity:.2f}{Style.RESET_ALL}")
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}95% Confidence Interval for the Gemini's Output Similarity: {BackgroundColors.CYAN}({confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}){Style.RESET_ALL}", end="\n\n")
 
