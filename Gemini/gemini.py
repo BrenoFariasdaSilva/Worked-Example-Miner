@@ -353,6 +353,29 @@ def perform_run(model, context_message, run_number, retries=3, backoff_factor=0.
 
 	raise Exception(f"{BackgroundColors.RED}Failed to perform run after {BackgroundColors.CYAN}{retries}{BackgroundColors.GREEN} retries.{Style.RESET_ALL}") # Raise an exception
 
+def analyze_outputs(outputs):
+	"""
+	Analyze the outputs and return the most frequent output.
+	:param outputs: The outputs to analyze.
+	:return: The most frequent output.
+	"""
+	
+	output_counts = Counter(outputs) # Count the frequencies of the outputs
+	most_frequent_output = output_counts.most_common(1)[0][0] # Get the most frequent output
+	write_output_to_file(most_frequent_output, MOST_COMMON_OUTPUT_FILE) # Write the most frequent output to a file
+	return most_frequent_output # Return the most frequent output
+
+def report_run_statistics(outputs):
+	"""
+	Report the run statistics.
+	:param outputs: The outputs to analyze.
+	"""
+
+	avg_similarity, confidence_interval = calculate_similarity_and_confidence(outputs, 0.95) # Calculate the average similarity and confidence interval
+	
+	print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Average Similarity between {BackgroundColors.CYAN}{RUNS}{BackgroundColors.GREEN} Runs: {BackgroundColors.CYAN}{avg_similarity:.2f}{Style.RESET_ALL}")
+	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}95% Confidence Interval for the Gemini's Output Similarity: {BackgroundColors.CYAN}({confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}){Style.RESET_ALL}", end="\n\n")
+
 def main():
 	"""
 	Main function.
@@ -374,41 +397,10 @@ def main():
 
 	context_message = prepare_context_message(csv_data) # Start chat session and send message
 	outputs = perform_runs_with_threading(model, context_message) # Perform the runs with threading
-
-	semaphore = Semaphore(MAX_THREADS) # Create a semaphore to limit the number of threads
-
-	def limited_thread_function(run): # Function to limit the number of threads
-		with semaphore: # Use the semaphore
-			return perform_run(model, context_message, run) # Perform the run
-
-	with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-		future_to_run = {executor.submit(limited_thread_function, run): run for run in range(RUNS)}
-		for future in as_completed(future_to_run):
-			run = future_to_run[future]
-			try:
-				output = future.result() # Get the output from the future
-				if RUNS > 1: # If the number of runs is greater than 1
-					print(f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Finished.{Style.RESET_ALL}")
-
-				if VERBOSE: # If the VERBOSE constant is set to True
-					print_output(output) # Print the output
-
-				write_output_to_file(output, f"{OUTPUT_FILE.split('.')[0]}.{OUTPUT_FILE.split('.')[1]}_{run+1}.{OUTPUT_FILE.split('.')[2]}") # Write the output to a file
-				outputs.append(output) # Add the output
-			except Exception as exc:
-				print(f"{BackgroundColors.RED}Run {run} generated an exception: {exc}{Style.RESET_ALL}")
-
-	# Count the frequency of each output
-	output_counts = Counter(outputs)
-	most_frequent_output = output_counts.most_common(1)[0][0]
-
-	# Write the most frequent output to a file
-	write_output_to_file(most_frequent_output, MOST_COMMON_OUTPUT_FILE) # Write the output to a file
+	most_frequent_output = analyze_outputs(outputs) # Analyze the outputs
 
 	if RUNS > 1: # If the number of runs is greater than 1
-		avg_similarity, confidence_interval = calculate_similarity_and_confidence(outputs, 0.95) # Calculate the average similarity between the outputs
-		print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Average Similarity between {BackgroundColors.CYAN}{RUNS}{BackgroundColors.GREEN} Runs: {BackgroundColors.CYAN}{avg_similarity:.2f}{Style.RESET_ALL}", end="\n")
-		print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}95% Confidence Interval for the Gemini's Output Similarity: {BackgroundColors.CYAN}({confidence_interval[0]:.2f}, {confidence_interval[1]:.2f}){Style.RESET_ALL}", end="\n\n")
+		report_run_statistics(outputs) # Report the run statistics
 
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
