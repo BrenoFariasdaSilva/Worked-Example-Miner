@@ -89,6 +89,7 @@ This project depends on the following libraries:
 - [Scikit-learn](https://scikit-learn.org/stable/) -> Utilized for text similarity assessments using TfidfVectorizer and cosine similarity metrics.
 - [SciPy](https://scipy.org) -> For calculating statistics, particularly useful for generating confidence intervals.
 - [Concurrent.futures](https://docs.python.org/3/library/concurrent.futures.html) -> For parallel execution of the Runs, improving the efficiency of processing tasks.
+- [Threading](https://docs.python.org/3/library/threading.html) -> Used for concurrency control, particularly with the `Semaphore` object for limiting the number of threads.
 - Standard Libraries:
     - [atexit](https://docs.python.org/3/library/atexit.html) -> For executing cleanup functions when the program terminates.
     - [os](https://docs.python.org/3/library/os.html) -> For interacting with the operating system, like running terminal commands.
