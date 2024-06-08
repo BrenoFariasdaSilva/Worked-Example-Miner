@@ -191,20 +191,26 @@ def prepare_context_message(csv_data):
 	{csv_data}
 	"""
 
-def limited_thread_function(model, semaphore, message, run):
+def write_output_to_file(output, file_path=OUTPUT_FILE):
 	"""
-	Perform a single run of starting a chat session and sending a message with a semaphore.
-	:param model: The generative AI model.
-	:param semaphore: The semaphore to limit the number of threads.
-	:param message: The message to be sent.
-	:param run: The run number.
-	:return: The output text.
+	Writes the chat output to a specified file.
+	:param output: The output to write.
+	:param file_path: The path to the file.
+	:return: None
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Started.{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the output to the file...{Style.RESET_ALL}")
 
-	with semaphore: # Use the semaphore
-		return perform_run(model, message, run) # Perform the run
+	with open(file_path, "w") as file:
+		file.write(output) # Write the output to the file
+
+def print_output(output):
+	"""
+	Print the output text.
+	:param output: The output text.
+	"""
+	
+	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Output:{BackgroundColors.GREEN}\n{output}{Style.RESET_ALL}", end="\n") # Output the output
 
 def handle_output(run, output):
 	"""
@@ -240,27 +246,6 @@ def process_future_output(future, run, outputs):
 		handle_output(run, output) # Handle the output
 	except Exception as exc: # If an exception occurs
 		print(f"{BackgroundColors.RED}Run {run} generated an exception: {exc}{Style.RESET_ALL}")
-
-def perform_runs_with_threading(model, context_message):
-	"""
-	Perform multiple runs of starting a chat session and sending a message with threading.
-	:param model: The generative AI model.
-	:param context_message: The context message to be sent.
-	:return: The outputs of the runs.
-	"""
-
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Performing the runs with threading...{Style.RESET_ALL}")
-
-	outputs = [] # Initialize the outputs list
-	semaphore = Semaphore(MAX_THREADS) # Create a semaphore to limit the number of threads
-
-	with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-		future_to_run = {executor.submit(limited_thread_function, model, semaphore, context_message, run): run for run in range(RUNS)} # Create a future to run dictionary
-		for future in as_completed(future_to_run): # For each future in the completed futures
-			run = future_to_run[future] # Get the run from the future
-			process_future_output(future, run, outputs) # Process the future output
-
-	return outputs # Return the outputs
 
 def start_chat_session(model, initial_user_message):
 	"""
@@ -298,55 +283,6 @@ def send_message(chat_session, user_message):
 	output = chat_session.send_message(user_message) # Send the message
 	return output # Return the output
 
-def print_output(output):
-	"""
-	Print the output text.
-	:param output: The output text.
-	"""
-	
-	print(f"{BackgroundColors.BOLD}{BackgroundColors.CYAN}Output:{BackgroundColors.GREEN}\n{output}{Style.RESET_ALL}", end="\n") # Output the output
-
-def write_output_to_file(output, file_path=OUTPUT_FILE):
-	"""
-	Writes the chat output to a specified file.
-	:param output: The output to write.
-	:param file_path: The path to the file.
-	:return: None
-	"""
-
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the output to the file...{Style.RESET_ALL}")
-
-	with open(file_path, "w") as file:
-		file.write(output) # Write the output to the file
-
-def calculate_similarity_and_confidence(outputs, confidence=0.95):
-	"""
-	Calculate the average similarity between multiple outputs and the confidence interval.
-	:param outputs: The outputs to calculate the similarity.
-	:param confidence: The confidence level.
-	:return: The average similarity and confidence interval.
-	"""
-
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating the similarity between the outputs...{Style.RESET_ALL}")
-
-	if not outputs or len(outputs) == 1: # If there are no outputs or only one output
-		return 0.0, (0.0, 0.0) # No similarity or undefined confidence interval
-
-	vectorizer = TfidfVectorizer().fit_transform(outputs) # Fit the vectorizer and transform the outputs
-	vectors = vectorizer.toarray() # Convert the vectors to an array
-	cosine_matrix = cosine_similarity(vectors) # Calculate the cosine similarity matrix
-	np.fill_diagonal(cosine_matrix, 0) # Ignore self-similarity
-
-	# Get upper triangle of the matrix, ignoring the diagonal
-	upper_tri_indices = np.triu_indices_from(cosine_matrix, k=1)
-	similarities = cosine_matrix[upper_tri_indices]
-
-	avg_similarity = similarities.mean() # Calculate the average similarity
-	sem = stats.sem(similarities) # Calculate the standard error of the mean
-	ci = stats.t.interval(confidence, len(similarities)-1, loc=avg_similarity, scale=sem) # Calculate the confidence interval
-
-	return avg_similarity, ci # Return the average similarity and confidence interval
-
 def perform_run(model, context_message, run_number, retries=3, backoff_factor=0.5):
 	"""
 	Perform a single run of starting a chat session and sending a message.
@@ -375,6 +311,42 @@ def perform_run(model, context_message, run_number, retries=3, backoff_factor=0.
 
 	raise Exception(f"{BackgroundColors.RED}Failed to perform run after {BackgroundColors.CYAN}{retries}{BackgroundColors.GREEN} retries.{Style.RESET_ALL}") # Raise an exception
 
+def limited_thread_function(model, semaphore, message, run):
+	"""
+	Perform a single run of starting a chat session and sending a message with a semaphore.
+	:param model: The generative AI model.
+	:param semaphore: The semaphore to limit the number of threads.
+	:param message: The message to be sent.
+	:param run: The run number.
+	:return: The output text.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Thread of Run {BackgroundColors.CYAN}{run + 1}/{RUNS}{BackgroundColors.GREEN} Started.{Style.RESET_ALL}")
+
+	with semaphore: # Use the semaphore
+		return perform_run(model, message, run) # Perform the run
+
+def perform_runs_with_threading(model, context_message):
+	"""
+	Perform multiple runs of starting a chat session and sending a message with threading.
+	:param model: The generative AI model.
+	:param context_message: The context message to be sent.
+	:return: The outputs of the runs.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Performing the runs with threading...{Style.RESET_ALL}")
+
+	outputs = [] # Initialize the outputs list
+	semaphore = Semaphore(MAX_THREADS) # Create a semaphore to limit the number of threads
+
+	with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+		future_to_run = {executor.submit(limited_thread_function, model, semaphore, context_message, run): run for run in range(RUNS)} # Create a future to run dictionary
+		for future in as_completed(future_to_run): # For each future in the completed futures
+			run = future_to_run[future] # Get the run from the future
+			process_future_output(future, run, outputs) # Process the future output
+
+	return outputs # Return the outputs
+
 def analyze_outputs(outputs):
 	"""
 	Analyze the outputs and return the most frequent output.
@@ -386,6 +358,34 @@ def analyze_outputs(outputs):
 	most_frequent_output = output_counts.most_common(1)[0][0] # Get the most frequent output
 	write_output_to_file(most_frequent_output, MOST_COMMON_OUTPUT_FILE) # Write the most frequent output to a file
 	return most_frequent_output # Return the most frequent output
+
+def calculate_similarity_and_confidence(outputs, confidence=0.95):
+	"""
+	Calculate the average similarity between multiple outputs and the confidence interval.
+	:param outputs: The outputs to calculate the similarity.
+	:param confidence: The confidence level.
+	:return: The average similarity and confidence interval.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating the similarity between the outputs...{Style.RESET_ALL}")
+
+	if not outputs or len(outputs) == 1: # If there are no outputs or only one output
+		return 0.0, (0.0, 0.0) # No similarity or undefined confidence interval
+
+	vectorizer = TfidfVectorizer().fit_transform(outputs) # Fit the vectorizer and transform the outputs
+	vectors = vectorizer.toarray() # Convert the vectors to an array
+	cosine_matrix = cosine_similarity(vectors) # Calculate the cosine similarity matrix
+	np.fill_diagonal(cosine_matrix, 0) # Ignore self-similarity
+
+	# Get upper triangle of the matrix, ignoring the diagonal
+	upper_tri_indices = np.triu_indices_from(cosine_matrix, k=1)
+	similarities = cosine_matrix[upper_tri_indices]
+
+	avg_similarity = similarities.mean() # Calculate the average similarity
+	sem = stats.sem(similarities) # Calculate the standard error of the mean
+	ci = stats.t.interval(confidence, len(similarities)-1, loc=avg_similarity, scale=sem) # Calculate the confidence interval
+
+	return avg_similarity, ci # Return the average similarity and confidence interval
 
 def report_run_statistics(outputs):
 	"""
