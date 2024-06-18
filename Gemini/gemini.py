@@ -45,7 +45,7 @@ OUTPUT_DIRECTORY = "./Outputs/" # The path to the output directory
 
 # File Path Constants:
 CSV_INPUT_FILE = "../PyDriller/metrics_statistics/zookeeper/substantial_CBO_classes_changes.csv" # The path to the input JSON file
-PDF_FILE = f"{INPUT_DIRECTORY}NFSTCPP.pdf" # The path to the PDF file
+PDF_FILE = f"{INPUT_DIRECTORY}Curriculum.pdf" # The path to the PDF file
 OUTPUT_FILE = f"{OUTPUT_DIRECTORY}output.txt" # The path to the output file
 MOST_COMMON_OUTPUT_FILE = f"{OUTPUT_DIRECTORY}most_common_output.txt" # The path to the most common output file
 
