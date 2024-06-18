@@ -1,4 +1,5 @@
 import atexit # For playing a sound when the program finishes
+import fitz # For extracting text from PDF files
 import google.generativeai as genai # Import the Google AI Python SDK
 import numpy as np # For handling numerical data
 import os # For running a command in the terminal
@@ -38,9 +39,13 @@ MAX_THREADS = 2 # Maximum number of threads to run concurrently
 ENV_PATH = "../.env" # The path to the .env file
 ENV_VARIABLE = "GEMINI_API_KEY" # The environment variable to load
 
+# Directory Constants:
+INPUT_DIRECTORY = "./Inputs/" # The path to the input directory
+OUTPUT_DIRECTORY = "./Outputs/" # The path to the output directory
+
 # File Path Constants:
 CSV_INPUT_FILE = "../PyDriller/metrics_statistics/zookeeper/substantial_CBO_classes_changes.csv" # The path to the input JSON file
-OUTPUT_DIRECTORY = "./Outputs/" # The path to the output directory
+PDF_FILE = f"{INPUT_DIRECTORY}NFSTCPP.pdf" # The path to the PDF file
 OUTPUT_FILE = f"{OUTPUT_DIRECTORY}output.txt" # The path to the output file
 MOST_COMMON_OUTPUT_FILE = f"{OUTPUT_DIRECTORY}most_common_output.txt" # The path to the most common output file
 
@@ -172,10 +177,34 @@ def load_csv_file(file_path):
 	filtered_data = df[DESIRED_HEADER].to_string(index=False) # Filter the data and convert it to a string
 	return filtered_data # Return the filtered data
 
-def prepare_context_message(csv_data):
+def read_pdf_file(file_path=PDF_FILE):
+	"""
+	Read the text from a PDF file.
+	:param file_path: The path to the PDF file.
+	:return: The text from the PDF file.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Reading the PDF file...{Style.RESET_ALL}")
+
+	# Verify if the PDF file exists
+	if not os.path.exists(file_path):
+		print(f"{BackgroundColors.RED}PDF file {BackgroundColors.CYAN}{file_path}{BackgroundColors.RED} not found.{Style.RESET_ALL}")
+		sys.exit(1) # Exit the program
+
+	doc = fitz.open(file_path) # Open the PDF file
+	text = "" # Initialize the text
+
+	for page in doc: # For each page in the PDF file
+		text += page.get_text() # Get the text from the page
+	doc.close() # Close the PDF file
+
+	return text # Return the text
+
+def prepare_context_message(csv_data, pdf_content):
 	"""
 	Prepare the context message for the chat session.
 	:param csv_data: The CSV data to be included in the message.
+	:param pdf_content: The PDF content to be included in the message.
 	:return: The context message.
 	"""
 
@@ -189,6 +218,10 @@ def prepare_context_message(csv_data):
 	With that in mind, i want you to analyze each line of the CSV and try to relate the terms of the method invocations with topics of Distributed Systems education.
 	Here is the CSV data:
 	{csv_data}
+
+	Also, i have a PDF file containing the Curriculum Initiative on Parallel and Distributed Computing from NFS TCPP and i want you to relate the curriculum of Distributed System from the PDF with the CSV data.
+	Here is the PDF content:
+	{pdf_content}
 	"""
 
 def write_output_to_file(output, file_path=OUTPUT_FILE):
@@ -417,7 +450,10 @@ def main():
 	# Load and filter the CSV file
 	csv_data = load_csv_file(CSV_INPUT_FILE)
 
-	context_message = prepare_context_message(csv_data) # Start chat session and send message
+	# Read the PDF file
+	pdf_content = read_pdf_file(PDF_FILE)
+
+	context_message = prepare_context_message(csv_data, pdf_content) # Start chat session and send message
 	outputs = perform_runs_with_threading(model, context_message) # Perform the runs with threading
 	most_frequent_output = analyze_outputs(outputs) # Analyze the outputs
 
