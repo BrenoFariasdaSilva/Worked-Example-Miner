@@ -206,11 +206,16 @@ make gemini_script
    - If the file or required columns are missing, the script exits.
    - Filters and converts the data to a string for further processing.
 
-5. **Start Chat Session with Model:**
+5. **Read and Extract Text from PDF File:**
+   - Calls `read_pdf_file()` to extract text from the PDF file located at `PDF_FILE`.
+   - The extracted text is used to provide additional context to the Generative AI model for generating responses.
+   - If the PDF file is missing, the script continues without the additional context.
+
+6. **Start Chat Session with Model:**
    - Prepares an initial message for the chat session explaining the format and content of the CSV data.
    - Calls `start_chat_session()` with the initial message to begin a chat session with the AI model.
 
-6. **Perform Multiple Runs:**
+7. **Perform Multiple Runs:**
    - Executes the process `RUNS` times to engage with the model using parallel execution, where each run starts a chat session and sends a message requesting the analysis of the provided CSV data.
    - Implements a retry mechanism with exponential backoff in case of server errors.
    - Each response is collected and the similarity between all responses is computed to assess consistency.
@@ -219,21 +224,21 @@ make gemini_script
      - `limited_thread_function(model, semaphore, message, run)`
      - `perform_run(model, context_message, run_number, retries=3, backoff_factor=0.5)`
 
-7. **Print and Save Outputs:**
+8. **Print and Save Outputs:**
    - Calls `print_output()` to print the AI model's response to the terminal.
    - Calls `write_output_to_file()` to save the AI model's response to the specified output file (`OUTPUT_FILE`).
    - **Function Calls:**
      - `analyze_outputs(outputs)`
      - `write_output_to_file(most_frequent_output, MOST_COMMON_OUTPUT_FILE)`
 
-8. **Compute Similarity Between Runs:**
+9. **Compute Similarity Between Runs:**
    - After collecting outputs from multiple runs, calculates the similarity of outputs to assess the consistency using cosine similarity metrics.
    - Computes the average similarity and a 95% confidence interval for the similarity to provide a measure of the reliability of the responses.
    - **Function Calls:**
      - `calculate_similarity_and_confidence(outputs, confidence=0.95)`
      - `report_run_statistics(outputs)`
 
-9. **Play Sound on Completion:**
+10. **Play Sound on Completion:**
    - When the script finishes, it plays a notification sound to indicate completion, using the `play_sound()` function registered with `atexit`.
 
 ## Generated Data
