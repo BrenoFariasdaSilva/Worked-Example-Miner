@@ -216,6 +216,6 @@ Jabref/.github/*
 # Ignore the .env file
 .env
 
-# Gemini Output File
-/Gemini/Outputs/*.txt
-/Gemini/Outputs/*.json
+# Gemini's Input and Output Directories
+/Gemini/Inputs/
+/Gemini/Outputs/
