@@ -1,5 +1,3 @@
-# TODO: Modify the occurrences_counter = row["methodInvocations"] if PROCESS_CLASSES else 0 at line 197 to get the methodInvocationsCounter when CK Jar has it implemented.
-
 import atexit # For playing a sound when the program finishes
 import csv # For reading csv files
 import matplotlib.pyplot as plt # For plotting the graphs
@@ -22,7 +20,7 @@ from code_metrics import create_directory, output_time, path_contains_whitespace
 # Default values that can be changed:
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
-DESIRED_DECREASED = 0.20 # The desired decreased in the metric
+DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
 SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to search for substantial changes
@@ -557,7 +555,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		current_percentual_variation = round((metrics_values[i - 1] - metrics_values[i]) / metrics_values[i - 1], 3)
 
 		# If the current percentual variation is bigger than the desired decrease, then update the biggest_change list
-		if current_percentual_variation > DESIRED_DECREASED and current_percentual_variation > biggest_change[2]:
+		if current_percentual_variation > DESIRED_DECREASE and current_percentual_variation > biggest_change[2]:
 			# Fetch commit data to retrieve refactoring information
 			temp_commit_data = [commit_hashes[i - 1], commit_hashes[i]] # The commit data [from_commit_hash, to_commit_hash]
 			refactorings_info = get_refactoring_info(repository_name, temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1], class_name)
@@ -570,8 +568,8 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary.replace("'", "")]
 				commit_data = [temp_commit_data[0].split('-')[0], temp_commit_data[0].split('-')[1], temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1]] # Splitting commit hash to get commit number and hash
 
-	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decreased
-	if biggest_change[2] > DESIRED_DECREASED:
+	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decrease
+	if biggest_change[2] > DESIRED_DECREASE:
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
 			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
