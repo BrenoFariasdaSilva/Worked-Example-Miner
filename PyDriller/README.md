@@ -445,7 +445,7 @@ This script is used to generate the zip files of the repositories. As mentioned 
 In order to execute it, you must modify the following constants:
 
 1. `repositories`: This constant is used to specify the names of the repositories that you want to generate the zip files.
-2. `subfolders`: This constant is used to specify the subfolders that you want to generate the zip files. For example, if you want to generate the zip files of the `diffs`, `metrics_data`, `metrics_evolution`, `metrics_predictions`, `metrics_statistics` and `repositories` subfolders, you must add them to the `subfolders` list.
+2. `subfolders`: This constant is used to specify the subfolders that you want to generate the zip files. For example, if you want to generate the zip files of the `diffs`, `metrics_data`, `metrics_evolution`, `metrics_predictions`, `metrics_statistics`, `progress`, `refactorings` and `repositories` subfolders, you must add them to the `subfolders` list.
 
 ##### Run
 
