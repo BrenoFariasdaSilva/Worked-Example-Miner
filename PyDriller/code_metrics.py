@@ -21,7 +21,11 @@ class BackgroundColors: # Colors for the terminal
    CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
 # Default values that can be changed:
-DEFAULT_REPOSITORIES = {"zookeeper": "https://github.com/apache/zookeeper"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
+# DEFAULT_REPOSITORIES = {"conductor": "https://github.com/conductor-oss/conductor"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
+# DEFAULT_REPOSITORIES = {"genie": "https://github.com/Netflix/genie"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
+DEFAULT_REPOSITORIES = {"kafka": "https://github.com/apache/kafka"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
+# DEFAULT_REPOSITORIES = {"trino": "https://github.com/trinodb/trino"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
+# DEFAULT_REPOSITORIES = {"zookeeper": "https://github.com/apache/zookeeper"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
 
 # Default paths:
@@ -356,7 +360,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
             print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
             execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
-            output_time(execution_time, round((number_of_commits - last_commit_number) * 1), 2) # Output the estimated time for running the remaining iterations for the repository
+            output_time(execution_time, number_of_commits - last_commit_number) # Output the estimated time for running the remaining iterations for the repository
             
    else: # If there is no saved progress file, create one and write the header
       with open(saved_progress_file, "w") as progress_file: # Open the saved progress file
