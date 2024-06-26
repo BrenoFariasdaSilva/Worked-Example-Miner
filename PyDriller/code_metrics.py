@@ -21,7 +21,7 @@ class BackgroundColors: # Colors for the terminal
    CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
 # Default values that can be changed:
-DEFAULT_REPOSITORIES = {"zookeeper": "https://github.com/apache/zookeeper"} # The dicitonary of the repositories to be analyzed (repository name: repository URL)
+DEFAULT_REPOSITORIES = {"zookeeper": "https://github.com/apache/zookeeper"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
 
 # Default paths:
