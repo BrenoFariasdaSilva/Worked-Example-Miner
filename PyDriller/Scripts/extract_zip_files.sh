@@ -57,7 +57,7 @@ for repo_name in "${short_repositories[@]}"; do
 done
 
 # Play a sound when the script finishes
-sound_file="../.assets/Sounds/NotificationSound.wav"
+sound_file="./../../.assets/Sounds/NotificationSound.wav"
 
 if [ -e "$sound_file" ]; then
    aplay "$sound_file" # Play the sound file
