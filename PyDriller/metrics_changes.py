@@ -799,12 +799,30 @@ def sort_csv_by_changes(repository_name):
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}metrics statistics files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}number of changes{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
+	# Define the unsorted csv file path
+	unsorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted csv file path
+
+	# Verify if the unsorted csv file exists
+	if not verify_file(unsorted_csv_file_path):
+		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository does not exist.{Style.RESET_ALL}")
+		return # Return if the unsorted csv file does not exist
+
 	# Read the csv file
-	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}")
+	data = pd.read_csv(unsorted_csv_file_path)
+	
+	# Verify if the DataFrame is empty after the header
+	if data.empty:
+		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is empty after the header.{Style.RESET_ALL}")
+		return # Return if the file is empty after the header
+	
 	# Sort the csv file by the number of changes
 	data = data.sort_values(by=["Changed"], ascending=False)
+	
+	# Define the sorted csv file path
+	sorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}" # The sorted csv file path
+	
 	# Write the sorted csv file to a new csv file
-	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}", index=False)
+	data.to_csv(sorted_csv_file_path, index=False)
 
 def sort_csv_by_percentual_variation(repository_name):
 	"""
