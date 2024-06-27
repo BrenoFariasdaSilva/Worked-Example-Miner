@@ -20,7 +20,7 @@ if [[ "${current_dir}" != *"/PyDriller" ]]; then
 fi
 
 # Define the list of repositories
-repositories=("commons-lang" "jabref" "kafka" "zookeeper")
+repositories=("commons-lang" "conductor" "genie" "jabref" "kafka" "waltz" "zookeeper")
 
 # Define the list of subfolders
 subfolders=("diffs" "metrics_data" "metrics_evolution" "metrics_predictions" "metrics_statistics" "refactorings" "repositories")

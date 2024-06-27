@@ -19,8 +19,8 @@ if [[ "${current_dir}" != *"/PyDriller" ]]; then
    exit # Exit the script
 fi
 
-# Define the list of repositoriesgit p
-repositories=("commons-lang" "jabref" "kafka" "zookeeper")
+# Define the list of repositories
+repositories=("commons-lang" "conductor" "genie" "jabref" "kafka" "waltz" "zookeeper")
 
 # Define the list of subfolders
 subfolders=("ck_metrics" "diffs" "metrics_data" "metrics_evolution" "metrics_predictions" "metrics_statistics" "progress" "refactorings" "repositories")
