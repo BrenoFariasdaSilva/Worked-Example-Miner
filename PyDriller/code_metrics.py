@@ -21,11 +21,16 @@ class BackgroundColors: # Colors for the terminal
    CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
 # Default values that can be changed:
-# DEFAULT_REPOSITORIES = {"conductor": "https://github.com/conductor-oss/conductor"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
-# DEFAULT_REPOSITORIES = {"genie": "https://github.com/Netflix/genie"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
-DEFAULT_REPOSITORIES = {"kafka": "https://github.com/apache/kafka"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
-# DEFAULT_REPOSITORIES = {"trino": "https://github.com/trinodb/trino"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
-# DEFAULT_REPOSITORIES = {"zookeeper": "https://github.com/apache/zookeeper"} # The dictionary of the repositories to be analyzed (repository name: repository URL)
+DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
+   "commons-lang": "https://github.com/apache/commons-lang",
+   "conductor": "https://github.com/conductor-oss/conductor",
+   "genie": "https://github.com/Netflix/genie",
+   "jabref": "https://github.com/JabRef/jabref",
+   "kafka": "https://github.com/apache/kafka",
+   "waltz": "https://github.com/wepay/waltz",
+   "zookeeper": "https://github.com/apache/zookeeper",
+}
+
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
 
 # Default paths:
