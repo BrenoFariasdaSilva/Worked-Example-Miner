@@ -502,6 +502,34 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 
 	return refactorings_summary # Return the formatted string containing the refactorings information
 
+def add_csv_header(csv_filename, metric_name):
+	""""
+	Adds the header to the csv file, if it does not exist.
+	:param csv_filename: The name of the csv file
+	:param metric_name: The name of the metric
+	:return: None
+	"""
+
+	expected_header = [] # The expected header list
+	if PROCESS_CLASSES:
+		expected_header = ["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Method Invocations", "Refactoring Patterns"]
+	else:
+		expected_header = ["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactoring Patterns"]
+	
+	if verify_file(csv_filename): # If the file exists
+		with open(csv_filename, "r") as file: # Open the file
+			first_line = file.readline().strip() # Read the first line
+			if first_line != ",".join(expected_header): # If the first line is not equal to the expected header
+				existing_lines = file.readlines() # Read the existing lines
+				with open(csv_filename, "w") as csvfile: # Open the file in write mode
+					writer = csv.writer(csvfile) # Create the csv writer
+					writer.writerow(expected_header) # Write the expected header
+					csvfile.writelines(existing_lines) # Write the existing lines
+	else: # If the file does not exist
+		with open(csv_filename, "w") as csvfile: # Open the file in write mode
+			writer = csv.writer(csvfile) # Create the csv writer
+			writer.writerow(expected_header) # Write the expected header
+
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric.
@@ -531,16 +559,12 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	
 	# Verify if it's the first run and if the CSV file already exists
 	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_file(csv_filename):
-		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False # Update the flag after handling the first run
-		os.remove(csv_filename) # Remove the CSV file if it exists
+		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False  # Update the flag after handling the first run
+		os.remove(csv_filename)  # Remove the CSV file if it exists
 
-		# Open the csv file and write the header. If the file does not exist, create it.
-		with open(f"{csv_filename}", "w") as csvfile:
-			writer = csv.writer(csvfile) # Create the csv writer
-			if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True, then we're processing the classes
-				writer.writerow(["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Method Invocations", "Refactoring Patterns"])
-			else: # If the PROCESS_CLASSES constant is set to False, then we're processing the methods
-				writer.writerow(["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactoring Patterns"])
+	# Add the header if the file is newly created
+	if not verify_file(csv_filename):
+		add_csv_header(csv_filename, metric_name)
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = ['', '', '', ''] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
