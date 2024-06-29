@@ -113,6 +113,39 @@ def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
 
    return api_key # Return the value of the key
 
+def fetch_repositories(token):
+   """
+   Fetches the list of repositories from GitHub API.
+
+   :param token: str
+   :return: list
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Fetching the repositories...{Style.RESET_ALL}")
+
+   headers = {
+      "Authorization": f"token {token}", # Add the token to the headers
+      "Accept": "application/vnd.github.v3+json" # Add the accept header
+   }
+
+   query = "topic:distributed-systems language:java" # The query to search for repositories
+   url = f"https://api.github.com/search/repositories?q={query}&sort=updated&order=desc&per_page=100" # The URL to fetch the repositories
+   repositories = [] # The list of repositories
+   page = 1 # The page number
+
+   while True:
+      response = requests.get(f"{url}&page={page}", headers=headers) # Make a GET request to the URL
+      response_data = response.json() # Get the JSON data from the response
+
+      # Break the loop if there are no items in the response
+      if "items" not in response_data or not response_data["items"]:
+         break # Break the loop if there are no items in the response
+
+      repositories.extend(response_data["items"]) # Add the fetched repositories to the list
+      page += 1 # Increment the page number
+
+   return repositories # Return the list of repositories
+
 def main():
    """
    Main function.
