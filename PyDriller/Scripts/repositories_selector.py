@@ -23,6 +23,20 @@ class BackgroundColors: # Colors for the terminal
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
 SOUND_FILE = "./.assets/Sounds/NotificationSound.wav" # The path to the sound file
 
+# .Env Constants:
+ENV_PATH = "../.env" # The path to the .env file
+ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
+
+# Execution Constants:
+VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
+CANDIDATES = 3 # The number of repositories to select
+EXCLUDE_REPOSITORIES_KEYWORDS = ["awesome", "interview", "question"] # Keywords to ignore in repository names
+MINIMUM_STARS = 50 # The minimum number of stars a repository must have
+
+# File Path Constants:
+OUTPUT_DIRECTORY = "./Repositories/" # The path to the output directory
+OUTPUT_FILE = f"{OUTPUT_DIRECTORY}repositories.json" # The path to the output file
+
 def play_sound():
    """
    Plays a sound when the program finishes.
