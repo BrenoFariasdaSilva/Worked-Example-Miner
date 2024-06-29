@@ -53,6 +53,7 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
       - [Move Extracted Files](#move-extracted-files)
         - [Run](#run-6)
         - [Workflow](#workflow-6)
+      - [Repositories Selector](#repositories-selector)
       - [Track Files](#track-files)
         - [Configuration](#configuration-6)
         - [Run](#run-7)
@@ -502,6 +503,10 @@ make move_extracted_files_script
 5. **Sound Notification:** Upon successfully organizing and cleaning up the files, the script attempts to play a notification sound. If the specified sound file cannot be found, it alerts the user about the missing file.
 
 6. **Completion Message:** Finally, the script prints a success message indicating that the files have been moved and the source folders deleted, signaling the end of its operation.
+
+#### Repositories Selector
+
+This script interacts with the GitHub API to fetch and filter repositories based on specific criteria, and randomly selects a subset for further processing.
 
 #### Track Files
 
