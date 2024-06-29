@@ -55,9 +55,10 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
         - [Workflow](#workflow-6)
       - [Repositories Selector](#repositories-selector)
         - [Configuration](#configuration-6)
+        - [Run](#run-7)
       - [Track Files](#track-files)
         - [Configuration](#configuration-7)
-        - [Run](#run-7)
+        - [Run](#run-8)
         - [Workflow](#workflow-7)
   - [Generated Data](#generated-data)
     - [CK Metrics](#ck-metrics)
@@ -518,6 +519,14 @@ Before running the script, modify the following constants if necessary:
 3. `EXCLUDE_REPOSITORIES_KEYWORDS`: Keywords to ignore in repository names.
 4. `MINIMUM_STARS`: Minimum number of stars a repository must have.
 5. `OUTPUT_DIRECTORY` and `OUTPUT_FILE`: Paths for saving the output JSON file.
+
+##### Run
+
+Now that you have set the constants, you can run the following command to execute the following command:
+
+```
+make repositories_selector_script
+```
 
 #### Track Files
 
