@@ -53,7 +53,7 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
       - [Move Extracted Files](#move-extracted-files)
         - [Run](#run-6)
         - [Workflow](#workflow-6)
-      - [Repositories Picker](#repositories-selector)
+      - [Repositories Picker](#repositories-picker)
         - [Configuration](#configuration-6)
         - [Run](#run-7)
         - [Workflow](#workflow-7)
@@ -703,6 +703,21 @@ The outputs (generated data and metadata) of the scripts are stored in the `PyDr
 ### Repositories Files
     
    This directory contains the cloned repositories, which are stored in the `repositories/repository_name` directory. We need this files locally to extract the ck metrics of the repositories.
+
+   Also, here you can find the `repositories.json` file that contains the list of the candidate repositories that are of the `topic:distributed-systems` and `language:java`, wee updated in the last 180 days (6 months) and have more than 100 stars. The `repositories.json` file has the following structure:
+
+   ```json
+   {
+      "repositories": [
+         {
+            "name": "the_repository_name" (String),
+            "url": "the_repository_url" (String),
+            "description": "the_repository_description" (String),
+            "stars": "the_repository_stars" (Integer),
+         },
+      ]
+   }
+   ```
 
 ## Contributing
 
