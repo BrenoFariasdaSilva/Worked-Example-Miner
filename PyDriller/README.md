@@ -54,8 +54,9 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
         - [Run](#run-6)
         - [Workflow](#workflow-6)
       - [Repositories Selector](#repositories-selector)
-      - [Track Files](#track-files)
         - [Configuration](#configuration-6)
+      - [Track Files](#track-files)
+        - [Configuration](#configuration-7)
         - [Run](#run-7)
         - [Workflow](#workflow-7)
   - [Generated Data](#generated-data)
@@ -507,6 +508,16 @@ make move_extracted_files_script
 #### Repositories Selector
 
 This script interacts with the GitHub API to fetch and filter repositories based on specific criteria, and randomly selects a subset for further processing.
+
+##### Configuration
+
+Before running the script, modify the following constants if necessary:
+
+1. `VERBOSE`: Set to `True` for detailed output during script execution.
+2. `CANDIDATES`: Number of repositories to select randomly.
+3. `EXCLUDE_REPOSITORIES_KEYWORDS`: Keywords to ignore in repository names.
+4. `MINIMUM_STARS`: Minimum number of stars a repository must have.
+5. `OUTPUT_DIRECTORY` and `OUTPUT_FILE`: Paths for saving the output JSON file.
 
 #### Track Files
 
