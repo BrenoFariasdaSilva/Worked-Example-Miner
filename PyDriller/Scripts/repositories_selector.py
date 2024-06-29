@@ -146,6 +146,32 @@ def fetch_repositories(token):
 
    return repositories # Return the list of repositories
 
+def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
+   """
+   Filters the list of repositories based on the update date and ignore keywords.
+
+   :param repositories: list
+   :param ignore_keywords: list
+   :return: list
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Filtering the repositories...{Style.RESET_ALL}")
+
+   filtered_repositories = [] # The list of filtered repositories
+   six_months_ago = datetime.now() - timedelta(days=180) # The date six months ago
+
+   for repo in repositories: # Iterate over the repositories
+      updated_date = datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ") # Get the updated date of the repository
+      if updated_date > six_months_ago and repo["stargazers_count"] >= MINIMUM_STARS and not any(keyword in repo["name"].lower() for keyword in ignore_keywords):
+         filtered_repositories.append({ # Append the repository to the list
+            "name": repo["name"], # Get the name of the repository
+            "url": repo["html_url"], # Get the URL of the repository
+            "description": repo["description"], # Get the description of the repository
+            "stars": repo["stargazers_count"] # Get the number of stars of the repository
+         })
+
+   return filtered_repositories # Return the filtered list of repositories
+
 def main():
    """
    Main function.
