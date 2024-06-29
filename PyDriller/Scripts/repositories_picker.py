@@ -222,9 +222,10 @@ def main():
       # Randomly select an specific number of repositories
       candidates = randomly_select_repositories(filtered_repositories, CANDIDATES)
 
-      print(f"{BackgroundColors.GREEN}Selected repositories:{Style.RESET_ALL}")
-      for repo in candidates: # Iterate over the selected repositories
-         print(f"{BackgroundColors.CYAN}{repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
+      print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
+      for i, repo in enumerate(candidates, start=1): # Iterate over the selected repositories with index starting from 1
+         print(f"{BackgroundColors.CYAN}{i}. {repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
+
    else:
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
