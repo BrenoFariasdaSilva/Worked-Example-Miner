@@ -35,6 +35,7 @@ def play_sound():
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
 
+
 def main():
    """
    Main function.
@@ -42,7 +43,25 @@ def main():
    :return: None
    """
 
-   print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Hello, World!{Style.RESET_ALL}", end="\n\n") # Output the Welcome message
+   print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Selector{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
+
+   token = verify_env_file() # Verify the .env file and get the token
+
+   repositories = fetch_repositories(token) # Fetch the repositories
+
+   filtered_repositories = filter_repositories(repositories) # Filter the repositories
+
+   if filtered_repositories: # If there are repositories after filtering
+      save_to_json(filtered_repositories) # Save the filtered repositories to a JSON file
+
+      # Randomly select an specific number of repositories
+      candidates = select_repositories(filtered_repositories, CANDIDATES)
+
+      print(f"{BackgroundColors.GREEN}Selected repositories:{Style.RESET_ALL}")
+      for repo in candidates: # Iterate over the selected repositories
+         print(f"{BackgroundColors.CYAN}{repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
+   else:
+      print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
    print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
