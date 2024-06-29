@@ -30,7 +30,7 @@ ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
 # Execution Constants:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
 CANDIDATES = 3 # The number of repositories to select
-EXCLUDE_REPOSITORIES_KEYWORDS = ["awesome", "interview", "question"] # Keywords to ignore in repository names
+EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 
 # File Path Constants:
@@ -162,7 +162,7 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    for repo in repositories: # Iterate over the repositories
       updated_date = datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ") # Get the updated date of the repository
-      if updated_date > six_months_ago and repo["stargazers_count"] >= MINIMUM_STARS and not any(keyword in repo["name"].lower() for keyword in ignore_keywords):
+      if updated_date > six_months_ago and repo["stargazers_count"] >= MINIMUM_STARS and not any(keyword.lower() in repo["name"].lower() or keyword.lower() in repo["description"].lower() for keyword in ignore_keywords):
          filtered_repositories.append({ # Append the repository to the list
             "name": repo["name"], # Get the name of the repository
             "url": repo["html_url"], # Get the URL of the repository
@@ -208,7 +208,7 @@ def main():
    :return: None
    """
 
-   print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Selector{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
+   print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Picker{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
 
    token = verify_env_file() # Verify the .env file and get the token
 

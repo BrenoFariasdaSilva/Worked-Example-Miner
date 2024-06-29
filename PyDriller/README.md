@@ -53,7 +53,7 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
       - [Move Extracted Files](#move-extracted-files)
         - [Run](#run-6)
         - [Workflow](#workflow-6)
-      - [Repositories Selector](#repositories-selector)
+      - [Repositories Picker](#repositories-selector)
         - [Configuration](#configuration-6)
         - [Run](#run-7)
         - [Workflow](#workflow-7)
@@ -507,7 +507,7 @@ make move_extracted_files_script
 
 6. **Completion Message:** Finally, the script prints a success message indicating that the files have been moved and the source folders deleted, signaling the end of its operation.
 
-#### Repositories Selector
+#### Repositories Picker
 
 This script interacts with the GitHub API to fetch and filter repositories based on specific criteria, and randomly selects a subset for further processing.
 
@@ -526,7 +526,7 @@ Before running the script, modify the following constants if necessary:
 Now that you have set the constants, you can run the following command to execute the following command:
 
 ```
-make repositories_selector_script
+make repositories_picker_script
 ```
 
 ##### Workflow
