@@ -87,6 +87,32 @@ def create_directory(full_directory_name, relative_directory_name):
    except OSError: # If the directory cannot be created
       print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
 
+def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
+   """
+   Verify if the .env file exists and if the desired key is present.
+
+   :param env_path: Path to the .env file.
+   :param key: The key to get in the .env file.
+   :return: The value of the key if it exists.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying the .env file...{Style.RESET_ALL}")
+
+   # Verify if the .env file exists
+   if not os.path.exists(env_path):
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}.env file{BackgroundColors.RED} not found at {BackgroundColors.CYAN}{env_path}{Style.RESET_ALL}")
+      sys.exit(1) # Exit the program
+
+   load_dotenv(env_path) # Load the .env file
+   api_key = os.getenv(key) # Get the value of the key
+
+   # Verify if the key exists
+   if not api_key:
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{key}{BackgroundColors.RED} key was not found in the .env file located at {BackgroundColors.CYAN}{env_path}{Style.RESET_ALL}")
+      sys.exit(1) # Exit the program
+
+   return api_key # Return the value of the key
+
 def main():
    """
    Main function.
