@@ -22,13 +22,11 @@ class BackgroundColors: # Colors for the terminal
 
 # Default values that can be changed:
 DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
-   "commons-lang": "https://github.com/apache/commons-lang",
-   "conductor": "https://github.com/conductor-oss/conductor",
-   "genie": "https://github.com/Netflix/genie",
-   "jabref": "https://github.com/JabRef/jabref",
+   "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
    "kafka": "https://github.com/apache/kafka",
-   "waltz": "https://github.com/wepay/waltz",
-   "zookeeper": "https://github.com/apache/zookeeper",
+   "moleculer-java": "https://github.com/moleculer-java/moleculer-java",
+   "scalecube-services": "https://github.com/scalecube/scalecube-services",
+   "zookeeper": "https://github.com/apache/zookeeper"
 }
 
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
