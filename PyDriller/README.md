@@ -56,10 +56,11 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
       - [Repositories Selector](#repositories-selector)
         - [Configuration](#configuration-6)
         - [Run](#run-7)
+        - [Workflow](#workflow-7)
       - [Track Files](#track-files)
         - [Configuration](#configuration-7)
         - [Run](#run-8)
-        - [Workflow](#workflow-7)
+        - [Workflow](#workflow-8)
   - [Generated Data](#generated-data)
     - [CK Metrics](#ck-metrics)
     - [Commit Diff Files](#commit-diff-files)
@@ -527,6 +528,15 @@ Now that you have set the constants, you can run the following command to execut
 ```
 make repositories_selector_script
 ```
+
+##### Workflow
+
+1. Environment Setup: Loads environment variables from `.env` file, specifically the GitHub token (`GITHUB_TOKEN`).
+2. Fetch Repositories: Queries the GitHub API for repositories matching criteria (`topic:distributed-systems` and `language:java`), sorting by update date in descending order.
+3. Filter Repositories Filters fetched repositories based on update date, star count, and exclusion keywords.
+4. Save to JSON Saves filtered repositories to a JSON file (`repositories.json` in the specified directory).
+5. Select Repositories Randomly selects a specified number of repositories (`CANDIDATES`) from the filtered list.
+6. Output Displays selected repositories with their names, URLs, descriptions, and star counts.
 
 #### Track Files
 
