@@ -172,6 +172,22 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    return filtered_repositories # Return the filtered list of repositories
 
+def save_to_json(data, filename=OUTPUT_FILE):
+   """
+   Saves the data to a JSON file.
+
+   :param data: dict
+   :param filename: str
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Saving the data to {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+
+   create_directory(OUTPUT_DIRECTORY, "output") # Create the output directory
+
+   with open(filename, "w") as json_file: # Open the JSON file
+      json.dump(data, json_file, indent=3) # Dump the data to the JSON file
+
 def main():
    """
    Main function.
