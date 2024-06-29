@@ -188,6 +188,19 @@ def save_to_json(data, filename=OUTPUT_FILE):
    with open(filename, "w") as json_file: # Open the JSON file
       json.dump(data, json_file, indent=3) # Dump the data to the JSON file
 
+def randomly_select_repositories(repositories, num_repos):
+   """
+   Selects a number of repositories randomly.
+
+   :param repositories: list
+   :param num_repos: int
+   :return: list
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Selecting {BackgroundColors.CYAN}{num_repos}{BackgroundColors.GREEN} repositories randomly...{Style.RESET_ALL}")
+
+   return random.sample(repositories, num_repos)
+
 def main():
    """
    Main function.
@@ -207,7 +220,7 @@ def main():
       save_to_json(filtered_repositories) # Save the filtered repositories to a JSON file
 
       # Randomly select an specific number of repositories
-      candidates = select_repositories(filtered_repositories, CANDIDATES)
+      candidates = randomly_select_repositories(filtered_repositories, CANDIDATES)
 
       print(f"{BackgroundColors.GREEN}Selected repositories:{Style.RESET_ALL}")
       for repo in candidates: # Iterate over the selected repositories
