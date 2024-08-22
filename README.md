@@ -48,8 +48,7 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Clone with Submodule](#clone-with-submodule)
     - [Clone Submodule](#clone-submodule)
   - [Paper Submissions](#paper-submissions)
-    - [EduComp 2024 - Ideas Laboratory (UPDATE)](#educomp-2024---ideas-laboratory-update)
-    - [SIGCSE 2025 (UPDATE)](#sigcse-2025-update)
+    - [EduComp 2024 - Ideas Laboratory](#educomp-2024---ideas-laboratory)
   - [Goals](#goals)
   - [Skills](#skills)
   - [Directories](#directories)
@@ -106,7 +105,7 @@ git submodule update
 
 This research project aims to contribute to the field of Software Engineering (SE) and Distributed Systems (DS) by exploring the evolution of code quality in Java repositories. Our research findings and insights will be shared through academic papers, conference presentations, and educational resources. We are committed to advancing knowledge in software development practices and improve the educational quality of worked examples in SE.
 
-### EduComp 2024 - Ideas Laboratory (UPDATE)
+### EduComp 2024 - Ideas Laboratory
 
 We are excited to announce that our paper's submission to the [EduComp 2024](http://educompbrasil.org) conference was accepted! EduComp is a premier conference that focuses on educational computing, providing a platform for researchers, educators, and practitioners to share their insights and innovations in the field of educational technology. Our paper highlights the significance of worked examples in software engineering education, particularly within the domain of Distributed Systems, and discusses a novel approach for selecting these examples based on code quality metrics.
 
@@ -114,15 +113,15 @@ The study introduces a heuristic based on metrics to examine the evolution of co
 
 Our findings reveal that this methodology can effectively contribute to the selection of worked examples for Distributed Systems, highlighting improvements in modularization, cohesion, and code reusability. Such examples are instrumental in enhancing learning and understanding in software engineering education.
 
-For further details on our approach and findings, you can read our paper submission here: [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE) and watch our presentation at EduComp 2024 on April 25 available on [YouTube](https://youtu.be/g_5z_1xqKKU?si=L2e6s5mQ2xs-w9aZ).
+For further details on our approach and findings, you can read our paper submission here: [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](https://sol.sbc.org.br/index.php/educomp_estendido/article/view/29466) and watch our presentation at EduComp 2024 on April 25 available on [YouTube](https://youtu.be/g_5z_1xqKKU?si=L2e6s5mQ2xs-w9aZ).
 
 EduComp24, April 22-27, 2024, São Paulo, São Paulo, Brazil (Online)
 
 © 2024 Copyright maintained by the authors. Publication rights licensed to the Brazilian Computer Society (SBC).
 
-### SIGCSE 2025 (UPDATE)
+<!-- ### SIGCSE 2025 (UPDATE)
 
-We are also planning to submit a paper to the [SBES 2024](https://cbsoft.sbc.org.br/2024/sbes/) conference. SBES is the Brazilian Symposium on Software Engineering, a prestigious event that brings together researchers, practitioners, and students to discuss the latest trends and advancements in software engineering. Our paper will delve into the evolution of code quality metrics in Java repositories, focusing on Distributed Systems (DS) and the implications for software design and maintainability. You can our paper submission here [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE).
+We are also planning to submit a paper to the [SBES 2024](https://cbsoft.sbc.org.br/2024/sbes/) conference. SBES is the Brazilian Symposium on Software Engineering, a prestigious event that brings together researchers, practitioners, and students to discuss the latest trends and advancements in software engineering. Our paper will delve into the evolution of code quality metrics in Java repositories, focusing on Distributed Systems (DS) and the implications for software design and maintainability. You can our paper submission here [Abordagem para seleção de exemplos trabalhados para Engenharia de Software do domínio de Sistemas Distribuídos](UPDATE). -->
 
 ## Goals
 
