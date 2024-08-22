@@ -25,6 +25,7 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
     - [Cleaning Up](#cleaning-up)
   - [How to use](#how-to-use)
     - [Main Scripts](#main-scripts)
+      - [Repositories Picker](#repositories-picker)
       - [Code\_Metrics](#code_metrics)
         - [Configuration](#configuration)
         - [Run](#run)
@@ -53,7 +54,6 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
       - [Move Extracted Files](#move-extracted-files)
         - [Run](#run-6)
         - [Workflow](#workflow-6)
-      - [Repositories Picker](#repositories-picker)
         - [Configuration](#configuration-6)
         - [Run](#run-7)
         - [Workflow](#workflow-7)
@@ -196,6 +196,10 @@ By following these instructions, you'll ensure that all project dependencies are
 ## How to use 
 
 ### Main Scripts
+
+#### Repositories Picker
+
+This script interacts with the GitHub API to fetch and filter repositories based on specific criteria, and randomly selects a subset for further processing. The script is useful for selecting repositories to analyze with the `code_metrics.py` and `metrics_changes.py` scripts.
 
 In order to use the makefile rules, you must be in the `PyDriller/` directory.
 
@@ -506,10 +510,6 @@ make move_extracted_files_script
 5. **Sound Notification:** Upon successfully organizing and cleaning up the files, the script attempts to play a notification sound. If the specified sound file cannot be found, it alerts the user about the missing file.
 
 6. **Completion Message:** Finally, the script prints a success message indicating that the files have been moved and the source folders deleted, signaling the end of its operation.
-
-#### Repositories Picker
-
-This script interacts with the GitHub API to fetch and filter repositories based on specific criteria, and randomly selects a subset for further processing.
 
 ##### Configuration
 
