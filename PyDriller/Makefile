@@ -7,32 +7,32 @@ PIP := $(VENV)/bin/pip
 
 # Main Scripts:
 code_metrics_script: $(VENV)
-	clear; time $(PYTHON) code_metrics.py
+	clear; time $(PYTHON) ./code_metrics.py
 
 metrics_changes_script: $(VENV)
-	clear; time $(PYTHON) metrics_changes.py
+	clear; time $(PYTHON) ./metrics_changes.py
+
+repositories_picker_script: $(VENV)
+	clear; time $(PYTHON) ./repositories_picker.py
 
 # Auxiliar Scripts:
 empty_folders_script: $(VENV)
-	clear; time $(PYTHON) Scripts/empty_folders.py
+	clear; time $(PYTHON) ./Scripts/empty_folders.py
 
 extract_zip_files_script: $(VENV)
-	chmod +x Scripts/extract_zip_files.sh; clear; time ./Scripts/extract_zip_files.sh
+	chmod +x ./Scripts/extract_zip_files.sh; clear; time ./Scripts/extract_zip_files.sh
 
 generate_short_zip_files_script: $(VENV)
-	chmod +x Scripts/generate_short_zip_files.sh; clear; time ./Scripts/generate_short_zip_files.sh
+	chmod +x ./Scripts/generate_short_zip_files.sh; clear; time ./Scripts/generate_short_zip_files.sh
 
 generate_zip_files_script: $(VENV)
-	chmod +x Scripts/generate_zip_files.sh; clear; time ./Scripts/generate_zip_files.sh
+	chmod +x ./Scripts/generate_zip_files.sh; clear; time ./Scripts/generate_zip_files.sh
 
 move_extracted_files_script: $(VENV)
-	chmod +x Scripts/move_extracted_files.sh; clear; time ./Scripts/move_extracted_files.sh
-
-repositories_picker_script: $(VENV)
-	clear; time $(PYTHON) Scripts/repositories_picker.py
+	chmod +x ./Scripts/move_extracted_files.sh; clear; time ./Scripts/move_extracted_files.sh
 
 track_files_script: $(VENV)
-	clear; time $(PYTHON) Scripts/track_files.py
+	clear; time $(PYTHON) ./Scripts/track_files.py
 
 # Setup Virtual Environment and Install Dependencies
 $(VENV): dependencies
