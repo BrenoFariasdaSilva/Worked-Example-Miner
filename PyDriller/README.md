@@ -203,6 +203,10 @@ This script interacts with the GitHub API to fetch and filter repositories based
 
 In order to use the makefile rules, you must be in the `PyDriller/` directory.
 
+##### Configuration
+
+##### Workflow
+
 #### Code_Metrics
 
 This script is used to generate the ck metrics, commit diff files and commit hashes list of the repositories specified in the `DEFAULT_REPOSITORIES` dictionary. It is really usefull to generate the data that will be used in the `metrics_changes.py` script.
