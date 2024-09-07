@@ -35,7 +35,7 @@ MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 
 # File Path Constants:
 OUTPUT_DIRECTORY = "./Repositories/" # The path to the output directory
-OUTPUT_FILE = f"{OUTPUT_DIRECTORY}repositories.json" # The path to the output file
+OUTPUT_FILE_JSON = f"{OUTPUT_DIRECTORY}repositories.json" # The path to the JSON output file
 
 def play_sound():
    """
