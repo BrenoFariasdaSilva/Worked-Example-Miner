@@ -173,7 +173,7 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    return filtered_repositories # Return the filtered list of repositories
 
-def save_to_json(data, filename=OUTPUT_FILE):
+def save_to_json(data, filename=OUTPUT_FILE_JSON):
    """
    Saves the data to a JSON file.
 
