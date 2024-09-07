@@ -1,7 +1,8 @@
 import atexit # For playing a sound when the program finishes
 import csv # CSV (Comma Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database
+import json # JSON (JavaScript Object Notation) is a lightweight data-interchange format
 import os # OS module in Python provides functions for interacting with the operating system
-import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool,
+import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
 import platform # For getting the operating system name
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import threading # The threading module provides a high-level interface for running tasks in separate threads
@@ -21,6 +22,8 @@ class BackgroundColors: # Colors for the terminal
    CLEAR_TERMINAL = "\033[H\033[J" # Clear the terminal
 
 # Default values that can be changed:
+PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
+
 DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
    "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
    "kafka": "https://github.com/apache/kafka",
@@ -37,6 +40,7 @@ START_PATH = os.getcwd() # Get the current working directory
 # Extensions:
 CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit hashes
 DIFF_FILE_EXTENSION = ".diff" # The diff file extension
+JSON_FILE_EXTENSION = ".json" # The JSON file extension
 
 # CK Constants:
 CK_BRANCH = "FEAT-ClassMetricUnsorted" # The branch of the CK repository to be used
@@ -56,6 +60,7 @@ RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory th
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
 RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of the directory that contains the refactorings
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
+RELATIVE_REPOSITORIES_LIST_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_list{JSON_FILE_EXTENSION}" # The relative path of the file that contains the repositories list
 
 # Full paths (Start Path + Relative Paths):
 FULL_CK_JAR_PATH = START_PATH.replace("PyDriller", "") + RELATIVE_CK_JAR_PATH.replace("../", "") # The full path of the CK JAR file
@@ -63,6 +68,7 @@ FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH
 FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # The full path of the progress file
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
+FULL_REPOSITORIES_LIST_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_LIST_FILE_PATH # The full path of the file that contains the repositories list
 
 def verbose_output(true_string="", false_string=""):
    """
