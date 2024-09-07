@@ -139,7 +139,7 @@ def verify_git():
 
 def switch_ck_branch():
    """
-   Ensure that the 'ck' repository is on the correct branch as defined by CK_BRANCH.
+   Ensure that the "ck" repository is on the correct branch as defined by CK_BRANCH.
    If CK_BRANCH does not exist, revert to the branch defined in the standard_branch variable.
    """
 
@@ -147,14 +147,14 @@ def switch_ck_branch():
 
    standard_branch = "master" # The standard branch in case the CK_BRANCH does not exist
 
-   # Check current branch
+   # Verify current branch
    result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True)
    current_branch = result.stdout.strip()
    
    if current_branch == CK_BRANCH:
       return True # Return True if the current branch is the CK branch
    
-   # Check if CK_BRANCH exists and switch to it
+   # Verify if CK_BRANCH exists and switch to it
    result = subprocess.run(["git", "checkout", CK_BRANCH], capture_output=True, text=True)
    if result.returncode == 0:
       verbose_output(true_string=f"{BackgroundColors.GREEN}The CK branch {BackgroundColors.CYAN}{CK_BRANCH}{BackgroundColors.GREEN} exists and was successfully checked out.{Style.RESET_ALL}")
@@ -281,11 +281,11 @@ def update_repository(repository_directory_path):
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_directory_path.split("/")[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + '/' + repository_name
+   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + "/" + repository_name
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
@@ -299,7 +299,7 @@ def clone_repository(repository_directory_path, repository_url):
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_directory_path.split("/")[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
    # Create a thread to clone the repository
    thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -664,7 +664,7 @@ def main():
    # Print the message that the CK metrics generator has finished processing the repositories
    print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}", end="\n\n")
 		
-if __name__ == '__main__':
+if __name__ == "__main__":
    """
    This is the standard boilerplate that calls the main() function.
 
