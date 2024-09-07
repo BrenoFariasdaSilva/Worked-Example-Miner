@@ -167,7 +167,8 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
             "name": repo["name"], # Get the name of the repository
             "url": repo["html_url"], # Get the URL of the repository
             "description": repo["description"], # Get the description of the repository
-            "stars": repo["stargazers_count"] # Get the number of stars of the repository
+            "stars": repo["stargazers_count"], # Get the number of stars of the repository
+            "updated_at": repo["updated_at"] # Get the updated date of the repository
          })
 
    return filtered_repositories # Return the filtered list of repositories
