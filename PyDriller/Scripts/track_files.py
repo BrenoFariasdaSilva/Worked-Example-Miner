@@ -131,7 +131,7 @@ def main():
 	# Print the completion message
 	print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Track Files{BackgroundColors.GREEN} script has completed!{Style.RESET_ALL}")
  
-if __name__ == '__main__':
+if __name__ == "__main__":
    """
    This is the standard boilerplate that calls the main() function.
 

@@ -93,7 +93,7 @@ def main():
 	# Print the end message
 	print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Empty Folders Finder{BackgroundColors.GREEN} has finished running. Thank you for using it!{Style.RESET_ALL}")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
    """
    This is the standard boilerplate that calls the main() function.
 
