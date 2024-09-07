@@ -40,8 +40,8 @@ REFACTORING_MINER_JSON_FILE_EXTENSION = ".json" # The extension of the Refactori
 # Filenames:
 CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # The name of the csv generated file from ck.
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
-UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
-SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
+UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace(".csv", "")}_unsorted_changes.{CK_CSV_FILE.split(".")[1]}" # The name of the csv file containing the top changed methods
+SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace(".csv", "")}_changes.{CK_CSV_FILE.split(".")[1]}" # The name of the csv file containing the sorted top changed methods
 SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # The relative path to the directory containing the interesting changes
 
 # Relative Paths:
@@ -78,8 +78,8 @@ def update_global_variables():
 	PROCESS_CLASSES = input(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}").strip().lower() == "true"
 	CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1]
 	CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods"
-	UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}"
-	SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}"
+	UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace(".csv", "")}_unsorted_changes.{CK_CSV_FILE.split(".")[1]}"
+	SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace(".csv", "")}_changes.{CK_CSV_FILE.split(".")[1]}"
 	SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}"
 
 def get_directory_path(repository_name):
@@ -300,7 +300,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name)
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
-	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
+	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split("/")[-1]} files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path):
 			# Sort the subdirectories in ascending order by the substring that comes before the "-"
 			subdirs.sort(key=lambda x: int(x.split("-")[0]))
@@ -329,7 +329,7 @@ def sort_commit_hashes_by_commit_number(metrics_track_record):
 	Sorts the commit_hashes list for each entry in the metrics_track_record dictionary
 	by the commit number (numeric value before the hyphen).
 
-	:param metrics_track_record: A dictionary where each key maps to another dictionary that contains a list under the key 'commit_hashes'.
+	:param metrics_track_record: A dictionary where each key maps to another dictionary that contains a list under the key "commit_hashes".
 	:return: The sorted metrics_track_record
 	"""
 
@@ -354,10 +354,10 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
 		for key, value in metrics_track_record.items(): # For each key, value in the metrics_track_record dictionary
 			file.write(f"{key}: \n") # Write the key
-			file.write(f"\tMetrics: {value['metrics']}\n") # Write the metrics
-			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n") # Write the commit hashes
-			file.write(f"\tChanged: {value['changed']}\n") # Write the changed value
-			file.write(f"\tOccurrences: {value['occurrences']}\n") # Write the occurrences value
+			file.write(f"\tMetrics: {value["metrics"]}\n") # Write the metrics
+			file.write(f"\tCommit Hashes: {value["commit_hashes"]}\n") # Write the commit hashes
+			file.write(f"\tChanged: {value["changed"]}\n") # Write the changed value
+			file.write(f"\tOccurrences: {value["occurrences"]}\n") # Write the occurrences value
 			file.write(f"\n") # Write a new line
 
 def get_clean_id(id):
@@ -467,10 +467,10 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 		data = json.load(file) # Load the JSON data
 		# Loop through the refactorings in the data
 		for commit in data["commits"]:
-			if commit["sha1"] == commit_hash: # Check if the commit hash matches the specified one
+			if commit["sha1"] == commit_hash: # Verify if the commit hash matches the specified one
 				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
 					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Combine and loop through both left and right side locations
-						# Check if the class name is in the file path
+						# Verify if the class name is in the file path
 						simplified_class_name = class_name.split("$")[0].replace(".", "/") # Simplify the class name and adapt it to the path format
 						if simplified_class_name in location["filePath"]:
 							# If the file path is already in the dictionary, append the refactoring type to its list
@@ -496,7 +496,7 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 
 	# Converts the nested dictionary into a formatted string with the file paths and their corresponding refactoring types and occurrences
 	refactorings_summary = " ".join(
-        f"{filepath}: [{' '.join(f'{refactoring_type}({occurrences})' for refactoring_type, occurrences in sorted(types.items(), key=lambda item: item[1], reverse=True))}]"
+        f"{filepath}: [{" ".join(f"{refactoring_type}({occurrences})" for refactoring_type, occurrences in sorted(types.items(), key=lambda item: item[1], reverse=True))}]"
         for filepath, types in refactorings_info.items()
     )
 
@@ -567,7 +567,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		add_csv_header(csv_filename, metric_name)
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
-	commit_data = ['', '', '', ''] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
+	commit_data = ["", "", "", ""] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
 
 	# Loop through the metrics values
 	for i in range(1, len(metrics_values)):
@@ -582,7 +582,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		if current_percentual_variation > DESIRED_DECREASE and current_percentual_variation > biggest_change[2]:
 			# Fetch commit data to retrieve refactoring information
 			temp_commit_data = [commit_hashes[i - 1], commit_hashes[i]] # The commit data [from_commit_hash, to_commit_hash]
-			refactorings_info = get_refactoring_info(repository_name, temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1], class_name)
+			refactorings_info = get_refactoring_info(repository_name, temp_commit_data[1].split("-")[0], temp_commit_data[1].split("-")[1], class_name)
 
 			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
 			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list):
@@ -590,7 +590,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 
 				# Update the biggest_change list and commit data only if the conditions above are met.
 				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary.replace("'", "")]
-				commit_data = [temp_commit_data[0].split('-')[0], temp_commit_data[0].split('-')[1], temp_commit_data[1].split('-')[0], temp_commit_data[1].split('-')[1]] # Splitting commit hash to get commit number and hash
+				commit_data = [temp_commit_data[0].split("-")[0], temp_commit_data[0].split("-")[1], temp_commit_data[1].split("-")[0], temp_commit_data[1].split("-")[1]] # Splitting commit hash to get commit number and hash
 
 	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decrease and refactorings were found
 	if biggest_change[2] > DESIRED_DECREASE and biggest_change[3]:
@@ -937,7 +937,7 @@ def main():
 	# Output the message that the Metrics Changes Generator has finished
 	print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN} has finished processing the {BackgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORY_NAMES)}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}")
 		
-if __name__ == '__main__':
+if __name__ == "__main__":
    """
    This is the standard boilerplate that calls the main() function.
 
