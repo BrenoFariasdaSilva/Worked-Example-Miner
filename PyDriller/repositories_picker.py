@@ -293,12 +293,14 @@ def main():
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
-   if filtered_repositories: # If there are repositories after filtering
-      save_to_json(filtered_repositories) # Save the filtered repositories to a JSON file
-      save_to_pdf(filtered_repositories) # Save the filtered repositories to a PDF file
+   sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
+
+   if sorted_by_stars: # If there are repositories after filtering and sorting
+      save_to_json(sorted_by_stars) # Save the filtered and sorted repositories to a JSON file
+      save_to_pdf(sorted_by_stars) # Save the filtered and sorted repositories to a PDF file
 
       # Randomly select an specific number of repositories
-      candidates = randomly_select_repositories(filtered_repositories, CANDIDATES)
+      candidates = randomly_select_repositories(sorted_by_stars, CANDIDATES)
 
       print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
       for i, repo in enumerate(candidates, start=1): # Iterate over the selected repositories with index starting from 1
