@@ -175,6 +175,21 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    return filtered_repositories # Return the filtered list of repositories
 
+def capitalize_repositories(repositories):
+   """
+   Capitalizes the first letter of each word in the repository name.
+
+   :param repositories: list
+   :return: list
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Capitalizing the repository names...{Style.RESET_ALL}")
+
+   for repo in repositories: # Iterate over the repositories
+      repo["name"] = repo["name"].title() # Capitalize the first letter of each word in the repository name
+
+   return repositories # Return the list of repositories
+
 def save_to_json(data, filename=OUTPUT_FILE_JSON):
    """
    Saves the data to a JSON file.
@@ -293,7 +308,9 @@ def main():
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
-   sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
+   capitalized_repositories = capitalize_repositories(filtered_repositories)
+
+   sorted_by_stars = sorted(capitalized_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
 
    if sorted_by_stars: # If there are repositories after filtering and sorting
       save_to_json(sorted_by_stars) # Save the filtered and sorted repositories to a JSON file
