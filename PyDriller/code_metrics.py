@@ -1,11 +1,11 @@
 import atexit # For playing a sound when the program finishes
+import concurrent.futures # For running tasks in parallel
 import csv # CSV (Comma Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database
 import json # JSON (JavaScript Object Notation) is a lightweight data-interchange format
 import os # OS module in Python provides functions for interacting with the operating system
 import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
 import platform # For getting the operating system name
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
-import threading # The threading module provides a high-level interface for running tasks in separate threads
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
@@ -652,26 +652,33 @@ def process_repository(repository_name, repository_url):
 
 def process_repositories_in_parallel():
    """
-   Processes each repository in the DEFAULT_REPOSITORIES dictionary in parallel, using threads.
+   Processes each repository in the DEFAULT_REPOSITORIES dictionary in parallel using a thread pool.
 
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using threads...{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using a thread pool...{Style.RESET_ALL}")
 
-   threads = [] # The threads list
-   # Loop through the default repositories
-   for repository_name, repository_url in DEFAULT_REPOSITORIES.items():
-      estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for running all of the iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-      commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
-      output_time(estimated_time_string, round(((commits_number / 1000) * commits_number), 2)) # Output the estimated time for running all of the iterations for the repository
-      thread = threading.Thread(target=process_repository, args=(repository_name, repository_url,)) # Create a thread to process the repository
-      threads.append(thread) # Append the thread to the threads list
-      thread.start() # Start the thread
+   usable_threads, max_threads = get_max_threads() # Get the max number of threads to use
+   print(f"{BackgroundColors.GREEN}The number of usable threads is {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-   # Wait for all threads to finish
-   for thread in threads:
-      thread.join() # Wait for the thread to finish
+   # Function to process each repository
+   def process_and_estimate(repository_name, repository_url):
+      estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for running all iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+      
+      # Traverse commits in the repository and count them without materializing the entire list
+      commits_number = sum(1 for _ in Repository(repository_url).traverse_commits()) # Efficient commit count
+      estimated_time = round(((commits_number / 1000) * commits_number), 2) # Estimate the time to process the repository
+      output_time(estimated_time_string, estimated_time) # Output the estimated time
+      process_repository(repository_name, repository_url) # Process the repository
+
+   # Use ThreadPoolExecutor with a limit of usable_threads
+   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
+      futures = [ # Create a list of futures. Futures are used to manage the execution of the function in the thread pool
+         executor.submit(process_and_estimate, repository_name, repository_url) # Submit the process_and_estimate function
+         for repository_name, repository_url in DEFAULT_REPOSITORIES.items() # Loop through the DEFAULT_REPOSITORIES dictionary
+      ]
+      concurrent.futures.wait(futures) # Wait for all tasks to complete
 
 def play_sound():
    """
