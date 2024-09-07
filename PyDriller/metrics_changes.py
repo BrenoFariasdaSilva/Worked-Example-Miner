@@ -559,8 +559,8 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	
 	# Verify if it's the first run and if the CSV file already exists
 	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_file(csv_filename):
-		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False  # Update the flag after handling the first run
-		os.remove(csv_filename)  # Remove the CSV file if it exists
+		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False # Update the flag after handling the first run
+		os.remove(csv_filename) # Remove the CSV file if it exists
 
 	# Add the header if the file is newly created
 	if not verify_file(csv_filename):
