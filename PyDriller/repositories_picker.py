@@ -9,7 +9,6 @@ import random # For selecting random items
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
 from fpdf import FPDF # For creating PDFs
-from fpdf.enums import XPos, YPos # For setting the position of the text in the PDF
 
 # Macros:
 class BackgroundColors: # Colors for the terminal
@@ -193,98 +192,78 @@ def save_to_json(data, filename=OUTPUT_FILE_JSON):
       json.dump(data, json_file, indent=3) # Dump the data to the JSON file
 
 def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
-    """
-    Saves the data to a PDF file.
-    :param data: list of dict
-    :param filename: str
-    :return: None
-    """
+   """
+   Saves the data to a PDF file.
+   :param data: list of dict
+   :param filename: str
+   :return: None
+   """
 
-    verbose_output(true_string=f"{BackgroundColors.GREEN}Saving the data to {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Saving the data to {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 
-    pdf = FPDF()  # Create a PDF object
-    pdf.add_page()  # Add a page to the PDF
+   pdf = FPDF() # Create a PDF object
+   pdf.add_page() # Add a page to the PDF
 
-    # Use Helvetica to avoid Arial substitution warning
-    pdf.set_font("Helvetica", size=12)
+   pdf.set_font("Helvetica", size=12) # Set the font to Helvetica with size 12
 
-    # Header
-    pdf.set_font("Helvetica", "B", 12)
-    pdf.set_text_color(0, 102, 204)  # Set font color to a sky blue shade
+   # Header
+   pdf.set_font("Helvetica", "B", 12) # Set font to bold
+   pdf.set_text_color(0, 102, 204) # Set font color to a sky blue shade
 
-    # Format the current date
-    current_date = datetime.now().strftime("%d %B %Y")
-    current_time = datetime.now().strftime("%Hh %Mm %Ss")
+   # Format the current date
+   current_date = datetime.now().strftime("%d %B %Y") # Format: 01 January 2022
+   current_time = datetime.now().strftime("%Hh %Mm %Ss") # Format: 12h 34m 56s
 
-    header_text = (
-        f"Repositories List\n"
-        f"Number of Candidates: {len(data)}\n"
-        f"Generated on: {current_date} at {current_time}"
-    )
+   header_text = (
+      f"Repositories List\n" # Title
+      f"Number of Candidates: {len(data)}\n" # Number of repositories
+      f"Generated on: {current_date} at {current_time}" # Current date and time of generation
+   )
 
-    pdf.set_y(10)  # Set vertical position
-    pdf.multi_cell(0, 8, header_text, align="C")  # Reduced line height
-    pdf.ln(5)  # Reduced line break after header
+   pdf.set_y(10) # Set vertical position
+   pdf.multi_cell(0, 8, header_text, align="C") # Reduced line height
+   pdf.ln(5) # Reduced line break after header
 
-    # Column headers
-    pdf.set_font("Helvetica", "B", 10)
-    pdf.set_fill_color(200, 220, 255)  # Light blue color for headers
-    pdf.set_text_color(0, 0, 0)  # Reset font color to black
-    pdf.set_x(10)  # Set the start x position
-    pdf.cell(135, 10, "Name (Hyperlink)", border=1, fill=True)  # Name column
-    pdf.cell(20, 10, "Stars", border=1, fill=True)  # Stars column
-    pdf.cell(35, 10, "Last Update", border=1, fill=True)  # Last Update column
-    pdf.ln()  # Line break
+   # Column headers
+   pdf.set_font("Helvetica", "B", 10) # Bold font
+   pdf.set_fill_color(200, 220, 255) # Light blue color for headers
+   pdf.set_text_color(0, 0, 0) # Reset font color to black
+   pdf.set_x(10) # Set the start x position
+   pdf.cell(135, 10, "Name (Hyperlink)", border=1, fill=True) # Name column
+   pdf.cell(20, 10, "Stars", border=1, fill=True) # Stars column
+   pdf.cell(35, 10, "Last Update", border=1, fill=True) # Last Update column
+   pdf.ln() # Line break
 
-    # Data rows
-    pdf.set_font("Helvetica", size=10)
+   # Data rows
+   pdf.set_font("Helvetica", size=10)
 
-    def fit_cell(content, width, height=10):
-        """
-        Fit the content into a cell with word wrapping.
-        :param content: str, the text to fit in the cell
-        :param width: int, width of the cell
-        :param height: int, height of the cell (default 10)
-        """
-        # Verify if content fits the width, if not, add a multi-cell (wrapped text)
-        if pdf.get_string_width(content) > width:
-            # Split the content into multiple lines
-            pdf.multi_cell(width, height, content, border=1)
-        else:
-            pdf.cell(width, height, content, border=1)
+   for repo in data:
+      # Handle content in English
+      name = repo.get("name", "") # Get the name of the repository
+      url = repo.get("url", "") # Get the URL of the repository
+      stars = str(repo.get("stars", "")) # Get the number of stars of the repository
+      
+      # Handle last_update
+      last_update = repo.get("updated_at", "")
+      try:
+         last_update_date = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%SZ") # Parse the date
+         last_update = last_update_date.strftime("%d %B %Y") # Format: 01 January 2022
+      except ValueError:
+         last_update = "Unknown" # Fallback if date parsing fails
 
-    for repo in data:
-        # Handle content in English
-        name = repo.get("name", "")
-        url = repo.get("url", "")
-        stars = str(repo.get("stars", ""))
-        
-        # Handle last_update
-        last_update = repo.get("updated_at", "")
-        try:
-            last_update_date = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%SZ")
-            last_update = last_update_date.strftime("%d %B %Y")
-        except ValueError:
-            last_update = "Unknown"  # Fallback if date parsing fails
+      # Add the encoded content to the PDF
+      pdf.set_x(10) # Set the start x position
 
-        # Add the encoded content to the PDF
-        pdf.set_x(10)  # Set the start x position
+      # Name (make it a hyperlink)
+      pdf.set_text_color(0, 0, 255) # Set color to blue for hyperlinks
+      pdf.cell(135, 10, name, border=1, link=url) # Name should be clickable
+      pdf.set_text_color(0, 0, 0) # Reset text color to black
 
-        # Name (make it a hyperlink)
-        pdf.set_text_color(0, 0, 255)  # Set color to blue for hyperlinks
-        pdf.cell(135, 10, name, border=1, link=url)  # Name should be clickable
-        pdf.set_text_color(0, 0, 0)  # Reset text color to black
+      pdf.cell(20, 10, stars, border=1) # Stars
+      pdf.cell(35, 10, last_update, border=1) # Last Update
+      pdf.ln() # Line break
 
-        # Stars
-        pdf.cell(20, 10, stars, border=1)
-
-        # Last Update
-        pdf.cell(35, 10, last_update, border=1)
-
-        pdf.ln()  # Line break
-
-    # Output the PDF file
-    pdf.output(filename)
+   pdf.output(filename) # Save the PDF file
 
 def randomly_select_repositories(repositories, num_repos):
    """
