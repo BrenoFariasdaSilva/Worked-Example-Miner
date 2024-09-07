@@ -650,15 +650,34 @@ def process_repository(repository_name, repository_url):
    # Checkout the main branch
    checkout_branch("main")
 
+def get_adjusted_number_of_threads(cpu_count):
+   """
+   Get the adjusted number of threads to use based on the available CPU cores, following these rules:
+
+   - Ensure at least 1 thread is used.
+   - Always try leave at least 1 thread free.
+   - If there are 8 or more cores, leave 2 threads free, so the system can still be usable in terms of cpu usage, but memory wise it will also be very high.
+   """
+
+   if cpu_count <= 2: # If there are 2 or fewer CPU cores
+      usable_threads = 1 # Use 1 thread
+   elif 3 <= cpu_count <= 7: # If there are between 3 and 7 CPU cores
+      usable_threads = cpu_count - 1 # Leave 1 thread free
+   else: # If there are 8 or more CPU cores
+      usable_threads = cpu_count - 2 # Leave 2 threads free
+
+   return max(1, usable_threads), cpu_count # Return the number of threads to use and the maximum number of threads available
+
 def get_threads():
    """
-   Get the number of CPU cores available on the system, minus one, to set a limit for the thread pool.
+   Get the number of available cpu cores.
 
-   :return: Number of threads available and the number of CPU cores.
+   return: The number of cpu cores.
    """
    
-   cpu_count = os.cpu_count() # Get the number of CPU cores
-   return max(1, cpu_count - 1), cpu_count # Return the number of threads available and the number of CPU cores
+   cpu_cores = os.cpu_count() # Get the number of CPU cores
+
+   return cpu_cores # Return the number of CPU cores
 
 def process_repositories_in_parallel():
    """
@@ -669,7 +688,9 @@ def process_repositories_in_parallel():
 
    print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using a thread pool...{Style.RESET_ALL}")
 
-   usable_threads, max_threads = get_threads() # Get the number of available and usable threads
+   cpu_cores = get_threads() # Get the number of cpu cores
+   usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
+
    print(f"{BackgroundColors.GREEN}The number of usable threads is {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
    # Function to process each repository
