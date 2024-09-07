@@ -650,6 +650,16 @@ def process_repository(repository_name, repository_url):
    # Checkout the main branch
    checkout_branch("main")
 
+def get_threads():
+   """
+   Get the number of CPU cores available on the system, minus one, to set a limit for the thread pool.
+
+   :return: Number of threads available and the number of CPU cores.
+   """
+   
+   cpu_count = os.cpu_count() # Get the number of CPU cores
+   return max(1, cpu_count - 1), cpu_count # Return the number of threads available and the number of CPU cores
+
 def process_repositories_in_parallel():
    """
    Processes each repository in the DEFAULT_REPOSITORIES dictionary in parallel using a thread pool.
@@ -659,7 +669,7 @@ def process_repositories_in_parallel():
 
    print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using a thread pool...{Style.RESET_ALL}")
 
-   usable_threads, max_threads = get_max_threads() # Get the max number of threads to use
+   usable_threads, max_threads = get_threads() # Get the number of available and usable threads
    print(f"{BackgroundColors.GREEN}The number of usable threads is {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
    # Function to process each repository
