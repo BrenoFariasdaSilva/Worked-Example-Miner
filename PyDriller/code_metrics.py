@@ -194,6 +194,66 @@ def ensure_ck_jar_exists():
       print(f"{BackgroundColors.RED}The CK JAR file was not found in the target directory.{Style.RESET_ALL}")
       return False # Return False if the CK JAR file was not found in the target directory
 
+def is_valid_json_file(file_path):
+   """
+   Verify if the JSON file exists and is not empty.
+
+   :param file_path: The path to the JSON file.
+   :return: True if the JSON file exists and is not empty, False otherwise.
+   """
+
+   if not os.path.exists(file_path):
+      verbose_output(f"{BackgroundColors.RED}The repositories JSON file does not exist.{Style.RESET_ALL}", is_error=True)
+      return False # Return False if the JSON file does not exist
+   if os.path.getsize(file_path) == 0:
+      verbose_output(f"{BackgroundColors.RED}The repositories JSON file is empty.{Style.RESET_ALL}", is_error=True)
+      return False # Return False if the JSON file is empty
+   return True # Return True if the JSON file exists and is not empty
+
+# Function to load repositories from JSON
+def load_repositories_from_json(file_path):
+   """
+   Load repositories from a JSON file.
+
+   :param file_path: The path to the JSON file.
+   :return: A dictionary containing the repositories if the JSON file is valid, None otherwise.   
+   """
+
+   try:
+      with open(file_path, "r", encoding="utf-8") as json_file: # Open the JSON file
+         repositories_list = json.load(json_file) # Load the JSON file
+
+      # Ensure the data is a list and contains repositories
+      if isinstance(repositories_list, list) and repositories_list:
+         return {repo["name"]: repo["url"] for repo in repositories_list} # Return the dictionary containing the repositories
+      else:
+         print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
+         return None # Return None if the JSON file is not in the correct format
+   except (json.JSONDecodeError, KeyError) as e:
+      verbose_output(f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
+      return None # Return None if there is an error parsing the JSON file
+
+def update_repositories_list():
+   """
+   Update the repositories list file with the DEFAULT_REPOSITORIES dictionary.
+   
+   :return: True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file, False otherwise.
+   """
+   
+   verbose_output(f"{BackgroundColors.GREEN}Updating the repositories list file with the DEFAULT_REPOSITORIES dictionary...{Style.RESET_ALL}")
+
+   global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
+
+   # Validate the JSON file
+   if not is_valid_json_file(RELATIVE_REPOSITORIES_LIST_FILE_PATH):
+      return # Return if the JSON file is not valid
+
+   # Load repositories from JSON and update DEFAULT_REPOSITORIES
+   json_repositories = load_repositories_from_json(RELATIVE_REPOSITORIES_LIST_FILE_PATH)
+   if json_repositories:
+      DEFAULT_REPOSITORIES = json_repositories
+      verbose_output("The DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file.")
+
 def output_time(output_string, time):
    """
    Outputs time, considering the appropriate time unit.
@@ -653,6 +713,12 @@ def main():
    if not os.path.exists(RELATIVE_CK_JAR_PATH):
       if not ensure_ck_jar_exists(): # Ensure that the CK JAR file exists
          return # Return if the CK JAR file does not exist
+      
+   # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
+   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
+      if not update_repositories_list(): # Update the repositories list
+         print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
+         return # Return if the repositories list could not be updated
 
    # Print the welcome message
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
