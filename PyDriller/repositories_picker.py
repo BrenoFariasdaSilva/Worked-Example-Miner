@@ -215,39 +215,36 @@ def extract_author_name(repo):
 
    return repo["html_url"].split("/")[-2]
 
-def get_unique_repo_name(repo, repo_names):
+def get_unique_repo_name(repo):
    """
-   Ensures the repository has a unique name by appending the author's name if necessary.
+   Ensures the repository has a unique name by adding the author's name as a prefix to the repository name.
    :param repo: dict
    :param repo_names: set
    :return: str
    """
 
    repo_name = repo["name"] # Get the name of the repository
+   author_name = extract_author_name(repo) # Extract the author's name
+   unique_repo_name = f"{author_name}/{repo_name}" # Add the author's name to the repository name
 
-   if repo_name in repo_names: # If the repository name is already in the set, then it is not unique (duplicate) 
-      author_name = extract_author_name(repo) # Extract the author's name
-      repo_name = f"{repo_name}/{author_name}" # Append the author's name to the repository name
+   return unique_repo_name # Return the unique repository name
 
-   return repo_name
-
-def process_repository(repo, six_months_ago, ignore_keywords, repo_names):
+def process_repository(repo, six_months_ago, ignore_keywords):
    """
    Processes a single repository, filtering by date, keywords, and ensuring a unique name.
    :param repo: dict
    :param six_months_ago: datetime
    :param ignore_keywords: list
-   :param repo_names: set
    :return: dict or None
    """
 
    updated_date = parse_repo_updated_date(repo) # Get the last update date of the repository
-   repo_name = get_unique_repo_name(repo, repo_names) # Get the name of the repository
+   unique_repo_name = get_unique_repo_name(repo) # Get the name of the repository
 
    # Validate the repository based on the update date, star count, and keywords
    if is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords):
       return {
-         "name": repo_name,
+         "name": unique_repo_name,
          "url": repo["html_url"],
          "description": repo["description"],
          "stars": repo["stargazers_count"],
@@ -258,7 +255,7 @@ def process_repository(repo, six_months_ago, ignore_keywords, repo_names):
 
 def contains_excluded_keywords(repo, ignore_keywords):
    """
-   Verifys if the repository's name or description contains any excluded keywords.
+   Verifies if the repository's name or description contains any excluded keywords.
    :param repo: dict
    :param ignore_keywords: list
    :return: bool
@@ -274,7 +271,7 @@ def contains_excluded_keywords(repo, ignore_keywords):
 
 def is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords):
    """
-   Verifys if the repository is valid based on the update date, star count, and keywords.
+   Verifies if the repository is valid based on the update date, star count, and keywords.
    :param repo: dict
    :param updated_date: datetime
    :param six_months_ago: datetime
@@ -300,13 +297,11 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    filtered_repositories = [] # The list of filtered repositories
    six_months_ago = get_six_months_ago_date() # The date six months ago
-   repo_names = set() # The set of repository names
 
    for repo in repositories: # Iterate over the repositories
-      filtered_repo = process_repository(repo, six_months_ago, ignore_keywords, repo_names) # Process the repository
+      filtered_repo = process_repository(repo, six_months_ago, ignore_keywords) # Process the repository
       if filtered_repo: # If the repository is valid
          filtered_repositories.append(filtered_repo) # Append the repository to the list
-         repo_names.add(filtered_repo["name"]) # Add the repository name to the set
 
    return filtered_repositories # Return the list of filtered repositories
 
