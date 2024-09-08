@@ -146,24 +146,32 @@ def switch_ck_branch():
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying and setting the CK branch...{Style.RESET_ALL}")
 
-   standard_branch = "master" # The standard branch in case the CK_BRANCH does not exist
+   standard_branches = ["master", "main"] # List of possible default branches
 
    # Verify current branch
    result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True)
-   current_branch = result.stdout.strip()
+   current_branch = result.stdout.strip() # Get the current branch
    
    if current_branch == CK_BRANCH:
       return True # Return True if the current branch is the CK branch
-   
-   # Verify if CK_BRANCH exists and switch to it
+
+   # Try to switch to CK_BRANCH
    result = subprocess.run(["git", "checkout", CK_BRANCH], capture_output=True, text=True)
-   if result.returncode == 0:
+   if result.returncode == 0: # If the return code is 0, the branch exists
       verbose_output(true_string=f"{BackgroundColors.GREEN}The CK branch {BackgroundColors.CYAN}{CK_BRANCH}{BackgroundColors.GREEN} exists and was successfully checked out.{Style.RESET_ALL}")
       return True # Return True if the CK branch exists and was successfully checked out
    else:
-      print(f"{BackgroundColors.YELLOW}The CK branch {BackgroundColors.CYAN}{CK_BRANCH}{BackgroundColors.YELLOW} doesn't exist. Reverting to {BackgroundColors.CYAN}{standard_branch}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
-      subprocess.run(["git", "checkout", standard_branch], check=True)
-      return False # Return False if the CK branch does not exist
+      print(f"{BackgroundColors.YELLOW}The CK branch {BackgroundColors.CYAN}{CK_BRANCH}{BackgroundColors.YELLOW} doesn't exist. Attempting to revert to a standard branch...{Style.RESET_ALL}")
+
+      # Try to switch to the standard branches
+      for branch in standard_branches: # Loop through the standard branches
+         result = subprocess.run(["git", "checkout", branch], capture_output=True, text=True) # Try to switch to the branch
+         if result.returncode == 0: # If the return code is 0, the branch exists
+            verbose_output(true_string=f"{BackgroundColors.GREEN}Successfully switched to {BackgroundColors.CYAN}{branch}{BackgroundColors.GREEN} branch.{Style.RESET_ALL}")
+            return True # Return True if the branch exists and was successfully checked out
+
+      print(f"{BackgroundColors.RED}Neither 'master' nor 'main' branches exist. Please verify the repository structure.{Style.RESET_ALL}")
+      return False
 
 def ensure_ck_jar_exists():
    """
