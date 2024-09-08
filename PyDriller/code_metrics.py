@@ -148,15 +148,17 @@ def switch_ck_branch():
 
    standard_branches = ["master", "main"] # List of possible default branches
 
+   ck_repo_path = os.path.abspath("../ck") # Path to the ck submodule
+
    # Verify current branch
-   result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True)
+   result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=ck_repo_path, capture_output=True, text=True)
    current_branch = result.stdout.strip() # Get the current branch
    
    if current_branch == CK_BRANCH:
       return True # Return True if the current branch is the CK branch
 
    # Try to switch to CK_BRANCH
-   result = subprocess.run(["git", "checkout", CK_BRANCH], capture_output=True, text=True)
+   result = subprocess.run(["git", "checkout", CK_BRANCH], cwd=ck_repo_path, capture_output=True, text=True)
    if result.returncode == 0: # If the return code is 0, the branch exists
       verbose_output(true_string=f"{BackgroundColors.GREEN}The CK branch {BackgroundColors.CYAN}{CK_BRANCH}{BackgroundColors.GREEN} exists and was successfully checked out.{Style.RESET_ALL}")
       return True # Return True if the CK branch exists and was successfully checked out
@@ -165,13 +167,14 @@ def switch_ck_branch():
 
       # Try to switch to the standard branches
       for branch in standard_branches: # Loop through the standard branches
-         result = subprocess.run(["git", "checkout", branch], capture_output=True, text=True) # Try to switch to the branch
+         result = subprocess.run(["git", "checkout", branch], cwd=ck_repo_path, capture_output=True, text=True) # Try to switch to the branch
          if result.returncode == 0: # If the return code is 0, the branch exists
             verbose_output(true_string=f"{BackgroundColors.GREEN}Successfully switched to {BackgroundColors.CYAN}{branch}{BackgroundColors.GREEN} branch.{Style.RESET_ALL}")
             return True # Return True if the branch exists and was successfully checked out
 
-      print(f"{BackgroundColors.RED}Neither 'master' nor 'main' branches exist. Please verify the repository structure.{Style.RESET_ALL}")
-      return False
+      branch_list = ", ".join([f"'{branch}'" for branch in standard_branches]) # Dynamic list of standard branches in the error message
+      print(f"{BackgroundColors.RED}None of the standard branches {BackgroundColors.CYAN}{branch_list}{BackgroundColors.GREEN} exist in {BackgroundColors.CYAN}'ck'{BackgroundColors.CYAN}. Please verify the repository structure.{Style.RESET_ALL}")
+      return False  # Return False if no valid branch was found
 
 def ensure_ck_jar_exists():
    """
