@@ -226,6 +226,22 @@ To run this script with the desired settings, you need to modify the following c
 
 ##### Workflow
 
+1. As for every file in this project, the first thing it will do is verify if you don't have whitespaces in the path of the project; if you have, it will not work.  
+2. Now, the main function will call the `verify_env_file()` function, which will verify if the `.env` file exists in the path defined in the `ENV_PATH` constant, as well as if the environment variable defined in the `ENV_VARIABLE` constant is set. If it isn't, it will stop the code execution.
+3. Next, the main function calls the `fetch_repositories(token)` function, which will fetch the repositories from the GitHub API. This function will return a list of repositories that have the minimum number of stars defined in the `MINIMUM_STARS` constant and don't have any of the keywords defined in the `EXCLUDE_REPOSITORIES_KEYWORDS` constant in the repository name. This function calls the following functions:
+   1. `build_headers(token)`: This function builds the headers for the GitHub API request, including the token for authentication.
+   2. `build_url(query)`: This function builds the URL for the GitHub API request, including the query parameters.
+   3. `fetch_all_pages(url, headers)`: This function fetches all pages of the GitHub API response, as the API paginates the results. It returns a list of all repositories.
+4. After fetching the repositories, the `filter_repositories(repositories, ignore_keywords)` function is called to filter the repositories based on the update date, ignore keywords, and ensure unique names. This function calls the following functions:
+   1. `process_repository(repo, six_months_ago, ignore_keywords)`: This function processes a single repository, filtering by date, keywords, and ensuring a unique name.
+   2. `contains_excluded_keywords(repo, ignore_keywords)`: This function verifies if the repository's name or description contains any excluded keywords.
+   3. `is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords)`: This function validates the repository based on the update date, star count, and keywords.
+5. The `filter_repositories()` function returns a list of filtered repositories, which is then passed to `randomly_select_repositories(repositories, num_repos)` to select a specified number of repositories randomly.
+6. Finally, the selected repositories are saved to both JSON and PDF formats using `save_to_json(data, filename)` and `save_to_pdf(data, filename)`, respectively. The PDF includes a header, column headers, and data rows formatted with hyperlinks to the repositories.
+7. The `print_repositories_summary(total_repositories, candidates)` function is called to print the total number of repositories and the selected repositories to the console for review.
+
+The program ensures that the environment is correctly set up, fetches and processes data from the GitHub API, applies filtering criteria, and outputs the results in both JSON and PDF formats.
+
 #### Code_Metrics
 
 This script is used to generate the ck metrics, commit diff files and commit hashes list of the repositories specified in the `DEFAULT_REPOSITORIES` dictionary. It is really usefull to generate the data that will be used in the `metrics_changes.py` script.

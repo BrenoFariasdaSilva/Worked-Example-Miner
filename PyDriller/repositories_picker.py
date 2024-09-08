@@ -244,7 +244,7 @@ def process_repository(repo, six_months_ago, ignore_keywords):
    # Validate the repository based on the update date, star count, and keywords
    if is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords):
       return {
-         "name": unique_repo_name,
+         "name": unique_repo_name.title(),
          "url": repo["html_url"],
          "description": repo["description"],
          "stars": repo["stargazers_count"],
@@ -304,21 +304,6 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
          filtered_repositories.append(filtered_repo) # Append the repository to the list
 
    return filtered_repositories # Return the list of filtered repositories
-
-def capitalize_repositories(repositories):
-   """
-   Capitalizes the first letter of each word in the repository name.
-
-   :param repositories: list
-   :return: list
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Capitalizing the repository names...{Style.RESET_ALL}")
-
-   for repo in repositories: # Iterate over the repositories
-      repo["name"] = repo["name"].title() # Capitalize the first letter of each word in the repository name
-
-   return repositories # Return the list of repositories
 
 def save_to_json(data, filename=OUTPUT_FILE_JSON):
    """
@@ -484,9 +469,7 @@ def main():
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
-   capitalized_repositories = capitalize_repositories(filtered_repositories) # Capitalize the repository names
-
-   sorted_by_stars = sorted(capitalized_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
+   sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
 
    if sorted_by_stars: # If there are repositories after filtering and sorting
       save_to_json(sorted_by_stars) # Save the filtered and sorted repositories to a JSON file
