@@ -534,6 +534,21 @@ def get_class_and_loc_metrics(output_directory):
 
    return class_count, loc_count # Return the class count and lines of code count
 
+def get_directory_size(directory):
+   """
+   Calculates the total size of the given directory in bytes.
+
+   :param directory: Path to the directory.
+   :return: Total size of the directory in bytes.
+   """
+
+   total_size = 0 # Total size of the directory
+   for dirpath, dirnames, filenames in os.walk(directory): # Walk through the directory
+      for filename in filenames: # Loop through the filenames
+         filepath = os.path.join(dirpath, filename) # Join the directory path with the filename
+         total_size += os.path.getsize(filepath) # Get the size of the file and add it to the total size
+   return total_size # Return the total size of the directory
+
 def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
    """
    Shows the execution time of the CK metrics generator.
