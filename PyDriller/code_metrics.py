@@ -506,6 +506,17 @@ def parse_commit_info(lines):
    
    return commits_info, last_commit_number # Return the list of commit information and the last commit number
 
+def calculate_percentage_progress(last_commit_number, total_commits):
+   """
+   Calculate the percentage progress based on the last commit number.
+
+   :param last_commit_number: The last processed commit number
+   :param total_commits: Total number of commits to be processed
+   :return: Percentage of progress as a rounded float
+   """
+
+   return round((last_commit_number / total_commits) * 100, 2) # Calculate the percentage progress
+
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
    Gets the last execution progress of the repository.
