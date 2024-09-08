@@ -200,6 +200,16 @@ def build_ck_jar_file(repo_path):
    subprocess.run(["mvn", "clean", "package", "-DskipTests"], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
    return os.path.exists(RELATIVE_CK_JAR_PATH) # Return True if the JAR file exists, False otherwise
 
+def switch_branch(target_branch, repo_path):
+   """
+   Switch branches in the CK submodule.
+   
+   :param original_branch: The name of the original branch
+   :param repo_path: Path to the ck submodule
+   """
+
+   subprocess.run(["git", "checkout", target_branch], cwd=repo_path, check=True)
+
 def ensure_ck_jar_file_exists():
    """
    Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
