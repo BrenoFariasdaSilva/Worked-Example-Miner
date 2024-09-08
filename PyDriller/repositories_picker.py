@@ -35,7 +35,7 @@ EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 
 # File Path Constants:
-OUTPUT_DIRECTORY = "./Repositories/" # The path to the output directory
+OUTPUT_DIRECTORY = "./repositories/" # The path to the output directory
 OUTPUT_FILE_JSON = f"{OUTPUT_DIRECTORY}repositories.json" # The path to the JSON output file
 OUTPUT_FILE_PDF = f"{OUTPUT_DIRECTORY}repositories.pdf" # The path to the PDF output file
 
