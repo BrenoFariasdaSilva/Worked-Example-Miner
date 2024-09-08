@@ -697,6 +697,16 @@ def get_filtered_sorted_directories(directory_path):
    filtered_dirs = [dirname for dirname in dirnames if "-" in dirname and dirname.split("-")[0].isdigit()] # Filter directories
    return sorted(filtered_dirs, key=lambda dirname: int(dirname.split("-")[0])) # Sort by commit number
 
+def get_last_directory(dirs):
+   """
+   Get the last directory from a sorted list of directories.
+
+   :param dirs: List of sorted directories
+   :return: Last directory in the list
+   """
+
+   return dirs[-1] if dirs else "" # Return the last directory if the list is not empty
+
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
    Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
