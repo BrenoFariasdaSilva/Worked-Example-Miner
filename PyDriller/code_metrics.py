@@ -54,7 +54,8 @@ TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, second
  
 # Relative paths:
 SOUND_FILE = "../.assets/Sounds/NotificationSound.wav" # The path to the sound file
-RELATIVE_CK_JAR_PATH = "../ck/target/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The relative path of the CK JAR file
+RELATIVE_CK_SUBMODULE_PATH = "../ck" # The relative path of the CK submodule
+RELATIVE_CK_JAR_PATH = f"{RELATIVE_CK_SUBMODULE_PATH}/target/ck-0.7.1-SNAPSHOT-jar-with-dependencies.jar" # The relative path of the CK JAR file
 RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path of the directory that contains the CK generated files
 RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory that contains the diffs
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
@@ -176,35 +177,38 @@ def switch_ck_branch():
       print(f"{BackgroundColors.RED}None of the standard branches {BackgroundColors.CYAN}{branch_list}{BackgroundColors.GREEN} exist in {BackgroundColors.CYAN}'ck'{BackgroundColors.CYAN}. Please verify the repository structure.{Style.RESET_ALL}")
       return False  # Return False if no valid branch was found
 
-def ensure_ck_jar_exists():
+def ensure_ck_jar_file_exists():
    """
    Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
-
-   :return: True if the CK JAR file was found in the target directory, False otherwise.
+   
+   :return: True if the CK JAR file was found or built successfully, False otherwise.
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Ensuring that the CK JAR file exists in the target directory...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Ensuring that the {BackgroundColors.CYAN}CK JAR{BackgroundColors.GREEN} file exists in the target directory...{Style.RESET_ALL}")
 
    # Initialize and update Git submodules
    if not init_and_update_submodules():
-      return # Return if the Git submodules could not be initialized and updated
-   
-   switch_ck_branch() # Switch to the desired CK branch if it exists
+      return False # Return if the Git submodules could not be initialized and updated
 
-   # Verify if the jar exists in the ck directory
-   if os.path.exists(RELATIVE_CK_JAR_PATH):
-      return True # Return True if the CK JAR file was found in the target directory
-   
-   # If not, run "mvn clean package -DskipTests" in the ck directory to generate the jar file
-   makefile_dir = os.path.abspath("../ck")
-   subprocess.run(["mvn", "clean", "package", "-DskipTests"], cwd=makefile_dir, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-   
-   # Verify if the jar now exists in the target directory
-   if os.path.exists(RELATIVE_CK_JAR_PATH):
-      return True # Return True if the CK JAR file was found in the target directory
-   else:
-      print(f"{BackgroundColors.RED}The CK JAR file was not found in the target directory.{Style.RESET_ALL}")
-      return False # Return False if the CK JAR file was not found in the target directory
+   ck_repo_path = os.path.abspath(RELATIVE_CK_SUBMODULE_PATH) # Path to the ck submodule
+
+   # Store the current branch before switching
+   original_branch = get_current_branch(ck_repo_path)
+
+   # Switch to the desired CK branch if it exists
+   if not switch_ck_branch(ck_repo_path, CK_BRANCH):
+      return False # Return False if the CK branch does not exist
+
+   # Build the JAR file if it does not exist
+   if build_ck_jar(ck_repo_path):
+      # Switch back to the original branch
+      switch_branch(original_branch, ck_repo_path)
+      # Verify if the jar exists in the ck directory
+      if os.path.exists(RELATIVE_CK_JAR_PATH):
+         return True # Return True if the CK JAR file was found in the target directory
+
+   print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CK JAR{BackgroundColors.RED} file was not found in the target directory.{Style.RESET_ALL}")
+   return False # Return False if the JAR file was not found in the target directory
 
 def verify_json_file(file_path):
    """
@@ -885,7 +889,7 @@ def main():
    
    # Verify if the CK JAR file exists
    if not os.path.exists(RELATIVE_CK_JAR_PATH):
-      if not ensure_ck_jar_exists(): # Ensure that the CK JAR file exists
+      if not ensure_ck_jar_file_exists(): # Ensure that the CK JAR file exists
          return # Return if the CK JAR file does not exist
 
    verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
