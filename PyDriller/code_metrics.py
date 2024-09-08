@@ -160,7 +160,7 @@ def switch_branch(target_branch, repo_path):
    """
    
    try:
-      subprocess.run(["git", "checkout", target_branch], cwd=repo_path, check=True)
+      subprocess.run(["git", "checkout", target_branch], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
       verbose_output(true_string=f"{BackgroundColors.GREEN}Successfully switched to {BackgroundColors.CYAN}{target_branch}{BackgroundColors.GREEN} branch.{Style.RESET_ALL}")
       return True
    except subprocess.CalledProcessError:
