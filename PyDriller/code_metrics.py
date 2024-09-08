@@ -514,6 +514,26 @@ def run_ck_metrics_generator(cmd):
    thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the cmd command in a subprocess
    stdout, stderr = thread.communicate() # Get the stdout and stderr of the thread
 
+def get_class_and_loc_metrics(output_directory):
+   """
+   Extracts the number of classes and lines of code from the CK output files.
+
+   :param output_directory: Path to the directory containing the CK metrics files.
+   :return: Tuple (classes, lines_of_code).
+   """
+
+   class_count = 0 # Total number of classes
+   loc_count = 0 # Total number of lines of code
+
+   # Open the CK metrics CSV file to extract the metrics
+   with open(f"{output_directory}/class.csv", "r") as file:
+      reader = csv.DictReader(file) # Read the CSV file
+      for row in reader: # Loop through the rows of the CSV file
+         class_count += 1 # Increment the class count
+         loc_count += int(row["loc"]) # Increment the lines of code count
+
+   return class_count, loc_count # Return the class count and lines of code count
+
 def show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name):
    """
    Shows the execution time of the CK metrics generator.
