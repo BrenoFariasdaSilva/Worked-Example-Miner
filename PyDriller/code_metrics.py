@@ -245,14 +245,20 @@ def update_repositories_list():
    global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
 
    # Validate the JSON file
-   if not verify_json_file(RELATIVE_REPOSITORIES_LIST_FILE_PATH):
-      return # Return if the JSON file is not valid
+   if not verify_json_file(FULL_REPOSITORIES_LIST_FILE_PATH):
+      return False # Return if the JSON file is not valid
 
    # Load repositories from JSON and update DEFAULT_REPOSITORIES
-   json_repositories = load_repositories_from_json(RELATIVE_REPOSITORIES_LIST_FILE_PATH)
-   if json_repositories:
-      DEFAULT_REPOSITORIES = json_repositories
-      verbose_output("The DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file.")
+   json_repositories = load_repositories_from_json(FULL_REPOSITORIES_LIST_FILE_PATH)
+
+   if not json_repositories: # If the JSON file was not successfully loaded
+      return False # Return False if the DEFAULT_REPOSITORIES dictionary was not successfully updated with values from the JSON file
+
+   DEFAULT_REPOSITORIES = json_repositories # Update the DEFAULT_REPOSITORIES dictionary with the values from the JSON file
+
+   verbose_output(f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated with values from the {BackgroundColors.CYAN}JSON{BackgroundColors.GREEN} file.{Style.RESET_ALL}")
+   
+   return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
 
 def output_time(output_string, time):
    """
