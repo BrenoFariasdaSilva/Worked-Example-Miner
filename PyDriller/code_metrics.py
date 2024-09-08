@@ -535,11 +535,12 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
 def traverse_repository(repository_name, repository_url, number_of_commits):
    """
    Traverses the repository to run CK for every commit hash in the repository.
+   Tracks the processing time, number of classes, lines of code, and other attributes.
 
    :param repository_name: Name of the repository to be analyzed.
    :param repository_url: URL of the repository to be analyzed.
    :param number_of_commits: Number of commits to be analyzed.
-   :return: The commit information of the repository.
+   :return: A tuple with the commits information list and a dictionary with repository attributes.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to run CK for every commit hash...{Style.RESET_ALL}")
@@ -553,7 +554,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    commits_info, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits-last_commit, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
+   with tqdm(total=number_of_commits - last_commit, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url).traverse_commits(): # Loop through the commits of the repository
          if commit_number < last_commit: # If the current commit number is less than the last commit number
             commit_number += 1 # Increment the commit number
@@ -562,7 +563,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
          current_tuple = (f"{commit_number}-{commit.hash}", commit.msg.split("\n")[0], commit.committer_date)
-         commits_info.append(current_tuple) # Append the current tuple to the commit_hashes list
+         commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
          # Save the diff of the modified files of the current commit
          generate_diffs(repository_name, commit, commit_number)
@@ -575,8 +576,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
          # Create the ck_metrics directory paths
          output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, commit_number)
-         # Create the ck_metrics directory
-         create_directory(output_directory, relative_output_directory)
+         create_directory(output_directory, relative_output_directory) # Create the ck_metrics directory
 
          os.chdir(output_directory) # Change working directory to the repository directory
 
@@ -601,7 +601,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    elapsed_time = time.time() - start_time # Calculate elapsed time
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
 
-   return commits_info # Return the commits information list
+   return commits_info #, get_repository_attributes(repository_name, number_of_commits, elapsed_time) # Return the commits info and repository attributes
 
 def write_commits_information_to_csv(repository_name, commit_info):
    """
