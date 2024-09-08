@@ -697,23 +697,18 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Retrieving the repository attributes...{Style.RESET_ALL}")
 
-   output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/" # The path to the CK metrics directory
-   dirnames = os.listdir(output_directory) # Get the directory names
-   
-   # Filter directories to include only those matching the expected pattern "commit_number-commit_hash"
-   filtered_dirs = [dirname for dirname in dirnames if "-" in dirname and dirname.split("-")[0].isdigit()]
+   output_directory = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # The path to the CK metrics directory
+   sorted_dirs = get_filtered_sorted_directories(output_directory) # Get and sort directories
 
-   # Sort the directories by the commit number (the part before the '-')
-   sorted_dirs = sorted(filtered_dirs, key=lambda dirname: int(dirname.split("-")[0]))
-
-   last_directory = sorted_dirs[-1] # Get the last directory created by the CK metrics generator
-   output_directory = f"{output_directory}{last_directory}/" # Update the output directory with the last directory
+   last_directory = get_last_directory(sorted_dirs) # Get the last directory
+   last_directory_path = os.path.join(output_directory, last_directory) # Update the output directory with the last directory
 
    # Get the total number of classes and lines of code
-   total_classes, total_lines_of_code = get_class_and_loc_metrics(output_directory)
+   total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
-   ck_metrics_dir_size = round(get_directory_size(f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/") / (1024 ** 3), 3) # Get the CK metrics directory size
-   diff_dir_size = round(get_directory_size(f"{FULL_DIFFS_DIRECTORY_PATH}/{repository_name}/") / (1024 ** 3), 3) # Get the diff directory size
+   # Get the CK metrics directory size and diff directory size
+   ck_metrics_dir_size = get_directory_size(os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name))
+   diff_dir_size = get_directory_size(os.path.join(FULL_DIFFS_DIRECTORY_PATH, repository_name))
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
