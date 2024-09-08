@@ -344,6 +344,16 @@ def get_commit_hashes(commit_file_path):
    # Read the commit hashes CSV file and get the commit_hashes column, ignoring the first line
    return pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
 
+def verify_folder_exists(folder_path):
+   """
+   Verify if a folder exists at the specified path.
+
+   :param folder_path: Path to the folder
+   :return: True if the folder exists, False otherwise
+   """
+
+   return os.path.exists(folder_path)
+
 def verify_ck_metrics_folder(repository_name):
    """
    Verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder.
