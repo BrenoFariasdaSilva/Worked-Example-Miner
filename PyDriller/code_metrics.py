@@ -470,6 +470,22 @@ def setup_repository(repository_name, repository_url):
    else:
       clone_repository(repository_directory_path, repository_url) # Clone the repository
 
+def read_progress_file(file_path):
+   """
+   Read the contents of the progress file, excluding the last two lines.
+
+   :param file_path: Path to the saved progress file
+   :return: List of lines from the progress file, excluding the last two lines
+   """
+
+   if not os.path.exists(file_path): # Verify if the file exists
+      return [] # Return an empty list if the file does not exist
+
+   with open(file_path, "r") as file: # Open the progress file
+      lines = file.readlines() # Read the lines from the file
+   
+   return lines[:-2] # Remove the last two lines
+
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
    Gets the last execution progress of the repository.
