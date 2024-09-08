@@ -236,7 +236,7 @@ To run this script with the desired settings, you need to modify the following c
    1. `process_repository(repo, six_months_ago, ignore_keywords)`: This function processes a single repository, filtering by date, keywords, and ensuring a unique name.
    2. `contains_excluded_keywords(repo, ignore_keywords)`: This function verifies if the repository's name or description contains any excluded keywords.
    3. `is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords)`: This function validates the repository based on the update date, star count, and keywords.
-5. The `filter_repositories()` function returns a list of filtered repositories, which is then passed to `randomly_select_repositories(repositories, num_repos)` to select a specified number of repositories randomly.
+5. The `filter_repositories()` function returns a list of filtered repositories, which will be sorted by the number of stars and then be passed to `randomly_select_repositories(repositories, num_repos)` to select a specified number of repositories randomly.
 6. Finally, the selected repositories are saved to both JSON and PDF formats using `save_to_json(data, filename)` and `save_to_pdf(data, filename)`, respectively. The PDF includes a header, column headers, and data rows formatted with hyperlinks to the repositories.
 7. The `print_repositories_summary(total_repositories, candidates)` function is called to print the total number of repositories and the selected repositories to the console for review.
 
