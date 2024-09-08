@@ -139,6 +139,17 @@ def init_and_update_submodules():
       return False # Return False if the Git submodules could not be initialized and updated
    return True # Return True if the Git submodules were initialized and updated successfully
 
+def get_current_branch(repo_path):
+   """
+   Retrieve the current branch of the repository at the specified path.
+   
+   :param repo_path: Path to the repository
+   :return: The name of the current branch
+   """
+
+   result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_path, capture_output=True, text=True)
+   return result.stdout.strip() # Get the current branch
+
 def switch_ck_branch():
    """
    Ensure that the "ck" repository is on the correct branch as defined by CK_BRANCH.
