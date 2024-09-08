@@ -115,37 +115,78 @@ def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
 
    return api_key # Return the value of the key
 
+def build_headers(token):
+   """
+   Builds the headers for the GitHub API request.
+   :param token: str
+   :return: dict
+   """
+
+   return {
+      "Authorization": f"token {token}", # Add the token to the headers
+      "Accept": "application/vnd.github.v3+json" # Add the accept header
+   }
+
+def build_url(query):
+   """
+   Builds the GitHub API request URL.
+   :param query: str
+   :return: str
+   """
+
+   return f"https://api.github.com/search/repositories?q={query}&sort=updated&order=desc&per_page=100"
+
+def fetch_single_page(url, headers, page):
+   """
+   Fetches a single page of repositories from GitHub API.
+   :param url: str
+   :param headers: dict
+   :param page: int
+   :return: dict or None
+   """
+
+   response = requests.get(f"{url}&page={page}", headers=headers) # Make a GET request to the URL
+   if response.status_code == 200:
+      return response.json() # Get the JSON data from the response
+   else:
+      verbose_output(true_string=f"{BackgroundColors.RED}Failed to fetch page {page}: {response.status_code}{Style.RESET_ALL}")
+      return None
+
+def fetch_all_pages(url, headers):
+   """
+   Fetches all pages of repositories from GitHub API.
+   :param url: str
+   :param headers: dict
+   :return: list
+   """
+
+   repositories = [] # The list of repositories
+   page = 1 # The page number
+
+   while True:
+      response_data = fetch_single_page(url, headers, page) # Fetch a single page of data
+      if not response_data or "items" not in response_data or not response_data["items"]:
+         break # Break the loop if there are no items in the response
+
+      repositories.extend(response_data["items"]) # Add the fetched repositories to the list
+      page += 1 # Increment the page number
+
+   return repositories # Return the list of repositories
+
 def fetch_repositories(token):
    """
    Fetches the list of repositories from GitHub API.
-
    :param token: str
    :return: list
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Fetching the repositories...{Style.RESET_ALL}")
 
-   headers = {
-      "Authorization": f"token {token}", # Add the token to the headers
-      "Accept": "application/vnd.github.v3+json" # Add the accept header
-   }
-
+   headers = build_headers(token) # Build the request headers
    query = "topic:distributed-systems language:java" # The query to search for repositories
-   url = f"https://api.github.com/search/repositories?q={query}&sort=updated&order=desc&per_page=100" # The URL to fetch the repositories
-   repositories = [] # The list of repositories
-   page = 1 # The page number
+   url = build_url(query) # Build the request URL
 
-   while True:
-      response = requests.get(f"{url}&page={page}", headers=headers) # Make a GET request to the URL
-      response_data = response.json() # Get the JSON data from the response
-
-      # Break the loop if there are no items in the response
-      if "items" not in response_data or not response_data["items"]:
-         break # Break the loop if there are no items in the response
-
-      repositories.extend(response_data["items"]) # Add the fetched repositories to the list
-      page += 1 # Increment the page number
-
+   repositories = fetch_all_pages(url, headers) # Fetch repositories from all pages
    return repositories # Return the list of repositories
 
 def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
