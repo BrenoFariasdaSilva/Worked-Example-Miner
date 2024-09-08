@@ -354,6 +354,21 @@ def verify_folder_exists(folder_path):
 
    return os.path.exists(folder_path)
 
+def verify_ck_metrics_files(folder_path, ck_metrics_files):
+   """
+   Verify if all the CK metrics files exist inside the specified folder.
+
+   :param folder_path: Path to the folder containing CK metrics files
+   :param ck_metrics_files: List of CK metrics file names to check
+   :return: True if all CK metrics files exist, False otherwise
+   """
+
+   for ck_metric_file in ck_metrics_files: # Loop through the CK metrics files
+      ck_metric_file_path = os.path.join(folder_path, ck_metric_file) # Join the folder path with the CK metric file
+      if not os.path.exists(ck_metric_file_path): # If the CK metric file does not exist
+         return False # Return False if the CK metric file does not exist
+   return True # Return True if all CK metrics files exist
+
 def verify_ck_metrics_folder(repository_name):
    """
    Verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder.
