@@ -486,6 +486,26 @@ def read_progress_file(file_path):
    
    return lines[:-2] # Remove the last two lines
 
+def parse_commit_info(lines):
+   """
+   Parse commit information from the lines of the progress file.
+
+   :param lines: List of lines from the progress file
+   :return: Tuple containing the list of commit info and the last commit number
+   """
+
+   commits_info = [] # List to store the commit information
+   last_commit_number = 0 # Variable to store the last commit number
+   
+   if len(lines) > 3: # If there are more than 3 lines in the file
+      last_commit_number = int(lines[-1].split(",")[0]) # Get the last commit number from the last line
+      for line in lines[1:]: # Loop through the lines, excluding the header
+         parts = line.split(",") # Split the line by commas
+         commit_info = (parts[1], parts[2], parts[3]) # Get the commit hash, commit message, and commit date
+         commits_info.append(commit_info) # Append the commit information to the list
+   
+   return commits_info, last_commit_number # Return the list of commit information and the last commit number
+
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
    Gets the last execution progress of the repository.
