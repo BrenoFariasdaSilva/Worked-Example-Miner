@@ -296,7 +296,7 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
    :return: list
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Filtering the repositories based on the heuristic's criteria...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}") 
 
    filtered_repositories = [] # The list of filtered repositories
    six_months_ago = get_six_months_ago_date() # The date six months ago
@@ -389,7 +389,7 @@ def format_last_update_date(last_update):
    """
    Formats the last update date of the repository.
    :param last_update: str, the ISO date string from the repository data
-   :return: str, formatted date or 'Unknown' if parsing fails
+   :return: str, formatted date or "Unknown" if parsing fails
    """
 
    try:
