@@ -188,6 +188,9 @@ def ensure_ck_jar_file_exists():
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Ensuring that the {BackgroundColors.CYAN}CK JAR{BackgroundColors.GREEN} file exists in the target directory...{Style.RESET_ALL}")
 
+   if os.path.exists(RELATIVE_CK_JAR_PATH): # Verify if the JAR file exists in the target directory
+      return True # Return True if the CK JAR file was found in the target directory
+
    # Initialize and update Git submodules
    if not init_and_update_submodules():
       return False # Return if the Git submodules could not be initialized and updated
@@ -197,9 +200,17 @@ def ensure_ck_jar_file_exists():
    # Store the current branch before switching
    original_branch = get_current_branch(ck_repo_path)
 
-   # Switch to the desired CK branch if it exists
-   if not switch_ck_branch(ck_repo_path, CK_BRANCH):
-      return False # Return False if the CK branch does not exist
+   # Try to switch to the desired CK branch if it exists
+   if not switch_branch(CK_BRANCH, ck_repo_path):
+      # If switching to CK_BRANCH fails, try to switch to a standard branch
+      standard_branches = ["master", "main"]
+      for branch in standard_branches:
+         if switch_branch(branch, ck_repo_path):
+            original_branch = branch # Successfully switched to a standard branch, use that as the fallback
+            break # Exit the loop if a standard branch was found
+      else:
+         print(f"{BackgroundColors.RED}None of the standard branches {BackgroundColors.CYAN}{', '.join(standard_branches)}{BackgroundColors.RED} exist in {BackgroundColors.CYAN}'ck'{BackgroundColors.RED}. Please verify the repository structure.{Style.RESET_ALL}")
+         return False # Return False if no valid branch was found
 
    # Build the JAR file if it does not exist
    if build_ck_jar_file(ck_repo_path):
