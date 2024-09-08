@@ -99,6 +99,22 @@ def path_contains_whitespaces():
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
 
+def verify_git():
+   """
+   Verify if Git is installed.
+
+   :return: True if Git is installed, False otherwise.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if Git is installed...{Style.RESET_ALL}")
+
+   try:
+      subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   except subprocess.CalledProcessError as e:
+      print(f"{BackgroundColors.RED}An error occurred while verifying if Git is installed: {BackgroundColors.YELLOW}{e}{BackgroundColors.RED}. Please install Git!{Style.RESET_ALL}")
+      return False # Return False if Git is not installed
+   return True # Return True if Git is installed
+
 def init_and_update_submodules():
    """
    Initialize and update Git submodules
@@ -121,22 +137,6 @@ def init_and_update_submodules():
       print(f"{BackgroundColors.RED}An error occurred while initializing and updating the CK Git Submodule: {e}{Style.RESET_ALL}")
       return False # Return False if the Git submodules could not be initialized and updated
    return True # Return True if the Git submodules were initialized and updated successfully
-
-def verify_git():
-   """
-   Verify if Git is installed.
-
-   :return: True if Git is installed, False otherwise.
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if Git is installed...{Style.RESET_ALL}")
-
-   try:
-      subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-   except subprocess.CalledProcessError as e:
-      print(f"{BackgroundColors.RED}An error occurred while verifying if Git is installed: {BackgroundColors.YELLOW}{e}{BackgroundColors.RED}. Please install Git!{Style.RESET_ALL}")
-      return False # Return False if Git is not installed
-   return True # Return True if Git is installed
 
 def switch_ck_branch():
    """
