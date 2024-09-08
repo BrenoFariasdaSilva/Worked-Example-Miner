@@ -482,46 +482,25 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   commits_info = [] # The commit information list containing the commit hashes, commit messages and commit dates
-   last_commit_number = 0 # The last commit number
+   lines = read_progress_file(saved_progress_file) # Read the progress file
 
-   # Verify if there is a saved progress file
-   if os.path.exists(saved_progress_file):
-      # Open the saved progress file
-      with open(saved_progress_file, "r") as progress_file:
-         lines = progress_file.readlines() # Read the lines of the progress file
-         lines = lines[:-2] # Remove the last two lines
+   if lines: # If there are lines in the progress file
+      commits_info, last_commit_number = parse_commit_info(lines) # Parse the commit information
+      percentage_progress = calculate_percentage_progress(last_commit_number, number_of_commits) # Calculate the percentage progress
+      
+      last_commit_hash = commits_info[-1][0] if commits_info else "N/A" # Get the last commit hash
+      
+      print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+      
+      execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
+      output_time(execution_time, number_of_commits - last_commit_number)
 
-         # Clear the saved progress file
-         with open(saved_progress_file, "w") as progress_file:
-            progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n")
+      write_progress_file(saved_progress_file, lines) # Update progress file without the last two lines
+   else:
+      # If there is no saved progress file, create one and write the header
+      write_progress_file(saved_progress_file, [])
 
-         # If there are more than 3 lines in the progress file, then there is at least one commit that was already processed
-         if len(lines) > 3:
-            last_commit_number = int(lines[-1].split(",")[0]) # Get the last commit number
-            last_commit_hash = 0 # The last commit hash
-            
-            with open(saved_progress_file, "w") as progress_file: # Open the saved progress file
-               for line in lines: # Loop through the lines
-                  progress_file.write(line) # Write the line to the progress file
-            
-            # Fill the commit_hashes list with the commits that were already processed
-            for line in lines[1:]: # Loop through the lines
-               current_tuple = (line.split(",")[1], line.split(",")[2], line.split(",")[3]) # Store the commit hash, commit message and commit date in one line of the list, separated by commas
-               last_commit_hash = line.split(",")[1] # Get the last commit hash
-               commits_info.append(current_tuple) # Append the current tuple to the commit_hashes list
-            percentage_progress = round((last_commit_number / number_of_commits) * 100, 2) # Calculate the percentage progress
-            
-            print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of it's progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
-
-            execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
-            output_time(execution_time, number_of_commits - last_commit_number) # Output the estimated time for running the remaining iterations for the repository
-            
-   else: # If there is no saved progress file, create one and write the header
-      with open(saved_progress_file, "w") as progress_file: # Open the saved progress file
-         progress_file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n") # Write the header to the progress file
-
-   return commits_info, last_commit_number # Return the commit_hashes list and the last commit number
+   return commits_info, last_commit_number # Return the commits_info and last_commit_number
 
 def generate_diffs(repository_name, commit, commit_number):
    """
