@@ -231,7 +231,7 @@ def load_repositories_from_json(file_path):
          print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
          return None # Return None if the JSON file is not in the correct format
    except (json.JSONDecodeError, KeyError) as e:
-      verbose_output(f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
+      verbose_output(true_string=f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
       return None # Return None if there is an error parsing the JSON file
 
 def update_repositories_list():
@@ -241,7 +241,7 @@ def update_repositories_list():
    :return: True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file, False otherwise.
    """
    
-   verbose_output(f"{BackgroundColors.GREEN}Updating the repositories list file with the DEFAULT_REPOSITORIES dictionary...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the repositories list file with the DEFAULT_REPOSITORIES dictionary...{Style.RESET_ALL}")
 
    global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
 
@@ -257,7 +257,7 @@ def update_repositories_list():
 
    DEFAULT_REPOSITORIES = json_repositories # Update the DEFAULT_REPOSITORIES dictionary with the values from the JSON file
 
-   verbose_output(f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated with values from the {BackgroundColors.CYAN}JSON{BackgroundColors.GREEN} file.{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated with values from the {BackgroundColors.CYAN}JSON{BackgroundColors.GREEN} file.{Style.RESET_ALL}")
    
    return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
 
