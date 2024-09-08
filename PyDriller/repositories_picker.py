@@ -442,14 +442,15 @@ def randomly_select_repositories(repositories, num_repos):
 
    return random.sample(repositories, num_repos)
 
-def print_repositories_summary(total_repositories, candidates):
+def print_repositories_summary(total_repo_count, total_candidates, candidates):
    """
    Prints the total number of repositories and the selected repositories to the console.
-   :param total_repositories: int
+   :param total_repo_count: int
+   :param total_candidates: int
    :param candidates: list
    """
 
-   print(f"{BackgroundColors.GREEN}Total repositories according to the criteria: {BackgroundColors.CYAN}{total_repositories}{Style.RESET_ALL}\n")
+   print(f"{BackgroundColors.GREEN}Total repositories according to the criteria: {BackgroundColors.CYAN}{total_candidates}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{total_repo_count}{Style.RESET_ALL}\n")
    print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
    for i, repo in enumerate(candidates, start=1):
       print(f"{BackgroundColors.CYAN}{i}. {repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
@@ -466,6 +467,8 @@ def main():
    token = verify_env_file() # Verify the .env file and get the token
 
    repositories = fetch_repositories(token) # Fetch the repositories
+   
+   total_repo_count = len(repositories) # Get the total number of repositories
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
@@ -479,7 +482,7 @@ def main():
       candidates = randomly_select_repositories(sorted_by_stars, CANDIDATES)
       
       # Print the summary of the repositories
-      print_repositories_summary(len(sorted_by_stars), candidates)
+      print_repositories_summary(total_repo_count, len(sorted_by_stars), candidates)
    else:
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
