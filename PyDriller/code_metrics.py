@@ -127,7 +127,7 @@ def init_and_update_submodules():
       verbose_output(true_string=f"{BackgroundColors.GREEN}Initializing and updating the CK Git Submodule...{Style.RESET_ALL}")
 
       # Adjust path as necessary for reliability across environments
-      submodule_path = os.path.abspath("../ck/.git")
+      submodule_path = os.path.abspath(f"{RELATIVE_CK_SUBMODULE_PATH}.git") # Path to the ck submodule
 
       if not os.path.exists(submodule_path):
          subprocess.run(["git", "submodule", "init"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
