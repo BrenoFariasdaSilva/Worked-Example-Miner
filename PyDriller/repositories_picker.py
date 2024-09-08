@@ -206,18 +206,13 @@ def save_to_json(data, filename=OUTPUT_FILE_JSON):
    with open(filename, "w") as json_file: # Open the JSON file
       json.dump(data, json_file, indent=3) # Dump the data to the JSON file
 
-def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
+def add_pdf_header(pdf, num_candidates):
    """
-   Saves the data to a PDF file.
-   :param data: list of dict
-   :param filename: str
+   Adds a header to the PDF.
+   :param pdf: FPDF object
+   :param num_candidates: int, number of repositories
    :return: None
    """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Saving the data to {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
-
-   pdf = FPDF() # Create a PDF object
-   pdf.add_page() # Add a page to the PDF
 
    pdf.set_font("Helvetica", size=12) # Set the font to Helvetica with size 12
 
@@ -231,7 +226,7 @@ def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
 
    header_text = (
       f"Repositories List\n" # Title
-      f"Number of Candidates: {len(data)}\n" # Number of repositories
+      f"Number of Candidates: {num_candidates}\n" # Number of repositories
       f"Generated on: {current_date} at {current_time}" # Current date and time of generation
    )
 
@@ -239,7 +234,13 @@ def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
    pdf.multi_cell(0, 8, header_text, align="C") # Reduced line height
    pdf.ln(5) # Reduced line break after header
 
-   # Column headers
+def add_pdf_column_headers(pdf):
+   """
+   Adds column headers to the PDF.
+   :param pdf: FPDF object
+   :return: None
+   """
+
    pdf.set_font("Helvetica", "B", 10) # Bold font
    pdf.set_fill_color(200, 220, 255) # Light blue color for headers
    pdf.set_text_color(0, 0, 0) # Reset font color to black
@@ -249,22 +250,38 @@ def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
    pdf.cell(35, 10, "Last Update", border=1, fill=True) # Last Update column
    pdf.ln() # Line break
 
-   # Data rows
+def format_last_update_date(last_update):
+   """
+   Formats the last update date of the repository.
+   :param last_update: str, the ISO date string from the repository data
+   :return: str, formatted date or 'Unknown' if parsing fails
+   """
+
+   try:
+      last_update_date = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%SZ") # Parse the date
+      return last_update_date.strftime("%d %B %Y") # Format: 01 January 2022
+   except ValueError:
+      return "Unknown" # Fallback if date parsing fails
+
+def add_pdf_data_rows(pdf, data):
+   """
+   Adds repository data rows to the PDF.
+   :param pdf: FPDF object
+   :param data: list of dict
+   :return: None
+   """
+
    pdf.set_font("Helvetica", size=10)
 
    for repo in data:
       # Handle content in English
       name = repo.get("name", "") # Get the name of the repository
       url = repo.get("url", "") # Get the URL of the repository
-      stars = str(repo.get("stars", "")) # Get the number of stars of the repository
-      
+      stars = str(repo.get("stars", "")) # Get the number of stars
+
       # Handle last_update
       last_update = repo.get("updated_at", "")
-      try:
-         last_update_date = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%SZ") # Parse the date
-         last_update = last_update_date.strftime("%d %B %Y") # Format: 01 January 2022
-      except ValueError:
-         last_update = "Unknown" # Fallback if date parsing fails
+      last_update = format_last_update_date(last_update) # Parse and format last update date
 
       # Add the encoded content to the PDF
       pdf.set_x(10) # Set the start x position
@@ -277,6 +294,23 @@ def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
       pdf.cell(20, 10, stars, border=1) # Stars
       pdf.cell(35, 10, last_update, border=1) # Last Update
       pdf.ln() # Line break
+
+def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
+   """
+   Saves the data to a PDF file.
+   :param data: list of dict
+   :param filename: str
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Saving the data to {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+
+   pdf = FPDF() # Create a PDF object
+   pdf.add_page() # Add a page to the PDF
+
+   add_pdf_header(pdf, len(data)) # Add header section
+   add_pdf_column_headers(pdf) # Add column headers
+   add_pdf_data_rows(pdf, data) # Add data rows
 
    pdf.output(filename) # Save the PDF file
 
