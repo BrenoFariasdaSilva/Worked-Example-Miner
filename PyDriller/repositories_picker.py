@@ -215,20 +215,6 @@ def extract_author_name(repo):
 
    return repo["html_url"].split("/")[-2]
 
-def get_unique_repo_name(repo):
-   """
-   Ensures the repository has a unique name by adding the author's name as a prefix to the repository name.
-   :param repo: dict
-   :param repo_names: set
-   :return: str
-   """
-
-   repo_name = repo["name"] # Get the name of the repository
-   author_name = extract_author_name(repo) # Extract the author's name
-   unique_repo_name = f"{author_name}/{repo_name}" # Add the author's name to the repository name
-
-   return unique_repo_name # Return the unique repository name
-
 def process_repository(repo, six_months_ago, ignore_keywords):
    """
    Processes a single repository, filtering by date, keywords, and ensuring a unique name.
@@ -239,12 +225,12 @@ def process_repository(repo, six_months_ago, ignore_keywords):
    """
 
    updated_date = parse_repo_updated_date(repo) # Get the last update date of the repository
-   unique_repo_name = get_unique_repo_name(repo) # Get the name of the repository
 
    # Validate the repository based on the update date, star count, and keywords
    if is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords):
       return {
-         "name": unique_repo_name.title(),
+         "name": repo["name"],
+         "author": extract_author_name(repo),
          "url": repo["html_url"],
          "description": repo["description"],
          "stars": repo["stargazers_count"],
