@@ -188,6 +188,18 @@ def switch_ck_branch():
       print(f"{BackgroundColors.RED}None of the standard branches {BackgroundColors.CYAN}{branch_list}{BackgroundColors.GREEN} exist in {BackgroundColors.CYAN}'ck'{BackgroundColors.CYAN}. Please verify the repository structure.{Style.RESET_ALL}")
       return False  # Return False if no valid branch was found
 
+def build_ck_jar_file(repo_path):
+   """
+   Build the CK JAR file if it doesn't already exist.
+   
+   :param repo_path: Path to the ck submodule
+   :return: True if the JAR file was successfully built, False otherwise
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Building the CK JAR file...{Style.RESET_ALL}")
+   subprocess.run(["mvn", "clean", "package", "-DskipTests"], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   return os.path.exists(RELATIVE_CK_JAR_PATH) # Return True if the JAR file exists, False otherwise
+
 def ensure_ck_jar_file_exists():
    """
    Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
@@ -211,7 +223,7 @@ def ensure_ck_jar_file_exists():
       return False # Return False if the CK branch does not exist
 
    # Build the JAR file if it does not exist
-   if build_ck_jar(ck_repo_path):
+   if build_ck_jar_file(ck_repo_path):
       # Switch back to the original branch
       switch_branch(original_branch, ck_repo_path)
       # Verify if the jar exists in the ck directory
