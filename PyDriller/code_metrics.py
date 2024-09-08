@@ -707,6 +707,16 @@ def get_last_directory(dirs):
 
    return dirs[-1] if dirs else "" # Return the last directory if the list is not empty
 
+def get_directory_size(directory_path):
+   """
+   Get the size of a directory in GB.
+
+   :param directory_path: Path to the directory
+   :return: Size of the directory in GB
+   """
+
+   return round(get_directory_size(directory_path) / (1024 ** 3), 3) # Size in GB
+
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
    Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
