@@ -685,6 +685,18 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
    time_taken_string = f"{BackgroundColors.GREEN}Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
    output_time(time_taken_string, round(elapsed_time, 2)) # Output the time taken to generate CK metrics for the commits in the repository
 
+def get_filtered_sorted_directories(directory_path):
+   """
+   Get and sort directories by the commit number.
+
+   :param directory_path: Path to the directory containing subdirectories
+   :return: List of sorted directories by commit number
+   """
+
+   dirnames = os.listdir(directory_path) # Get the directory names
+   filtered_dirs = [dirname for dirname in dirnames if "-" in dirname and dirname.split("-")[0].isdigit()] # Filter directories
+   return sorted(filtered_dirs, key=lambda dirname: int(dirname.split("-")[0])) # Sort by commit number
+
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
    Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
