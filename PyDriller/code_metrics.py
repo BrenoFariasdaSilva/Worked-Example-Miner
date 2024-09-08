@@ -60,11 +60,12 @@ RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory th
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
 RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of the directory that contains the refactorings
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
-RELATIVE_REPOSITORIES_LIST_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_list{JSON_FILE_EXTENSION}" # The relative path of the file that contains the repositories list
+RELATIVE_REPOSITORIES_LIST_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path of the file that contains the repositories list
 
 # Full paths (Start Path + Relative Paths):
 FULL_CK_JAR_PATH = START_PATH.replace("PyDriller", "") + RELATIVE_CK_JAR_PATH.replace("../", "") # The full path of the CK JAR file
 FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH # The full path of the directory that contains the CK generated files
+FULL_DIFFS_DIRECTORY_PATH = START_PATH + RELATIVE_DIFFS_DIRECTORY_PATH # The full path of the directory that contains the diffs
 FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # The full path of the progress file
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
