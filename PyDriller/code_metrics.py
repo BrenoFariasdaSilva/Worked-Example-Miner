@@ -345,24 +345,22 @@ def verify_ck_metrics_folder(repository_name):
    commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The name of the commit hashes file
    commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
 
-   # Verify if the repository exists
-   if not os.path.exists(commit_file_path):
-      return False # Return False because the repository commit list does not exist
+   commit_hashes = get_commit_hashes(commit_file_path) # Get the commit hashes
 
-   # Read the commit hashes csv file and get the commit_hashes column, but ignore the first line
-   commit_hashes = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
+   if not commit_hashes:
+      return False # Return False if the commit hashes list is empty
 
-   # Verify if the repository exists
    for commit_hash in commit_hashes: # Loop through the commit hashes
       commit_file_filename = commit_hash[0] # This removes the brackets from the commit hash
-      folder_path = os.path.join(repo_path, commit_file_filename) # Join the repo path with the folder name
+      folder_path = os.path.join(repo_path, commit_file_filename) # Join the repository path with the commit hash folder
 
-      if os.path.exists(folder_path): # Verify if the folder exists
-         for ck_metric_file in CK_METRICS_FILES: # Verify if all the ck metrics files exist inside the folder
-            ck_metric_file_path = os.path.join(folder_path, ck_metric_file) # Join the folder path with the ck metric file
-            if not os.path.exists(ck_metric_file_path): # If the file does not exist
-               return False # If the file does not exist, then the metrics are not calculated
-   return True # If all the metrics are already calculated
+      if verify_folder_exists(folder_path): # Verify if the folder exists
+         if not verify_ck_metrics_files(folder_path, CK_METRICS_FILES): # Verify if all the CK metrics files exist
+            return False # If any CK metrics file does not exist, return False
+      else:
+         return False # Return False if the folder does not exist
+
+   return True # Return True if all the metrics are already calculated
 
 def create_directory(full_directory_name, relative_directory_name):
    """
