@@ -532,6 +532,47 @@ def show_execution_time(first_iteration_duration, elapsed_time, number_of_commit
    time_taken_string = f"{BackgroundColors.GREEN}Time taken to generate CK metrics for {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository: "
    output_time(time_taken_string, round(elapsed_time, 2)) # Output the time taken to generate CK metrics for the commits in the repository
 
+def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
+   """
+   Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
+
+   :param repository_name: Name of the repository.
+   :param number_of_commits: Number of commits to be analyzed.
+   :param elapsed_time: Elapsed time of the execution.
+   :return: A dictionary with repository attributes.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Retrieving the repository attributes...{Style.RESET_ALL}")
+
+   output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/" # The path to the CK metrics directory
+   dirnames = os.listdir(output_directory) # Get the directory names
+   
+   # Filter directories to include only those matching the expected pattern "commit_number-commit_hash"
+   filtered_dirs = [dirname for dirname in dirnames if "-" in dirname and dirname.split("-")[0].isdigit()]
+
+   # Sort the directories by the commit number (the part before the '-')
+   sorted_dirs = sorted(filtered_dirs, key=lambda dirname: int(dirname.split("-")[0]))
+
+   last_directory = sorted_dirs[-1] # Get the last directory created by the CK metrics generator
+   output_directory = f"{output_directory}{last_directory}/" # Update the output directory with the last directory
+
+   # Get the total number of classes and lines of code
+   total_classes, total_lines_of_code = get_class_and_loc_metrics(output_directory)
+
+   ck_metrics_dir_size = round(get_directory_size(f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/") / (1024 ** 3), 3) # Get the CK metrics directory size
+   diff_dir_size = round(get_directory_size(f"{FULL_DIFFS_DIRECTORY_PATH}/{repository_name}/") / (1024 ** 3), 3) # Get the diff directory size
+
+   repository_attributes = { # Create a dictionary with the repository attributes
+      "repository_name": repository_name,
+      "classes": total_classes,
+      "lines_of_code": total_lines_of_code,
+      "commits": number_of_commits,
+      "execution_time_minutes": round(elapsed_time / 60, 3),
+      "size_in_gb": ck_metrics_dir_size + diff_dir_size
+   }
+
+   return repository_attributes # Return the repository attributes
+
 def traverse_repository(repository_name, repository_url, number_of_commits):
    """
    Traverses the repository to run CK for every commit hash in the repository.
@@ -601,7 +642,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    elapsed_time = time.time() - start_time # Calculate elapsed time
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
 
-   return commits_info #, get_repository_attributes(repository_name, number_of_commits, elapsed_time) # Return the commits info and repository attributes
+   return commits_info, get_repository_attributes(repository_name, number_of_commits, elapsed_time) # Return the commits info and repository attributes
 
 def write_commits_information_to_csv(repository_name, commit_info):
    """
