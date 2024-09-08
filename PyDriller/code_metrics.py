@@ -194,7 +194,7 @@ def ensure_ck_jar_exists():
       print(f"{BackgroundColors.RED}The CK JAR file was not found in the target directory.{Style.RESET_ALL}")
       return False # Return False if the CK JAR file was not found in the target directory
 
-def is_valid_json_file(file_path):
+def verify_json_file(file_path):
    """
    Verify if the JSON file exists and is not empty.
 
@@ -245,7 +245,7 @@ def update_repositories_list():
    global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
 
    # Validate the JSON file
-   if not is_valid_json_file(RELATIVE_REPOSITORIES_LIST_FILE_PATH):
+   if not verify_json_file(RELATIVE_REPOSITORIES_LIST_FILE_PATH):
       return # Return if the JSON file is not valid
 
    # Load repositories from JSON and update DEFAULT_REPOSITORIES
