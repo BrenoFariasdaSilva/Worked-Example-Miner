@@ -559,6 +559,8 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    else:
       # If there is no saved progress file, create one and write the header
       write_progress_file(saved_progress_file, [])
+      commits_info = [] # Initialize the commits_info list
+      last_commit_number = 0 # Initialize the last_commit_number variable
 
    return commits_info, last_commit_number # Return the commits_info and last_commit_number
 
