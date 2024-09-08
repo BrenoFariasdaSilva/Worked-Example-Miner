@@ -696,6 +696,30 @@ def write_commits_information_to_csv(repository_name, commit_info):
       writer.writerow(["Commit Hash", "Commit Message", "Commit Date"]) # Write the header
       writer.writerows(commit_info) # Write the commit hashes
 
+def write_repository_attributes_to_csv(repository_name, repository_attributes):
+   """
+   Writes the repository attributes to a csv file.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param repository_attributes: Dictionary containing the repository attributes.
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the repository attributes to a csv file...{Style.RESET_ALL}")
+
+   file_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}-attributes{CSV_FILE_EXTENSION}"
+   with open(file_path, "w", newline="") as csv_file:
+      writer = csv.writer(csv_file) # Create a csv writer
+      writer.writerow(["Repository Name", "Number of Classes", "Lines of Code", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
+      writer.writerow([ # Write the repository attributes
+         repository_attributes["repository_name"],
+         repository_attributes["classes"],
+         repository_attributes["lines_of_code"],
+         repository_attributes["commits"],
+         repository_attributes["execution_time_minutes"],
+         repository_attributes["size_in_gb"]
+      ])
+
 def process_repository(repository_name, repository_url):
    """
    Processes the repository.
