@@ -686,9 +686,9 @@ def process_repositories_in_parallel():
    :return: None
    """
 
-   print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using a thread pool...{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using a Thread Pool...{Style.RESET_ALL}")
 
-   cpu_cores = get_threads() # Get the number of cpu cores
+   cpu_cores = get_threads() # Get the number of CPU cores
    usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
 
    print(f"{BackgroundColors.GREEN}The number of usable threads is {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
@@ -696,7 +696,7 @@ def process_repositories_in_parallel():
    # Function to process each repository
    def process_and_estimate(repository_name, repository_url):
       estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for running all iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-      
+
       # Traverse commits in the repository and count them without materializing the entire list
       commits_number = sum(1 for _ in Repository(repository_url).traverse_commits()) # Efficient commit count
       estimated_time = round(((commits_number / 1000) * commits_number), 2) # Estimate the time to process the repository
