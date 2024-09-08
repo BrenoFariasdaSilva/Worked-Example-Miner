@@ -261,6 +261,20 @@ def update_repositories_list():
    
    return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
 
+def verify_repositories_execution_constants():
+   """
+   Verify the constants used in the execution of the repositories.
+   It will process the JSON repositories, if the PROCESS_JSON_REPOSITORIES constant is set to True or if the DEFAULT_REPOSITORIES dictionary is empty.
+   
+   :return: None
+   """
+
+   # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
+   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
+      if not update_repositories_list(): # Update the repositories list
+         print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
+         exit() # Exit the program if the repositories list could not be updated
+
 def output_time(output_string, time):
    """
    Outputs time, considering the appropriate time unit.
@@ -862,13 +876,9 @@ def main():
    if not os.path.exists(RELATIVE_CK_JAR_PATH):
       if not ensure_ck_jar_exists(): # Ensure that the CK JAR file exists
          return # Return if the CK JAR file does not exist
-      
-   # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
-   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
-      if not update_repositories_list(): # Update the repositories list
-         print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
-         return # Return if the repositories list could not be updated
 
+   verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
+   
    # Print the welcome message
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
