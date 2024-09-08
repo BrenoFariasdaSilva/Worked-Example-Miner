@@ -517,6 +517,19 @@ def calculate_percentage_progress(last_commit_number, total_commits):
 
    return round((last_commit_number / total_commits) * 100, 2) # Calculate the percentage progress
 
+def write_progress_file(file_path, lines):
+   """
+   Write the provided lines to the progress file, including the header.
+
+   :param file_path: Path to the saved progress file
+   :param lines: List of lines to be written to the file
+   """
+
+   with open(file_path, "w") as file: # Open the progress file to write
+      file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n") # Write the header to the file
+      for line in lines: # Loop through the lines
+         file.write(line) # Write the line to the file
+
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
    Gets the last execution progress of the repository.
