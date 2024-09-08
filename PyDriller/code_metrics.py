@@ -330,6 +330,20 @@ def output_time(output_string, time):
    rounded_time = round(time_value, 2) # Round the time value to two decimal places
    print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
+def get_commit_hashes(commit_file_path):
+   """
+   Read the commit hashes from a CSV file.
+
+   :param commit_file_path: Path to the CSV file containing commit hashes
+   :return: List of commit hashes
+   """
+   
+   if not os.path.exists(commit_file_path):
+      return [] # Return an empty list if the file does not exist
+
+   # Read the commit hashes CSV file and get the commit_hashes column, ignoring the first line
+   return pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
+
 def verify_ck_metrics_folder(repository_name):
    """
    Verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder.
