@@ -462,6 +462,18 @@ def randomly_select_repositories(repositories, num_repos):
 
    return random.sample(repositories, num_repos)
 
+def print_repositories_summary(total_repositories, candidates):
+   """
+   Prints the total number of repositories and the selected repositories to the console.
+   :param total_repositories: int
+   :param candidates: list
+   """
+
+   print(f"{BackgroundColors.GREEN}Total repositories according to the criteria: {BackgroundColors.CYAN}{total_repositories}{Style.RESET_ALL}\n")
+   print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
+   for i, repo in enumerate(candidates, start=1):
+      print(f"{BackgroundColors.CYAN}{i}. {repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
+
 def main():
    """
    Main function.
@@ -477,7 +489,7 @@ def main():
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
-   capitalized_repositories = capitalize_repositories(filtered_repositories)
+   capitalized_repositories = capitalize_repositories(filtered_repositories) # Capitalize the repository names
 
    sorted_by_stars = sorted(capitalized_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
 
@@ -487,11 +499,9 @@ def main():
 
       # Randomly select an specific number of repositories
       candidates = randomly_select_repositories(sorted_by_stars, CANDIDATES)
-
-      print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
-      for i, repo in enumerate(candidates, start=1): # Iterate over the selected repositories with index starting from 1
-         print(f"{BackgroundColors.CYAN}{i}. {repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
-
+      
+      # Print the summary of the repositories
+      print_repositories_summary(len(sorted_by_stars), candidates)
    else:
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
