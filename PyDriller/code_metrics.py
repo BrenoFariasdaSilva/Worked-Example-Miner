@@ -724,11 +724,15 @@ def process_repository(repository_name, repository_url):
 
    # Get the number of commits, which is needed to traverse the repository
    number_of_commits = len(list(Repository(repository_url).traverse_commits()))
-   # Traverse the repository to run ck for every commit hash in the repository
-   commits_info = traverse_repository(repository_name, repository_url, number_of_commits)
+   
+   # Traverse the repository to run CK for every commit hash in the repository
+   commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits)
 
-   # Write the commits information to a csv file
+   # Write the commits information to a CSV file
    write_commits_information_to_csv(repository_name, commits_info)
+   
+   # Save repository attributes to a CSV file
+   write_repository_attributes_to_csv(repository_name, repository_attributes)
 
    # Checkout the main branch
    checkout_branch("main")
