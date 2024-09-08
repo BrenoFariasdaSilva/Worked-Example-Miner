@@ -203,10 +203,10 @@ def is_valid_json_file(file_path):
    """
 
    if not os.path.exists(file_path):
-      verbose_output(f"{BackgroundColors.RED}The repositories JSON file does not exist.{Style.RESET_ALL}", is_error=True)
+      print(f"{BackgroundColors.RED}The repositories JSON file does not exist.{Style.RESET_ALL}")
       return False # Return False if the JSON file does not exist
    if os.path.getsize(file_path) == 0:
-      verbose_output(f"{BackgroundColors.RED}The repositories JSON file is empty.{Style.RESET_ALL}", is_error=True)
+      print(f"{BackgroundColors.RED}The repositories JSON file is empty.{Style.RESET_ALL}")
       return False # Return False if the JSON file is empty
    return True # Return True if the JSON file exists and is not empty
 
