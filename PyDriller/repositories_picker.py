@@ -377,6 +377,7 @@ def add_pdf_data_rows(pdf, data):
    for repo in data:
       # Handle content in English
       name = repo.get("name", "") # Get the name of the repository
+      author = repo.get("author", "") # Get the author of the repository
       url = repo.get("url", "") # Get the URL of the repository
       stars = str(repo.get("stars", "")) # Get the number of stars
 
@@ -389,7 +390,7 @@ def add_pdf_data_rows(pdf, data):
 
       # Name (make it a hyperlink)
       pdf.set_text_color(0, 0, 255) # Set color to blue for hyperlinks
-      pdf.cell(135, 10, name, border=1, link=url) # Name should be clickable
+      pdf.cell(135, 10, f"{author}/{name}", border=1, link=url) # Name (Hyperlink) is the "author/repository_name" of the repository
       pdf.set_text_color(0, 0, 0) # Reset text color to black
 
       pdf.cell(20, 10, stars, border=1) # Stars
