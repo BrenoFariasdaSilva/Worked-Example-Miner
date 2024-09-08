@@ -207,6 +207,23 @@ In order to use the makefile rules, you must be in the `PyDriller/` directory.
 
 ##### Configuration
 
+To run this script with the desired settings, you need to modify the following constants:
+
+1. **.Env Constants:**
+   - `ENV_PATH`: Specify the path to your `.env` file, which contains environment variables.
+   - `ENV_VARIABLE`: Set the environment variable for the GitHub token needed for authentication.
+
+2. **Execution Constants:**
+   - `VERBOSE`: Set this to `True` if you want to see additional messages and progress updates. If you prefer a cleaner output with only the script execution progress bar, leave it as `False`.
+   - `CANDIDATES`: Define the number of repositories you want to randomly select for processing.
+   - `EXCLUDE_REPOSITORIES_KEYWORDS`: List any keywords to exclude from repository names when filtering.
+   - `MINIMUM_STARS`: Specify the minimum number of stars a repository must have to be considered.
+
+3. **File Path Constants:**
+   - `OUTPUT_DIRECTORY`: Set the path to the directory where output files will be saved.
+   - `OUTPUT_FILE_JSON`: Define the path for the JSON output file.
+   - `OUTPUT_FILE_PDF`: Define the path for the PDF output file.
+
 ##### Workflow
 
 #### Code_Metrics
