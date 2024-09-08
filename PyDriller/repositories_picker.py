@@ -321,7 +321,7 @@ def main():
 
       print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
       for i, repo in enumerate(candidates, start=1): # Iterate over the selected repositories with index starting from 1
-         print(f"{BackgroundColors.CYAN}{i}. {repo["name"].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo["url"]} - {repo["description"]} (⭐ {repo["stars"]}){Style.RESET_ALL}")
+         print(f"{BackgroundColors.CYAN}{i}. {repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
 
    else:
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
