@@ -878,7 +878,7 @@ def write_repository_attributes_to_csv(repository_name, repository_attributes):
 
    with open(repository_attributes_file_path, "w", newline="") as csv_file:
       writer = csv.writer(csv_file) # Create a csv writer
-      writer.writerow(["Repository Name", "Number of Classes", "Lines of Code", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
+      writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
       writer.writerow([ # Write the repository attributes
          repository_attributes["repository_name"],
          repository_attributes["classes"],
