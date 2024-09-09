@@ -187,14 +187,12 @@ def build_ck_jar_file(repo_path):
 def ensure_ck_jar_file_exists():
    """
    Ensure that the CK JAR file exists in the ck directory. If not, build the CK JAR file.
+   We don't verify if the CK_JAR already exists in the target directory because we want to ensure that the latest version is used.
    
    :return: True if the CK JAR file was found or built successfully, False otherwise.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Ensuring that the {BackgroundColors.CYAN}CK JAR{BackgroundColors.GREEN} file exists in the target directory...{Style.RESET_ALL}")
-
-   if os.path.exists(RELATIVE_CK_JAR_PATH): # Verify if the JAR file exists in the target directory
-      return True # Return True if the CK JAR file was found in the target directory
 
    # Initialize and update Git submodules
    if not init_and_update_submodules():
@@ -1049,9 +1047,8 @@ def main():
       return # Return if Git is not installed
    
    # Verify if the CK JAR file exists
-   if not os.path.exists(RELATIVE_CK_JAR_PATH):
-      if not ensure_ck_jar_file_exists(): # Ensure that the CK JAR file exists
-         return # Return if the CK JAR file does not exist
+   if not ensure_ck_jar_file_exists(): # Ensure that the CK JAR file exists
+      return # Return if the CK JAR file does not exist
 
    verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
    
