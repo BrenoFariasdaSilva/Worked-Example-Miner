@@ -888,11 +888,20 @@ def write_repositories_attributes_to_csv(repository_attributes):
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the repositories attributes to a csv file...{Style.RESET_ALL}")
-
-   with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "w", newline="") as csv_file:
+   
+   # Verify if the file already exists
+   file_exists = os.path.exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH)
+   
+   # Open the file in append mode if it exists, else in write mode
+   with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "a" if file_exists else "w", newline="") as csv_file:
       writer = csv.writer(csv_file) # Create a csv writer
-      writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
-      writer.writerow([ # Write the repository attributes
+      
+      # If the file does not exist, write the header
+      if not file_exists:
+         writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"])
+      
+      # Write the repository attributes
+      writer.writerow([
          repository_attributes["repository_name"],
          repository_attributes["classes"],
          repository_attributes["lines_of_code"],
