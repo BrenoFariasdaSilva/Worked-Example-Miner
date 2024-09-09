@@ -720,7 +720,7 @@ def get_directory_size_in_gb(directory_path):
 
    return sum_directory_files_size(directory_path) / (1024 ** 3) # Size in GB
 
-def get_output_directories_size_in_gb(repository_name):
+def get_output_directories_size_in_gb(repository_name, output_directories=OUTPUT_DIRECTORIES):
    """
    Get the size of the output directories in GB.
 
@@ -731,12 +731,9 @@ def get_output_directories_size_in_gb(repository_name):
    verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the size of the output directories in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    output_dirs_size = 0 # Total size of the output directories in GB
-   for output_dir in OUTPUT_DIRECTORIES: # Loop through the output directories
+   for output_dir in output_directories: # Loop through the output directories
       # Get the size of each output directory in GB
       output_dirs_size += get_directory_size_in_gb(os.path.join(output_dir, output_dir))
-   
-   # Get the size of the file from progress/{repository_name}-progress.csv
-   output_dirs_size += os.path.getsize(f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv") / (1024 ** 3)
    
    return output_dirs_size # Return the total size of the output directories in GB
 
@@ -762,7 +759,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
    # Get the size of the output directories in GB
-   output_dirs_size = get_output_directories_size_in_gb(repository_name)
+   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + os.path.getsize(f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv") / (1024 ** 3)
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
