@@ -465,7 +465,7 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 			file.write(f"\tMetrics: {value['metrics']}\n") # Write the metrics
 			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n") # Write the commit hashes
 			file.write(f"\tChanged: {value['changed']}\n") # Write the changed value
-			file.write(f"\tOccurrences: {value['occurrences']}\n") # Write the occurrences value
+			file.write(f"\t{'Method Invocations' if PROCESS_CLASSES else 'Methods Invoked Qty'}: {value['method_invoked']}\n") # Write the 'Method Invocations' if PROCESS_CLASS, else 'Methods Invoked Qty' value
 			file.write(f"\n") # Write a new line
 
 def get_clean_id(id):
