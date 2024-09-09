@@ -718,7 +718,7 @@ def get_directory_size_in_gb(directory_path):
    :return: Size of the directory in GB
    """
 
-   return round(sum_directory_files_size(directory_path) / (1024 ** 3), 3) # Size in GB
+   return sum_directory_files_size(directory_path) / (1024 ** 3) # Size in GB
 
 def get_output_directories_size(repository_name):
    """
