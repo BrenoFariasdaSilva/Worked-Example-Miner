@@ -62,6 +62,7 @@ RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progre
 RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of the directory that contains the refactorings
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_attributes{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repositories attributes
+RELATIVE_REPOSITORY_PROGRESS_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repository_name-progress{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repository progress
 RELATIVE_REPOSITORIES_LIST_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path of the file that contains the repositories list
 
 # Full paths (Start Path + Relative Paths):
@@ -72,6 +73,7 @@ FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # T
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
 FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH # The full path of the file that contains the repositories attributes
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
+FULL_REPOSITORY_PROGRESS_FILE_PATH = START_PATH + RELATIVE_REPOSITORY_PROGRESS_FILE_PATH # The full path of the file that contains the repository progress
 FULL_REPOSITORIES_LIST_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_LIST_FILE_PATH # The full path of the file that contains the repositories list
 OUTPUT_DIRECTORIES = [FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH] # The list of output directories
 
