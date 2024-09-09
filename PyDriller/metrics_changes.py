@@ -129,6 +129,17 @@ def process_classes_and_methods():
 	update_global_variables_for_processing(False) # Update the global variables for processing methods
 	process_all_repositories() # Process all repositories
 
+def process_based_on_user_input(user_response):
+	"""
+	Processes data based on user input.
+
+	:param user_response: str, the user input
+	"""
+
+	process_classes = user_response == "true" # If the user input is "true", then process classes, otherwise process methods (False)
+	update_global_variables_for_processing(process_classes) # Update the global variables for processing classes or methods
+	process_all_repositories() # Process all repositories
+
 def update_global_variables():
 	"""
 	Updates the global variables according to the user input or the lack thereof.
@@ -144,7 +155,7 @@ def update_global_variables():
 		print(f"{BackgroundColors.RED}No input received within the timeout. Processing both classes and methods.{Style.RESET_ALL}")
 		process_classes_and_methods() # Process both classes and methods
 	else:
-		process_based_on_input(user_response) # Process based on user input
+		process_based_on_user_input(user_response) # Process based on user input
 
 def get_directory_path(repository_name):
 	"""
