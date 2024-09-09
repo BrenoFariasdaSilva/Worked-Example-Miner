@@ -1,13 +1,14 @@
 import atexit # For playing a sound when the program finishes
 import csv # For reading csv files
+import json # For reading the refactoring file from RefactoringMiner
 import matplotlib.pyplot as plt # For plotting the graphs
 import numpy as np # For calculating the min, max, avg, and third quartile of each metric
 import os # For walking through directories
 import pandas as pd # For the csv file operations
 import platform # For determining the system's null device to discard output
-import threading # For using threads and setting a timeout for the user input
+import select # For waiting for input with a timeout
+import sys # For reading the input
 import time # For measuring the time
-import json # For reading the refactoring file from RefactoringMiner
 from colorama import Style # For coloring the terminal
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from sklearn.linear_model import LinearRegression # For the linear regression
@@ -132,32 +133,23 @@ def verify_and_update_repositories():
 
 def input_with_timeout(prompt, timeout=60):
 	"""
-	Prompts the user for input with a specified timeout.
-
+	Prompts the user for input with a specified timeout on Unix-based systems.
+	
 	:param prompt: str, the prompt message to display
 	:param timeout: int, the timeout in seconds
-	:return: str, the user input
+	:return: str, the user input or None if timeout
 	"""
-
+	
 	print(prompt, end="", flush=True) # Print the prompt message without a newline character
-	
-	user_input = [None] # Create a variable to store the user input
-	
-	def get_input(): # Define a function to get the user input
-		user_input[0] = input().strip().lower() # Get the user input and store it in the user_input variable
-	
-	# Start a thread to get user input
-	input_thread = threading.Thread(target=get_input) # Create a thread to get the user input
-	input_thread.start() # Start the thread
-	
-	input_thread.join(timeout) # Wait for the thread to complete or timeout
-	
-	if input_thread.is_alive():
-		# If the thread is still alive after timeout, terminate it
-		print(f"\n{BackgroundColors.RED}Timeout of {BackgroundColors.GREEN}{timeout}{BackgroundColors.RED} seconds reached. Proceeding with default settings.")
-		return None # Return None if the timeout is reached
-	
-	return user_input[0] # Return the user input
+
+	# Wait for input with a timeout
+	ready, _, _ = select.select([sys.stdin], [], [], timeout)
+
+	if ready:
+		return sys.stdin.readline().strip().lower() # Read and return user input
+	else:
+		print(f"{BackgroundColors.RED}\nTimeout of {BackgroundColors.GREEN}{timeout}{BackgroundColors.RED} seconds reached. Processing the classes and methods automatically...{Style.RESET_ALL}")
+		return None  # Return None if timeout is reached
 
 def update_global_variables_for_processing(process_classes):
 	"""
