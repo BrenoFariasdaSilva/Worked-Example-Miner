@@ -148,7 +148,6 @@ def input_with_timeout(prompt, timeout=60):
 	if ready:
 		return sys.stdin.readline().strip().lower() # Read and return user input
 	else:
-		print(f"{BackgroundColors.RED}\nTimeout of {BackgroundColors.GREEN}{timeout}{BackgroundColors.RED} seconds reached. Processing the classes and methods automatically...{Style.RESET_ALL}")
 		return None  # Return None if timeout is reached
 
 def update_global_variables_for_processing(process_classes):
