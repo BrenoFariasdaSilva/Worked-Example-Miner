@@ -60,8 +60,8 @@ RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path of the di
 RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory that contains the diffs
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
 RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of the directory that contains the refactorings
-RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH = f"/repositories_attributes{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repositories attributes
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
+RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_attributes{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repositories attributes
 RELATIVE_REPOSITORIES_LIST_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path of the file that contains the repositories list
 
 # Full paths (Start Path + Relative Paths):
@@ -862,11 +862,10 @@ def write_commits_information_to_csv(repository_name, commit_info):
       writer.writerow(["Commit Hash", "Commit Message", "Commit Date"]) # Write the header
       writer.writerows(commit_info) # Write the commit hashes
 
-def write_repository_attributes_to_csv(repository_name, repository_attributes):
+def write_repository_attributes_to_csv(repository_attributes):
    """
    Writes the repository attributes to a csv file.
 
-   :param repository_name: Name of the repository to be analyzed.
    :param repository_attributes: Dictionary containing the repository attributes.
    :return: None
    """
@@ -921,7 +920,7 @@ def process_repository(repository_name, repository_url):
    write_commits_information_to_csv(repository_name, commits_info)
    
    # Save repository attributes to a CSV file
-   write_repository_attributes_to_csv(repository_name, repository_attributes)
+   write_repository_attributes_to_csv(repository_attributes)
 
    # Checkout the main branch
    checkout_branch("main")
