@@ -60,6 +60,7 @@ RELATIVE_CK_METRICS_DIRECTORY_PATH = "/ck_metrics" # The relative path of the di
 RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory that contains the diffs
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
 RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of the directory that contains the refactorings
+RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH = f"/repository_name-attributes{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repositories attributes
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 RELATIVE_REPOSITORIES_LIST_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path of the file that contains the repositories list
 
@@ -69,6 +70,7 @@ FULL_CK_METRICS_DIRECTORY_PATH = START_PATH + RELATIVE_CK_METRICS_DIRECTORY_PATH
 FULL_DIFFS_DIRECTORY_PATH = START_PATH + RELATIVE_DIFFS_DIRECTORY_PATH # The full path of the directory that contains the diffs
 FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # The full path of the progress file
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
+FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH # The full path of the file that contains the repositories attributes
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_REPOSITORIES_LIST_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_LIST_FILE_PATH # The full path of the file that contains the repositories list
 OUTPUT_DIRECTORIES = [FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH] # The list of output directories
@@ -871,8 +873,10 @@ def write_repository_attributes_to_csv(repository_name, repository_attributes):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the repository attributes to a csv file...{Style.RESET_ALL}")
 
-   file_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}-attributes{CSV_FILE_EXTENSION}"
-   with open(file_path, "w", newline="") as csv_file:
+   # Replace the "repository_name" substring from FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH with the actual repository name
+   repository_attributes_file_path = FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH.replace("repository_name", repository_name)
+
+   with open(repository_attributes_file_path, "w", newline="") as csv_file:
       writer = csv.writer(csv_file) # Create a csv writer
       writer.writerow(["Repository Name", "Number of Classes", "Lines of Code", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
       writer.writerow([ # Write the repository attributes
