@@ -27,6 +27,10 @@ code_metrics_to_repositories_attributes_analyzer: $(VENV)
 	$(MAKE) metrics_changes_script
 	$(MAKE) repositories_attributes_analyzer_script
 
+metrics_changes_to_repositories_attributes_analyzer: $(VENV)
+	$(MAKE) metrics_changes_script
+	$(MAKE) repositories_attributes_analyzer_script
+
 # Auxiliary Scripts:
 empty_folders_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/empty_folders.py
