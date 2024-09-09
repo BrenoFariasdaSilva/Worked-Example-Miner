@@ -5,6 +5,7 @@ import numpy as np # For calculating the min, max, avg, and third quartile of ea
 import os # For walking through directories
 import pandas as pd # For the csv file operations
 import platform # For determining the system's null device to discard output
+import threading # For using threads and setting a timeout for the user input
 import time # For measuring the time
 import json # For reading the refactoring file from RefactoringMiner
 from colorama import Style # For coloring the terminal
@@ -69,6 +70,35 @@ def verify_file(file_path):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the file {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN} exists...{Style.RESET_ALL}")
 	
 	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
+
+def input_with_timeout(prompt, timeout=60):
+	"""
+	Prompts the user for input with a specified timeout.
+
+	:param prompt: str, the prompt message to display
+	:param timeout: int, the timeout in seconds
+	:return: str, the user input
+	"""
+
+	print(prompt, end="", flush=True) # Print the prompt message without a newline character
+	
+	user_input = [None] # Create a variable to store the user input
+	
+	def get_input(): # Define a function to get the user input
+		user_input[0] = input().strip().lower() # Get the user input and store it in the user_input variable
+	
+	# Start a thread to get user input
+	input_thread = threading.Thread(target=get_input) # Create a thread to get the user input
+	input_thread.start() # Start the thread
+	
+	input_thread.join(timeout) # Wait for the thread to complete or timeout
+	
+	if input_thread.is_alive():
+		# If the thread is still alive after timeout, terminate it
+		print(f"\n{BackgroundColors.RED}Timeout of {BackgroundColors.GREEN}{timeout}{BackgroundColors.RED} seconds reached. Proceeding with default settings.")
+		return None # Return None if the timeout is reached
+	
+	return user_input[0] # Return the user input
 
 def update_global_variables():
 	"""
