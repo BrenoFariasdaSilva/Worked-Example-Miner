@@ -741,6 +741,21 @@ def get_output_directories_size_in_gb(repository_name, output_directories=OUTPUT
    
    return output_dirs_size # Return the total size of the output directories in GB
 
+def get_file_size_in_gb(filepath):
+   """
+   Returns the size of the file in GB.
+   If the file does not exist, the size is 0 GB.
+
+   :param filepath: Path to the file
+   :return: float, size of the progress file in GB
+   """
+
+   try: # Try to get the size of the progress file
+      file_size = os.path.getsize(filepath) / (1024 ** 3) # Size in GB
+   except FileNotFoundError:
+      file_size = 0 # File does not exist, size is 0 GB
+   return file_size # Return the size of the progress file in GB
+
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
    Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
@@ -763,7 +778,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
    # Get the size of the output directories in GB and the progress file size in GB
-   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name))
+   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size_in_gb(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name))
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
