@@ -892,6 +892,9 @@ def process_repository(repository_name):
 
 	# Output the elapsed time to process this repository
 	elapsed_time = time.time() - start_time # Calculate the elapsed time
+ 
+	update_repository_attributes(repository_name, elapsed_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
+ 
 	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
 
