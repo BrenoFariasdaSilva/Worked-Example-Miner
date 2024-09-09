@@ -289,7 +289,7 @@ def get_identifier_and_metrics(row):
 	:return: The identifier, metrics and occurrences_counter of the class or method
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the identifier and metrics of the method or class...{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the identifier and metrics of the class or method...{Style.RESET_ALL}")
 	
 	class_name = row["class"] # Get the class name from the row
 	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
@@ -306,9 +306,9 @@ def get_identifier_and_metrics(row):
 
 	# Create a tuple containing the metrics
 	metrics = (cbo, wmc, rfc) # The metrics tuple
-	identifier = f"{class_name} {variable_attribute}" # The identifier of the method or class
+	identifier = f"{class_name} {variable_attribute}" # The identifier of the class or method
 
-	return identifier, metrics, occurrences_counter # Return the identifier, metrics and occurrences_counter of the method or class
+	return identifier, metrics, occurrences_counter # Return the identifier, metrics and occurrences_counter of the class or method
 
 def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	"""
@@ -452,7 +452,7 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 	Writes the metrics_track_record to a txt file.
 
 	:param repository_name: The name of the repository
-	:param metrics_track_record: A dictionary containing the metrics of each method or class
+	:param metrics_track_record: A dictionary containing the metrics of each class or method
 	:return: None
 	"""
 
@@ -785,7 +785,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 	Writes the metrics evolution to a csv file.
 
 	:param repository_name: The name of the repository
-	:param metrics_track_record: A dictionary containing the metrics of each method or class
+	:param metrics_track_record: A dictionary containing the metrics of each class or method
 	:return: None
 	"""
 
@@ -860,7 +860,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 	Processes the metrics in metrics_track_record to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
 
 	:param repository_name: The name of the repository
-	:param metrics_track_record: A dictionary containing the metrics of each method or class
+	:param metrics_track_record: A dictionary containing the metrics of each class or method
 	:return: None
 	"""
 
