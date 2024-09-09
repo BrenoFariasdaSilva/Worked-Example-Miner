@@ -31,6 +31,9 @@ metrics_changes_to_repositories_attributes_analyzer: $(VENV)
 	$(MAKE) metrics_changes_script
 	$(MAKE) repositories_attributes_analyzer_script
 
+# Define the main target that runs the scripts in the specified order and waits for the previous one to finish before starting the next one
+all: repositories_picker_script code_metrics_script metrics_changes_script repositories_attributes_analyzer_script
+
 # Auxiliary Scripts:
 empty_folders_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/empty_folders.py
