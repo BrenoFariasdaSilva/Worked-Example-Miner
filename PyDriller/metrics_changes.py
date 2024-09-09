@@ -286,7 +286,7 @@ def get_identifier_and_metrics(row):
 	Gets the identifier and metrics of the class or method.
 
 	:param row: The row of the csv file
-	:return: The identifier, metrics and occurrences_counter of the class or method
+	:return: The identifier, metrics and method_invoked of the class or method
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the identifier and metrics of the class or method...{Style.RESET_ALL}")
@@ -302,13 +302,13 @@ def get_identifier_and_metrics(row):
 	cbo = float(row["cbo"]) # Get the cbo metric from the row as a float
 	wmc = float(row["wmc"]) # Get the wmc metric from the row as a float
 	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
-	occurrences_counter = row["methodInvocations"] if PROCESS_CLASSES else 0 # Get the occurrences_counter metric from the row as an integer
+	method_invoked = row["methodInvocations"] if PROCESS_CLASSES else int(row["methodsInvokedQty"]) # Get the methodInvocations (str) or methodsInvokedQty (int) from the row
 
 	# Create a tuple containing the metrics
 	metrics = (cbo, wmc, rfc) # The metrics tuple
 	identifier = f"{class_name} {variable_attribute}" # The identifier of the class or method
 
-	return identifier, metrics, occurrences_counter # Return the identifier, metrics and occurrences_counter of the class or method
+	return identifier, metrics, method_invoked # Return the identifier, metrics and method_invoked of the class or method
 
 def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	"""
@@ -363,11 +363,11 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 		# Iterate through each row, that is, for each method in the csv file
 		for row in reader:
 			# Get the identifier, metrics and method_invoked of the class or method
-			identifier, ck_metrics, occurrences_counter = get_identifier_and_metrics(row)
+			identifier, ck_metrics, method_invoked = get_identifier_and_metrics(row)
 
 			# If the identifier is not in the dictionary, then add it
 			if identifier not in metrics_track_record.keys():
-				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0, "occurrences": occurrences_counter}
+				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0, "method_invoked": method_invoked}
 
 			# Get the metrics_changes list for the method
 			metrics_changes = metrics_track_record[identifier]["metrics"]
@@ -815,10 +815,10 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				metrics_len = len(metrics)
 				for i in range(metrics_len): # For each metric in the metrics list
 					# Write the unique identifier, the commit hash, and the metrics to the csv file
-					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["occurrences"]])
+					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
 
 			# Perform linear regression and generate graphics for the metrics
-			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["occurrences"], identifier.split(" ")[1], repository_name)
+			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["method_invoked"], identifier.split(" ")[1], repository_name)
 			progress_bar.update(1) # Update the progress bar
 
 def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values, first_commit_hash, last_commit_hash):
@@ -853,7 +853,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3) # The third quartile rfc value rounded to 3 decimal places
 
 	# Write the metrics statistics to the csv file
-	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["occurrences"]])
+	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
 
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	"""
@@ -875,7 +875,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"])
 		else:
 			# Write the header to the csv file but using the "Method" in the second column
-			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Occurrences"])
+			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"])
 
 		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
 		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
