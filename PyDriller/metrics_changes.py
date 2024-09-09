@@ -116,6 +116,19 @@ def update_global_variables_for_processing(process_classes):
 	SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # Update the SORTED_CHANGED_METHODS_CSV_FILENAME constant
 	SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # Update the SUBSTANTIAL_CHANGES_FILENAME constant
 
+def process_classes_and_methods():
+	"""
+	Processes data for both classes and methods.
+	"""
+
+	# Process classes
+	update_global_variables_for_processing(True) # Update the global variables for processing classes
+	process_all_repositories() # Process all repositories
+
+	# Process methods
+	update_global_variables_for_processing(False) # Update the global variables for processing methods
+	process_all_repositories() # Process all repositories
+
 def update_global_variables():
 	"""
 	Updates the global variables according to the user input or the lack thereof.
@@ -129,7 +142,7 @@ def update_global_variables():
 	if user_response is None:
 		# No input received within timeout
 		print(f"{BackgroundColors.RED}No input received within the timeout. Processing both classes and methods.{Style.RESET_ALL}")
-		process_for_classes_and_methods() # Process both classes and methods
+		process_classes_and_methods() # Process both classes and methods
 	else:
 		process_based_on_input(user_response) # Process based on user input
 
