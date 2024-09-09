@@ -738,7 +738,7 @@ def get_output_directories_size(repository_name):
    # Get the size of the file from progress/{repository_name}-progress.csv
    output_dirs_size += os.path.getsize(f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv") / (1024 ** 3)
    
-   return round(output_dirs_size, 3) # Return the total size of the output directories in GB
+   return output_dirs_size # Return the total size of the output directories in GB
 
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
