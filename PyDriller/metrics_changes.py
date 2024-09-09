@@ -1094,7 +1094,7 @@ def process_all_repositories():
 		print(f"") # Print an empty line
 		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}metrics evolution history, metrics statistics, linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name) # Process the current repository
-		print(f"------------------------------------------------------------") # Print a separator
+		print(f"\n------------------------------------------------------------") # Print a separator
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
