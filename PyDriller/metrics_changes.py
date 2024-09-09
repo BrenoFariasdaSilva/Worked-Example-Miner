@@ -72,18 +72,20 @@ def verify_file(file_path):
 
 def update_global_variables():
 	"""
-	Updates the global variables PROCESS_CLASSES and CLASSES_OR_METHODS according to the user input.
+	Updates the global variables according to the user input or the lack thereof.
 	"""
 
 	verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
-	global PROCESS_CLASSES, CK_CSV_FILE, CLASSES_OR_METHODS, DEFAULT_REPOSITORY_NAMES, UNSORTED_CHANGED_METHODS_CSV_FILENAME, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME
-	DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
-	PROCESS_CLASSES = input(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}").strip().lower() == "true"
-	CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1]
-	CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods"
-	UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}"
-	SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}"
-	SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}"
+	
+	# Prompt the user with a timeout
+	user_response = input_with_timeout(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}", 10)
+	
+	if user_response is None:
+		# No input received within timeout
+		print(f"{BackgroundColors.RED}No input received within the timeout. Processing both classes and methods.{Style.RESET_ALL}")
+		process_for_classes_and_methods() # Process both classes and methods
+	else:
+		process_based_on_input(user_response) # Process based on user input
 
 def get_directory_path(repository_name):
 	"""
