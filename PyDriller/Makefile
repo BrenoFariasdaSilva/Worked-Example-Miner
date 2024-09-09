@@ -18,6 +18,10 @@ repositories_picker_script: $(VENV)
 repositories_attributes_analyzer_script: $(VENV)
 	clear; time $(PYTHON) ./repositories_attributes_analyzer.py
 
+repositories_picker_to_code_metrics: $(VENV)
+	$(MAKE) repositories_picker_script
+	$(MAKE) code_metrics_script
+
 # Auxiliary Scripts:
 empty_folders_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/empty_folders.py
