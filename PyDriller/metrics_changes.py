@@ -843,6 +843,33 @@ def sort_csv_by_percentual_variation(repository_name):
 	# Write the sorted csv file to a new csv file
 	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}", index=False)
 
+def read_csv_as_dict(file_path):
+	"""
+	Reads the CSV file into a dictionary format where the key is the repository name.
+	
+	:param file_path: Path to the CSV file
+	:return: Dictionary containing repository data
+	"""
+
+	repository_data = {} # Initialize the dictionary to hold the repository data
+	if os.path.exists(file_path): # If the file path exists
+		with open(file_path, "r", newline="") as csv_file: # Open the CSV file
+			reader = csv.DictReader(csv_file) # Create the CSV reader
+			for row in reader: # For each row in the CSV file
+				repository_name = row["Repository Name"] # Get the repository name
+				repository_data[repository_name] = { # Add the repository data to the dictionary
+					"classes": int(row["Number of Classes"]), # Convert the number of classes to an integer
+					"lines_of_code": int(row["Lines of Code"]), # Convert the lines of code to an integer
+					"commits": int(row["Number of Commits"]), # Convert the number of commits to an integer
+					"execution_time_in_minutes": float(row["Execution Time (Minutes)"]), # Convert the execution time to a float
+					"size_in_gb": float(row["Size (GB)"]) # Convert the size to a float
+				}
+	else:
+		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{file_path}{BackgroundColors.RED} file does not exist.{Style.RESET_ALL}")
+		repository_data = {} # Reset the repository data if the file does not exist
+
+	return repository_data # Return the dictionary containing the repository data
+
 def update_repository_attributes(repository_name, elapsed_time):
 	"""
 	Updates the attributes for a specific repository.
@@ -918,7 +945,7 @@ def process_repository(repository_name):
 	elapsed_time = time.time() - start_time # Calculate the elapsed time
 
 	update_repository_attributes(repository_name, elapsed_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
-	
+
 	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
 
