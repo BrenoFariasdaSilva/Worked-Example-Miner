@@ -71,6 +71,7 @@ FULL_PROGRESS_DIRECTORY_PATH = START_PATH + RELATIVE_PROGRESS_DIRECTORY_PATH # T
 FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_PATH # The full path of the directory that contains the refactorings
 FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_PATH # The full path of the directory that contains the repositories
 FULL_REPOSITORIES_LIST_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_LIST_FILE_PATH # The full path of the file that contains the repositories list
+OUTPUT_DIRECTORIES = [FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH] # The list of output directories
 
 def verbose_output(true_string="", false_string=""):
    """
@@ -719,6 +720,26 @@ def get_directory_size_in_gb(directory_path):
 
    return round(sum_directory_files_size(directory_path) / (1024 ** 3), 3) # Size in GB
 
+def get_output_directories_size(repository_name):
+   """
+   Get the size of the output directories in GB.
+
+   :param repository_name: Name of the repository.
+   :return: Total size of the output directories in GB
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the size of the output directories in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+   output_dirs_size = 0 # Total size of the output directories in GB
+   for output_dir in OUTPUT_DIRECTORIES: # Loop through the output directories
+      # Get the size of each output directory in GB
+      output_dirs_size += get_directory_size_in_gb(os.path.join(output_dir, output_dir))
+   
+   # Get the size of the file from progress/{repository_name}-progress.csv
+   output_dirs_size += os.path.getsize(f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv") / (1024 ** 3)
+   
+   return round(output_dirs_size, 3) # Return the total size of the output directories in GB
+
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
    Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
@@ -740,9 +761,8 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    # Get the total number of classes and lines of code
    total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
-   # Get the CK metrics directory size and diff directory size
-   ck_metrics_dir_size = get_directory_size_in_gb(os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name))
-   diff_dir_size = get_directory_size_in_gb(os.path.join(FULL_DIFFS_DIRECTORY_PATH, repository_name))
+   # Get the size of the output directories in GB
+   output_dirs_size = get_output_directories_size(repository_name)
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
@@ -750,7 +770,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
       "lines_of_code": total_lines_of_code,
       "commits": number_of_commits,
       "execution_time_minutes": round(elapsed_time / 60, 3),
-      "size_in_gb": ck_metrics_dir_size + diff_dir_size
+      "size_in_gb": output_dirs_size
    }
 
    return repository_attributes # Return the repository attributes
