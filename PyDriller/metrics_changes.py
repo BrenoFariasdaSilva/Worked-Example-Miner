@@ -870,6 +870,27 @@ def read_csv_as_dict(file_path):
 
 	return repository_data # Return the dictionary containing the repository data
 
+def write_dict_to_csv(file_path, repositories_attributes):
+	"""
+	Writes the dictionary data back into the CSV file.
+	
+	:param file_path: Path to the CSV file
+	:param repositories_attributes: Dictionary containing repositories attributes
+	"""
+
+	with open(file_path, "w", newline="") as csv_file: # Open the CSV file
+		writer = csv.writer(csv_file) # Create the CSV writer
+		writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"])
+		for repository_name, attributes in repositories_attributes.items(): # For each repository name and attributes in the data dictionary
+			writer.writerow([ # Write the repository name and attributes to the CSV file
+				repository_name, # Repository name
+				attributes["classes"], # Number of classes
+				attributes["lines_of_code"], # Lines of code (LOC)
+				attributes["commits"], # Number of commits
+				attributes["execution_time_in_minutes"], # Execution time in minutes
+				attributes["size_in_gb"] # Size in GB
+			])
+
 def update_repository_attributes(repository_name, elapsed_time):
 	"""
 	Updates the attributes for a specific repository.
