@@ -15,6 +15,9 @@ metrics_changes_script: $(VENV)
 repositories_picker_script: $(VENV)
 	clear; time $(PYTHON) ./repositories_picker.py
 
+repositories_attributes_analyzer_script: $(VENV)
+	clear; time $(PYTHON) ./repositories_attributes_analyzer.py
+
 # Auxiliary Scripts:
 empty_folders_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/empty_folders.py
