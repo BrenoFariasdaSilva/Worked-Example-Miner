@@ -760,8 +760,8 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    # Get the total number of classes and lines of code
    total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
-   # Get the size of the output directories in GB
-   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + os.path.getsize(f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv") / (1024 ** 3)
+   # Get the size of the output directories in GB and the progress file size in GB
+   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_progress_file_size(repository_name, FULL_PROGRESS_DIRECTORY_PATH)
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
