@@ -843,6 +843,30 @@ def sort_csv_by_percentual_variation(repository_name):
 	# Write the sorted csv file to a new csv file
 	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}", index=False)
 
+def update_repository_attributes(repository_name, elapsed_time):
+	"""
+	Updates the attributes for a specific repository.
+	
+	:param repository_name: Name of the repository to update
+	:param elapsed_time: Additional elapsed time in seconds
+	"""
+
+	repository_attributes_file_path = FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH.replace("repository_name", repository_name)
+
+	# Read the existing CSV data
+	repositories_attributes = read_csv_as_dict(repository_attributes_file_path)
+
+	if repository_name in repositories_attributes:
+		# Update the attributes for the specified repository
+		repositories_attributes[repository_name]["execution_time_in_minutes"] = round(repositories_attributes[repository_name]["execution_time_in_minutes"] + elapsed_time / 60, 2)
+		repositories_attributes[repository_name]["size_in_gb"] += get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES)
+	else:
+		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not found in the {BackgroundColors.CYAN}repositories attributes{BackgroundColors.RED} file.{Style.RESET_ALL}")
+		return # Return if the repository was not found in the repositories attributes file
+
+	# Write the updated data back to the CSV file
+	write_dict_to_csv(repository_attributes_file_path, repositories_attributes)
+
 def process_repository(repository_name):
 	"""
 	Processes the specified repository.
@@ -892,9 +916,9 @@ def process_repository(repository_name):
 
 	# Output the elapsed time to process this repository
 	elapsed_time = time.time() - start_time # Calculate the elapsed time
- 
+
 	update_repository_attributes(repository_name, elapsed_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
- 
+	
 	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
 
