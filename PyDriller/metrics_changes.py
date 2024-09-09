@@ -860,7 +860,7 @@ def read_csv_as_dict(file_path):
 				repository_name = row["Repository Name"] # Get the repository name
 				repository_data[repository_name] = { # Add the repository data to the dictionary
 					"classes": int(row["Number of Classes"]), # Convert the number of classes to an integer
-					"lines_of_code": int(row["Lines of Code"]), # Convert the lines of code to an integer
+					"lines_of_code": int(row["Lines of Code (LOC)"]), # Convert the lines of code to an integer
 					"commits": int(row["Number of Commits"]), # Convert the number of commits to an integer
 					"execution_time_in_minutes": float(row["Execution Time (Minutes)"]), # Convert the execution time to a float
 					"size_in_gb": float(row["Size (GB)"]) # Convert the size to a float
