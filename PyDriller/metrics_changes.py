@@ -622,7 +622,7 @@ def add_csv_header(csv_filename, metric_name):
 	if PROCESS_CLASSES:
 		expected_header = ["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Method Invocations", "Refactoring Patterns"]
 	else:
-		expected_header = ["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Occurrences", "Refactoring Patterns"]
+		expected_header = ["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Methods Invoked Qty", "Refactoring Patterns"]
 	
 	if verify_file(csv_filename): # If the file exists
 		with open(csv_filename, "r") as file: # Open the file
@@ -809,7 +809,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 					writer.writerow(["Class", "Commit Hash", "CBO", "WMC", "RFC", "Method Invocations"]) # Write the header to the csv file
 				else: # If the PROCESS_CLASSES constant is set to False
 					unique_identifier = variable_attribute # The unique identifier is the method name
-					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC", "Occurrences"]) # Write the header to the csv file
+					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC", "Methods Invoked Qty"]) # Write the header to the csv file
 				
 				# Get the len of the metrics list
 				metrics_len = len(metrics)
