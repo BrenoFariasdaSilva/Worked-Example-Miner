@@ -362,7 +362,7 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 		reader = csv.DictReader(csvfile)
 		# Iterate through each row, that is, for each method in the csv file
 		for row in reader:
-			# Get the identifier and metrics of the method
+			# Get the identifier, metrics and method_invoked of the class or method
 			identifier, ck_metrics, occurrences_counter = get_identifier_and_metrics(row)
 
 			# If the identifier is not in the dictionary, then add it
