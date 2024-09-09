@@ -767,7 +767,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
       "lines_of_code": total_lines_of_code,
       "commits": number_of_commits,
       "execution_time_in_minutes": round(elapsed_time / 60, 2),
-      "size_in_gb": round(output_dirs_size, 3)
+      "size_in_gb": round(output_dirs_size, 2)
    }
 
    return repository_attributes # Return the repository attributes
