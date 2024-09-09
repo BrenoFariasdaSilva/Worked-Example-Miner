@@ -763,7 +763,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
    # Get the size of the output directories in GB and the progress file size in GB
-   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_progress_file_size(repository_name, FULL_PROGRESS_DIRECTORY_PATH)
+   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name))
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
@@ -792,7 +792,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
    commit_number = 1 # The current commit number
-   saved_progress_file = f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}-progress.csv"
+   saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name) # The path to the saved progress file
 
    # Get the last execution progress of the repository
    commits_info, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
