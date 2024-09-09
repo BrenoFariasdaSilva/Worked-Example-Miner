@@ -654,7 +654,7 @@ def get_class_and_loc_metrics(output_directory):
 
    return class_count, loc_count # Return the class count and lines of code count
 
-def get_directory_size(directory):
+def sum_directory_files_size(directory):
    """
    Calculates the total size of the given directory in bytes.
 
@@ -709,7 +709,7 @@ def get_last_directory(dirs):
 
    return dirs[-1] if dirs else "" # Return the last directory if the list is not empty
 
-def get_directory_size(directory_path):
+def get_directory_size_in_gb(directory_path):
    """
    Get the size of a directory in GB.
 
@@ -717,7 +717,7 @@ def get_directory_size(directory_path):
    :return: Size of the directory in GB
    """
 
-   return round(get_directory_size(directory_path) / (1024 ** 3), 3) # Size in GB
+   return round(sum_directory_files_size(directory_path) / (1024 ** 3), 3) # Size in GB
 
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
@@ -741,8 +741,8 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
    # Get the CK metrics directory size and diff directory size
-   ck_metrics_dir_size = get_directory_size(os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name))
-   diff_dir_size = get_directory_size(os.path.join(FULL_DIFFS_DIRECTORY_PATH, repository_name))
+   ck_metrics_dir_size = get_directory_size_in_gb(os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name))
+   diff_dir_size = get_directory_size_in_gb(os.path.join(FULL_DIFFS_DIRECTORY_PATH, repository_name))
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
