@@ -14,7 +14,7 @@ from tqdm import tqdm # For progress bar
 
 # Import from the main.py file
 from code_metrics import BackgroundColors # For coloring the terminal outputs
-from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Importing constants from the code_metrics.py file
+from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Importing constants from the code_metrics.py file
 from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, verbose_output, verify_ck_metrics_folder, verify_repositories_execution_constants # Importing functions from the code_metrics.py file
 
 # Default values that can be changed:
