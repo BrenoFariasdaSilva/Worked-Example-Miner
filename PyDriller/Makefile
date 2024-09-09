@@ -15,7 +15,7 @@ metrics_changes_script: $(VENV)
 repositories_picker_script: $(VENV)
 	clear; time $(PYTHON) ./repositories_picker.py
 
-# Auxiliar Scripts:
+# Auxiliary Scripts:
 empty_folders_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/empty_folders.py
 
@@ -52,4 +52,4 @@ clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
 
-.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extract_zip_files_script generate_short_zip_files_script generate_zip_files_script move_extracted_files_script repositories_picker_script track_files_script dependencies generate_requirements
+.PHONY: clean code_metrics_script metrics_changes_script empty_folders_script extract_zip_files_script generate_short_zip_files_script generate_zip_files_script move_extracted_files_script repositories_picker_script track_files_script dependencies generate_requirements repositories_picker_to_code_metrics code_metrics_to_repositories_attributes_analyzer metrics_changes_to_repositories_attributes_analyzer
