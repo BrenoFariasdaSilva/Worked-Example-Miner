@@ -900,10 +900,8 @@ def update_repository_attributes(repository_name, elapsed_time):
 	:param elapsed_time: Additional elapsed time in seconds
 	"""
 
-	repository_attributes_file_path = FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH.replace("repository_name", repository_name)
-
 	# Read the existing CSV data
-	repositories_attributes = read_csv_as_dict(repository_attributes_file_path)
+	repositories_attributes = read_csv_as_dict(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH)
 
 	if repository_name in repositories_attributes:
 		# Update the attributes for the specified repository
@@ -914,7 +912,7 @@ def update_repository_attributes(repository_name, elapsed_time):
 		return # Return if the repository was not found in the repositories attributes file
 
 	# Write the updated data back to the CSV file
-	write_dict_to_csv(repository_attributes_file_path, repositories_attributes)
+	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes)
 
 def process_repository(repository_name):
 	"""
