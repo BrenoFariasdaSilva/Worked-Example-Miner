@@ -15,7 +15,7 @@ from tqdm import tqdm # For progress bar
 # Import from the main.py file
 from code_metrics import BackgroundColors # For coloring the terminal outputs
 from code_metrics import START_PATH, CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, VERBOSE # Importing constants from the code_metrics.py file
-from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, verbose_output, verify_ck_metrics_folder # Importing functions from the code_metrics.py file
+from code_metrics import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, verbose_output, verify_ck_metrics_folder, verify_repositories_execution_constants # Importing functions from the code_metrics.py file
 
 # Default values that can be changed:
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
@@ -74,6 +74,7 @@ def update_global_variables():
 	Updates the global variables PROCESS_CLASSES and CLASSES_OR_METHODS according to the user input.
 	"""
 
+	verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
 	global PROCESS_CLASSES, CK_CSV_FILE, CLASSES_OR_METHODS, UNSORTED_CHANGED_METHODS_CSV_FILENAME, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME
 	PROCESS_CLASSES = input(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}").strip().lower() == "true"
 	CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1]
