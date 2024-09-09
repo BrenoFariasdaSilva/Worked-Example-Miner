@@ -140,23 +140,6 @@ def process_based_on_user_input(user_response):
 	update_global_variables_for_processing(process_classes) # Update the global variables for processing classes or methods
 	process_all_repositories() # Process all repositories
 
-def update_global_variables():
-	"""
-	Updates the global variables according to the user input or the lack thereof.
-	"""
-
-	verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
-	
-	# Prompt the user with a timeout
-	user_response = input_with_timeout(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}", 10)
-	
-	if user_response is None:
-		# No input received within timeout
-		print(f"{BackgroundColors.RED}No input received within the timeout. Processing both classes and methods.{Style.RESET_ALL}")
-		process_classes_and_methods() # Process both classes and methods
-	else:
-		process_based_on_user_input(user_response) # Process based on user input
-
 def get_directory_path(repository_name):
 	"""
 	Gets the path to the directory of the CK metrics related to the repository.
