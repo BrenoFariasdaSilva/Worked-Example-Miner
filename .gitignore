@@ -198,6 +198,7 @@ Jabref/.github/*
 /PyDriller/metrics_evolution
 /PyDriller/metrics_predictions
 /PyDriller/metrics_statistics
+/PyDriller/plots
 /PyDriller/progress
 /PyDriller/tmp
 /PyDriller/refactorings
