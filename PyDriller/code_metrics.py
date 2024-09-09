@@ -720,7 +720,7 @@ def get_directory_size_in_gb(directory_path):
 
    return sum_directory_files_size(directory_path) / (1024 ** 3) # Size in GB
 
-def get_output_directories_size(repository_name):
+def get_output_directories_size_in_gb(repository_name):
    """
    Get the size of the output directories in GB.
 
@@ -762,7 +762,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
 
    # Get the size of the output directories in GB
-   output_dirs_size = get_output_directories_size(repository_name)
+   output_dirs_size = get_output_directories_size_in_gb(repository_name)
 
    repository_attributes = { # Create a dictionary with the repository attributes
       "repository_name": repository_name,
