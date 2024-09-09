@@ -71,6 +71,24 @@ def verify_file(file_path):
 	
 	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
 
+def verify_and_update_repositories():
+	"""
+	Verifies the DEFAULT_REPOSITORIES and PROCESS_JSON_REPOSITORIES constants,
+	updates the repositories list file with the DEFAULT_REPOSITORIES dictionary,
+	and updates the DEFAULT_REPOSITORY_NAMES list with the keys of the DEFAULT_REPOSITORIES dictionary.
+	"""
+ 
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying and updating the repositories...{Style.RESET_ALL}")
+
+	# Verify DEFAULT_REPOSITORIES and PROCESS_JSON_REPOSITORIES constants
+	verify_repositories_execution_constants()
+
+	# Update DEFAULT_REPOSITORY_NAMES with the keys of the DEFAULT_REPOSITORIES dictionary
+	global DEFAULT_REPOSITORY_NAMES
+	DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys())
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}DEFAULT_REPOSITORY_NAMES{BackgroundColors.GREEN} list was successfully updated with the keys of the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary.{Style.RESET_ALL}")
+
 def input_with_timeout(prompt, timeout=60):
 	"""
 	Prompts the user for input with a specified timeout.
@@ -1057,7 +1075,7 @@ def main():
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
 		return # Exit the program
 
-	update_global_variables() # Update the global variables
+	verify_and_update_repositories() # Verify and update the repositories
 
 	# Print the welcome message
 	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
