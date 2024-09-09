@@ -127,7 +127,7 @@ def verify_and_update_repositories():
 
 	# Update DEFAULT_REPOSITORIES_NAMES with the keys of the DEFAULT_REPOSITORIES dictionary
 	global DEFAULT_REPOSITORIES_NAMES
-	DEFAULT_REPOSITORIES_NAMES = json.dumps(list(DEFAULT_REPOSITORIES.keys()))
+	DEFAULT_REPOSITORIES_NAMES = list(DEFAULT_REPOSITORIES.keys())
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}DEFAULT_REPOSITORIES_NAMES{BackgroundColors.GREEN} list was successfully updated with the keys of the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary.{Style.RESET_ALL}")
 
