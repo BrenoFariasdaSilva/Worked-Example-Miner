@@ -32,7 +32,7 @@ DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Pu
 
 # Constants:
 PROCESS_CLASSES = True # If True, then the classes will be processed, otherwise the methods will be processed
-DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys()) # The default repository names
+DEFAULT_REPOSITORY_NAMES = json.dumps(list(DEFAULT_REPOSITORIES.keys())) # The default repository names
 FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = True # If True, then it is the first run of the program
 
 # Extensions:
@@ -127,7 +127,7 @@ def verify_and_update_repositories():
 
 	# Update DEFAULT_REPOSITORY_NAMES with the keys of the DEFAULT_REPOSITORIES dictionary
 	global DEFAULT_REPOSITORY_NAMES
-	DEFAULT_REPOSITORY_NAMES = list(DEFAULT_REPOSITORIES.keys())
+	DEFAULT_REPOSITORY_NAMES = json.dumps(list(DEFAULT_REPOSITORIES.keys()))
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}DEFAULT_REPOSITORY_NAMES{BackgroundColors.GREEN} list was successfully updated with the keys of the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary.{Style.RESET_ALL}")
 
