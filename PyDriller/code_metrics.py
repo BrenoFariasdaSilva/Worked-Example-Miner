@@ -769,7 +769,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
       "classes": total_classes,
       "lines_of_code": total_lines_of_code,
       "commits": number_of_commits,
-      "execution_time_minutes": round(elapsed_time / 60, 3),
+      "execution_time_in_minutes": round(elapsed_time / 60, 2),
       "size_in_gb": round(output_dirs_size, 3)
    }
 
@@ -883,7 +883,7 @@ def write_repository_attributes_to_csv(repository_name, repository_attributes):
          repository_attributes["classes"],
          repository_attributes["lines_of_code"],
          repository_attributes["commits"],
-         repository_attributes["execution_time_minutes"],
+         repository_attributes["execution_time_in_minutes"],
          repository_attributes["size_in_gb"]
       ])
 
