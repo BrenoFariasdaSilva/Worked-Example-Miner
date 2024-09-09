@@ -22,6 +22,11 @@ repositories_picker_to_code_metrics: $(VENV)
 	$(MAKE) repositories_picker_script
 	$(MAKE) code_metrics_script
 
+code_metrics_to_repositories_attributes_analyzer: $(VENV)
+	$(MAKE) code_metrics_script
+	$(MAKE) metrics_changes_script
+	$(MAKE) repositories_attributes_analyzer_script
+
 # Auxiliary Scripts:
 empty_folders_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/empty_folders.py
