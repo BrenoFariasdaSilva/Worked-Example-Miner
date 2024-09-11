@@ -1,8 +1,7 @@
-<div align="center">
-   
-# [Worked-Example-Miner](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Icons/Bash.svg"  width="3%" height="3%">
-
-</div>
+<h1 align="center">
+    <a href="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner">Worked-Example-Miner</a>
+    <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Icons/Bash.svg" width="30" height="30">
+</h1>
 
 <div align="center">
   
