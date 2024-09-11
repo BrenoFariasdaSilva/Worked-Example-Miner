@@ -287,6 +287,12 @@ If you use the Worked Example Miner (WEM) in your research, please cite it using
 }
 ```
 
+Additionally, a `main.bib` file is available in the root directory of this repository. It contains the BibTeX entry for this project, as well as papers and references related to the research and data made with the Worked Example Miner (WEM).
+
+If you find this repository valuable, please don't forget to give it a ⭐ to show your support! Contributions are highly encouraged, whether by creating issues for feedback or submitting pull requests (PRs) to improve the project. For details on how to contribute, please refer to the [Contributing](#contributing) section below.
+
+Thank you for your support and for recognizing the contribution of this tool to your work!
+
 ## Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. If you have suggestions for improving the code, your insights will be highly welcome.
