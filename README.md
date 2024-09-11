@@ -62,6 +62,7 @@ This project is massive and complex, containing multiple integrated tools and ex
   - [Refactorings Patterns](#refactorings-patterns)
   - [Tools Utilized](#tools-utilized)
 - [Conclusion](#conclusion)
+- [How to Cite?](#how-to-cite)
 - [Contributing](#contributing)
 - [Collaborators](#collaborators)
 - [License](#license)
@@ -271,6 +272,20 @@ Dynamic code analysis complements our understanding by examining the code's beha
 ## Conclusion
 
 This research methodology, underpinned by detailed code metric analysis and tool integration, aims to offer significant insights into the evolution of software quality in DS. By identifying and analyzing patterns of improvement, this work contributes to the broader field of Software Engineering, particularly in educational contexts where real-world examples of code evolution are invaluable.
+
+## How to Cite?
+
+If you use the Worked Example Miner (WEM) in your research, please cite it using the following BibTeX entry:
+
+```
+@misc{softwareWEM:2023,
+  title = {Worked Example Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories},
+  author = {Breno Farias da Silva},
+  year = {2023},
+  howpublished = {https://github.com/BrenoFariasdaSilva/Worked-Example-Miner},
+  note = {Accessed on September 11, 2024}
+}
+```
 
 ## Contributing
 
