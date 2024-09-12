@@ -36,12 +36,12 @@ fi
 
 # Loop through the repository names found in ./repositories
 for repo_name in "${repositories[@]}"; do
-   folders_list=("")  # Clear the folders_list variable
+   folders_list=("") # Clear the folders_list variable
 
    # Loop through the subfolders
    for folder in "${subfolders[@]}"; do
-      if [[ -d "./${folder}/${repo_name}" ]]; then  # Check if the subfolder exists for the repository
-         folders_list+=("./${folder}/${repo_name}/")  # Add the folder to the list if it exists
+      if [[ -d "./${folder}/${repo_name}" ]]; then # Check if the subfolder exists for the repository
+         folders_list+=("./${folder}/${repo_name}/") # Add the folder to the list if it exists
       fi
    done
 
@@ -50,7 +50,7 @@ for repo_name in "${repositories[@]}"; do
       folders_list+=("./${subfolders[0]}/${repo_name}-commits_list.csv")
    fi
 
-   if [[ ${#folders_list[@]} -gt 1 ]]; then  # Proceed only if there are valid folders/files to zip
+   if [[ ${#folders_list[@]} -gt 1 ]]; then # Proceed only if there are valid folders/files to zip
       echo "Creating a zip file for the ${repo_name} repository..."
 
       # Create a zip file for the repository
@@ -59,15 +59,6 @@ for repo_name in "${repositories[@]}"; do
       echo "No valid folders or files to zip for the ${repo_name} repository."
    fi
 done
-
-# Play a sound when the script finishes
-sound_file="../.assets/Sounds/NotificationSound.wav"
-
-if [[ -e "$sound_file" ]]; then
-   aplay "$sound_file" # Play the sound file
-else
-   echo "Sound file not found at: $sound_file"
-fi
 
 # Print a success message
 echo "Zip files created successfully."
