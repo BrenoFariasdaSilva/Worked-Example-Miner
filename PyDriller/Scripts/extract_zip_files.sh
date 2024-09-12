@@ -16,46 +16,38 @@ echo "Current directory: ${current_dir}"
 # If the current_dir doesn't end with "/PyDriller", then exit
 if [[ "${current_dir}" != *"/PyDriller" ]]; then
    echo "Please run the script from the '/PyDriller' with the command './Scripts/extract_zip_files.sh'."
-   exit # Exit the script
+   exit 1 # Exit the script with an error code
 fi
 
 # Define the compressed directory
 compressed_dir="compressed" # Set the compressed directory
 
-# If the compressed directory does not exist, then create it
+# If the compressed directory does not exist, then exit
 if [[ ! -d "$compressed_dir" ]]; then
-   echo "Creating the ${compressed_dir} directory in current path..."
-   mkdir -p "$compressed_dir" # Create the directory
+   echo "The compressed directory does not exist. Please ensure there are zip files in the ${compressed_dir} directory."
+   exit 1 # Exit the script with an error code
 fi
 
-# Define the list of repositories
-full_repositories=("commons-lang" "conductor" "genie" "jabref" "kafka" "waltz" "zookeeper")
-short_repositories=("commons-lang-short" "conductor-short" "genie-short" "jabref-short" "kafka-short" "waltz-short" "zookeeper-short")
+# Get the list of zip files in the ./compressed directory (without extensions)
+repositories=($(find "$compressed_dir" -maxdepth 1 -name "*.zip" -exec basename {} .zip \; | sort))
 
-# Loop through the specified repository names and unzip the corresponding files
-for repo_name in "${full_repositories[@]}"; do
+# Check if any zip files were found
+if [[ ${#repositories[@]} -eq 0 ]]; then
+   echo "No zip files found in ${compressed_dir}. Exiting..."
+   exit 1 # Exit the script with an error code
+fi
+
+# Loop through the repository zip files and unzip them
+for repo_name in "${repositories[@]}"; do
    zipfile="$compressed_dir/${repo_name}.zip" # Define the zip file path
    echo "Unzipping $zipfile to $compressed_dir..."
-   if [ -e "$zipfile" ]; then                  # Check if the zip file exists
+   if [[ -e "$zipfile" ]]; then # Check if the zip file exists
       unzip -q "$zipfile" -d "$compressed_dir" # Unzip the file
       echo "Unzipped $zipfile to $compressed_dir"
    else # If the zip file does not exist, then print an error message
       echo "File $zipfile not found in $compressed_dir"
    fi
 done
-
-# Loop through the specified repository names and unzip the corresponding files
-for repo_name in "${short_repositories[@]}"; do
-   zipfile="$compressed_dir/${repo_name}.zip" # Define the zip file path
-   echo "Unzipping $zipfile to $compressed_dir..."
-   if [ -e "$zipfile" ]; then                  # Check if the zip file exists
-      unzip -q "$zipfile" -d "$compressed_dir" # Unzip the file
-      echo "Unzipped $zipfile to $compressed_dir"
-   else # If the zip file does not exist, then print an error message
-      echo "File $zipfile not found in $compressed_dir"
-   fi
-done
-
 
 # Print a success message
 echo "Files extracted successfully."
