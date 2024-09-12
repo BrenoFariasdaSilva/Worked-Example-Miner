@@ -40,14 +40,5 @@ for extracted_folder in "${extracted_folders[@]}"; do
    rm -rf "${compressed_folder_path}/${extracted_folder}"
 done
 
-# Play a sound when the script finishes
-sound_file="./../../.assets/Sounds/NotificationSound.wav"
-
-if [ -e "$sound_file" ]; then
-   aplay "$sound_file" # Play the sound file
-else
-   echo "Sound file not found at: $sound_file"
-fi
-
 # Print a success message
 echo "Files Moved and Source Folders deleted successfully."
