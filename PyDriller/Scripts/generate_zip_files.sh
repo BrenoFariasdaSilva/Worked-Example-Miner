@@ -15,47 +15,55 @@ echo "Current directory: ${current_dir}"
 
 # If the current_dir doesn't end with "/PyDriller", then exit
 if [[ "${current_dir}" != *"/PyDriller" ]]; then
-   echo "Please run the script from the '/PyDriller' with the command './Scripts/generate_zip_files.sh'."
-   exit # Exit the script
+   echo "Please run the script from the '/PyDriller' directory with the command './Scripts/generate_zip_files.sh'."
+   exit 1 # Exit the script with an error code
 fi
 
-# Define the list of repositories
-repositories=("commons-lang" "conductor" "genie" "jabref" "kafka" "waltz" "zookeeper")
+# Get the list of repository names (directories only) from the ./repositories directory and sort them
+repositories=($(find ./repositories -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort))
+
+# Print the list of repositories
+echo "List of repositories: ${repositories[@]}"
 
 # Define the list of subfolders
 subfolders=("ck_metrics" "diffs" "metrics_data" "metrics_evolution" "metrics_predictions" "metrics_statistics" "progress" "refactorings" "repositories")
 
-# List of the folder to zip
-folders_list=("")
-
-# Create a "Compressed" directory if it does not exist
-if [[ "${current_dir}" == *"/PyDriller" ]]; then
-   if [[ ! -d "compressed/" ]]; then # Check if the directory does not exist
-      echo "Creating the compressed directory in current path..."
-      mkdir -p "compressed" # Create the directory
-   fi
+# Create a "compressed" directory if it does not exist
+if [[ ! -d "compressed/" ]]; then
+   echo "Creating the compressed directory in the current path..."
+   mkdir -p "compressed" # Create the directory
 fi
 
-# Loop through the repositories names
+# Loop through the repository names found in ./repositories
 for repo_name in "${repositories[@]}"; do
-   folders_list=("")                              # Clean the folders_list variable
-   for folder in "${subfolders[@]}"; do           # Loop through the subfolders
-      folders_list+=("./${folder}/${repo_name}/") # Add the folder to the list
+   folders_list=("")  # Clear the folders_list variable
+
+   # Loop through the subfolders
+   for folder in "${subfolders[@]}"; do
+      if [[ -d "./${folder}/${repo_name}" ]]; then  # Check if the subfolder exists for the repository
+         folders_list+=("./${folder}/${repo_name}/")  # Add the folder to the list if it exists
+      fi
    done
 
-   # Add the .//ck_metrics/repository_name-commits_list.csv file to the list
-   folders_list+=("./${subfolders[0]}/${repo_name}-commits_list.csv")
+   # Add the commit list file if it exists
+   if [[ -e "./${subfolders[0]}/${repo_name}-commits_list.csv" ]]; then
+      folders_list+=("./${subfolders[0]}/${repo_name}-commits_list.csv")
+   fi
 
-   echo "Creating a zip file for the ${repo_name} repository..."
+   if [[ ${#folders_list[@]} -gt 1 ]]; then  # Proceed only if there are valid folders/files to zip
+      echo "Creating a zip file for the ${repo_name} repository..."
 
-   # Create a zip file for the repository
-   zip -r "./compressed/${repo_name}.zip" "${folders_list[@]}"
+      # Create a zip file for the repository
+      zip -r "./compressed/${repo_name}.zip" "${folders_list[@]}"
+   else
+      echo "No valid folders or files to zip for the ${repo_name} repository."
+   fi
 done
 
 # Play a sound when the script finishes
 sound_file="./../../.assets/Sounds/NotificationSound.wav"
 
-if [ -e "$sound_file" ]; then
+if [[ -e "$sound_file" ]]; then
    aplay "$sound_file" # Play the sound file
 else
    echo "Sound file not found at: $sound_file"
