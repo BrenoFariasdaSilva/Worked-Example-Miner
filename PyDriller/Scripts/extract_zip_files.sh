@@ -56,14 +56,6 @@ for repo_name in "${short_repositories[@]}"; do
    fi
 done
 
-# Play a sound when the script finishes
-sound_file="./../../.assets/Sounds/NotificationSound.wav"
-
-if [ -e "$sound_file" ]; then
-   aplay "$sound_file" # Play the sound file
-else
-   echo "Sound file not found at: $sound_file"
-fi
 
 # Print a success message
 echo "Files extracted successfully."
