@@ -189,13 +189,14 @@ def fetch_repositories(token):
    repositories = fetch_all_pages(url, headers) # Fetch repositories from all pages
    return repositories # Return the list of repositories
 
-def get_six_months_ago_date():
+def get_datetime_filter():
    """
-   Calculates the date for six months ago from the current date.
+   Calculates the date filter for the repositories.
+   :param days: Number of days to go back from today. If None, return the earliest possible datetime.
    :return: datetime
    """
 
-   return datetime.now() - timedelta(days=180)
+   return datetime.min # Return the earliest possible datetime (since "forever")
 
 def parse_repo_updated_date(repo):
    """
@@ -215,11 +216,11 @@ def extract_author_name(repo):
 
    return repo["html_url"].split("/")[-2]
 
-def process_repository(repo, six_months_ago, ignore_keywords):
+def process_repository(repo, date_filter=None, ignore_keywords=None):
    """
    Processes a single repository, filtering by date, keywords, and ensuring a unique name.
    :param repo: dict
-   :param six_months_ago: datetime
+   :param date_filter: datetime to filter the repositories
    :param ignore_keywords: list
    :return: dict or None
    """
@@ -227,7 +228,7 @@ def process_repository(repo, six_months_ago, ignore_keywords):
    updated_date = parse_repo_updated_date(repo) # Get the last update date of the repository
 
    # Validate the repository based on the update date, star count, and keywords
-   if is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords):
+   if is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
       return {
          "name": repo["name"],
          "author": extract_author_name(repo),
@@ -255,18 +256,18 @@ def contains_excluded_keywords(repo, ignore_keywords):
       for keyword in ignore_keywords # Iterate over the ignore keywords
    )
 
-def is_repository_valid(repo, updated_date, six_months_ago, ignore_keywords):
+def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
    """
    Verifies if the repository is valid based on the update date, star count, and keywords.
    :param repo: dict
    :param updated_date: datetime
-   :param six_months_ago: datetime
+   :param date_filter: datetime to filter the repositories
    :param ignore_keywords: list
    :return: bool
    """
 
    return (
-      updated_date > six_months_ago # Verify if the repository was updated in the last six months
+      updated_date > date_filter # Verify if the repository was updated after the date filter
       and repo["stargazers_count"] >= MINIMUM_STARS # Verify if the repository has the minimum number of stars
       and not contains_excluded_keywords(repo, ignore_keywords) # Verify if the repository has the excluded keywords
    )
@@ -282,10 +283,10 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
    verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}") 
 
    filtered_repositories = [] # The list of filtered repositories
-   six_months_ago = get_six_months_ago_date() # The date six months ago
+   datetime_filter = get_datetime_filter() # The date filter for the repositories
 
    for repo in repositories: # Iterate over the repositories
-      filtered_repo = process_repository(repo, six_months_ago, ignore_keywords) # Process the repository
+      filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
       if filtered_repo: # If the repository is valid
          filtered_repositories.append(filtered_repo) # Append the repository to the list
 
