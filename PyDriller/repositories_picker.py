@@ -30,6 +30,7 @@ ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
 
 # Execution Constants:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
+DATETIME_FILTER = None # The datetime filter for the repositories
 CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
@@ -189,14 +190,17 @@ def fetch_repositories(token):
    repositories = fetch_all_pages(url, headers) # Fetch repositories from all pages
    return repositories # Return the list of repositories
 
-def get_datetime_filter():
+def get_datetime_filter(days=DATETIME_FILTER):
    """
    Calculates the date filter for the repositories.
    :param days: Number of days to go back from today. If None, return the earliest possible datetime.
    :return: datetime
    """
 
-   return datetime.min # Return the earliest possible datetime (since "forever")
+   if days is None:
+      return datetime.min # Return the earliest possible datetime (since "forever")
+   else:
+      return datetime.now() - timedelta(days=days) # Return datetime "days" ago
 
 def parse_repo_updated_date(repo):
    """
