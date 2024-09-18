@@ -363,6 +363,16 @@ def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
       and not contains_excluded_keywords(repo, ignore_keywords) # Verify if the repository has the excluded keywords
    )
 
+def count_commits(repo_path):
+   """
+   Counts the number of commits in a repository.
+
+   :param repo_path: str
+   :return: int
+   """
+
+   return len(list(Repository(repo_path).traverse_commits()))
+
 def process_repository_task(repo, datetime_filter, ignore_keywords):
    """
    Processes and filters a single repository.
