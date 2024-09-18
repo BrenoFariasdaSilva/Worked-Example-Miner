@@ -366,28 +366,32 @@ def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
 def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
    """
    Filters the list of repositories based on the update date, ignore keywords, and ensures unique names.
+   This function uses concurrent processing to speed up the filtering process based on the number of available CPU cores.
+
    :param repositories: list
    :param ignore_keywords: list
    :return: list
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}") 
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}")
 
-   filtered_repositories = [] # The list of filtered repositories
-   datetime_filter = get_datetime_filter() # The date filter for the repositories
+   usable_threads, max_threads = get_adjusted_number_of_threads(get_threads()) # Get the adjusted number of threads to use
+   print(f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
 
-   for repo in repositories: # Iterate over the repositories
-      filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
+   datetime_filter = get_datetime_filter()
 
-      if filtered_repo: # If the repository is valid
-         repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}" # The path to the repository directory
+   filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
 
-         setup_repository(repo["name"], repo["html_url"]) # Setup the repository
+   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
+      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories]
 
-         # Verify if the repository path exists
-         if os.path.isdir(repo_path):
-            repo["commits"] = len(list(Repository(repo_path).traverse_commits())) # Get the number of commits in the repository
-            filtered_repositories.append(filtered_repo) # Append the repository to the list         
+      for future in concurrent.futures.as_completed(futures):
+         try:
+            result = future.result() # Raises exception if any occurred during execution
+            if result: # If the result is not None
+               filtered_repositories.append(result) # Append the repository to the list
+         except Exception as exc:
+               print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
 
    return filtered_repositories # Return the list of filtered repositories
 
