@@ -401,8 +401,6 @@ def get_adjusted_number_of_threads(cpu_count):
 
    usable_threads = max(1, usable_threads) # Ensure at least 1 thread is used
 
-   print(f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{max(1, usable_threads)}{BackgroundColors.GREEN} threads out of {BackgroundColors.CYAN}{cpu_count}{BackgroundColors.GREEN} available...{Style.RESET_ALL}")
-
    return usable_threads, cpu_count # Return the number of threads to use and the maximum number of threads available
 
 def update_repository(repository_directory_path):
@@ -464,10 +462,12 @@ def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIE
    :return: None
    """
 
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the repositories...{Style.RESET_ALL}")
+
    cpu_cores = get_threads() # Get the number of CPU cores
    usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
 
-   verbose_output(true_string=f"Cloning repositories to {repositories_directory} using {usable_threads} threads (max {max_threads} cores available)...")
+   print(f"Cloning repositories to {repositories_directory} using {usable_threads} threads (max {max_threads} cores available)...")
 
    with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
       # Submit each repository setup task to the thread pool
