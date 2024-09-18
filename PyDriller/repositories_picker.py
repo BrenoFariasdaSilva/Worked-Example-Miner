@@ -279,7 +279,7 @@ def parse_repo_updated_date(repo):
    :return: datetime
    """
 
-   return datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ")
+   return datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ") # Parse the date string to a datetime object
 
 def extract_author_name(repo):
    """
@@ -288,7 +288,7 @@ def extract_author_name(repo):
    :return: str
    """
 
-   return repo["html_url"].split("/")[-2]
+   return repo["html_url"].split("/")[-2] # Get the author's name from the URL
 
 def process_repository(repo, date_filter=None, ignore_keywords=None):
    """
@@ -400,7 +400,7 @@ def add_pdf_header(pdf, num_candidates):
    current_date = datetime.now().strftime("%d %B %Y") # Format: 01 January 2022
    current_time = datetime.now().strftime("%Hh %Mm %Ss") # Format: 12h 34m 56s
 
-   header_text = (
+   header_text = ( # Header text
       f"Repositories List\n" # Title
       f"Number of Candidates: {num_candidates}\n" # Number of repositories
       f"Generated on: {current_date} at {current_time}" # Current date and time of generation
@@ -433,7 +433,7 @@ def format_last_update_date(last_update):
    :return: str, formatted date or "Unknown" if parsing fails
    """
 
-   try:
+   try: # Try to parse the date
       last_update_date = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%SZ") # Parse the date
       return last_update_date.strftime("%d %B %Y") # Format: 01 January 2022
    except ValueError:
@@ -447,9 +447,9 @@ def add_pdf_data_rows(pdf, data):
    :return: None
    """
 
-   pdf.set_font("Helvetica", size=10)
+   pdf.set_font("Helvetica", size=10) # Set the font to Helvetica with size 10
 
-   for repo in data:
+   for repo in data: # Iterate over the repositories
       # Handle content in English
       name = repo.get("name", "") # Get the name of the repository
       author = repo.get("author", "") # Get the author of the repository
@@ -457,7 +457,7 @@ def add_pdf_data_rows(pdf, data):
       stars = str(repo.get("stars", "")) # Get the number of stars
 
       # Handle last_update
-      last_update = repo.get("updated_at", "")
+      last_update = repo.get("updated_at", "") # Get the last update date of the repository
       last_update = format_last_update_date(last_update) # Parse and format last update date
 
       # Add the encoded content to the PDF
@@ -502,7 +502,7 @@ def randomly_select_repositories(repositories, num_repos):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Selecting {BackgroundColors.CYAN}{num_repos}{BackgroundColors.GREEN} repositories randomly...{Style.RESET_ALL}")
 
-   return random.sample(repositories, num_repos)
+   return random.sample(repositories, num_repos) # Return a random sample of repositories
 
 def print_repositories_summary(total_repo_count, total_candidates, candidates):
    """
@@ -510,6 +510,7 @@ def print_repositories_summary(total_repo_count, total_candidates, candidates):
    :param total_repo_count: int
    :param total_candidates: int
    :param candidates: list
+   :return: None
    """
 
    print(f"{BackgroundColors.GREEN}Total repositories according to the criteria: {BackgroundColors.CYAN}{total_candidates}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{total_repo_count}{Style.RESET_ALL}\n")
@@ -526,14 +527,12 @@ def main():
 
    print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Picker{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
 
-   # Verify if the path constants contains whitespaces
-   if path_contains_whitespaces():
+   if path_contains_whitespaces(): # Verify if the path constants contains whitespaces
       return # Return if the path constants contains whitespaces
 
    update_sound_file_path() # Update the sound file path
 
-   # Verify if Git is installed
-   if not verify_git():
+   if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
 
    token = verify_env_file() # Verify the .env file and get the token
@@ -555,7 +554,7 @@ def main():
       
       # Print the summary of the repositories
       print_repositories_summary(total_repo_count, len(sorted_by_stars), candidates)
-   else:
+   else: # If there are no repositories after filtering and sorting
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
    print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
