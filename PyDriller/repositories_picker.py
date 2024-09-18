@@ -467,7 +467,7 @@ def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIE
    cpu_cores = get_threads() # Get the number of CPU cores
    usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
 
-   print(f"Cloning repositories to {repositories_directory} using {usable_threads} threads (max {max_threads} cores available)...")
+   print(f"{BackgroundColors.GREEN}Cloning repositories to {BackgroundColors.CYAN}{repositories_directory}{BackgroundColors.GREEN} using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
 
    with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
       # Submit each repository setup task to the thread pool
