@@ -40,6 +40,31 @@ OUTPUT_DIRECTORY = "./repositories/" # The path to the output directory
 OUTPUT_FILE_JSON = f"{OUTPUT_DIRECTORY}repositories.json" # The path to the JSON output file
 OUTPUT_FILE_PDF = f"{OUTPUT_DIRECTORY}repositories.pdf" # The path to the PDF output file
 
+def update_sound_file_path():
+   """
+   Updates the SOUND_FILE constant based on the current directory.
+   If the current directory ends in "PyDriller", the prefix is "../",
+   if it ends in "Scripts", the prefix is "../../", otherwise "./".
+   """
+
+   global SOUND_FILE # Declare SOUND_FILE as global to modify its value
+
+   # Get the current working directory
+   current_dir = os.getcwd()
+
+   # Determine the appropriate prefix based on the current directory name
+   if current_dir.endswith("PyDriller"):
+      prefix = "../" # Go up one directory
+   elif current_dir.endswith("Scripts"):
+      prefix = "../../" # Go up two directories
+   else: # The current directory is not "PyDriller" or "Scripts", so it must be "Worked-Example-Miner"
+      prefix = "./" # Stay in the same directory
+
+   # Update the SOUND_FILE constant
+   SOUND_FILE = f"{prefix}assets/Sounds/NotificationSound.wav"
+
+   print(f"SOUND_FILE updated to: {SOUND_FILE}")
+
 def play_sound():
    """
    Plays a sound when the program finishes.
@@ -455,6 +480,8 @@ def main():
    """
 
    print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Picker{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
+
+   update_sound_file_path() # Update the sound file path
 
    token = verify_env_file() # Verify the .env file and get the token
 
