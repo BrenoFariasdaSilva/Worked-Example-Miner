@@ -10,7 +10,37 @@ from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
 from fpdf import FPDF # For creating PDFs
 
-# Macros:
+## CONSTANTS:
+
+# Execution Constants:
+VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
+DATETIME_FILTER = None # The datetime filter for the repositories
+CANDIDATES = 3 # The number of repositories to select
+EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
+MINIMUM_STARS = 50 # The minimum number of stars a repository must have
+
+# .Env Constants:
+ENV_PATH = "../.env" # The path to the .env file
+ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
+
+# File Extensions Constants:
+PDF_FILE_EXTENSION = ".pdf" # The PDF file extension
+JSON_FILE_EXTENSION = ".json" # The JSON file extension
+
+# Default paths:
+START_PATH = os.getcwd() # Get the current working directory
+
+# Relative File Path Constants:
+RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
+RELATIVE_REPOSITORIES_DIRECTORY_PATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
+RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
+
+# Full File Path Constants:
+FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
+FULL_REPOSITORIES_DIRECTORY_PATH_PDF = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH_PDF}" # The full path to the repositories PDF file
+FULL_REPOSITORIES_DIRECTORY_PATH_JSON = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON}" # The full path to the repositories JSON file
+
+# Color Constants:
 class BackgroundColors: # Colors for the terminal
    CYAN = "\033[96m" # Cyan
    GREEN = "\033[92m" # Green
@@ -23,34 +53,6 @@ class BackgroundColors: # Colors for the terminal
 # Sound Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
 SOUND_FILE_PATH = ".assets/Sounds/NotificationSound.wav" # The path to the sound file
-
-# .Env Constants:
-ENV_PATH = "../.env" # The path to the .env file
-ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
-
-# Execution Constants:
-VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
-DATETIME_FILTER = None # The datetime filter for the repositories
-CANDIDATES = 3 # The number of repositories to select
-EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
-MINIMUM_STARS = 50 # The minimum number of stars a repository must have
-
-# Default paths:
-START_PATH = os.getcwd() # Get the current working directory
-
-# File Extensions Constants:
-PDF_FILE_EXTENSION = ".pdf" # The PDF file extension
-JSON_FILE_EXTENSION = ".json" # The JSON file extension
-
-# Relative File Path Constants:
-RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
-RELATIVE_REPOSITORIES_DIRECTORY_PATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
-RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
-
-# Full File Path Constants:
-FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
-FULL_REPOSITORIES_DIRECTORY_PATH_PDF = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH_PDF}" # The full path to the repositories PDF file
-FULL_REPOSITORIES_DIRECTORY_PATH_JSON = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON}" # The full path to the repositories JSON file
 
 def update_sound_file_path():
    """
