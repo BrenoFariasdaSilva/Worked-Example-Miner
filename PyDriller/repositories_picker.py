@@ -1,6 +1,7 @@
 import atexit # For playing a sound when the program finishes
 import concurrent.futures # For running tasks concurrently
 import json # For creating JSON output
+import matplotlib.pyplot as plt # For creating plots, such as histograms
 import numpy as np # For numerical operations
 import os # For running a command in the terminal
 import platform # For getting the operating system name
@@ -29,6 +30,7 @@ ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
 
 # File Extensions Constants:
 PDF_FILE_EXTENSION = ".pdf" # The PDF file extension
+PNG_FILE_EXTENSION = ".png" # The PNG file extension
 JSON_FILE_EXTENSION = ".json" # The JSON file extension
 
 # Time units:
@@ -39,11 +41,13 @@ START_PATH = os.getcwd() # Get the current working directory
 
 # Relative File Path Constants:
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
+RELATIVE_REPOSITORIES_HISTOGRAM_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/histogram_DATA_TYPE{PNG_FILE_EXTENSION}" # The relative path of the directory that contains the histograms
 RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
 RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
+FULL_REPOSITORIES_HISTOGRAM_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_HISTOGRAM_FILEPATH}" # The full path of the directory that contains the histograms
 FULL_REPOSITORIES_LIST_FILEPATH_PDF = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF}" # The full path to the repositories PDF file
 FULL_REPOSITORIES_LIST_FILEPATH_JSON = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON}" # The full path to the repositories JSON file
 
