@@ -457,7 +457,7 @@ def setup_repository(repository_name, repository_url):
    else:
       clone_repository(repository_directory_path, repository_url) # Clone the repository
 
-def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIES_DIRECTORY_PATH):
+def setup_repositories(repositories, repositories_directory=FULL_REPOSITORIES_DIRECTORY_PATH):
    """
    Clones or updates the repositories using optimized threads.
    :param repositories: list of repositories (each a dict with 'name' and 'url')
