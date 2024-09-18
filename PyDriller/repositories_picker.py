@@ -467,32 +467,6 @@ def setup_repository(repository_name, repository_url):
    else:
       clone_repository(repository_directory_path, repository_url) # Clone the repository
 
-def setup_repositories(repositories, repositories_directory=FULL_REPOSITORIES_DIRECTORY_PATH):
-   """
-   Clones or updates the repositories using optimized threads.
-   :param repositories: list of repositories (each a dict with 'name' and 'url')
-   :param repositories_directory: str, the directory path where repositories will be stored
-   :return: None
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the repositories...{Style.RESET_ALL}")
-
-   cpu_cores = get_threads() # Get the number of CPU cores
-   usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
-
-   print(f"{BackgroundColors.GREEN}Cloning repositories to {BackgroundColors.CYAN}{repositories_directory}{BackgroundColors.GREEN} using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
-
-   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
-      # Submit each repository setup task to the thread pool
-      futures = [executor.submit(setup_repository, repo["name"], repo["url"]) for repo in repositories]
-
-      # Wait for all the futures to complete
-      for future in concurrent.futures.as_completed(futures):
-         try:
-            future.result() # Raises exception if any occurred during execution
-         except Exception as exc:
-            print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
-
 def save_to_json(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_JSON):
    """
    Saves the data to a JSON file.
