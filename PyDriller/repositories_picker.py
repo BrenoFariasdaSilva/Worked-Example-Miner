@@ -651,6 +651,19 @@ def save_to_pdf(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_PDF):
 
    pdf.output(filename) # Save the PDF file
 
+def create_histograms(repositories):
+   """
+   Create histograms for the number of commits and stars in the repositories.
+
+   :param repositories: list of repositories (dicts)
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Creating histograms for the repositories...{Style.RESET_ALL}")
+
+   create_repository_field_histogram(repositories, "commits") # Create a histogram for the number of commits in the repositories
+   create_repository_field_histogram(repositories, "stars") # Create a histogram for the number of stars in the repositories
+
 def randomly_select_repositories(repositories, num_repos):
    """
    Selects a number of repositories randomly.
@@ -739,6 +752,8 @@ def main():
 
       save_to_json(sorted_by_stars) # Save the filtered and sorted repositories to a JSON file
       save_to_pdf(sorted_by_stars) # Save the filtered and sorted repositories to a PDF file
+
+      create_histograms(sorted_by_stars) # Create histograms for the number of commits and stars in the repositories
 
       # Randomly select an specific number of repositories
       candidates = randomly_select_repositories(sorted_by_stars, CANDIDATES)
