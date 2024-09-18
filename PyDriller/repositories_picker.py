@@ -378,6 +378,33 @@ def get_threads():
 
    return cpu_cores # Return the number of CPU cores
 
+def get_adjusted_number_of_threads(cpu_count):
+   """
+   Get the adjusted number of threads to use based on the available CPU cores, following these rules:
+
+   - Ensure at least 1 thread is used.
+   - Always try leave at least 1 thread free.
+   - If there are 8 or more cores, leave 2 threads free, so the system can still be usable in terms of cpu usage, but memory wise it will also be very high.
+
+   :param cpu_count: int
+   :return: tuple (int, int)
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Adjusting the number of threads to use...{Style.RESET_ALL}")
+
+   if cpu_count <= 2: # If there are 2 or fewer CPU cores
+      usable_threads = 1 # Use 1 thread
+   elif 3 <= cpu_count <= 7: # If there are between 3 and 7 CPU cores
+      usable_threads = cpu_count - 1 # Leave 1 thread free
+   else: # If there are 8 or more CPU cores
+      usable_threads = cpu_count - 2 # Leave 2 threads free
+
+   usable_threads = max(1, usable_threads) # Ensure at least 1 thread is used
+
+   print(f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{max(1, usable_threads)}{BackgroundColors.GREEN} threads out of {BackgroundColors.CYAN}{cpu_count}{BackgroundColors.GREEN} available...{Style.RESET_ALL}")
+
+   return usable_threads, cpu_count # Return the number of threads to use and the maximum number of threads available
+
 def update_repository(repository_directory_path):
    """
    Update the repository using "git pull".
