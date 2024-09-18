@@ -193,15 +193,17 @@ def build_headers(token):
       "Accept": "application/vnd.github.v3+json" # Add the accept header
    }
 
-def build_url(query):
+def build_url(query, updated_after=None):
    """
    Builds the GitHub API request URL.
 
    :param query: str
+   :param updated_after: str for filtering repositories updated after a certain time, this way we create a new query and bypass the 1000 results limit
    :return: str
    """
 
-   return f"https://api.github.com/search/repositories?q={query}&sort=updated&order=desc&per_page=100"
+   updated_filter = f"+pushed:>{updated_after}" if updated_after else ""
+   return f"https://api.github.com/search/repositories?q={query}{updated_filter}&sort=updated&order=asc&per_page=100"
 
 def fetch_single_page(url, headers, page):
    """
@@ -254,10 +256,25 @@ def fetch_repositories(token):
 
    headers = build_headers(token) # Build the request headers
    query = "topic:distributed-systems language:java" # The query to search for repositories
-   url = build_url(query) # Build the request URL
 
-   repositories = fetch_all_pages(url, headers) # Fetch repositories from all pages
-   return repositories # Return the list of repositories
+   all_repositories = [] # The list of all repositories
+   updated_after = None # Start without a time filter
+
+   while True: # Infinite loop to fetch all repositories
+      url = build_url(query, updated_after) # Build the request URL with updated_after for pagination beyond 1000 results
+      repositories = fetch_all_pages(url, headers) # Fetch repositories from all pages
+
+      if not repositories: # If no repositories are returned
+         break # Exit loop if no more repositories are returned
+
+      all_repositories.extend(repositories) # Append fetched repositories to the complete list
+
+      updated_after = repositories[-1]["updated_at"] # Get the timestamp of the last fetched repository to continue fetching from there
+
+      if len(repositories) < 100: # Break if the number of repositories fetched is less than 100 (no more pages)
+         break # Exit the loop
+
+   return all_repositories
 
 def get_threads():
    """
