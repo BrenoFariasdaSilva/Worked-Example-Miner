@@ -23,6 +23,7 @@ DATETIME_FILTER = None # The datetime filter for the repositories
 HISTOGRAM_REPOSITORY_FIELDS = ["commits", "stars"] # The repository fields to create histograms for
 CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
+MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 
 # .Env Constants:
@@ -467,7 +468,7 @@ def process_repository_task(repo, datetime_filter, ignore_keywords):
          try:
             commits_count = count_commits(filtered_repo_path) # Count the number of commits in the repository
             filtered_repo["commits"] = commits_count # Add the number of commits to the repository
-            return filtered_repo # Return the filtered repository
+            return filtered_repo if commits_count > MINIMUM_COMMITS else None # Return the repository if the number of commits is greater than the minimum
          except Exception as e:
             print(f"{BackgroundColors.RED}Error counting commits for repository {BackgroundColors.GREEN}{filtered_repo_path}{BackgroundColors.RED}: {BackgroundColors.YELLOW}{e}{Style.RESET_ALL}")
       else:
