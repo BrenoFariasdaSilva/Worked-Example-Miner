@@ -367,6 +367,17 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    return filtered_repositories # Return the list of filtered repositories
 
+def get_threads():
+   """
+   Get the number of available cpu cores.
+
+   return: The number of cpu cores.
+   """
+   
+   cpu_cores = os.cpu_count() # Get the number of CPU cores
+
+   return cpu_cores # Return the number of CPU cores
+
 def update_repository(repository_directory_path):
    """
    Update the repository using "git pull".
