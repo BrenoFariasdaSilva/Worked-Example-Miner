@@ -363,6 +363,33 @@ def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
       and not contains_excluded_keywords(repo, ignore_keywords) # Verify if the repository has the excluded keywords
    )
 
+def process_repository_task(repo, datetime_filter, ignore_keywords):
+   """
+   Processes and filters a single repository.
+
+   :param repo: dict
+   :param datetime_filter: datetime to filter the repositories
+   :param ignore_keywords: list
+   :return: dict or None
+   """
+
+   filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
+
+   if filtered_repo: # If the repository is valid
+      setup_repository(repo["name"], repo["html_url"]) # Setup the repository
+      repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}" # The path to the repository directory
+      if os.path.isdir(repo_path): # If the repository path exists
+         try:
+            commits_count = count_commits(repo_path) # Count the number of commits in the repository
+            repo["commits"] = commits_count # Add the number of commits to the repository
+            return filtered_repo # Return the filtered repository
+         except Exception as e:
+            print(f"{BackgroundColors.RED}Error counting commits for repository {BackgroundColors.GREEN}{repo_path}{BackgroundColors.RED}: {BackgroundColors.YELLOW}{e}{Style.RESET_ALL}")
+      else:
+         print(f"{BackgroundColors.RED}Repository path {BackgroundColors.CYAN}{repo_path}{BackgroundColors.RED} does not exist.{Style.RESET_ALL}")
+
+   return None # Return None if the repository is not valid
+
 def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
    """
    Filters the list of repositories based on the update date, ignore keywords, and ensures unique names.
