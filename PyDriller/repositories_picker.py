@@ -413,16 +413,18 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
    verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}")
 
    usable_threads, max_threads = get_adjusted_number_of_threads(get_threads()) # Get the adjusted number of threads to use
-   print(f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
+   
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
 
-   datetime_filter = get_datetime_filter()
+   datetime_filter = get_datetime_filter() # Get the datetime filter for the repositories
 
    filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
 
    with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
+      # Submit the process_repository_task function to the executor for each repository
       futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories]
 
-      for future in concurrent.futures.as_completed(futures):
+      for future in concurrent.futures.as_completed(futures): # Iterate over the futures as they are completed
          try:
             result = future.result() # Raises exception if any occurred during execution
             if result: # If the result is not None
