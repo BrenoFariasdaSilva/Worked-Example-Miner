@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import update_sound_file_path, play_sound # For updating the sound file path
+from repositories_picker import play_sound, update_sound_file_path, verify_git # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -93,22 +93,6 @@ def path_contains_whitespaces():
    if " " in START_PATH: # If the PATH constant contains whitespaces
       return True # Return True if the PATH constant contains whitespaces
    return False # Return False if the PATH constant does not contain whitespaces
-
-def verify_git():
-   """
-   Verify if Git is installed.
-
-   :return: True if Git is installed, False otherwise.
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if Git is installed...{Style.RESET_ALL}")
-
-   try:
-      subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-   except subprocess.CalledProcessError as e:
-      print(f"{BackgroundColors.RED}An error occurred while verifying if Git is installed: {BackgroundColors.YELLOW}{e}{BackgroundColors.RED}. Please install Git!{Style.RESET_ALL}")
-      return False # Return False if Git is not installed
-   return True # Return True if Git is installed
 
 def init_and_update_submodules():
    """
