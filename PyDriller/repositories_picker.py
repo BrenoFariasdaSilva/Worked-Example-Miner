@@ -480,7 +480,7 @@ def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIE
          except Exception as exc:
             print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
 
-def save_to_json(data, filename=RELATIVE_REPOSITORIES_LIST_PATH_JSON):
+def save_to_json(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_JSON):
    """
    Saves the data to a JSON file.
 
@@ -586,7 +586,7 @@ def add_pdf_data_rows(pdf, data):
       pdf.cell(35, 10, last_update, border=1) # Last Update
       pdf.ln() # Line break
 
-def save_to_pdf(data, filename=RELATIVE_REPOSITORIES_LIST_PATH_PDF):
+def save_to_pdf(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_PDF):
    """
    Saves the data to a PDF file.
    :param data: list of dict
