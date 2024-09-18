@@ -194,6 +194,7 @@ def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
 def build_headers(token):
    """
    Builds the headers for the GitHub API request.
+
    :param token: str
    :return: dict
    """
@@ -206,6 +207,7 @@ def build_headers(token):
 def build_url(query):
    """
    Builds the GitHub API request URL.
+
    :param query: str
    :return: str
    """
@@ -215,6 +217,7 @@ def build_url(query):
 def fetch_single_page(url, headers, page):
    """
    Fetches a single page of repositories from GitHub API.
+
    :param url: str
    :param headers: dict
    :param page: int
@@ -231,6 +234,7 @@ def fetch_single_page(url, headers, page):
 def fetch_all_pages(url, headers):
    """
    Fetches all pages of repositories from GitHub API.
+
    :param url: str
    :param headers: dict
    :return: list
@@ -252,6 +256,7 @@ def fetch_all_pages(url, headers):
 def fetch_repositories(token):
    """
    Fetches the list of repositories from GitHub API.
+
    :param token: str
    :return: list
    """
@@ -268,6 +273,7 @@ def fetch_repositories(token):
 def get_datetime_filter(days=DATETIME_FILTER):
    """
    Calculates the date filter for the repositories.
+
    :param days: Number of days to go back from today. If None, return the earliest possible datetime.
    :return: datetime
    """
@@ -280,6 +286,7 @@ def get_datetime_filter(days=DATETIME_FILTER):
 def parse_repo_updated_date(repo):
    """
    Parses the repository's last updated date from its string format.
+
    :param repo: dict
    :return: datetime
    """
@@ -289,6 +296,7 @@ def parse_repo_updated_date(repo):
 def extract_author_name(repo):
    """
    Extracts the author's name from the repository's URL.
+
    :param repo: dict
    :return: str
    """
@@ -298,6 +306,7 @@ def extract_author_name(repo):
 def process_repository(repo, date_filter=None, ignore_keywords=None):
    """
    Processes a single repository, filtering by date, keywords, and ensuring a unique name.
+
    :param repo: dict
    :param date_filter: datetime to filter the repositories
    :param ignore_keywords: list
@@ -323,6 +332,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
 def contains_excluded_keywords(repo, ignore_keywords):
    """
    Verifies if the repository's name or description contains any excluded keywords.
+
    :param repo: dict
    :param ignore_keywords: list
    :return: bool
@@ -339,6 +349,7 @@ def contains_excluded_keywords(repo, ignore_keywords):
 def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
    """
    Verifies if the repository is valid based on the update date, star count, and keywords.
+
    :param repo: dict
    :param updated_date: datetime
    :param date_filter: datetime to filter the repositories
@@ -486,6 +497,7 @@ def save_to_json(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_JSON):
 def add_pdf_header(pdf, num_candidates):
    """
    Adds a header to the PDF.
+
    :param pdf: FPDF object
    :param num_candidates: int, number of repositories
    :return: None
@@ -514,6 +526,7 @@ def add_pdf_header(pdf, num_candidates):
 def add_pdf_column_headers(pdf):
    """
    Adds column headers to the PDF.
+
    :param pdf: FPDF object
    :return: None
    """
@@ -530,6 +543,7 @@ def add_pdf_column_headers(pdf):
 def format_last_update_date(last_update):
    """
    Formats the last update date of the repository.
+
    :param last_update: str, the ISO date string from the repository data
    :return: str, formatted date or "Unknown" if parsing fails
    """
@@ -543,6 +557,7 @@ def format_last_update_date(last_update):
 def add_pdf_data_rows(pdf, data):
    """
    Adds repository data rows to the PDF.
+
    :param pdf: FPDF object
    :param data: list of dict
    :return: None
@@ -576,6 +591,7 @@ def add_pdf_data_rows(pdf, data):
 def save_to_pdf(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_PDF):
    """
    Saves the data to a PDF file.
+
    :param data: list of dict
    :param filename: str
    :return: None
@@ -608,6 +624,7 @@ def randomly_select_repositories(repositories, num_repos):
 def print_repositories_summary(total_repo_count, total_candidates, candidates):
    """
    Prints the total number of repositories and the selected repositories to the console.
+
    :param total_repo_count: int
    :param total_candidates: int
    :param candidates: list
