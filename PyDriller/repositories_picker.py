@@ -4,6 +4,7 @@ import os # For running a command in the terminal
 import platform # For getting the operating system name
 import random # For selecting random items
 import requests # For making HTTP requests
+import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import sys # For exiting the program
 from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
@@ -108,6 +109,22 @@ def update_sound_file_path():
    verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE_PATH}{Style.RESET_ALL}")
 
    return SOUND_FILE_PATH # Return the updated sound file path
+
+def verify_git():
+   """
+   Verify if Git is installed.
+
+   :return: True if Git is installed, False otherwise.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if Git is installed...{Style.RESET_ALL}")
+
+   try:
+      subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   except subprocess.CalledProcessError as e:
+      print(f"{BackgroundColors.RED}An error occurred while verifying if Git is installed: {BackgroundColors.YELLOW}{e}{BackgroundColors.RED}. Please install Git!{Style.RESET_ALL}")
+      return False # Return False if Git is not installed
+   return True # Return True if Git is installed
 
 def create_directory(full_directory_name, relative_directory_name):
    """
@@ -494,6 +511,10 @@ def main():
    print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Picker{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
 
    update_sound_file_path() # Update the sound file path
+
+   # Verify if Git is installed
+   if not verify_git():
+      return # Return if Git is not installed
 
    token = verify_env_file() # Verify the .env file and get the token
 
