@@ -65,6 +65,8 @@ def update_sound_file_path():
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE_PATH}{Style.RESET_ALL}")
 
+   return SOUND_FILE_PATH # Return the updated sound file path
+
 def play_sound():
    """
    Plays a sound when the program finishes.
