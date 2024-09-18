@@ -63,7 +63,7 @@ def update_sound_file_path():
    # Update the SOUND_FILE constant
    SOUND_FILE = f"{prefix}assets/Sounds/NotificationSound.wav"
 
-   print(f"SOUND_FILE updated to: {SOUND_FILE}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE}{Style.RESET_ALL}")
 
 def play_sound():
    """
