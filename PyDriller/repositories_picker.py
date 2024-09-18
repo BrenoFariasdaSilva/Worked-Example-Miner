@@ -86,6 +86,22 @@ def verbose_output(true_string="", false_string=""):
    elif false_string != "":
       print(false_string) # Output the false statement string
 
+def path_contains_whitespaces():
+   """
+   Verifies if the PATH constant contains whitespaces.
+
+   :return: True if the PATH constant contains whitespaces, False otherwise.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
+   
+   # Verify if the PATH constant contains whitespaces
+   if " " in START_PATH: # If the PATH constant contains whitespaces
+      return True # Return True if the PATH constant contains whitespaces
+   
+   print(f"{BackgroundColors.RED}The {BackgroundColors.GREEN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
+   return False # Return False if the PATH constant does not contain whitespaces
+
 def update_sound_file_path():
    """
    Updates the SOUND_FILE_PATH constant based on the current directory.
@@ -509,6 +525,10 @@ def main():
    """
 
    print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Picker{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
+
+   # Verify if the path constants contains whitespaces
+   if path_contains_whitespaces():
+      return # Return if the path constants contains whitespaces
 
    update_sound_file_path() # Update the sound file path
 
