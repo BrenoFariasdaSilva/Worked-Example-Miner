@@ -366,6 +366,24 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    return filtered_repositories # Return the list of filtered repositories
 
+def setup_repository(repository_name, repository_url):
+   """"
+   Setup the repository by cloning it or updating it if it already exists.
+
+   :param repository_name: Name of the repository to be analyzed
+   :param repository_url: URL of the repository to be analyzed
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   
+   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+   
+   # Verify if the repository directory already exists and if it is not empty
+   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
+      update_repository(repository_directory_path) # Update the repository
+   else:
+      clone_repository(repository_directory_path, repository_url) # Clone the repository
+
 def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIES_DIRECTORY_PATH):
    """
    Clones the repositories to the local directory.
