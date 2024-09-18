@@ -648,6 +648,8 @@ def main():
 
    if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
+   
+   start_time = datetime.now() # Get the start time
 
    token = verify_env_file() # Verify the .env file and get the token
 
@@ -672,6 +674,9 @@ def main():
       print_repositories_summary(total_repo_count, len(sorted_by_stars), candidates)
    else: # If there are no repositories after filtering and sorting
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
+
+   end_time = datetime.now() # Get the end time
+   output_time(f"{BackgroundColors.GREEN}Total execution time: ", (end_time - start_time).total_seconds()) # Output the total execution time
 
    print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
