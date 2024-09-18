@@ -20,6 +20,7 @@ from pydriller import Repository # PyDriller is a Python framework that helps de
 # Execution Constants:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
 DATETIME_FILTER = None # The datetime filter for the repositories
+HISTOGRAM_REPOSITORY_FIELDS = ["commits", "stars"] # The repository fields to create histograms for
 CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
@@ -721,7 +722,7 @@ def create_repository_field_histogram(repositories, repository_field):
 
 def create_histograms(repositories):
    """
-   Create histograms for the number of commits and stars in the repositories.
+   Create histograms for the repository fields in the HISTORY_REPOSITORY_FIELDS list.
 
    :param repositories: list of repositories (dicts)
    :return: None
@@ -729,8 +730,8 @@ def create_histograms(repositories):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Creating histograms for the repositories...{Style.RESET_ALL}")
 
-   create_repository_field_histogram(repositories, "commits") # Create a histogram for the number of commits in the repositories
-   create_repository_field_histogram(repositories, "stars") # Create a histogram for the number of stars in the repositories
+   for repository_field in HISTOGRAM_REPOSITORY_FIELDS: # Iterate over the repository fields
+      create_repository_field_histogram(repositories, repository_field) # Create a histogram for the repository field
 
 def randomly_select_repositories(repositories, num_repos):
    """
@@ -821,7 +822,7 @@ def main():
       save_to_json(sorted_by_stars) # Save the filtered and sorted repositories to a JSON file
       save_to_pdf(sorted_by_stars) # Save the filtered and sorted repositories to a PDF file
 
-      create_histograms(sorted_by_stars) # Create histograms for the number of commits and stars in the repositories
+      create_histograms(sorted_by_stars) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
 
       # Randomly select an specific number of repositories
       candidates = randomly_select_repositories(sorted_by_stars, CANDIDATES)
