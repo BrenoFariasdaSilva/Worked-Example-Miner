@@ -307,16 +307,6 @@ def get_datetime_filter(days=DATETIME_FILTER):
    else:
       return datetime.now() - timedelta(days=days) # Return datetime "days" ago
 
-def parse_repo_updated_date(repo):
-   """
-   Parses the repository's last updated date from its string format.
-
-   :param repo: dict
-   :return: datetime
-   """
-
-   return datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ") # Parse the date string to a datetime object
-
 def contains_excluded_keywords(repo, ignore_keywords):
    """
    Verifies if the repository's name or description contains any excluded keywords.
@@ -350,6 +340,16 @@ def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
       and repo["stargazers_count"] >= MINIMUM_STARS # Verify if the repository has the minimum number of stars
       and not contains_excluded_keywords(repo, ignore_keywords) # Verify if the repository has the excluded keywords
    )
+
+def parse_repo_updated_date(repo):
+   """
+   Parses the repository's last updated date from its string format.
+
+   :param repo: dict
+   :return: datetime
+   """
+
+   return datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ") # Parse the date string to a datetime object
 
 def extract_author_name(repo):
    """
