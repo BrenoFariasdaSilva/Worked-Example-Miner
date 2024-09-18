@@ -734,9 +734,9 @@ def main():
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
-   sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
+   if filtered_repositories: # If there are repositories after filtering and sorting
+      sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
 
-   if sorted_by_stars: # If there are repositories after filtering and sorting
       save_to_json(sorted_by_stars) # Save the filtered and sorted repositories to a JSON file
       save_to_pdf(sorted_by_stars) # Save the filtered and sorted repositories to a PDF file
 
