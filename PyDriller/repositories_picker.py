@@ -749,7 +749,7 @@ def main():
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
    end_time = datetime.now() # Get the end time
-   output_time(f"{BackgroundColors.GREEN}Total execution time: ", (end_time - start_time).total_seconds()) # Output the total execution time
+   output_time(f"\n{BackgroundColors.GREEN}Total execution time: ", (end_time - start_time).total_seconds()) # Output the total execution time
 
    print(f"\n{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
 
