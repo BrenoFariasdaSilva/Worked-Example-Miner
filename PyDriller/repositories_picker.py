@@ -38,10 +38,14 @@ MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 # Default paths:
 START_PATH = os.getcwd() # Get the current working directory
 
+# File Extensions Constants:
+PDF_FILE_EXTENSION = ".pdf" # The PDF file extension
+JSON_FILE_EXTENSION = ".json" # The JSON file extension
+
 # Relative File Path Constants:
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
-OUTPUT_FILE_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories.json" # The path to the JSON output file
-OUTPUT_FILE_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories.pdf" # The path to the PDF output file
+RELATIVE_REPOSITORIES_DIRECTORY_PATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
+RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
@@ -329,7 +333,7 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    return filtered_repositories # Return the list of filtered repositories
 
-def save_to_json(data, filename=OUTPUT_FILE_JSON):
+def save_to_json(data, filename=RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON):
    """
    Saves the data to a JSON file.
 
@@ -435,7 +439,7 @@ def add_pdf_data_rows(pdf, data):
       pdf.cell(35, 10, last_update, border=1) # Last Update
       pdf.ln() # Line break
 
-def save_to_pdf(data, filename=OUTPUT_FILE_PDF):
+def save_to_pdf(data, filename=RELATIVE_REPOSITORIES_DIRECTORY_PATH_PDF):
    """
    Saves the data to a PDF file.
    :param data: list of dict
