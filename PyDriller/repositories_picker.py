@@ -61,13 +61,10 @@ def update_sound_file_path():
 
    global SOUND_FILE_PATH # Declare SOUND_FILE_PATH as global to modify its value
 
-   # Get the current working directory
-   current_dir = os.getcwd()
-
    # Determine the appropriate prefix based on the current directory name
-   if current_dir.endswith("PyDriller"):
+   if START_PATH.endswith("PyDriller"):
       prefix = "../" # Go up one directory
-   elif current_dir.endswith("Scripts"):
+   elif START_PATH.endswith("Scripts"):
       prefix = "../../" # Go up two directories
    else: # The current directory is not "PyDriller" or "Scripts", so it must be "Worked-Example-Miner"
       prefix = "./" # Stay in the same directory
