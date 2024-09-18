@@ -1,4 +1,5 @@
 import atexit # For playing a sound when the program finishes
+import concurrent.futures # For running tasks concurrently
 import json # For creating JSON output
 import os # For running a command in the terminal
 import platform # For getting the operating system name
@@ -419,16 +420,27 @@ def setup_repository(repository_name, repository_url):
 
 def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIES_DIRECTORY_PATH):
    """
-   Clones the repositories to the local directory.
-   :param repositories: list
-   :param repositories_directory: str
+   Clones or updates the repositories using optimized threads.
+   :param repositories: list of repositories (each a dict with 'name' and 'url')
+   :param repositories_directory: str, the directory path where repositories will be stored
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the repositories to {BackgroundColors.CYAN}{repositories_directory}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+   verbose_output(true_string=f"Cloning repositories to {repositories_directory} using {usable_threads} threads (max {max_threads} cores available)...")
 
-   for repository in repositories: # Iterate over the repositories
-      setup_repository(repository["name"], repository["url"]) # Setup the repository
+   cpu_cores = get_threads() # Get the number of CPU cores
+   usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
+
+   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
+      # Submit each repository setup task to the thread pool
+      futures = [executor.submit(setup_repository, repo["name"], repo["url"]) for repo in repositories]
+
+      # Wait for all the futures to complete
+      for future in concurrent.futures.as_completed(futures):
+         try:
+            future.result() # Raises exception if any occurred during execution
+         except Exception as exc:
+            print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
 
 def save_to_json(data, filename=RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON):
    """
