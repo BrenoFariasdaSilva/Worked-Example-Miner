@@ -38,13 +38,13 @@ START_PATH = os.getcwd() # Get the current working directory
 
 # Relative File Path Constants:
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
-RELATIVE_REPOSITORIES_LIST_PATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
-RELATIVE_REPOSITORIES_LIST_PATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
+RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
+RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
-FULL_REPOSITORIES_DIRECTORY_PATH_PDF = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_PATH_PDF}" # The full path to the repositories PDF file
-FULL_REPOSITORIES_DIRECTORY_PATH_JSON = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_PATH_JSON}" # The full path to the repositories JSON file
+FULL_REPOSITORIES_LIST_FILEPATH_PDF = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF}" # The full path to the repositories PDF file
+FULL_REPOSITORIES_LIST_FILEPATH_JSON = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON}" # The full path to the repositories JSON file
 
 # Color Constants:
 class BackgroundColors: # Colors for the terminal
@@ -521,7 +521,7 @@ def create_directory(full_directory_name, relative_directory_name):
    except OSError: # If the directory cannot be created
       print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
 
-def save_to_json(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_JSON):
+def save_to_json(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_JSON):
    """
    Saves the data to a JSON file.
 
@@ -631,7 +631,7 @@ def add_pdf_data_rows(pdf, data):
       pdf.cell(35, 10, last_update, border=1) # Last Update
       pdf.ln() # Line break
 
-def save_to_pdf(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_PDF):
+def save_to_pdf(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_PDF):
    """
    Saves the data to a PDF file.
 
