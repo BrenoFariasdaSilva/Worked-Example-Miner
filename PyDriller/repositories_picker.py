@@ -97,9 +97,9 @@ def path_contains_whitespaces():
    
    # Verify if the PATH constant contains whitespaces
    if " " in START_PATH: # If the PATH constant contains whitespaces
+      print(f"{BackgroundColors.RED}The {BackgroundColors.GREEN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return True # Return True if the PATH constant contains whitespaces
    
-   print(f"{BackgroundColors.RED}The {BackgroundColors.GREEN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
    return False # Return False if the PATH constant does not contain whitespaces
 
 def update_sound_file_path():
