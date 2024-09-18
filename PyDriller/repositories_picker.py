@@ -651,6 +651,22 @@ def save_to_pdf(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_PDF):
 
    pdf.output(filename) # Save the PDF file
 
+def create_repository_field_histogram(repositories, repository_field):
+   """
+   Create a histogram for the specified repository field.
+
+   :param repositories: list of repositories (dicts)
+   :param repository_field: the name of the field containing the desired data
+   :return: None
+   """
+
+   repositories_data = extract_repositories_field(repositories, repository_field) # Extract the data for the repository field
+
+   average, median, std_dev = calculate_statistics(repositories_data) # Calculate and display statistics for the repository field
+   histogram_title = f"Histogram of {repository_field.capitalize()}\nAverage: {average:.2f}, Median: {median:.2f}, Standard Deviation: {std_dev:.2f}" # Title of the histogram
+   commits_histogram_filepath = FULL_REPOSITORIES_HISTOGRAM_FILEPATH.replace("DATA_TYPE", repository_field) # Replace "data_type" with the repository field in the histogram file path
+   create_basic_histogram(repositories_data, histogram_title, f"Number of {repository_field}", "Number of Repositories", commits_histogram_filepath) # Create a histogram for the repository field in the repositories
+
 def create_histograms(repositories):
    """
    Create histograms for the number of commits and stars in the repositories.
