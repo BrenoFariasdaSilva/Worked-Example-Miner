@@ -35,10 +35,16 @@ CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 
-# File Path Constants:
-OUTPUT_DIRECTORY = "./repositories/" # The path to the output directory
-OUTPUT_FILE_JSON = f"{OUTPUT_DIRECTORY}repositories.json" # The path to the JSON output file
-OUTPUT_FILE_PDF = f"{OUTPUT_DIRECTORY}repositories.pdf" # The path to the PDF output file
+# Default paths:
+START_PATH = os.getcwd() # Get the current working directory
+
+# Relative File Path Constants:
+RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
+OUTPUT_FILE_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories.json" # The path to the JSON output file
+OUTPUT_FILE_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}repositories.pdf" # The path to the PDF output file
+
+# Full File Path Constants:
+FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
 
 def update_sound_file_path():
    """
@@ -334,7 +340,7 @@ def save_to_json(data, filename=OUTPUT_FILE_JSON):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Saving the data to {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 
-   create_directory(OUTPUT_DIRECTORY, "output") # Create the output directory
+   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH) # Create the output directory
 
    with open(filename, "w") as json_file: # Open the JSON file
       json.dump(data, json_file, indent=3) # Dump the data to the JSON file
