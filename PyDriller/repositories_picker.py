@@ -22,7 +22,7 @@ class BackgroundColors: # Colors for the terminal
 
 # Sound Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
-SOUND_FILE = ".assets/Sounds/NotificationSound.wav" # The path to the sound file
+SOUND_FILE_PATH = ".assets/Sounds/NotificationSound.wav" # The path to the sound file
 
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
@@ -42,12 +42,12 @@ OUTPUT_FILE_PDF = f"{OUTPUT_DIRECTORY}repositories.pdf" # The path to the PDF ou
 
 def update_sound_file_path():
    """
-   Updates the SOUND_FILE constant based on the current directory.
+   Updates the SOUND_FILE_PATH constant based on the current directory.
    If the current directory ends in "PyDriller", the prefix is "../",
    if it ends in "Scripts", the prefix is "../../", otherwise "./".
    """
 
-   global SOUND_FILE # Declare SOUND_FILE as global to modify its value
+   global SOUND_FILE_PATH # Declare SOUND_FILE_PATH as global to modify its value
 
    # Get the current working directory
    current_dir = os.getcwd()
@@ -60,10 +60,10 @@ def update_sound_file_path():
    else: # The current directory is not "PyDriller" or "Scripts", so it must be "Worked-Example-Miner"
       prefix = "./" # Stay in the same directory
 
-   # Update the SOUND_FILE constant
-   SOUND_FILE = f"{prefix}{SOUND_FILE}"
+   # Update the SOUND_FILE_PATH constant
+   SOUND_FILE_PATH = f"{prefix}{SOUND_FILE_PATH}"
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE}{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE_PATH}{Style.RESET_ALL}")
 
 def play_sound():
    """
@@ -72,13 +72,13 @@ def play_sound():
    :return: None
    """
 
-   if os.path.exists(SOUND_FILE):
+   if os.path.exists(SOUND_FILE_PATH):
       if platform.system() in SOUND_COMMANDS: # If the platform.system() is in the SOUND_COMMANDS dictionary
-         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
+         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE_PATH}")
       else: # If the platform.system() is not in the SOUND_COMMANDS dictionary
          print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
    else: # If the sound file does not exist
-      print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+      print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE_PATH}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
 # Register the function to play a sound when the program finishes
 atexit.register(play_sound)
