@@ -382,6 +382,7 @@ def update_repository(repository_directory_path):
    # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + "/" + repository_name
    update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    update_thread.wait() # Wait for the thread to finish
+
    os.chdir(START_PATH) # Change the current working directory to the default one
 
 def clone_repository(repository_directory_path, repository_url):
@@ -397,8 +398,7 @@ def clone_repository(repository_directory_path, repository_url):
    
    # Create a thread to clone the repository
    thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   # Wait for the thread to finish
-   thread.wait()
+   thread.wait() # Wait for the thread to finish
 
 def setup_repository(repository_name, repository_url):
    """"
