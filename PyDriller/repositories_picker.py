@@ -464,10 +464,10 @@ def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIE
    :return: None
    """
 
-   verbose_output(true_string=f"Cloning repositories to {repositories_directory} using {usable_threads} threads (max {max_threads} cores available)...")
-
    cpu_cores = get_threads() # Get the number of CPU cores
    usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
+
+   verbose_output(true_string=f"Cloning repositories to {repositories_directory} using {usable_threads} threads (max {max_threads} cores available)...")
 
    with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
       # Submit each repository setup task to the thread pool
