@@ -11,6 +11,7 @@ from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
 from fpdf import FPDF # For creating PDFs
+from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 
 ## CONSTANTS:
 
@@ -312,6 +313,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
          "author": extract_author_name(repo),
          "url": repo["html_url"],
          "description": repo["description"],
+         "commits": 0,
          "stars": repo["stargazers_count"],
          "updated_at": repo["updated_at"]
       }
@@ -365,8 +367,16 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    for repo in repositories: # Iterate over the repositories
       filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
+
       if filtered_repo: # If the repository is valid
-         filtered_repositories.append(filtered_repo) # Append the repository to the list
+         repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}" # The path to the repository directory
+
+         setup_repository(repo["name"], repo["html_url"]) # Setup the repository
+
+         # Verify if the repository path exists
+         if os.path.isdir(repo_path):
+            repo["commits"] = len(list(Repository(repo_path).traverse_commits())) # Get the number of commits in the repository
+            filtered_repositories.append(filtered_repo) # Append the repository to the list         
 
    return filtered_repositories # Return the list of filtered repositories
 
@@ -688,8 +698,6 @@ def main():
    total_repo_count = len(repositories) # Get the total number of repositories
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
-
-   setup_repositories(filtered_repositories, RELATIVE_REPOSITORIES_DIRECTORY_PATH) # Clone the repositories
 
    sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
 
