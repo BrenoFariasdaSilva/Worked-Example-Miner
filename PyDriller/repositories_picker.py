@@ -1,11 +1,11 @@
 import atexit # For playing a sound when the program finishes
+import json # For creating JSON output
 import os # For running a command in the terminal
 import platform # For getting the operating system name
+import random # For selecting random items
+import requests # For making HTTP requests
 import sys # For exiting the program
 from colorama import Style # For coloring the terminal
-import requests # For making HTTP requests
-import json # For creating JSON output
-import random # For selecting random items
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
 from fpdf import FPDF # For creating PDFs
