@@ -69,8 +69,21 @@ def play_sound():
    else: # If the sound file does not exist
       print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE_PATH}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
-# Register the function to play a sound when the program finishes
-atexit.register(play_sound)
+atexit.register(play_sound) # Register the function to play a sound when the program finishes
+
+def verbose_output(true_string="", false_string=""):
+   """
+   Outputs a message if the VERBOSE constant is set to True.
+
+   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
+   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
+   :return: None
+   """
+
+   if VERBOSE and true_string != "": # If the VERBOSE constant is set to True and the true_string is set
+      print(true_string) # Output the true statement string
+   elif false_string != "":
+      print(false_string) # Output the false statement string
 
 def update_sound_file_path():
    """
@@ -95,20 +108,6 @@ def update_sound_file_path():
    verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE_PATH}{Style.RESET_ALL}")
 
    return SOUND_FILE_PATH # Return the updated sound file path
-
-def verbose_output(true_string="", false_string=""):
-   """
-   Outputs a message if the VERBOSE constant is set to True.
-
-   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
-   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
-   :return: None
-   """
-
-   if VERBOSE and true_string != "": # If the VERBOSE constant is set to True and the true_string is set
-      print(true_string) # Output the true statement string
-   elif false_string != "":
-      print(false_string) # Output the false statement string
 
 def create_directory(full_directory_name, relative_directory_name):
    """
