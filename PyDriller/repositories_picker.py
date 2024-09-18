@@ -677,7 +677,8 @@ def print_repositories_summary(total_repo_count, total_candidates, candidates):
    print(f"{BackgroundColors.GREEN}Total repositories according to the criteria: {BackgroundColors.CYAN}{total_candidates}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{total_repo_count}{Style.RESET_ALL}\n")
    print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
    for i, repo in enumerate(candidates, start=1):
-      print(f"{BackgroundColors.CYAN}{i}. {repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
+      print(f"{BackgroundColors.CYAN}{i}. {repo['author']}/{repo['name']}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} "
+         f"{BackgroundColors.CYAN}(⭐ {repo['stars']}{BackgroundColors.GREEN}, {BackgroundColors.CYAN}📝 {repo['commits']} commits{BackgroundColors.GREEN}){Style.RESET_ALL}")
 
 def output_time(output_string, time):
    """
