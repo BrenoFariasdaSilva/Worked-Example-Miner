@@ -12,7 +12,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
-from repositories_picker import SOUND_FILE_PATH # For the sound file path
+from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
 from repositories_picker import update_sound_file_path, play_sound # For updating the sound file path
 
 # Default values that can be changed:
@@ -31,10 +31,9 @@ VERBOSE = False # Verbose mode. If set to True, it will output messages at the s
 # Default paths:
 START_PATH = os.getcwd() # Get the current working directory
 
-# Extensions:
+# File Extensions Constants:
 CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit hashes
 DIFF_FILE_EXTENSION = ".diff" # The diff file extension
-JSON_FILE_EXTENSION = ".json" # The JSON file extension
 
 # CK Constants:
 CK_BRANCH = "FEAT-ClassMetric" # The branch of the CK repository to be used
