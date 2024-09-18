@@ -147,24 +147,6 @@ def verify_git():
       return False # Return False if Git is not installed
    return True # Return True if Git is installed
 
-def create_directory(full_directory_name, relative_directory_name):
-   """
-   Creates a directory.
-
-   :param full_directory_name: Name of the directory to be created.
-   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal.
-   :return: None
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
-
-   if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return # Return if the directory already exists
-   try: # Try to create the directory
-      os.makedirs(full_directory_name) # Create the directory
-   except OSError: # If the directory cannot be created
-      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
-
 def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
    """
    Verify if the .env file exists and if the desired key is present.
@@ -270,136 +252,6 @@ def fetch_repositories(token):
    repositories = fetch_all_pages(url, headers) # Fetch repositories from all pages
    return repositories # Return the list of repositories
 
-def get_datetime_filter(days=DATETIME_FILTER):
-   """
-   Calculates the date filter for the repositories.
-
-   :param days: Number of days to go back from today. If None, return the earliest possible datetime.
-   :return: datetime
-   """
-
-   if days is None:
-      return datetime.min # Return the earliest possible datetime (since "forever")
-   else:
-      return datetime.now() - timedelta(days=days) # Return datetime "days" ago
-
-def parse_repo_updated_date(repo):
-   """
-   Parses the repository's last updated date from its string format.
-
-   :param repo: dict
-   :return: datetime
-   """
-
-   return datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ") # Parse the date string to a datetime object
-
-def extract_author_name(repo):
-   """
-   Extracts the author's name from the repository's URL.
-
-   :param repo: dict
-   :return: str
-   """
-
-   return repo["html_url"].split("/")[-2] # Get the author's name from the URL
-
-def process_repository(repo, date_filter=None, ignore_keywords=None):
-   """
-   Processes a single repository, filtering by date, keywords, and ensuring a unique name.
-
-   :param repo: dict
-   :param date_filter: datetime to filter the repositories
-   :param ignore_keywords: list
-   :return: dict or None
-   """
-
-   updated_date = parse_repo_updated_date(repo) # Get the last update date of the repository
-
-   # Validate the repository based on the update date, star count, and keywords
-   if is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
-      return {
-         "name": repo["name"],
-         "author": extract_author_name(repo),
-         "url": repo["html_url"],
-         "description": repo["description"],
-         "commits": 0,
-         "stars": repo["stargazers_count"],
-         "updated_at": repo["updated_at"]
-      }
-      
-   return None # Return None if the repository is not valid
-
-def contains_excluded_keywords(repo, ignore_keywords):
-   """
-   Verifies if the repository's name or description contains any excluded keywords.
-
-   :param repo: dict
-   :param ignore_keywords: list
-   :return: bool
-   """
-
-   repo_name = repo["name"].lower() # Get the name of the repository
-   repo_description = (repo["description"] or "").lower() # Get the description of the repository
-
-   return any(
-      keyword.lower() in repo_name or keyword.lower() in repo_description # Verify if the keyword is in the name or description
-      for keyword in ignore_keywords # Iterate over the ignore keywords
-   )
-
-def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
-   """
-   Verifies if the repository is valid based on the update date, star count, and keywords.
-
-   :param repo: dict
-   :param updated_date: datetime
-   :param date_filter: datetime to filter the repositories
-   :param ignore_keywords: list
-   :return: bool
-   """
-
-   return (
-      updated_date > date_filter # Verify if the repository was updated after the date filter
-      and repo["stargazers_count"] >= MINIMUM_STARS # Verify if the repository has the minimum number of stars
-      and not contains_excluded_keywords(repo, ignore_keywords) # Verify if the repository has the excluded keywords
-   )
-
-def count_commits(repo_path):
-   """
-   Counts the number of commits in a repository.
-
-   :param repo_path: str
-   :return: int
-   """
-
-   return len(list(Repository(repo_path).traverse_commits()))
-
-def process_repository_task(repo, datetime_filter, ignore_keywords):
-   """
-   Processes and filters a single repository.
-
-   :param repo: dict
-   :param datetime_filter: datetime to filter the repositories
-   :param ignore_keywords: list
-   :return: dict or None
-   """
-
-   filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
-
-   if filtered_repo: # If the repository is valid
-      setup_repository(filtered_repo["name"], filtered_repo["url"]) # Setup the repository
-      filtered_repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{filtered_repo['name']}" # The path to the repository directory
-      if os.path.isdir(filtered_repo_path): # If the repository path exists
-         try:
-            commits_count = count_commits(filtered_repo_path) # Count the number of commits in the repository
-            filtered_repo["commits"] = commits_count # Add the number of commits to the repository
-            return filtered_repo # Return the filtered repository
-         except Exception as e:
-            print(f"{BackgroundColors.RED}Error counting commits for repository {BackgroundColors.GREEN}{filtered_repo_path}{BackgroundColors.RED}: {BackgroundColors.YELLOW}{e}{Style.RESET_ALL}")
-      else:
-         print(f"{BackgroundColors.RED}Repository path {BackgroundColors.CYAN}{filtered_repo_path}{BackgroundColors.RED} does not exist.{Style.RESET_ALL}")
-
-   return None # Return None if the repository is not valid
-
 def get_threads():
    """
    Get the number of available cpu cores.
@@ -436,39 +288,98 @@ def get_adjusted_number_of_threads(cpu_count):
 
    return usable_threads, cpu_count # Return the number of threads to use and the maximum number of threads available
 
-def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
+def get_datetime_filter(days=DATETIME_FILTER):
    """
-   Filters the list of repositories based on the update date, ignore keywords, and ensures unique names.
-   This function uses concurrent processing to speed up the filtering process based on the number of available CPU cores.
+   Calculates the date filter for the repositories.
 
-   :param repositories: list
+   :param days: Number of days to go back from today. If None, return the earliest possible datetime.
+   :return: datetime
+   """
+
+   if days is None:
+      return datetime.min # Return the earliest possible datetime (since "forever")
+   else:
+      return datetime.now() - timedelta(days=days) # Return datetime "days" ago
+
+def parse_repo_updated_date(repo):
+   """
+   Parses the repository's last updated date from its string format.
+
+   :param repo: dict
+   :return: datetime
+   """
+
+   return datetime.strptime(repo["updated_at"], "%Y-%m-%dT%H:%M:%SZ") # Parse the date string to a datetime object
+
+def contains_excluded_keywords(repo, ignore_keywords):
+   """
+   Verifies if the repository's name or description contains any excluded keywords.
+
+   :param repo: dict
    :param ignore_keywords: list
-   :return: list
+   :return: bool
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}")
+   repo_name = repo["name"].lower() # Get the name of the repository
+   repo_description = (repo["description"] or "").lower() # Get the description of the repository
 
-   usable_threads, max_threads = get_adjusted_number_of_threads(get_threads()) # Get the adjusted number of threads to use
-   
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
+   return any(
+      keyword.lower() in repo_name or keyword.lower() in repo_description # Verify if the keyword is in the name or description
+      for keyword in ignore_keywords # Iterate over the ignore keywords
+   )
 
-   datetime_filter = get_datetime_filter() # Get the datetime filter for the repositories
+def is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
+   """
+   Verifies if the repository is valid based on the update date, star count, and keywords.
 
-   filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
+   :param repo: dict
+   :param updated_date: datetime
+   :param date_filter: datetime to filter the repositories
+   :param ignore_keywords: list
+   :return: bool
+   """
 
-   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
-      # Submit the process_repository_task function to the executor for each repository
-      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories]
+   return (
+      updated_date > date_filter # Verify if the repository was updated after the date filter
+      and repo["stargazers_count"] >= MINIMUM_STARS # Verify if the repository has the minimum number of stars
+      and not contains_excluded_keywords(repo, ignore_keywords) # Verify if the repository has the excluded keywords
+   )
 
-      for future in concurrent.futures.as_completed(futures): # Iterate over the futures as they are completed
-         try:
-            result = future.result() # Raises exception if any occurred during execution
-            if result: # If the result is not None
-               filtered_repositories.append(result) # Append the repository to the list
-         except Exception as exc:
-               print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
+def extract_author_name(repo):
+   """
+   Extracts the author's name from the repository's URL.
 
-   return filtered_repositories # Return the list of filtered repositories
+   :param repo: dict
+   :return: str
+   """
+
+   return repo["html_url"].split("/")[-2] # Get the author's name from the URL
+
+def process_repository(repo, date_filter=None, ignore_keywords=None):
+   """
+   Processes a single repository, filtering by date, keywords, and ensuring a unique name.
+
+   :param repo: dict
+   :param date_filter: datetime to filter the repositories
+   :param ignore_keywords: list
+   :return: dict or None
+   """
+
+   updated_date = parse_repo_updated_date(repo) # Get the last update date of the repository
+
+   # Validate the repository based on the update date, star count, and keywords
+   if is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
+      return {
+         "name": repo["name"],
+         "author": extract_author_name(repo),
+         "url": repo["html_url"],
+         "description": repo["description"],
+         "commits": 0,
+         "stars": repo["stargazers_count"],
+         "updated_at": repo["updated_at"]
+      }
+      
+   return None # Return None if the repository is not valid
 
 def update_repository(repository_directory_path):
    """
@@ -520,6 +431,95 @@ def setup_repository(repository_name, repository_url):
       update_repository(repository_directory_path) # Update the repository
    else:
       clone_repository(repository_directory_path, repository_url) # Clone the repository
+
+def count_commits(repo_path):
+   """
+   Counts the number of commits in a repository.
+
+   :param repo_path: str
+   :return: int
+   """
+
+   return len(list(Repository(repo_path).traverse_commits()))
+
+def process_repository_task(repo, datetime_filter, ignore_keywords):
+   """
+   Processes and filters a single repository.
+
+   :param repo: dict
+   :param datetime_filter: datetime to filter the repositories
+   :param ignore_keywords: list
+   :return: dict or None
+   """
+
+   filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
+
+   if filtered_repo: # If the repository is valid
+      setup_repository(filtered_repo["name"], filtered_repo["url"]) # Setup the repository
+      filtered_repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{filtered_repo['name']}" # The path to the repository directory
+      if os.path.isdir(filtered_repo_path): # If the repository path exists
+         try:
+            commits_count = count_commits(filtered_repo_path) # Count the number of commits in the repository
+            filtered_repo["commits"] = commits_count # Add the number of commits to the repository
+            return filtered_repo # Return the filtered repository
+         except Exception as e:
+            print(f"{BackgroundColors.RED}Error counting commits for repository {BackgroundColors.GREEN}{filtered_repo_path}{BackgroundColors.RED}: {BackgroundColors.YELLOW}{e}{Style.RESET_ALL}")
+      else:
+         print(f"{BackgroundColors.RED}Repository path {BackgroundColors.CYAN}{filtered_repo_path}{BackgroundColors.RED} does not exist.{Style.RESET_ALL}")
+
+   return None # Return None if the repository is not valid
+
+def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
+   """
+   Filters the list of repositories based on the update date, ignore keywords, and ensures unique names.
+   This function uses concurrent processing to speed up the filtering process based on the number of available CPU cores.
+
+   :param repositories: list
+   :param ignore_keywords: list
+   :return: list
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}")
+
+   usable_threads, max_threads = get_adjusted_number_of_threads(get_threads()) # Get the adjusted number of threads to use
+   
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
+
+   datetime_filter = get_datetime_filter() # Get the datetime filter for the repositories
+
+   filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
+
+   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
+      # Submit the process_repository_task function to the executor for each repository
+      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories]
+
+      for future in concurrent.futures.as_completed(futures): # Iterate over the futures as they are completed
+         try:
+            result = future.result() # Raises exception if any occurred during execution
+            if result: # If the result is not None
+               filtered_repositories.append(result) # Append the repository to the list
+         except Exception as exc:
+               print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
+
+   return filtered_repositories # Return the list of filtered repositories
+
+def create_directory(full_directory_name, relative_directory_name):
+   """
+   Creates a directory.
+
+   :param full_directory_name: Name of the directory to be created.
+   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal.
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
+
+   if os.path.isdir(full_directory_name): # Verify if the directory already exists
+      return # Return if the directory already exists
+   try: # Try to create the directory
+      os.makedirs(full_directory_name) # Create the directory
+   except OSError: # If the directory cannot be created
+      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
 
 def save_to_json(data, filename=FULL_REPOSITORIES_DIRECTORY_PATH_JSON):
    """
