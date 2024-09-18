@@ -651,6 +651,17 @@ def save_to_pdf(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_PDF):
 
    pdf.output(filename) # Save the PDF file
 
+def extract_repositories_field(repositories, repository_field):
+   """
+   Extract the number of commits from repositories.
+
+   :param repositories: list of repositories (dicts)
+   :param repository_field: the name of the field containing the desired data
+   :return: list of data from the repositories of the repository field
+   """
+
+   return [repo[repository_field] for repo in repositories] # Return the data for each repository
+
 def create_repository_field_histogram(repositories, repository_field):
    """
    Create a histogram for the specified repository field.
