@@ -386,20 +386,19 @@ def process_repository_task(repo, datetime_filter, ignore_keywords):
    filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
 
    if filtered_repo: # If the repository is valid
-      setup_repository(repo["name"], repo["html_url"]) # Setup the repository
-      repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}" # The path to the repository directory
-      if os.path.isdir(repo_path): # If the repository path exists
+      setup_repository(filtered_repo["name"], filtered_repo["url"]) # Setup the repository
+      filtered_repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{filtered_repo['name']}" # The path to the repository directory
+      if os.path.isdir(filtered_repo_path): # If the repository path exists
          try:
-            commits_count = count_commits(repo_path) # Count the number of commits in the repository
-            repo["commits"] = commits_count # Add the number of commits to the repository
+            commits_count = count_commits(filtered_repo_path) # Count the number of commits in the repository
+            filtered_repo["commits"] = commits_count # Add the number of commits to the repository
             return filtered_repo # Return the filtered repository
          except Exception as e:
-            print(f"{BackgroundColors.RED}Error counting commits for repository {BackgroundColors.GREEN}{repo_path}{BackgroundColors.RED}: {BackgroundColors.YELLOW}{e}{Style.RESET_ALL}")
+            print(f"{BackgroundColors.RED}Error counting commits for repository {BackgroundColors.GREEN}{filtered_repo_path}{BackgroundColors.RED}: {BackgroundColors.YELLOW}{e}{Style.RESET_ALL}")
       else:
-         print(f"{BackgroundColors.RED}Repository path {BackgroundColors.CYAN}{repo_path}{BackgroundColors.RED} does not exist.{Style.RESET_ALL}")
+         print(f"{BackgroundColors.RED}Repository path {BackgroundColors.CYAN}{filtered_repo_path}{BackgroundColors.RED} does not exist.{Style.RESET_ALL}")
 
    return None # Return None if the repository is not valid
-
 
 def get_threads():
    """
