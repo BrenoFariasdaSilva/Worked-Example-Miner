@@ -1,6 +1,7 @@
 import atexit # For playing a sound when the program finishes
 import concurrent.futures # For running tasks concurrently
 import json # For creating JSON output
+import numpy as np # For numerical operations
 import os # For running a command in the terminal
 import platform # For getting the operating system name
 import random # For selecting random items
@@ -661,6 +662,20 @@ def extract_repositories_field(repositories, repository_field):
    """
 
    return [repo[repository_field] for repo in repositories] # Return the data for each repository
+
+def calculate_statistics(data):
+   """
+   Calculate and print the statistics (average, median, and standard deviation) for a given dataset.
+
+   :param data: list of integers
+   :return: tuple of floats (average, median, standard deviation)
+   """
+
+   average = np.mean(data) # Calculate the average
+   median = np.median(data) # Calculate the median
+   std_dev = np.std(data) # Calculate the standard deviation
+
+   return average, median, std_dev # Return the calculated statistics
 
 def create_repository_field_histogram(repositories, repository_field):
    """
