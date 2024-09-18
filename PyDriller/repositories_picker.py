@@ -681,6 +681,28 @@ def calculate_statistics(data):
 
    return average, median, std_dev # Return the calculated statistics
 
+def create_basic_histogram(data, title, xlabel, ylabel, filename):
+   """
+   Create a histogram for the given data.
+
+   :param data: list of integers to plot
+   :param title: title of the histogram
+   :param xlabel: label for the x-axis
+   :param ylabel: label for the y-axis
+   :param filename: name of the file to save the histogram
+   :return: None
+   """
+
+   plt.figure(figsize=(10, 6)) # Set the figure size
+   plt.hist(data, bins=20, color="skyblue", edgecolor="black") # Create the histogram
+   plt.title(title) # Set the title of the histogram
+   plt.xlabel(xlabel) # Set the x-axis label
+   plt.ylabel(ylabel) # Set the y-axis label
+   plt.grid(True) # Enable the grid
+   plt.tight_layout() # Adjust the layout
+   plt.savefig(filename) # Save the histogram to a file
+   plt.close() # Close the plot
+
 def create_repository_field_histogram(repositories, repository_field):
    """
    Create a histogram for the specified repository field.
