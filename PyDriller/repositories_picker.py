@@ -54,6 +54,24 @@ class BackgroundColors: # Colors for the terminal
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
 SOUND_FILE_PATH = ".assets/Sounds/NotificationSound.wav" # The path to the sound file
 
+def play_sound():
+   """
+   Plays a sound when the program finishes.
+
+   :return: None
+   """
+
+   if os.path.exists(SOUND_FILE_PATH):
+      if platform.system() in SOUND_COMMANDS: # If the platform.system() is in the SOUND_COMMANDS dictionary
+         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE_PATH}")
+      else: # If the platform.system() is not in the SOUND_COMMANDS dictionary
+         print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
+   else: # If the sound file does not exist
+      print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE_PATH}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
+
+# Register the function to play a sound when the program finishes
+atexit.register(play_sound)
+
 def update_sound_file_path():
    """
    Updates the SOUND_FILE_PATH constant based on the current directory.
@@ -77,24 +95,6 @@ def update_sound_file_path():
    verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE_PATH}{Style.RESET_ALL}")
 
    return SOUND_FILE_PATH # Return the updated sound file path
-
-def play_sound():
-   """
-   Plays a sound when the program finishes.
-
-   :return: None
-   """
-
-   if os.path.exists(SOUND_FILE_PATH):
-      if platform.system() in SOUND_COMMANDS: # If the platform.system() is in the SOUND_COMMANDS dictionary
-         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE_PATH}")
-      else: # If the platform.system() is not in the SOUND_COMMANDS dictionary
-         print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
-   else: # If the sound file does not exist
-      print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE_PATH}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
-
-# Register the function to play a sound when the program finishes
-atexit.register(play_sound)
 
 def verbose_output(true_string="", false_string=""):
    """
