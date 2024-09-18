@@ -400,39 +400,6 @@ def process_repository_task(repo, datetime_filter, ignore_keywords):
 
    return None # Return None if the repository is not valid
 
-def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
-   """
-   Filters the list of repositories based on the update date, ignore keywords, and ensures unique names.
-   This function uses concurrent processing to speed up the filtering process based on the number of available CPU cores.
-
-   :param repositories: list
-   :param ignore_keywords: list
-   :return: list
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}")
-
-   usable_threads, max_threads = get_adjusted_number_of_threads(get_threads()) # Get the adjusted number of threads to use
-   
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
-
-   datetime_filter = get_datetime_filter() # Get the datetime filter for the repositories
-
-   filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
-
-   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
-      # Submit the process_repository_task function to the executor for each repository
-      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories]
-
-      for future in concurrent.futures.as_completed(futures): # Iterate over the futures as they are completed
-         try:
-            result = future.result() # Raises exception if any occurred during execution
-            if result: # If the result is not None
-               filtered_repositories.append(result) # Append the repository to the list
-         except Exception as exc:
-               print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
-
-   return filtered_repositories # Return the list of filtered repositories
 
 def get_threads():
    """
@@ -469,6 +436,40 @@ def get_adjusted_number_of_threads(cpu_count):
    usable_threads = max(1, usable_threads) # Ensure at least 1 thread is used
 
    return usable_threads, cpu_count # Return the number of threads to use and the maximum number of threads available
+
+def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
+   """
+   Filters the list of repositories based on the update date, ignore keywords, and ensures unique names.
+   This function uses concurrent processing to speed up the filtering process based on the number of available CPU cores.
+
+   :param repositories: list
+   :param ignore_keywords: list
+   :return: list
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Applying repository filtering criteria...{Style.RESET_ALL}")
+
+   usable_threads, max_threads = get_adjusted_number_of_threads(get_threads()) # Get the adjusted number of threads to use
+   
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Using {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN} threads available...{Style.RESET_ALL}")
+
+   datetime_filter = get_datetime_filter() # Get the datetime filter for the repositories
+
+   filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
+
+   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
+      # Submit the process_repository_task function to the executor for each repository
+      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories]
+
+      for future in concurrent.futures.as_completed(futures): # Iterate over the futures as they are completed
+         try:
+            result = future.result() # Raises exception if any occurred during execution
+            if result: # If the result is not None
+               filtered_repositories.append(result) # Append the repository to the list
+         except Exception as exc:
+               print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
+
+   return filtered_repositories # Return the list of filtered repositories
 
 def update_repository(repository_directory_path):
    """
