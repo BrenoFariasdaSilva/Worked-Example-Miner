@@ -366,6 +366,19 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    return filtered_repositories # Return the list of filtered repositories
 
+def setup_repositories(repositories, repositories_directory=RELATIVE_REPOSITORIES_DIRECTORY_PATH):
+   """
+   Clones the repositories to the local directory.
+   :param repositories: list
+   :param repositories_directory: str
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the repositories to {BackgroundColors.CYAN}{repositories_directory}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+
+   for repository in repositories: # Iterate over the repositories
+      setup_repository(repository["name"], repository["url"]) # Setup the repository
+
 def save_to_json(data, filename=RELATIVE_REPOSITORIES_DIRECTORY_PATH_JSON):
    """
    Saves the data to a JSON file.
@@ -542,6 +555,8 @@ def main():
    total_repo_count = len(repositories) # Get the total number of repositories
 
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
+
+   setup_repositories(filtered_repositories, RELATIVE_REPOSITORIES_DIRECTORY_PATH) # Clone the repositories
 
    sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
 
