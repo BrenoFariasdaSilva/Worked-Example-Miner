@@ -66,7 +66,7 @@ def update_sound_file_path():
       prefix = "../" # Go up one directory
    elif START_PATH.endswith("Scripts"):
       prefix = "../../" # Go up two directories
-   else: # The current directory is not "PyDriller" or "Scripts", so it must be "Worked-Example-Miner"
+   else: # The current directory is not "PyDriller" or "Scripts", so it must be the root dir ("Worked-Example-Miner")
       prefix = "./" # Stay in the same directory
 
    # Update the SOUND_FILE_PATH constant
