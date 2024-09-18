@@ -29,6 +29,9 @@ ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
 PDF_FILE_EXTENSION = ".pdf" # The PDF file extension
 JSON_FILE_EXTENSION = ".json" # The JSON file extension
 
+# Time units:
+TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, seconds in a day
+
 # Default paths:
 START_PATH = os.getcwd() # Get the current working directory
 
@@ -631,6 +634,33 @@ def print_repositories_summary(total_repo_count, total_candidates, candidates):
    print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
    for i, repo in enumerate(candidates, start=1):
       print(f"{BackgroundColors.CYAN}{i}. {repo['name'].title()}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} (⭐ {repo['stars']}){Style.RESET_ALL}")
+
+def output_time(output_string, time):
+   """
+   Outputs time, considering the appropriate time unit.
+
+   :param output_string: String to be outputted.
+   :param time: Time to be outputted.
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
+
+   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
+      time_unit = "seconds" # Set the time unit to seconds
+      time_value = time # Set the time value to time
+   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
+      time_unit = "minutes" # Set the time unit to minutes
+      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
+   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
+      time_unit = "hours" # Set the time unit to hours
+      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
+   else: # If the time is greater than or equal to 86400 seconds
+      time_unit = "days" # Set the time unit to days
+      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
+
+   rounded_time = round(time_value, 2) # Round the time value to two decimal places
+   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 def main():
    """
