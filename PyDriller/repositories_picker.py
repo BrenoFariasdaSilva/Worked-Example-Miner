@@ -22,7 +22,7 @@ class BackgroundColors: # Colors for the terminal
 
 # Sound Constants:
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
-SOUND_FILE = "./.assets/Sounds/NotificationSound.wav" # The path to the sound file
+SOUND_FILE = ".assets/Sounds/NotificationSound.wav" # The path to the sound file
 
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
@@ -61,7 +61,7 @@ def update_sound_file_path():
       prefix = "./" # Stay in the same directory
 
    # Update the SOUND_FILE constant
-   SOUND_FILE = f"{prefix}assets/Sounds/NotificationSound.wav"
+   SOUND_FILE = f"{prefix}{SOUND_FILE}"
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE}{Style.RESET_ALL}")
 
