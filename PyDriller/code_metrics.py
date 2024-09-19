@@ -259,22 +259,6 @@ def update_repository(repository_directory_path):
    update_thread.wait() # Wait for the thread to finish
    os.chdir(START_PATH) # Change the current working directory to the default one
 
-def clone_repository(repository_directory_path, repository_url):
-   """
-   Clone the repository to the repository directory.
-
-   :param repository_directory_path: The path to the repository directory
-   :param repository_url: URL of the repository to be analyzed
-   :return: None
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-   
-   # Create a thread to clone the repository
-   thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   # Wait for the thread to finish
-   thread.wait()
-
 def read_progress_file(file_path):
    """
    Read the contents of the progress file, excluding the last two lines.
