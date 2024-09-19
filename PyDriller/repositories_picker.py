@@ -15,9 +15,7 @@ from dotenv import load_dotenv # For loading environment variables from .env fil
 from fpdf import FPDF # For creating PDFs
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 
-## CONSTANTS:
-
-# Execution Constants:
+# Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
 DATETIME_FILTER = None # The datetime filter for the repositories
 HISTOGRAM_REPOSITORY_FIELDS = ["commits", "stars"] # The repository fields to create histograms for
@@ -25,6 +23,15 @@ CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
+PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
+
+DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
+   "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
+   "kafka": "https://github.com/apache/kafka",
+   "moleculer-java": "https://github.com/moleculer-java/moleculer-java",
+   "scalecube-services": "https://github.com/scalecube/scalecube-services",
+   "zookeeper": "https://github.com/apache/zookeeper"
+}
 
 # .Env Constants:
 ENV_PATH = "../.env" # The path to the .env file
