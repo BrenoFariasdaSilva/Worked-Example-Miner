@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_git # For updating the sound file path
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_git, verify_repositories_execution_constants # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -236,20 +236,6 @@ def update_repositories_list():
    verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated with values from the {BackgroundColors.CYAN}JSON{BackgroundColors.GREEN} file.{Style.RESET_ALL}")
    
    return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
-
-def verify_repositories_execution_constants():
-   """
-   Verify the constants used in the execution of the repositories.
-   It will process the JSON repositories, if the PROCESS_JSON_REPOSITORIES constant is set to True or if the DEFAULT_REPOSITORIES dictionary is empty.
-   
-   :return: None
-   """
-
-   # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
-   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
-      if not update_repositories_list(): # Update the repositories list
-         print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
-         exit() # Exit the program if the repositories list could not be updated
 
 def get_commit_hashes(commit_file_path):
    """
