@@ -145,6 +145,33 @@ def update_sound_file_path():
 
    return SOUND_FILE_PATH # Return the updated sound file path
 
+def update_repositories_dictionary():
+   """
+   Update the repositories list in the DEFAULT_REPOSITORIES dictionary.
+   
+   :return: True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file, False otherwise.
+   """
+   
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the repositories list file with the DEFAULT_REPOSITORIES dictionary...{Style.RESET_ALL}")
+
+   global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
+
+   # Validate the JSON file
+   if not verify_json_file(FULL_REPOSITORIES_LIST_FILEPATH_JSON):
+      return False # Return if the JSON file is not valid
+
+   # Load repositories from JSON and update DEFAULT_REPOSITORIES
+   json_repositories = load_repositories_from_json(FULL_REPOSITORIES_LIST_FILEPATH_JSON)
+
+   if not json_repositories: # If the JSON file was not successfully loaded
+      return False # Return False if the DEFAULT_REPOSITORIES dictionary was not successfully updated with values from the JSON file
+
+   DEFAULT_REPOSITORIES = json_repositories # Update the DEFAULT_REPOSITORIES dictionary with the values from the JSON file
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated with values from the {BackgroundColors.CYAN}JSON{BackgroundColors.GREEN} file.{Style.RESET_ALL}")
+   
+   return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
+
 def verify_repositories_execution_constants():
    """
    Verify the constants used in the execution of the repositories.
@@ -155,7 +182,7 @@ def verify_repositories_execution_constants():
 
    # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
    if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
-      if not update_repositories_list(): # Update the repositories list
+      if not update_repositories_dictionary(): # Update the repositories list
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
 
