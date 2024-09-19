@@ -145,6 +145,20 @@ def update_sound_file_path():
 
    return SOUND_FILE_PATH # Return the updated sound file path
 
+def verify_repositories_execution_constants():
+   """
+   Verify the constants used in the execution of the repositories.
+   It will process the JSON repositories, if the PROCESS_JSON_REPOSITORIES constant is set to True or if the DEFAULT_REPOSITORIES dictionary is empty.
+   
+   :return: None
+   """
+
+   # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
+   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
+      if not update_repositories_list(): # Update the repositories list
+         print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
+         exit() # Exit the program if the repositories list could not be updated
+
 def verify_git():
    """
    Verify if Git is installed.
@@ -829,6 +843,8 @@ def main():
       return # Return if the path constants contains whitespaces
 
    update_sound_file_path() # Update the sound file path
+
+   verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
 
    if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
