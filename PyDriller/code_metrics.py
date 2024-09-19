@@ -10,7 +10,7 @@ from colorama import Style # For coloring the terminal
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from tqdm import tqdm # For Generating the Progress Bars
 
-# Import from the repositories_picker.py file
+# Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
 from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_git, verify_repositories_execution_constants # Importing Functions from the repositories_picker.py file
