@@ -17,11 +17,11 @@ from tqdm import tqdm # For progress bar
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, PROCESS_JSON_REPOSITORIES, SOUND_FILE_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import play_sound, update_sound_file_path # Importing Functions from the repositories_picker.py file
+from repositories_picker import create_directory, play_sound, update_sound_file_path # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
-from code_metrics import CSV_FILE_EXTENSION, CK_METRICS_FILES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, START_PATH # Importing Constants from the code_metrics.py file
-from code_metrics import create_directory, get_output_directories_size_in_gb, load_repositories_from_json, output_time, path_contains_whitespaces, play_sound, setup_repository, verify_ck_metrics_folder, verify_json_file, verbose_output # Importing Functions from the code_metrics.py file
+from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, START_PATH # Importing Constants from the code_metrics.py file
+from code_metrics import get_output_directories_size_in_gb, load_repositories_from_json, output_time, path_contains_whitespaces, play_sound, setup_repository, verify_ck_metrics_folder, verify_json_file, verbose_output # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
