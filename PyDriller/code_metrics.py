@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verify_git # For updating the sound file path
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_git # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -65,20 +65,6 @@ FULL_REPOSITORIES_DIRECTORY_PATH = START_PATH + RELATIVE_REPOSITORIES_DIRECTORY_
 FULL_REPOSITORY_PROGRESS_FILE_PATH = START_PATH + RELATIVE_REPOSITORY_PROGRESS_FILE_PATH # The full path of the file that contains the repository progress
 FULL_REPOSITORIES_LIST_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_LIST_FILE_PATH # The full path of the file that contains the repositories list
 OUTPUT_DIRECTORIES = [FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH] # The list of output directories
-
-def verbose_output(true_string="", false_string=""):
-   """
-   Outputs a message if the VERBOSE constant is set to True.
-
-   :param true_string: The string to be outputted if the VERBOSE constant is set to True.
-   :param false_string: The string to be outputted if the VERBOSE constant is set to False.
-   :return: None
-   """
-
-   if VERBOSE and true_string != "": # If the VERBOSE constant is set to True and the true_string is set
-      print(true_string) # Output the true statement string
-   elif false_string != "":
-      print(false_string) # Output the false statement string
 
 def init_and_update_submodules():
    """
