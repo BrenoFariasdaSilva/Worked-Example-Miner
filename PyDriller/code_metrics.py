@@ -171,22 +171,6 @@ def ensure_ck_jar_file_exists():
    print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CK JAR{BackgroundColors.RED} file was not found in the target directory.{Style.RESET_ALL}")
    return False # Return False if the JAR file was not found in the target directory
 
-def verify_json_file(file_path):
-   """
-   Verify if the JSON file exists and is not empty.
-
-   :param file_path: The path to the JSON file.
-   :return: True if the JSON file exists and is not empty, False otherwise.
-   """
-
-   if not os.path.exists(file_path):
-      print(f"{BackgroundColors.RED}The repositories JSON file does not exist.{Style.RESET_ALL}")
-      return False # Return False if the JSON file does not exist
-   if os.path.getsize(file_path) == 0:
-      print(f"{BackgroundColors.RED}The repositories JSON file is empty.{Style.RESET_ALL}")
-      return False # Return False if the JSON file is empty
-   return True # Return True if the JSON file exists and is not empty
-
 def get_commit_hashes(commit_file_path):
    """
    Read the commit hashes from a CSV file.
