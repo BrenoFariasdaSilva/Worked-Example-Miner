@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_git, verify_repositories_execution_constants # For updating the sound file path
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_git, verify_repositories_execution_constants # Importing Functions from the repositories_picker.py file
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
