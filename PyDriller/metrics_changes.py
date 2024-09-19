@@ -22,7 +22,6 @@ from repositories_picker import create_directory, play_sound, update_repositorie
 # Imports from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, START_PATH # Importing Constants from the code_metrics.py file
 from code_metrics import get_output_directories_size_in_gb, output_time, path_contains_whitespaces, play_sound, setup_repository, verify_ck_metrics_folder, verbose_output # Importing Functions from the code_metrics.py file
-
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
@@ -96,6 +95,8 @@ def verify_and_update_repositories():
 	Verifies the DEFAULT_REPOSITORIES and PROCESS_JSON_REPOSITORIES constants,
 	updates the repositories list file with the DEFAULT_REPOSITORIES dictionary,
 	and updates the DEFAULT_REPOSITORIES_NAMES list with the keys of the DEFAULT_REPOSITORIES dictionary.
+
+	:return: None
 	"""
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying and updating the repositories...{Style.RESET_ALL}")
@@ -591,6 +592,7 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 def add_csv_header(csv_filename, metric_name):
 	""""
 	Adds the header to the csv file, if it does not exist.
+
 	:param csv_filename: The name of the csv file
 	:param metric_name: The name of the metric
 	:return: None
