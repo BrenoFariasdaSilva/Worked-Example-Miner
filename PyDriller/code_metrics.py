@@ -187,29 +187,6 @@ def verify_json_file(file_path):
       return False # Return False if the JSON file is empty
    return True # Return True if the JSON file exists and is not empty
 
-# Function to load repositories from JSON
-def load_repositories_from_json(file_path):
-   """
-   Load repositories from a JSON file.
-
-   :param file_path: The path to the JSON file.
-   :return: A dictionary containing the repositories if the JSON file is valid, None otherwise.   
-   """
-
-   try:
-      with open(file_path, "r", encoding="utf-8") as json_file: # Open the JSON file
-         repositories_list = json.load(json_file) # Load the JSON file
-
-      # Ensure the data is a list and contains repositories
-      if isinstance(repositories_list, list) and repositories_list:
-         return {repo["name"]: repo["url"] for repo in repositories_list} # Return the dictionary containing the repositories
-      else:
-         print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
-         return None # Return None if the JSON file is not in the correct format
-   except (json.JSONDecodeError, KeyError) as e:
-      verbose_output(true_string=f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
-      return None # Return None if there is an error parsing the JSON file
-
 def get_commit_hashes(commit_file_path):
    """
    Read the commit hashes from a CSV file.
