@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import get_adjusted_number_of_threads, get_threads, play_sound, update_sound_file_path, verify_git # For updating the sound file path
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, play_sound, update_sound_file_path, verify_git # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -376,24 +376,6 @@ def verify_ck_metrics_folder(repository_name):
          return False # Return False if the folder does not exist
 
    return True # Return True if all the metrics are already calculated
-
-def create_directory(full_directory_name, relative_directory_name):
-   """
-   Creates a directory.
-
-   :param full_directory_name: Name of the directory to be created.
-   :param relative_directory_name: Relative name of the directory to be created that will be shown in the terminal.
-   :return: None
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Creating the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
-
-   if os.path.isdir(full_directory_name): # Verify if the directory already exists
-      return # Return if the directory already exists
-   try: # Try to create the directory
-      os.makedirs(full_directory_name) # Create the directory
-   except OSError: # If the directory cannot be created
-      print(f"{BackgroundColors.GREEN}The creation of the {BackgroundColors.CYAN}{relative_directory_name}{BackgroundColors.GREEN} directory failed.{Style.RESET_ALL}")
 
 def update_repository(repository_directory_path):
    """
