@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, play_sound, update_sound_file_path, verify_git # For updating the sound file path
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, play_sound, update_sound_file_path, verify_git # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -278,33 +278,6 @@ def verify_repositories_execution_constants():
       if not update_repositories_list(): # Update the repositories list
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
-
-def output_time(output_string, time):
-   """
-   Outputs time, considering the appropriate time unit.
-
-   :param output_string: String to be outputted.
-   :param time: Time to be outputted.
-   :return: None
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Outputting the time in the most appropriate time unit...{Style.RESET_ALL}")
-
-   if float(time) < int(TIME_UNITS[0]): # If the time is less than 60 seconds
-      time_unit = "seconds" # Set the time unit to seconds
-      time_value = time # Set the time value to time
-   elif float(time) < float(TIME_UNITS[1]): # If the time is less than 3600 seconds
-      time_unit = "minutes" # Set the time unit to minutes
-      time_value = time / TIME_UNITS[0] # Set the time value to time divided by 60
-   elif float(time) < float(TIME_UNITS[2]): # If the time is less than 86400 seconds
-      time_unit = "hours" # Set the time unit to hours
-      time_value = time / TIME_UNITS[1] # Set the time value to time divided by 3600
-   else: # If the time is greater than or equal to 86400 seconds
-      time_unit = "days" # Set the time unit to days
-      time_value = time / TIME_UNITS[2] # Set the time value to time divided by 86400
-
-   rounded_time = round(time_value, 2) # Round the time value to two decimal places
-   print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 def get_commit_hashes(commit_file_path):
    """
