@@ -128,7 +128,7 @@ def input_with_timeout(prompt, timeout=60):
 	if ready:
 		return sys.stdin.readline().strip().lower() # Read and return user input
 	else:
-		return None  # Return None if timeout is reached
+		return None # Return None if timeout is reached
 
 def update_global_variables_for_processing(process_classes):
 	"""
