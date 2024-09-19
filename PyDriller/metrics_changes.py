@@ -17,7 +17,7 @@ from tqdm import tqdm # For progress bar
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, PROCESS_JSON_REPOSITORIES, SOUND_FILE_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import play_sound # Importing Functions from the repositories_picker.py file
+from repositories_picker import play_sound, update_sound_file_path # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
 from code_metrics import CSV_FILE_EXTENSION, CK_METRICS_FILES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, START_PATH # Importing Constants from the code_metrics.py file
@@ -1108,7 +1108,10 @@ def main():
 	if path_contains_whitespaces():
 		print(f"{BackgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return # Exit the program
-
+	
+	global SOUND_FILE_PATH # Declare the SOUND_FILE_PATH as a global variable
+	SOUND_FILE_PATH = update_sound_file_path() # Update the sound file path
+	
 	# Verify if the refactoring miner tool exists in the specified path
 	if not verify_file(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH):
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
