@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import play_sound, update_sound_file_path, verify_git # For updating the sound file path
+from repositories_picker import get_threads, play_sound, update_sound_file_path, verify_git # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -939,17 +939,6 @@ def get_adjusted_number_of_threads(cpu_count):
       usable_threads = cpu_count - 2 # Leave 2 threads free
 
    return max(1, usable_threads), cpu_count # Return the number of threads to use and the maximum number of threads available
-
-def get_threads():
-   """
-   Get the number of available cpu cores.
-
-   return: The number of cpu cores.
-   """
-   
-   cpu_cores = os.cpu_count() # Get the number of CPU cores
-
-   return cpu_cores # Return the number of CPU cores
 
 def process_repositories_in_parallel():
    """
