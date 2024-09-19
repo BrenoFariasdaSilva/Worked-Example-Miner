@@ -14,14 +14,17 @@ from pydriller import Repository # PyDriller is a Python framework that helps de
 from sklearn.linear_model import LinearRegression # For the linear regression
 from tqdm import tqdm # For progress bar
 
-# Import from the repositories_picker.py file
-from repositories_picker import BackgroundColors # For coloring the terminal outputs
+# Imports from the repositories_picker.py file
+from repositories_picker import BackgroundColors # Import the BackgroundColors class
+from repositories_picker import DEFAULT_REPOSITORIES, PROCESS_JSON_REPOSITORIES, SOUND_FILE_PATH # Importing Constants from the repositories_picker.py file
+from repositories_picker import play_sound # Importing Functions from the repositories_picker.py file
 
 # Import from the code_metrics.py file
 from code_metrics import CSV_FILE_EXTENSION, CK_METRICS_FILES, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_FILE_PATH, PROCESS_JSON_REPOSITORIES, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, START_PATH, VERBOSE # Importing constants from the code_metrics.py file
 from code_metrics import create_directory, get_output_directories_size_in_gb, load_repositories_from_json, output_time, path_contains_whitespaces, play_sound, setup_repository, verify_ck_metrics_folder, verify_json_file, verbose_output # Importing functions from the code_metrics.py file
 
 # Default values that can be changed:
+VERBOSE = False # If True, then the program will output the progress of the execution
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
 NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASE = 0.00 # The desired decrease in the metric
@@ -1105,7 +1108,7 @@ def main():
 	if path_contains_whitespaces():
 		print(f"{BackgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return # Exit the program
-	
+
 	# Verify if the refactoring miner tool exists in the specified path
 	if not verify_file(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH):
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
