@@ -74,7 +74,7 @@ def verify_file(file_path):
 	
 	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
 
-def update_repositories_list():
+def update_repositories_dictionary():
    """
    Update the repositories list file with the DEFAULT_REPOSITORIES dictionary.
    
@@ -111,7 +111,7 @@ def verify_repositories_execution_constants():
 
    # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
    if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
-      if not update_repositories_list(): # Update the repositories list
+      if not update_repositories_dictionary(): # Update the repositories list
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
 
