@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, update_sound_file_path, verify_git # For updating the sound file path
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verify_git # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -368,24 +368,6 @@ def clone_repository(repository_directory_path, repository_url):
    thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    # Wait for the thread to finish
    thread.wait()
-
-def setup_repository(repository_name, repository_url):
-   """"
-   Setup the repository by cloning it or updating it if it already exists.
-
-   :param repository_name: Name of the repository to be analyzed
-   :param repository_url: URL of the repository to be analyzed
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-   
-   repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-   
-   # Verify if the repository directory already exists and if it is not empty
-   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
-      update_repository(repository_directory_path) # Update the repository
-   else:
-      clone_repository(repository_directory_path, repository_url) # Clone the repository
 
 def read_progress_file(file_path):
    """
