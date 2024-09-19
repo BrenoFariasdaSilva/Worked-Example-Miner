@@ -242,23 +242,6 @@ def verify_ck_metrics_folder(repository_name):
 
    return True # Return True if all the metrics are already calculated
 
-def update_repository(repository_directory_path):
-   """
-   Update the repository using "git pull".
-
-   :param repository_directory_path: The path to the repository directory
-   :return: None
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-   
-   os.chdir(repository_directory_path) # Change the current working directory to the repository directory
-   
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + "/" + repository_name
-   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-   update_thread.wait() # Wait for the thread to finish
-   os.chdir(START_PATH) # Change the current working directory to the default one
-
 def read_progress_file(file_path):
    """
    Read the contents of the progress file, excluding the last two lines.
