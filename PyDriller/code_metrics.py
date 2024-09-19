@@ -13,7 +13,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Import from the repositories_picker.py file
 from repositories_picker import BackgroundColors # For coloring the terminal outputs
 from repositories_picker import JSON_FILE_EXTENSION, SOUND_FILE_PATH # For the sound file path
-from repositories_picker import get_threads, play_sound, update_sound_file_path, verify_git # For updating the sound file path
+from repositories_picker import get_adjusted_number_of_threads, get_threads, play_sound, update_sound_file_path, verify_git # For updating the sound file path
 
 # Default values that can be changed:
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
@@ -921,24 +921,6 @@ def process_repository(repository_name, repository_url):
 
    # Checkout the main branch
    checkout_branch("main")
-
-def get_adjusted_number_of_threads(cpu_count):
-   """
-   Get the adjusted number of threads to use based on the available CPU cores, following these rules:
-
-   - Ensure at least 1 thread is used.
-   - Always try leave at least 1 thread free.
-   - If there are 8 or more cores, leave 2 threads free, so the system can still be usable in terms of cpu usage, but memory wise it will also be very high.
-   """
-
-   if cpu_count <= 2: # If there are 2 or fewer CPU cores
-      usable_threads = 1 # Use 1 thread
-   elif 3 <= cpu_count <= 7: # If there are between 3 and 7 CPU cores
-      usable_threads = cpu_count - 1 # Leave 1 thread free
-   else: # If there are 8 or more CPU cores
-      usable_threads = cpu_count - 2 # Leave 2 threads free
-
-   return max(1, usable_threads), cpu_count # Return the number of threads to use and the maximum number of threads available
 
 def process_repositories_in_parallel():
    """
