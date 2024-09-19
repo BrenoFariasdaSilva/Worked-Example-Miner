@@ -17,11 +17,11 @@ from tqdm import tqdm # For progress bar
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, PROCESS_JSON_REPOSITORIES, SOUND_FILE_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import create_directory, play_sound, update_sound_file_path # Importing Functions from the repositories_picker.py file
+from repositories_picker import create_directory, play_sound, update_repositories_dictionary, update_sound_file_path # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, START_PATH # Importing Constants from the code_metrics.py file
-from code_metrics import get_output_directories_size_in_gb, load_repositories_from_json, output_time, path_contains_whitespaces, play_sound, setup_repository, verify_ck_metrics_folder, verify_json_file, verbose_output # Importing Functions from the code_metrics.py file
+from code_metrics import get_output_directories_size_in_gb, output_time, path_contains_whitespaces, play_sound, setup_repository, verify_ck_metrics_folder, verbose_output # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
@@ -76,33 +76,6 @@ def verify_file(file_path):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the file {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN} exists...{Style.RESET_ALL}")
 	
 	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
-
-def update_repositories_dictionary():
-   """
-   Update the repositories list file with the DEFAULT_REPOSITORIES dictionary.
-   
-   :return: True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file, False otherwise.
-   """
-   
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the repositories list file with the DEFAULT_REPOSITORIES dictionary...{Style.RESET_ALL}")
-
-   global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
-
-   # Validate the JSON file
-   if not verify_json_file(FULL_REPOSITORIES_LIST_FILE_PATH):
-      return False # Return if the JSON file is not valid
-
-   # Load repositories from JSON and update DEFAULT_REPOSITORIES
-   json_repositories = load_repositories_from_json(FULL_REPOSITORIES_LIST_FILE_PATH)
-
-   if not json_repositories: # If the JSON file was not successfully loaded
-      return False # Return False if the DEFAULT_REPOSITORIES dictionary was not successfully updated with values from the JSON file
-
-   DEFAULT_REPOSITORIES = json_repositories # Update the DEFAULT_REPOSITORIES dictionary with the values from the JSON file
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated with values from the {BackgroundColors.CYAN}JSON{BackgroundColors.GREEN} file.{Style.RESET_ALL}")
-   
-   return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
 
 def verify_repositories_execution_constants():
    """
