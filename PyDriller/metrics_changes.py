@@ -918,10 +918,10 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 		writer = csv.writer(csvfile)	
 		if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 			# Write the header to the csv file but using the "Type" in the second column
-			writer.writerow(["Class", "Type", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"])
+			writer.writerow(["Class", "Type", "Changed", "Code Churns", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"])
 		else:
 			# Write the header to the csv file but using the "Method" in the second column
-			writer.writerow(["Class", "Method", "Changed", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"])
+			writer.writerow(["Class", "Method", "Changed", "Code Churns", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"])
 
 		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
 		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
