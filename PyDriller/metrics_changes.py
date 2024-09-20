@@ -469,7 +469,15 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 
 			# If the identifier is not in the dictionary, then add it
 			if identifier not in metrics_track_record.keys():
-				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0, "code_churns": [], "method_invoked": method_invoked}
+				metrics_track_record[identifier] = {
+					"metrics": [], # The metrics list (CBO, WMC, RFC)
+					"commit_hashes": [], # The commit hashes list
+					"changed": 0, # The number of times the metrics changed
+					"code_churns": [], # The code churns values list
+					"lines_added": [], # The lines added list
+					"lines_deleted": [], # The lines deleted list
+					"method_invoked": method_invoked # The method_invoked str or methodsInvokedQty int
+				}
 
 			# Get the metrics_changes list for the method
 			metrics_changes = metrics_track_record[identifier]["metrics"]
