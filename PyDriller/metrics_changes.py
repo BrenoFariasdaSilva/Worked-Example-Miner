@@ -937,10 +937,10 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				writer = csv.writer(csvfile) # Create the csv writer
 				if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 					unique_identifier = class_name # The unique identifier is the class name
-					writer.writerow(["Class", "Commit Hash", "Code Churn", "CBO", "WMC", "RFC", "Method Invocations"]) # Write the header to the csv file
+					writer.writerow(["Class", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "CBO", "WMC", "RFC", "Method Invocations"]) # Write the header to the csv file
 				else: # If the PROCESS_CLASSES constant is set to False
 					unique_identifier = variable_attribute # The unique identifier is the method name
-					writer.writerow(["Method", "Commit Hash", "Code Churn", "CBO", "WMC", "RFC", "Methods Invoked Qty"]) # Write the header to the csv file
+					writer.writerow(["Method", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "CBO", "WMC", "RFC", "Methods Invoked Qty"]) # Write the header to the csv file
 				
 				previous_metrics = None # Initialize to None for the first iteration
 				metrics_len = len(metrics) # Get the len of the metrics list
@@ -950,8 +950,8 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 
 					# Verify if the metrics tuple is different from the previous metrics tuple
 					if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics):
-						# Write the unique identifier, the commit hash, code churn, the metrics values and the method invoked to the csv file
-						writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
+						# Write the unique identifier, the commit hash, code churn, lines added, lines deleted, and the metrics to the csv file
+						writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
 					
 					previous_metrics = current_metrics # Update previous metrics
 
