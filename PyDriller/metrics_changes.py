@@ -35,6 +35,7 @@ SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to search for substantial
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
+WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
 
 # Constants:
 PROCESS_CLASSES = True # If True, then the classes will be processed, otherwise the methods will be processed
@@ -857,11 +858,18 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 					unique_identifier = variable_attribute # The unique identifier is the method name
 					writer.writerow(["Method", "Commit Hash", "Code Churn", "CBO", "WMC", "RFC", "Methods Invoked Qty"]) # Write the header to the csv file
 				
-				# Get the len of the metrics list
-				metrics_len = len(metrics)
+				previous_metrics = None # Initialize to None for the first iteration
+				metrics_len = len(metrics) # Get the len of the metrics list
+
 				for i in range(metrics_len): # For each metric in the metrics list
-					# Write the unique identifier, the commit hash, and the metrics to the csv file
-					writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
+					current_metrics = (metrics[i][0], metrics[i][1], metrics[i][2]) # Tuple of current metrics (CBO, WMC, RFC)
+
+					# Verify if the metrics tuple is different from the previous metrics tuple
+					if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics):
+						# Write the unique identifier, the commit hash, code churn, the metrics values and the method invoked to the csv file
+						writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
+					
+					previous_metrics = current_metrics # Update previous metrics
 
 			# Perform linear regression and generate graphics for the metrics
 			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["method_invoked"], identifier.split(" ")[1], repository_name)
