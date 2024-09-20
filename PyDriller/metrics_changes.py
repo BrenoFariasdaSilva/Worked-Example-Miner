@@ -380,13 +380,13 @@ def extract_method_name(class_name):
 		return class_name[class_name.find("$") + 1:class_name.find(".", class_name.find("$"))] # Extract the method name.
 	return None # Return None if no method is found.
 
-def get_code_churn_str(diff_file_path, class_name):
+def get_code_churn_attributes(diff_file_path, class_name):
 	"""
-	Get the code churn string from the diff file path.
+	Get the code churn attributes (lines added and deleted) from the diff file path.
 
 	:param diff_file_path: The diff file path.
 	:param class_name: The class name.
-	:return: The code churn string in the format: "churn_value: lines_added - lines_deleted"
+	:return: A tuple containing lines added and lines deleted.
 	"""
 
 	lines_added = 0 # Initialize the lines added
@@ -394,48 +394,44 @@ def get_code_churn_str(diff_file_path, class_name):
 	method_name = extract_method_name(class_name) # Extract the method name from the class name
 
 	# Variables to track whether we're inside the relevant method block (if applicable)
-	in_method_block = False
+	in_method_block = False # Track if we are inside the method block
 	open_braces_count = 0 # Track braces to determine the start and end of a method
 
 	try:
-		with open(diff_file_path, "r") as diff_file: # Open the diff file
-			for line in diff_file: # For each line in the diff file
-				if method_name: # If method_name is specified, look for the start of the method in the diff
-					# Detect if the method signature is found in the diff (Java method pattern)
+		with open(diff_file_path, "r") as diff_file: # Open the diff file for reading.
+			for line in diff_file: # Loop through each line in the diff file.
+				if method_name: # If a method name is specified, search for the method block.
+					# Detect if the method signature is found in the diff (Java method pattern).
 					if (f" {method_name}(" in line or line.strip().endswith(f"{method_name}(")) and "{" in line:
-						in_method_block = True # We've found the method block
-						open_braces_count = 1 # We've encountered the opening brace
-					elif in_method_block: # If we're inside the method block
-						# Track opening and closing braces to identify the method block"s end
-						open_braces_count += line.count("{")
-						open_braces_count -= line.count("}")
+						in_method_block = True # Enter the method block.
+						open_braces_count = 1 # Start counting braces.
 
-						# If open_braces_count returns to 0, we've exited the method block
-						if open_braces_count == 0:
+					elif in_method_block: # If we are inside the method block.
+						open_braces_count += line.count("{") # Increment for opening braces.
+						open_braces_count -= line.count("}") # Decrement for closing braces.
+
+						if open_braces_count == 0: # If braces balance out, exit the method block.
 							in_method_block = False
 
 				# Only count changes inside the method block if method_name is specified
 				if method_name and not in_method_block:
 					continue # Skip lines outside the method
 
-				# Count lines starting with "+" but ignore "+++" (diff file header)
+				# Count added lines (starting with "+", excluding diff file headers).
 				if line.startswith("+") and not line.startswith("+++"):
 					lines_added += 1
-				# Count lines starting with "-" but ignore "---" (diff file header)
+
+				# Count deleted lines (starting with "-", excluding diff file headers).
 				elif line.startswith("-") and not line.startswith("---"):
 					lines_deleted += 1
 
-		# Calculate the code churn value as the sum of added and deleted lines
-		code_churn_value = lines_added - lines_deleted
-		
-		# Construct the code churn string
-		code_churn_str = f"{code_churn_value}: {lines_added} - {lines_deleted}"
-		return code_churn_str # Return the code churn string
+		return lines_added, lines_deleted # Return the tuple containing lines added and lines deleted.
 
 	except FileNotFoundError:
-		return "Error: Diff file not found"
+		raise FileNotFoundError(f"{BackgroundColors.RED}Error: Diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED} not found{Style.RESET_ALL}") # Raise an error if the file is not found.
+
 	except Exception as e:
-		return f"Error: {str(e)}"
+		raise Exception(f"{BackgroundColors.RED}Error: An error occurred while reading the diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED}: {e}{Style.RESET_ALL}") # Raise an error if an exception occurs.
 
 def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_track_record):
 	"""
