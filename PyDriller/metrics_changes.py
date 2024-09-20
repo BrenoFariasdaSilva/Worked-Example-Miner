@@ -263,6 +263,24 @@ def get_class_package_name(file_name):
 
 	return package_name # Return the package name
 
+def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
+	"""
+	Converts the CK file path to the diff file path.
+
+	:param ck_file_path: The CK file path
+	:param repository_file_path: The repository file path
+	:return: The diff file path
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Converting the CK file path to the diff file path...{Style.RESET_ALL}")
+	
+	diff_file_path = ck_file_path.replace("ck_metrics", "diffs") # Replace the ck_metrics with diffs in the file path
+	diff_file_path = diff_file_path[:diff_file_path.rfind("/")] # Get the substring path before the last slash (excluding the last slash)
+	class_file_path = repository_file_path[repository_file_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
+	diff_file_path = f"{diff_file_path}/{class_file_path}.diff" # Merge the diff_file_path with the file name and the .diff extension
+
+	return diff_file_path # Return the diff file path
+
 def get_identifier_and_metrics(row):
 	"""
 	Gets the identifier and metrics of the class or method.
