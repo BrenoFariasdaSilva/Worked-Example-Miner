@@ -965,6 +965,24 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["method_invoked"], identifier.split(" ")[1], repository_name)
 			progress_bar.update(1) # Update the progress bar
 
+def merge_code_churn_fields(code_churn_metrics):
+	"""
+	Merges the code churn fields into a single string separated by spaces.
+
+	:param code_churn_metrics: A dictionary containing the code churn metrics
+	:return: A string containing the merged code churn fields
+	"""
+
+	churn_info = [] # Initialize the churn information list
+
+	for i in range(len(code_churn_metrics["code_churns"])): # For each code churn in the code churns list
+		churn_entry = f"{code_churn_metrics['code_churns'][i]} ({code_churn_metrics['lines_added'][i]} - {code_churn_metrics['lines_deleted'][i]})"
+		churn_info.append(churn_entry) # Append the code churn entry to the churn information list
+	
+	churn_merged = ", ".join(churn_info) # Join the churn information list with a comma and a space
+
+	return churn_merged # Return the merged code churn fields
+
 def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values, first_commit_hash, last_commit_hash):
 	"""
 	Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
@@ -996,8 +1014,10 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	rfcAvg = round(float(sum(metrics_values[2])) / len(metrics_values[2]), 3) # The average rfc value rounded to 3 decimal places
 	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3) # The third quartile rfc value rounded to 3 decimal places
 
+	code_churn_fields_merged = merge_code_churn_fields(metrics) # Merge the code churn fields into a single string
+
 	# Write the metrics statistics to the csv file
-	csv_writer.writerow([id, key, metrics["changed"], metrics["code_churns"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
+	csv_writer.writerow([id, key, metrics["changed"], code_churn_fields_merged, cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
 
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	"""
