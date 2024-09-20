@@ -425,7 +425,9 @@ def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_t
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
 				# Calculate code churn for the specific file and commit
-				metrics_track_record[identifier]["code_churns"] = calculate_code_churn(repo_path, convert_ck_classname_to_filename_format(row["class"]), commit_hash)
+				code_churn_value = calculate_code_churn(repo_path, convert_ck_classname_to_filename_format(row["class"]), commit_hash)
+				# Update the code churn value
+				metrics_track_record[identifier]["code_churns"].append(code_churn_value)
 				# Update the metrics_track_record dictionary
 				metrics_track_record[identifier]["metrics"] = metrics_changes
 
