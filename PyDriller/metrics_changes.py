@@ -368,6 +368,18 @@ def convert_ck_classname_to_filename_format(ck_classname):
 	
 	return filename_format # Return the converted classname in filename format
 
+def extract_method_name(class_name):
+	"""
+	Extracts the method name from the class name if the class name contains a "$" symbol.
+
+	:param class_name: The class name which may contain a method name.
+	:return: The extracted method name, or None if no method name is found.
+	"""
+
+	if "$" in class_name: # Verify if class_name contains "$", indicating a method.
+		return class_name[class_name.find("$") + 1:class_name.find(".", class_name.find("$"))] # Extract the method name.
+	return None # Return None if no method is found.
+
 def get_code_churn_str(diff_file_path, class_name):
 	"""
 	Get the code churn string from the diff file path.
@@ -379,11 +391,7 @@ def get_code_churn_str(diff_file_path, class_name):
 
 	lines_added = 0 # Initialize the lines added
 	lines_deleted = 0 # Initialize the lines deleted
-	method_name = None # Initialize the method name
-
-	# If the class_name contains "$", extract the method name
-	if "$" in class_name:
-		method_name = class_name[class_name.find("$") + 1:class_name.find(".", class_name.find("$"))]
+	method_name = extract_method_name(class_name) # Extract the method name from the class name
 
 	# Variables to track whether we're inside the relevant method block (if applicable)
 	in_method_block = False
