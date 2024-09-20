@@ -801,12 +801,22 @@ def create_basic_histogram(data, title, xlabel, ylabel, filename):
    """
 
    plt.figure(figsize=(10, 6)) # Set the figure size
-   plt.hist(data, bins=20, color="skyblue", edgecolor="black") # Create the histogram
+   counts, bins, patches = plt.hist(data, bins=20, color="skyblue", edgecolor="black") # Create the histogram
    plt.title(title) # Set the title of the histogram
    plt.xlabel(xlabel) # Set the x-axis label
    plt.ylabel(ylabel) # Set the y-axis label
    plt.grid(True) # Enable the grid
    plt.tight_layout() # Adjust the layout
+   
+   # Annotate each bar with its height
+   for count, x in zip(counts, bins[:-1]):
+      if count > 0: # Verify if the count is greater than 0 (Bar Exists)
+         plt.annotate(f"{int(count)}", 
+                        xy=(x + (bins[1] - bins[0]) / 2, count), # Center of the bar
+                        xytext=(0, 5), # Offset the text a little above the bar
+                        textcoords="offset points", # Offset the text
+                        ha="center") # Center the text horizontally
+   
    plt.savefig(filename) # Save the histogram to a file
    plt.close() # Close the plot
 
