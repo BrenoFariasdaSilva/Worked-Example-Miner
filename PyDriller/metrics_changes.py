@@ -33,7 +33,7 @@ IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in t
 SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to search for substantial changes
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
-DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
+DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changesWRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
 
 # Constants:
 PROCESS_CLASSES = True # If True, then the classes will be processed, otherwise the methods will be processed
@@ -324,11 +324,12 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 			return True # The file was modified
 	return False # The file was not modified
 
-def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record):
+def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_track_record):
 	"""
 	Processes a csv file containing the metrics of a method nor class.
 
 	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files list as values
+	:param repo_path: The path to the repository
 	:param file_path: The path to the csv file
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
 	:return: None
@@ -387,6 +388,8 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	# Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
 	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name)
 
+	repo_path = f"{START_PATH}/{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository
+
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path):
@@ -397,7 +400,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 					if file == CK_CSV_FILE: # If the file is the desired csv file
 						relative_file_path = os.path.join(dir, file) # Get the relative path to the csv file
 						file_path = os.path.join(root, relative_file_path) # Get the path to the csv file
-						process_csv_file(commit_modified_files_dict, file_path, metrics_track_record) # Process the csv file
+						process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_track_record) # Process the csv file
 						file_count += 1 # Increment the file count
 
 						if progress_bar is None: # If the progress bar is not initialized
