@@ -341,8 +341,16 @@ def calculate_code_churn(repo_path, class_name, commit_hash):
 	# Get the code churn for all files in the repository
 	files_churn = code_churn_metric.count()
 
+	if not files_churn or not class_name: # If files_churn is empty or class_name is None,
+		return 0
+
+	matched_churn_value = 0 # Initialize variable to store the churn value
+
 	# Verify if the class_name is a key or a substring in the keys of the files churn
 	for churn_file in files_churn.keys():
+		if churn_file is None or class_name is None: # If the churn_file or class_name is None, skip to the next iteration
+			continue
+
 		if class_name in churn_file: # If the class_name is a substring in the churn_file
 			matched_churn_value = files_churn[churn_file] # Get the churn value of the matched file
 			return matched_churn_value # Return the churn value of the matched file
