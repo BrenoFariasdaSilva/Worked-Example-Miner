@@ -346,7 +346,7 @@ def convert_ck_classname_to_filename_format(ck_classname):
 		class_part = class_part.replace("Anonymous", "")
 
 	# Construct the full path
-	filename_format = f"{package_path}/{class_part}"
+	filename_format = f"{package_path}/{class_part}.java"
 	
 	return filename_format # Return the converted classname in filename format
 
