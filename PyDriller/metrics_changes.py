@@ -433,9 +433,9 @@ def get_code_churn_attributes(diff_file_path, class_name):
 	except Exception as e:
 		raise Exception(f"{BackgroundColors.RED}Error: An error occurred while reading the diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED}: {e}{Style.RESET_ALL}") # Raise an error if an exception occurs.
 
-def calculate_code_churn(churn_attributes):
+def get_code_churn(churn_attributes):
 	"""
-	Calculate the code churn value given the churn attributes.
+	Get the code churn value given the churn attributes.
 
 	:param churn_attributes: A tuple containing lines added and lines deleted.
 	:return: The code churn value (lines added - lines deleted).
