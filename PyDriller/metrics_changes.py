@@ -368,6 +368,67 @@ def convert_ck_classname_to_filename_format(ck_classname):
 	
 	return filename_format # Return the converted classname in filename format
 
+def get_code_churn_str(diff_file_path, class_name):
+	"""
+	Get the code churn string from the diff file path.
+
+	:param diff_file_path: The diff file path.
+	:param class_name: The class name.
+	:return: The code churn string in the format: "churn_value: lines_added - lines_deleted"
+	"""
+
+	lines_added = 0 # Initialize the lines added
+	lines_deleted = 0 # Initialize the lines deleted
+	method_name = None # Initialize the method name
+
+	# If the class_name contains "$", extract the method name
+	if "$" in class_name:
+		method_name = class_name[class_name.find("$") + 1:class_name.find(".", class_name.find("$"))]
+
+	# Variables to track whether we're inside the relevant method block (if applicable)
+	in_method_block = False
+	open_braces_count = 0 # Track braces to determine the start and end of a method
+
+	try:
+		with open(diff_file_path, "r") as diff_file: # Open the diff file
+			for line in diff_file: # For each line in the diff file
+				if method_name: # If method_name is specified, look for the start of the method in the diff
+					# Detect if the method signature is found in the diff (Java method pattern)
+					if (f" {method_name}(" in line or line.strip().endswith(f"{method_name}(")) and "{" in line:
+						in_method_block = True # We've found the method block
+						open_braces_count = 1 # We've encountered the opening brace
+					elif in_method_block: # If we're inside the method block
+						# Track opening and closing braces to identify the method block"s end
+						open_braces_count += line.count("{")
+						open_braces_count -= line.count("}")
+
+						# If open_braces_count returns to 0, we've exited the method block
+						if open_braces_count == 0:
+							in_method_block = False
+
+				# Only count changes inside the method block if method_name is specified
+				if method_name and not in_method_block:
+					continue # Skip lines outside the method
+
+				# Count lines starting with "+" but ignore "+++" (diff file header)
+				if line.startswith("+") and not line.startswith("+++"):
+					lines_added += 1
+				# Count lines starting with "-" but ignore "---" (diff file header)
+				elif line.startswith("-") and not line.startswith("---"):
+					lines_deleted += 1
+
+		# Calculate the code churn value as the sum of added and deleted lines
+		code_churn_value = lines_added - lines_deleted
+		
+		# Construct the code churn string
+		code_churn_str = f"{code_churn_value}: {lines_added} - {lines_deleted}"
+		return code_churn_str # Return the code churn string
+
+	except FileNotFoundError:
+		return "Error: Diff file not found"
+	except Exception as e:
+		return f"Error: {str(e)}"
+
 def calculate_code_churn(repo_path, class_name, commit_hash):
 	"""
 	Calculate the code churn metric for a specific class between two commits.
@@ -443,10 +504,10 @@ def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_t
 				metrics_track_record[identifier]["changed"] += 1
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
-				# Calculate code churn for the specific file and commit
-				code_churn_value = calculate_code_churn(repo_path, convert_ck_classname_to_filename_format(row["class"]), commit_hash)
+				# Get the code churn string
+				code_churn_str = get_code_churn_str(convert_ck_filepath_to_diff_filepath(file_path, row["file"]), convert_ck_classname_to_filename_format(row["class"]))
 				# Update the code churn value
-				metrics_track_record[identifier]["code_churns"].append(code_churn_value)
+				metrics_track_record[identifier]["code_churns"].append(code_churn_str)
 				# Update the metrics_track_record dictionary
 				metrics_track_record[identifier]["metrics"] = metrics_changes
 
