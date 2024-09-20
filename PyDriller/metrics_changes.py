@@ -769,9 +769,9 @@ def add_csv_header(csv_filename, metric_name):
 			writer = csv.writer(csvfile) # Create the csv writer
 			writer.writerow(expected_header) # Write the expected header
 
-def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name, code_churns, lines_added, lines_deleted):
 	"""
-	Verifies if the class or method has had a substantial decrease in the current metric.
+	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
 
 	:param metrics_values: A list containing the metrics values for linear regression
 	:param class_name: The class name of the current linear regression
@@ -780,6 +780,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	:param occurrences: The occurrences counter of the class_name
 	:param metric_name: The name of the metric
 	:param repository_name: The name of the repository
+	:param code_churns: The list of code churn values for each commit
+	:param lines_added: The list of lines added for each commit
+	:param lines_deleted: The list of lines deleted for each commit
 	:return: None
 	"""
 
@@ -836,7 +839,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
 			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, biggest_change[3]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], biggest_change[3]])
 	 
 def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, occurrences, raw_variable_attribute, repository_name):
 	"""
