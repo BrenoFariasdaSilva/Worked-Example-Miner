@@ -433,6 +433,18 @@ def get_code_churn_attributes(diff_file_path, class_name):
 	except Exception as e:
 		raise Exception(f"{BackgroundColors.RED}Error: An error occurred while reading the diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED}: {e}{Style.RESET_ALL}") # Raise an error if an exception occurs.
 
+def calculate_code_churn(churn_attributes):
+	"""
+	Calculate the code churn value given the churn attributes.
+
+	:param churn_attributes: A tuple containing lines added and lines deleted.
+	:return: The code churn value (lines added - lines deleted).
+	"""
+
+	lines_added, lines_deleted = churn_attributes # Unpack the tuple into lines added and deleted.
+	code_churn_value = lines_added - lines_deleted # Calculate the code churn value.
+	return code_churn_value # Return the code churn value.
+
 def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_track_record):
 	"""
 	Processes a csv file containing the metrics of a method nor class.
