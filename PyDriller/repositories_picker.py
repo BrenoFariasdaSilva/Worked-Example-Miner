@@ -912,6 +912,8 @@ def main():
    :return: None
    """
 
+   start_time = datetime.now() # Get the start time
+
    print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Repositories Picker{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the welcome message
 
    if path_contains_whitespaces(): # Verify if the path constants contains whitespaces
@@ -923,8 +925,6 @@ def main():
 
    if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
-   
-   start_time = datetime.now() # Get the start time
 
    token = verify_env_file() # Verify the .env file and get the token
 
