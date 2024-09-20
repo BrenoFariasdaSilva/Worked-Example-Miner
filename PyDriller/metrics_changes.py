@@ -769,7 +769,7 @@ def add_csv_header(csv_filename, metric_name):
 			writer = csv.writer(csvfile) # Create the csv writer
 			writer.writerow(expected_header) # Write the expected header
 
-def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name, code_churns, lines_added, lines_deleted):
+def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, occurrences, metric_name, repository_name):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
 
@@ -777,12 +777,12 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	:param class_name: The class name of the current linear regression
 	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 	:param commit_hashes: The commit hashes list for the specified class_name
-	:param occurrences: The occurrences counter of the class_name
-	:param metric_name: The name of the metric
-	:param repository_name: The name of the repository
 	:param code_churns: The list of code churn values for each commit
 	:param lines_added: The list of lines added for each commit
 	:param lines_deleted: The list of lines deleted for each commit
+	:param occurrences: The occurrences counter of the class_name
+	:param metric_name: The name of the metric
+	:param repository_name: The name of the repository
 	:return: None
 	"""
 
@@ -886,7 +886,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 
 		# For the CBO metric, verify if there occurred any substantial decrease in the metric
 		if metric_name == SUBSTANTIAL_CHANGE_METRIC:
-			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, occurrences, metric_name, repository_name)
+			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, occurrences, metric_name, repository_name)
 			
 		# Verify for sufficient data points for regression
 		if len(commit_number) < 2 or len(metric_values) < 2:
