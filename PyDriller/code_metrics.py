@@ -7,6 +7,7 @@ import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open 
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
+from datetime import datetime # For date manipulation
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from tqdm import tqdm # For Generating the Progress Bars
 
@@ -739,6 +740,8 @@ def main():
 
    :return: None
    """
+
+   start_time = datetime.now() # Get the start time
    
    # Verify if the path constants contains whitespaces
    if path_contains_whitespaces():
@@ -764,6 +767,9 @@ def main():
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used by the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}", end="\n\n")   
 
    process_repositories_in_parallel() # Process each of the repositories in parallel
+
+   end_time = datetime.now() # Get the end time
+   output_time(f"\n{BackgroundColors.GREEN}Total execution time: ", (end_time - start_time).total_seconds()) # Output the total execution time
 
    # Print the message that the CK metrics generator has finished processing the repositories
    print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN} has finished processing the repositories.{Style.RESET_ALL}", end="\n\n")
