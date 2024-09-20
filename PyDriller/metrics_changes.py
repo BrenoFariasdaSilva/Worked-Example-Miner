@@ -447,16 +447,16 @@ def get_code_churn(churn_attributes):
 
 def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record):
 	"""
-	Processes a csv file containing the metrics of a method nor class.
+	Processes a csv file containing the metrics of a method or class.
 
 	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files list as values
 	:param repo_path: The path to the repository
 	:param file_path: The path to the csv file
-	:param metrics_track_record: A dictionary containing the track record of the metrics of each method nor class
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
 	:return: None
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the csv file containing the metrics of a method nor class...{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the csv file containing the metrics of a method or class...{Style.RESET_ALL}")
 
 	# Open the csv file
 	with open(file_path, "r") as csvfile:
