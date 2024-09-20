@@ -852,16 +852,16 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				writer = csv.writer(csvfile) # Create the csv writer
 				if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 					unique_identifier = class_name # The unique identifier is the class name
-					writer.writerow(["Class", "Commit Hash", "CBO", "WMC", "RFC", "Method Invocations"]) # Write the header to the csv file
+					writer.writerow(["Class", "Commit Hash", "Code Churn", "CBO", "WMC", "RFC", "Method Invocations"]) # Write the header to the csv file
 				else: # If the PROCESS_CLASSES constant is set to False
 					unique_identifier = variable_attribute # The unique identifier is the method name
-					writer.writerow(["Method", "Commit Hash", "CBO", "WMC", "RFC", "Methods Invoked Qty"]) # Write the header to the csv file
+					writer.writerow(["Method", "Commit Hash", "Code Churn", "CBO", "WMC", "RFC", "Methods Invoked Qty"]) # Write the header to the csv file
 				
 				# Get the len of the metrics list
 				metrics_len = len(metrics)
 				for i in range(metrics_len): # For each metric in the metrics list
 					# Write the unique identifier, the commit hash, and the metrics to the csv file
-					writer.writerow([unique_identifier, record["commit_hashes"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
+					writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
 
 			# Perform linear regression and generate graphics for the metrics
 			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["method_invoked"], identifier.split(" ")[1], repository_name)
