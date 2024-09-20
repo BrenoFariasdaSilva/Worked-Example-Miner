@@ -899,7 +899,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3) # The third quartile rfc value rounded to 3 decimal places
 
 	# Write the metrics statistics to the csv file
-	csv_writer.writerow([id, key, metrics["changed"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
+	csv_writer.writerow([id, key, metrics["changed"], metrics["code_churns"], cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
 
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	"""
