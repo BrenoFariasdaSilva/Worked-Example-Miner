@@ -445,7 +445,7 @@ def get_code_churn(churn_attributes):
 	code_churn_value = lines_added - lines_deleted # Calculate the code churn value.
 	return code_churn_value # Return the code churn value.
 
-def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_track_record):
+def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record):
 	"""
 	Processes a csv file containing the metrics of a method nor class.
 
@@ -513,8 +513,6 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	# Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
 	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name)
 
-	repo_path = f"{START_PATH}/{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository
-
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path):
@@ -525,7 +523,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 					if file == CK_CSV_FILE: # If the file is the desired csv file
 						relative_file_path = os.path.join(dir, file) # Get the relative path to the csv file
 						file_path = os.path.join(root, relative_file_path) # Get the path to the csv file
-						process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_track_record) # Process the csv file
+						process_csv_file(commit_modified_files_dict, file_path, metrics_track_record) # Process the csv file
 						file_count += 1 # Increment the file count
 
 						if progress_bar is None: # If the progress bar is not initialized
