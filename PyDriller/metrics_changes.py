@@ -751,9 +751,9 @@ def add_csv_header(csv_filename, metric_name):
 
 	expected_header = [] # The expected header list
 	if PROCESS_CLASSES:
-		expected_header = ["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Method Invocations", "Refactoring Patterns"]
+		expected_header = ["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Method Invocations", "Refactoring Patterns"]
 	else:
-		expected_header = ["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Methods Invoked Qty", "Refactoring Patterns"]
+		expected_header = ["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Methods Invoked Qty", "Refactoring Patterns"]
 	
 	if verify_file(csv_filename): # If the file exists
 		with open(csv_filename, "r") as file: # Open the file
