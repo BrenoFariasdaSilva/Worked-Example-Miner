@@ -325,6 +325,30 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 			return True # The file was modified
 	return False # The file was not modified
 
+def convert_ck_classname_to_filename_format(ck_classname):
+	"""
+	Convert CK classname format (e.g., com.houarizegai.calculator.Calculator$Anonymous14)
+	to the filename format used by code churn (e.g., com/houarizegai/calculator/Calculator$14).
+	
+	:param ck_classname: The classname from the CK tool (e.g., com.houarizegai.calculator.Calculator$Anonymous14).
+	:return: The converted classname in filename format (e.g., com/houarizegai/calculator/Calculator$14).
+	"""
+	
+	# Replace dots with slashes except for the class and anonymous part
+	package_path = ck_classname.rsplit(".", 1)[0].replace(".", "/")
+	
+	# Get the class and anonymous part (e.g., Calculator$Anonymous14)
+	class_part = ck_classname.rsplit(".", 1)[-1]
+	
+	# If it's an anonymous class (e.g., Calculator$Anonymous14), convert it to Calculator$14
+	if "Anonymous" in class_part:
+		class_part = class_part.replace("Anonymous", "")
+
+	# Construct the full path
+	filename_format = f"{package_path}/{class_part}"
+	
+	return filename_format # Return the converted classname in filename format
+
 def calculate_code_churn(repo_path, class_name, commit_hash):
 	"""
 	Calculate the code churn metric for a specific class between two commits.
@@ -401,7 +425,7 @@ def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_t
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
 				# Calculate code churn for the specific file and commit
-				metrics_track_record[identifier]["code_churns"] = calculate_code_churn(repo_path, row["class"], commit_hash)
+				metrics_track_record[identifier]["code_churns"] = calculate_code_churn(repo_path, convert_ck_classname_to_filename_format(row["class"]), commit_hash)
 				# Update the metrics_track_record dictionary
 				metrics_track_record[identifier]["metrics"] = metrics_changes
 
