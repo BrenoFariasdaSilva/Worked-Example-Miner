@@ -10,6 +10,7 @@ import select # For waiting for input with a timeout
 import sys # For reading the input
 import time # For measuring the time
 from colorama import Style # For coloring the terminal
+from datetime import datetime # For date manipulation
 from pydriller.metrics.process.code_churn import CodeChurn # For calculating the Code Churn (Delta of Added and Deleted Lines) metric
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from sklearn.linear_model import LinearRegression # For the linear regression
@@ -1262,6 +1263,8 @@ def main():
 
    :return: None
    """
+
+	start_time = datetime.now() # Get the start time
    
 	# Verify if the path constants contains whitespaces
 	if path_contains_whitespaces():
@@ -1292,6 +1295,9 @@ def main():
 		process_classes_and_methods() # Process both classes and methods
 	else:
 		process_based_on_user_input(user_response) # Process based on user input
+
+	end_time = datetime.now() # Get the end time
+	output_time(f"\n{BackgroundColors.GREEN}Total execution time: ", (end_time - start_time).total_seconds()) # Output the total execution time
 
 	# Output the message that the Metrics Changes Generator has finished
 	print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN} has finished processing the {BackgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES_NAMES)}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}")
