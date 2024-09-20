@@ -10,6 +10,7 @@ import select # For waiting for input with a timeout
 import sys # For reading the input
 import time # For measuring the time
 from colorama import Style # For coloring the terminal
+from pydriller.metrics.process.code_churn import CodeChurn # For calculating the Code Churn (Delta of Added and Deleted Lines) metric
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from sklearn.linear_model import LinearRegression # For the linear regression
 from tqdm import tqdm # For progress bar
@@ -324,6 +325,30 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 			return True # The file was modified
 	return False # The file was not modified
 
+def calculate_code_churn(repo_path, class_name, commit_hash):
+	"""
+	Calculate the code churn metric for a specific class between two commits.
+	
+	:param repo_path: Path to the repository.
+	:param class_name: Name of the class to search for.
+	:param commit_hash: Commit hash.
+	:return: The churn value of the matched file or 0 if not found.
+	"""
+	
+	# Initialize the code churn metric for the specified repository and commit range
+	code_churn_metric = CodeChurn(path_to_repo=repo_path, from_commit=commit_hash, to_commit=commit_hash)
+	
+	# Get the code churn for all files in the repository
+	files_churn = code_churn_metric.count()
+
+	# Verify if the class_name is a key or a substring in the keys of the files churn
+	for churn_file in files_churn.keys():
+		if class_name in churn_file: # If the class_name is a substring in the churn_file
+			matched_churn_value = files_churn[churn_file] # Get the churn value of the matched file
+			return matched_churn_value # Return the churn value of the matched file
+
+	return matched_churn_value # If no match, return 0
+
 def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_track_record):
 	"""
 	Processes a csv file containing the metrics of a method nor class.
@@ -348,7 +373,7 @@ def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_t
 
 			# If the identifier is not in the dictionary, then add it
 			if identifier not in metrics_track_record.keys():
-				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0, "method_invoked": method_invoked}
+				metrics_track_record[identifier] = {"metrics": [], "commit_hashes": [], "changed": 0, "code_churns": [], "method_invoked": method_invoked}
 
 			# Get the metrics_changes list for the method
 			metrics_changes = metrics_track_record[identifier]["metrics"]
@@ -367,6 +392,8 @@ def process_csv_file(commit_modified_files_dict, repo_path, file_path, metrics_t
 				metrics_track_record[identifier]["changed"] += 1
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
+				# Calculate code churn for the specific file and commit
+				metrics_track_record[identifier]["code_churns"] = calculate_code_churn(repo_path, row["class"], commit_hash)
 				# Update the metrics_track_record dictionary
 				metrics_track_record[identifier]["metrics"] = metrics_changes
 
