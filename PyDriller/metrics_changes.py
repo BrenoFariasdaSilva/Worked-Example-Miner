@@ -496,10 +496,23 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 				metrics_track_record[identifier]["changed"] += 1
 				# Append the commit hash to the list
 				commit_hashes.append(commit_number)
-				# Get the code churn string
-				code_churn_str = get_code_churn_str(convert_ck_filepath_to_diff_filepath(file_path, row["file"]), convert_ck_classname_to_filename_format(row["class"]))
-				# Update the code churn value
-				metrics_track_record[identifier]["code_churns"].append(code_churn_str)
+
+				# Get the diff file path and class name for code churn calculation
+				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"])
+				class_name = convert_ck_classname_to_filename_format(row["class"])
+
+				# Extract code churn attributes (lines added and deleted)
+				churn_attributes = get_code_churn_attributes(diff_file_path, class_name)
+				lines_added, lines_deleted = churn_attributes
+
+				# Calculate the code churn value
+				code_churn_value = get_code_churn(churn_attributes)
+
+				# Update the code churn, lines added, and lines deleted in the metrics_track_record
+				metrics_track_record[identifier]["code_churns"].append(code_churn_value)
+				metrics_track_record[identifier]["lines_added"].append(lines_added)
+				metrics_track_record[identifier]["lines_deleted"].append(lines_deleted)
+
 				# Update the metrics_track_record dictionary
 				metrics_track_record[identifier]["metrics"] = metrics_changes
 
