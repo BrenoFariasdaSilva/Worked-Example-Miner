@@ -645,7 +645,7 @@ def save_to_json(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_JSON):
    create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH) # Create the output directory
 
    with open(filename, "w") as json_file: # Open the JSON file
-      json.dump(data, json_file, indent=3) # Dump the data to the JSON file
+      json.dump(data, json_file, ensure_ascii=False, indent=3) # Dump the data to the JSON file
 
 def add_pdf_header(pdf, num_candidates):
    """
