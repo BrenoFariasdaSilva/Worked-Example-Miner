@@ -935,18 +935,18 @@ def main():
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
    if filtered_repositories: # If there are repositories after filtering and sorting
-      sorted_by_stars = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
+      sorted_repositories = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
 
-      save_to_json(sorted_by_stars) # Save the filtered and sorted repositories to a JSON file
-      save_to_pdf(sorted_by_stars) # Save the filtered and sorted repositories to a PDF file
+      save_to_json(sorted_repositories) # Save the filtered and sorted repositories to a JSON file
+      save_to_pdf(sorted_repositories) # Save the filtered and sorted repositories to a PDF file
 
-      create_histograms(sorted_by_stars) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
+      create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
 
       # Randomly select an specific number of repositories
-      candidates = randomly_select_repositories(sorted_by_stars, CANDIDATES)
+      candidates = randomly_select_repositories(sorted_repositories, CANDIDATES)
       
       # Print the summary of the repositories
-      print_repositories_summary(total_repo_count, len(sorted_by_stars), candidates)
+      print_repositories_summary(total_repo_count, len(sorted_repositories), candidates)
    else: # If there are no repositories after filtering and sorting
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
