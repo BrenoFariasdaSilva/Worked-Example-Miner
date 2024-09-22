@@ -480,10 +480,10 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
    # Validate the repository based on the update date, star count, and keywords
    if is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
       return {
-         "name": repo["name"],
-         "author": extract_author_name(repo),
+         "name": repo["name"].encode("utf-8").decode("utf-8"),
+         "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
          "url": repo["html_url"],
-         "description": repo["description"],
+         "description": repo["description"].encode("utf-8").decode("utf-8"),
          "commits": 0,
          "stars": repo["stargazers_count"],
          "updated_at": repo["updated_at"]
