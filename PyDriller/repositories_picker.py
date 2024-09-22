@@ -500,10 +500,15 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
          "description": repo["description"].encode("utf-8").decode("utf-8"),
          "commits": 0,
          "stars": repo["stargazers_count"],
-         "updated_at": repo["updated_at"]
+         "updated_at": repo["updated_at"],
+         "topics": ", ".join(repo["topics"]),
+         "forks counter": repo["forks_count"],
+         "open issues counter": repo["open_issues_count"],
+         # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
+         "license": repo["license"]["name"] if repo.get("license") else "No license specified",
       }
-      
-   return None # Return None if the repository is not valid
+   
+   return None  # Return None if the repository is not valid
 
 def update_repository(repository_directory_path):
    """
