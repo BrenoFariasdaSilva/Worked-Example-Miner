@@ -478,35 +478,52 @@ def extract_author_name(repo):
    """
 
    return repo["html_url"].split("/")[-2] # Get the author's name from the URL
-    
+
 def calculate_average_code_churn(repo_path):
    """
    Calculates the average code churn for all commits in a repository.
 
-   :param repo_path: The path to the repository
-   :return: A float representing the average code churn (lines added and removed).
+   :param repo_path: str
+   :return: float representing the average code churn (lines added and removed).
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating average code churn for the {BackgroundColors.CYAN}{repo_path.split("/")[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   # Initialize totals for lines added and removed
-   total_lines_added = 0
-   total_lines_removed = 0
-   total_commits = 0
-   avg_code_churn = 0
+   try:
+      # Run the git command to get the numstat output
+      result = subprocess.run(
+         ["git", "-C", repo_path, "log", "--pretty=tformat:", "--numstat"], # Get the numstat output
+         capture_output=True, # Capture the output
+         text=True, # Get the output as text
+         check=True # Check for errors
+      )
+      
+      lines = result.stdout.strip().splitlines() # Split the output into lines
 
-   # Traverse the repository and gather data
-   for commit in Repository(repo_path).traverse_commits():
-      total_lines_added += commit.insertions
-      total_lines_removed += commit.deletions
-      code_churn = commit.insertions - commit.deletions
-      avg_code_churn += code_churn
-      total_commits += 1
+      code_churn_metrics = (0, 0, 0) # Initialize the code churn metrics (code churn, total added, total removed)
 
-   # Calculate average code churn (average of lines added + lines removed)
-   avg_code_churn /= total_commits if total_commits > 0 else 0
+      for line in lines: # Process each line
+         if line: # If the line is not empty
+            parts = line.split() # Split the line into parts
+            if len(parts) == 3: # If there are 3 parts
+               # Use try-except to handle conversion errors
+               try:
+                  added = int(parts[0]) if parts[0] != "-" else 0 # Get the number of lines added
+                  removed = int(parts[1]) if parts[1] != "-" else 0 # Get the number of lines removed
+                  total_added = code_churn_metrics[1] + added # Update total added
+                  total_removed = code_churn_metrics[2] + removed # Update total removed
+                  code_churn = added - removed # Calculate code churn
+                  code_churn_metrics = (code_churn_metrics[0] + code_churn, total_added, total_removed) # Update the code churn metrics
+               except ValueError as e:
+                  print(f"{BackgroundColors.RED}Error while parsing numstat output: {e}{Style.RESET_ALL}")
 
-   return avg_code_churn  # Return the average code churn
+      total_commits = count_commits(repo_path) # Count the number of commits in the repository
+      avg_code_churn = code_churn_metrics[0] / total_commits if total_commits > 0 else 0 # Calculate average code churn
+      return avg_code_churn # Return the average code churn
+
+   except subprocess.CalledProcessError as e:
+      print(f"{BackgroundColors.RED}Error while calculating average code churn: {e}{Style.RESET_ALL}")
+      return 0 # Return 0 or handle the error as needed
 
 def process_repository(repo, date_filter=None, ignore_keywords=None):
    """
@@ -522,7 +539,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
 
    # Validate the repository based on the update date, star count, and keywords
    if is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
-      repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}" # The path to the repository directory
+      repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}/" # The path to the repository directory
       return {
          "name": repo["name"].encode("utf-8").decode("utf-8"),
          "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
@@ -533,14 +550,14 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
          "stars": repo["stargazers_count"],
          "forks counter": repo["forks_count"],
          "open issues counter": repo["open_issues_count"],
-         "avg_code_churn": calculate_average_code_churn(repo_path),
+         "avg_code_churn": int(calculate_average_code_churn(repo_path)),
          "avg_modified_files_count": "To be calculated",
          "updated_at": repo["updated_at"],
          # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
          "license": repo["license"]["name"] if repo.get("license") else "No license specified",
       }
    
-   return None  # Return None if the repository is not valid
+   return None # Return None if the repository is not valid
 
 def update_repository(repository_directory_path):
    """
