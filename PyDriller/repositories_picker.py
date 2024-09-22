@@ -852,7 +852,7 @@ def create_repository_field_histogram(repositories, repository_field):
    min_value, max_value, average, median, std_dev = calculate_statistics(repositories_data) # Calculate and display statistics for the repository field
    histogram_title = f"Histogram of {repository_field.capitalize()}\nMin: {int(min_value)}, Max: {int(max_value)}, Average: {int(average)}, Median: {int(median)}, Standard Deviation: {int(std_dev)}" # Title of the histogram
    commits_histogram_filepath = FULL_REPOSITORIES_HISTOGRAM_FILEPATH.replace("DATA_TYPE", repository_field) # Replace "data_type" with the repository field in the histogram file path
-   create_basic_histogram(repositories_data, histogram_title, f"Number of {repository_field}", "Number of Repositories", commits_histogram_filepath) # Create a histogram for the repository field in the repositories
+   create_basic_histogram(repositories_data, histogram_title, f"Number of {repository_field}", f"Number of Repositories (Total {len(repositories_data)})", commits_histogram_filepath) # Create a histogram for the repository field in the repositories
 
 def create_histograms(repositories):
    """
