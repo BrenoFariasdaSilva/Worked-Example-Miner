@@ -13,7 +13,6 @@ from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
 from fpdf import FPDF # For creating PDFs
-from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
@@ -479,11 +478,12 @@ def extract_author_name(repo):
 
    return repo["html_url"].split("/")[-2] # Get the author's name from the URL
 
-def calculate_average_code_churn(repo_path):
+def calculate_average_code_churn(repo_path, total_commits):
    """
    Calculates the average code churn for all commits in a repository.
 
    :param repo_path: str
+   :param total_commits: int
    :return: float representing the average code churn (lines added and removed).
    """
 
@@ -517,7 +517,6 @@ def calculate_average_code_churn(repo_path):
                except ValueError as e:
                   print(f"{BackgroundColors.RED}Error while parsing numstat output: {e}{Style.RESET_ALL}")
 
-      total_commits = count_commits(repo_path) # Count the number of commits in the repository
       avg_code_churn = code_churn_metrics[0] / total_commits if total_commits > 0 else 0 # Calculate average code churn
       return avg_code_churn # Return the average code churn
 
@@ -539,24 +538,27 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
 
    # Validate the repository based on the update date, star count, and keywords
    if is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
+      setup_repository(repo["name"], repo["html_url"]) # Setup the repository: Clone or update it so we can calculate the code churn and commit count
       repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}/" # The path to the repository directory
-      return {
-         "name": repo["name"].encode("utf-8").decode("utf-8"),
-         "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
-         "url": repo["html_url"],
-         "description": repo["description"].encode("utf-8").decode("utf-8"),
-         "topics": ", ".join(repo["topics"]),
-         "commits": 0,
-         "stars": repo["stargazers_count"],
-         "forks counter": repo["forks_count"],
-         "open issues counter": repo["open_issues_count"],
-         "avg_code_churn": int(calculate_average_code_churn(repo_path)),
-         "avg_modified_files_count": "To be calculated",
-         "updated_at": repo["updated_at"],
-         # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
-         "license": repo["license"]["name"] if repo.get("license") else "No license specified",
-      }
-   
+      commits_count = count_commits(repo_path) # Count the number of commits in the repository
+      if commits_count > MINIMUM_COMMITS: # If the number of commits is greater than the minimum
+         return {
+            "name": repo["name"].encode("utf-8").decode("utf-8"),
+            "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
+            "url": repo["html_url"],
+            "description": repo["description"].encode("utf-8").decode("utf-8"),
+            "topics": ", ".join(repo["topics"]),
+            "commits": commits_count,
+            "stars": repo["stargazers_count"],
+            "forks counter": repo["forks_count"],
+            "open issues counter": repo["open_issues_count"],
+            "avg_code_churn": int(calculate_average_code_churn(repo_path, commits_count)),
+            "avg_modified_files_count": "To be calculated",
+            "updated_at": repo["updated_at"],
+            # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
+            "license": repo["license"]["name"] if repo.get("license") else "No license specified",
+         }
+
    return None # Return None if the repository is not valid
 
 def update_repository(repository_directory_path):
@@ -643,21 +645,7 @@ def process_repository_task(repo, datetime_filter, ignore_keywords):
    """
 
    filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
-
-   if filtered_repo: # If the repository is valid
-      setup_repository(filtered_repo["name"], filtered_repo["url"]) # Setup the repository
-      filtered_repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{filtered_repo['name']}" # The path to the repository directory
-      if os.path.isdir(filtered_repo_path): # If the repository path exists
-         try:
-            commits_count = count_commits(filtered_repo_path) # Count the number of commits in the repository
-            filtered_repo["commits"] = commits_count # Add the number of commits to the repository
-            return filtered_repo if commits_count > MINIMUM_COMMITS else None # Return the repository if the number of commits is greater than the minimum
-         except Exception as e:
-            print(f"{BackgroundColors.RED}Error counting commits for repository {BackgroundColors.GREEN}{filtered_repo_path}{BackgroundColors.RED}: {BackgroundColors.YELLOW}{e}{Style.RESET_ALL}")
-      else:
-         print(f"{BackgroundColors.RED}Repository path {BackgroundColors.CYAN}{filtered_repo_path}{BackgroundColors.RED} does not exist.{Style.RESET_ALL}")
-
-   return None # Return None if the repository is not valid
+   return filtered_repo if filtered_repo else None # Return the repository if it is valid, otherwise return None
 
 def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
    """
