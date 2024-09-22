@@ -1001,9 +1001,7 @@ def main():
    token = verify_env_file() # Verify the .env file and get the token
 
    repositories = fetch_repositories(token) # Fetch the repositories
-   
    total_repo_count = len(repositories) # Get the total number of repositories
-
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
    if filtered_repositories: # If there are repositories after filtering and sorting
@@ -1013,12 +1011,8 @@ def main():
          save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_FILEPATH_PDF.replace("SORTING_ATTRIBUTE", repository_attribute)) # Save the filtered and sorted repositories to a PDF file
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
-
-      # Randomly select an specific number of repositories
-      candidates = randomly_select_repositories(sorted_repositories, CANDIDATES)
-      
-      # Print the summary of the repositories
-      print_repositories_summary(total_repo_count, len(sorted_repositories), candidates)
+      candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
+      print_repositories_summary(total_repo_count, len(sorted_repositories), candidates) # Print the summary of the repositories
    else: # If there are no repositories after filtering and sorting
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
