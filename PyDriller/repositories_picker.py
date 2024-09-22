@@ -661,12 +661,13 @@ def save_to_json(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_JSON):
    with open(filename, "w") as json_file: # Open the JSON file
       json.dump(data, json_file, ensure_ascii=False, indent=3) # Dump the data to the JSON file
 
-def add_pdf_header(pdf, num_candidates):
+def add_pdf_header(pdf, num_candidates, sorting_attribute):
    """
    Adds a header to the PDF.
 
    :param pdf: FPDF object
    :param num_candidates: int, number of repositories
+   :param sorting_attribute: str, the attribute to sort the repositories by
    :return: None
    """
 
@@ -681,7 +682,7 @@ def add_pdf_header(pdf, num_candidates):
    current_time = datetime.now().strftime("%Hh %Mm %Ss") # Format: 12h 34m 56s
 
    header_text = ( # Header text
-      f"Repositories List\n" # Title
+      f"Repositories List Sorted by {sorting_attribute.capitalize()}\n" # Title
       f"Number of Candidates: {num_candidates}\n" # Number of repositories
       f"Generated on: {current_date} at {current_time}" # Current date and time of generation
    )
@@ -757,11 +758,12 @@ def add_pdf_data_rows(pdf, data):
       pdf.cell(35, 10, last_update, border=1) # Last Update
       pdf.ln() # Line break
 
-def save_to_pdf(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_PDF):
+def save_to_pdf(data, sorting_attribute, filename=FULL_REPOSITORIES_LIST_FILEPATH_PDF):
    """
    Saves the data to a PDF file.
 
    :param data: list of dict
+   :param sorting_attribute: str, the attribute to sort the data by
    :param filename: str
    :return: None
    """
@@ -771,7 +773,7 @@ def save_to_pdf(data, filename=FULL_REPOSITORIES_LIST_FILEPATH_PDF):
    pdf = FPDF() # Create a PDF object
    pdf.add_page() # Add a page to the PDF
 
-   add_pdf_header(pdf, len(data)) # Add header section
+   add_pdf_header(pdf, len(data), sorting_attribute) # Add header section
    add_pdf_column_headers(pdf) # Add column headers
    add_pdf_data_rows(pdf, data) # Add data rows
 
