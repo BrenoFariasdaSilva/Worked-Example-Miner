@@ -565,13 +565,25 @@ def setup_repository(repository_name, repository_url):
 
 def count_commits(repo_path):
    """
-   Counts the number of commits in a repository.
+   Counts the number of commits in a repository using the git command.
 
    :param repo_path: str
    :return: int
    """
 
-   return len(list(Repository(repo_path).traverse_commits()))
+   try:
+      # Run the git command to count commits
+      result = subprocess.run(
+         ["git", "-C", repo_path, "rev-list", "--count", "HEAD"],
+         capture_output=True,
+         text=True,
+         check=True
+      )
+      # Return the commit count as an integer
+      return int(result.stdout.strip())
+   except subprocess.CalledProcessError as e:
+      print(f"Error while counting commits: {e}")
+      return 0 # Return 0 or handle the error as needed
 
 def process_repository_task(repo, datetime_filter, ignore_keywords):
    """
