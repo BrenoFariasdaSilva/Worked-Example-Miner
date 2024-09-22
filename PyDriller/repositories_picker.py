@@ -24,6 +24,7 @@ EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
+REPOSITORIES_SORTING_ATTRIBUTES = ["commits", "stars"] # The attribute to sort the repositories by
 
 DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
    "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
@@ -51,8 +52,8 @@ START_PATH = os.getcwd() # Get the current working directory
 # Relative File Path Constants:
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 RELATIVE_REPOSITORIES_HISTOGRAM_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/histogram_DATA_TYPE{PNG_FILE_EXTENSION}" # The relative path of the directory that contains the histograms
-RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
-RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
+RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_DATA_TYPE{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
+RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_DATA_TYPE{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
@@ -194,21 +195,34 @@ def update_repositories_dictionary():
 
    global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
 
-   # Validate the JSON file
-   if not verify_json_file(FULL_REPOSITORIES_LIST_FILEPATH_JSON):
-      return False # Return if the JSON file is not valid
+   # Iterate through all REPOSITORIES_SORTING_ATTRIBUTES to find a valid file
+   for sorting_attribute in REPOSITORIES_SORTING_ATTRIBUTES:
+      filename = FULL_REPOSITORIES_LIST_FILEPATH_JSON.replace("DATA_TYPE", sorting_attribute) # Get the filename for the current attribute
+      
+      # Verify if the JSON file exists
+      if not os.path.exists(filename): # If file doesn't exist, skip to the next attribute
+         verbose_output(true_string=f"{BackgroundColors.YELLOW}File {filename} not found, checking next...{Style.RESET_ALL}")
+         continue
+      
+      # Validate the JSON file
+      if not verify_json_file(filename): # If the JSON file is not valid, skip to the next
+         verbose_output(true_string=f"{BackgroundColors.RED}Invalid JSON file: {filename}, checking next...{Style.RESET_ALL}")
+         continue
+      
+      # Load repositories from the valid JSON file
+      json_repositories = load_repositories_from_json(filename)
+      if not json_repositories: # If loading the JSON file fails, skip to the next
+         verbose_output(true_string=f"{BackgroundColors.RED}Failed to load JSON data from {filename}, checking next...{Style.RESET_ALL}")
+         continue
 
-   # Load repositories from JSON and update DEFAULT_REPOSITORIES
-   json_repositories = load_repositories_from_json(FULL_REPOSITORIES_LIST_FILEPATH_JSON)
-
-   if not json_repositories: # If the JSON file was not successfully loaded
-      return False # Return False if the DEFAULT_REPOSITORIES dictionary was not successfully updated with values from the JSON file
-
-   DEFAULT_REPOSITORIES = json_repositories # Update the DEFAULT_REPOSITORIES dictionary with the values from the JSON file
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated with values from the {BackgroundColors.CYAN}JSON{BackgroundColors.GREEN} file.{Style.RESET_ALL}")
+      # Update DEFAULT_REPOSITORIES and return True if successful
+      DEFAULT_REPOSITORIES = json_repositories
+      verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated from {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+      return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
    
-   return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
+   # If no valid files were found
+   print(f"{BackgroundColors.RED}No valid JSON files found for any of the sorting attributes.{Style.RESET_ALL}")
+   return False # Return False if no valid JSON files were found
 
 def verify_repositories_execution_constants():
    """
@@ -937,10 +951,10 @@ def main():
    filtered_repositories = filter_repositories(repositories) # Filter the repositories
 
    if filtered_repositories: # If there are repositories after filtering and sorting
-      sorted_repositories = sorted(filtered_repositories, key=lambda x: x["stars"], reverse=True) # Sort the repositories by stars
-
-      save_to_json(sorted_repositories) # Save the filtered and sorted repositories to a JSON file
-      save_to_pdf(sorted_repositories) # Save the filtered and sorted repositories to a PDF file
+      for repository_attribute in REPOSITORIES_SORTING_ATTRIBUTES: # Iterate over the REPOSITORIES_SORTING_ATTRIBUTES
+         sorted_repositories = sorted(filtered_repositories, key=lambda x: x[repository_attribute], reverse=True) # Sort the repositories by the repository_attribute value
+         save_to_json(sorted_repositories, FULL_REPOSITORIES_LIST_FILEPATH_JSON.replace("DATA_TYPE", repository_attribute)) # Save the filtered and sorted repositories to a JSON file
+         save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_FILEPATH_PDF.replace("DATA_TYPE", repository_attribute)) # Save the filtered and sorted repositories to a PDF file
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
 
