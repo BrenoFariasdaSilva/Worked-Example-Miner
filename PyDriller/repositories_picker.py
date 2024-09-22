@@ -52,8 +52,8 @@ START_PATH = os.getcwd() # Get the current working directory
 # Relative File Path Constants:
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
 RELATIVE_REPOSITORIES_HISTOGRAM_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/histogram_DATA_TYPE{PNG_FILE_EXTENSION}" # The relative path of the directory that contains the histograms
-RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_DATA_TYPE{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
-RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_DATA_TYPE{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
+RELATIVE_REPOSITORIES_LIST_FILEPATH_PDF = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
+RELATIVE_REPOSITORIES_LIST_FILEPATH_JSON = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
@@ -197,7 +197,7 @@ def update_repositories_dictionary():
 
    # Iterate through all REPOSITORIES_SORTING_ATTRIBUTES to find a valid file
    for sorting_attribute in REPOSITORIES_SORTING_ATTRIBUTES:
-      filename = FULL_REPOSITORIES_LIST_FILEPATH_JSON.replace("DATA_TYPE", sorting_attribute) # Get the filename for the current attribute
+      filename = FULL_REPOSITORIES_LIST_FILEPATH_JSON.replace("SORTING_ATTRIBUTE", sorting_attribute) # Get the filename for the current attribute
       
       # Verify if the JSON file exists
       if not os.path.exists(filename): # If file doesn't exist, skip to the next attribute
@@ -858,7 +858,7 @@ def create_repository_field_histogram(repositories, repository_field):
 
    min_value, max_value, average, median, std_dev = calculate_statistics(repositories_data) # Calculate and display statistics for the repository field
    histogram_title = f"Histogram of {repository_field.capitalize()}\nMin: {int(min_value)}, Max: {int(max_value)}, Average: {int(average)}, Median: {int(median)}, Standard Deviation: {int(std_dev)}" # Title of the histogram
-   commits_histogram_filepath = FULL_REPOSITORIES_HISTOGRAM_FILEPATH.replace("DATA_TYPE", repository_field) # Replace "data_type" with the repository field in the histogram file path
+   commits_histogram_filepath = FULL_REPOSITORIES_HISTOGRAM_FILEPATH.replace("DATA_TYPE", repository_field) # Replace "DATA_TYPE" with the repository field in the histogram file path
    create_basic_histogram(repositories_data, histogram_title, f"Number of {repository_field}", f"Number of Repositories (Total {len(repositories_data)})", commits_histogram_filepath) # Create a histogram for the repository field in the repositories
 
 def create_histograms(repositories):
@@ -962,8 +962,8 @@ def main():
    if filtered_repositories: # If there are repositories after filtering and sorting
       for repository_attribute in REPOSITORIES_SORTING_ATTRIBUTES: # Iterate over the REPOSITORIES_SORTING_ATTRIBUTES
          sorted_repositories = sorted(filtered_repositories, key=lambda x: x[repository_attribute], reverse=True) # Sort the repositories by the repository_attribute value
-         save_to_json(sorted_repositories, FULL_REPOSITORIES_LIST_FILEPATH_JSON.replace("DATA_TYPE", repository_attribute)) # Save the filtered and sorted repositories to a JSON file
-         save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_FILEPATH_PDF.replace("DATA_TYPE", repository_attribute)) # Save the filtered and sorted repositories to a PDF file
+         save_to_json(sorted_repositories, FULL_REPOSITORIES_LIST_FILEPATH_JSON.replace("SORTING_ATTRIBUTE", repository_attribute)) # Save the filtered and sorted repositories to a JSON file
+         save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_FILEPATH_PDF.replace("SORTING_ATTRIBUTE", repository_attribute)) # Save the filtered and sorted repositories to a PDF file
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
 
