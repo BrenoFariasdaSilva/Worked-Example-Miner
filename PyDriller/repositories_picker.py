@@ -1,5 +1,6 @@
 import atexit # For playing a sound when the program finishes
 import concurrent.futures # For running tasks concurrently
+import csv # For reading and writing CSV files
 import json # For creating JSON output
 import matplotlib.pyplot as plt # For creating plots, such as histograms
 import numpy as np # For numerical operations
@@ -9,6 +10,7 @@ import random # For selecting random items
 import requests # For making HTTP requests
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import sys # For exiting the program
+from collections import Counter # For counting the number of occurrences of each item
 from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
@@ -38,6 +40,7 @@ ENV_PATH = "../.env" # The path to the .env file
 ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
 
 # File Extensions Constants:
+CSV_FILE_EXTENSION = ".csv" # The CSV file extension
 PDF_FILE_EXTENSION = ".pdf" # The PDF file extension
 PNG_FILE_EXTENSION = ".png" # The PNG file extension
 JSON_FILE_EXTENSION = ".json" # The JSON file extension
@@ -53,12 +56,14 @@ RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of th
 RELATIVE_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/histogram_DATA_TYPE{PNG_FILE_EXTENSION}" # The relative path of the directory that contains the histograms
 RELATIVE_REPOSITORIES_LIST_PDF_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
 RELATIVE_REPOSITORIES_LIST_JSON_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
+RELATIVE_REPOSITORIES_TOPICS_CSV_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_topics{CSV_FILE_EXTENSION}" # The relative path to the repositories topics file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
 FULL_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_HISTOGRAM_PNG_FILEPATH}" # The full path of the directory that contains the histograms
 FULL_REPOSITORIES_LIST_PDF_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_PDF_FILEPATH}" # The full path to the repositories PDF file
 FULL_REPOSITORIES_LIST_JSON_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_JSON_FILEPATH}" # The full path to the repositories JSON file
+FULL_REPOSITORIES_TOPICS_CSV_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_TOPICS_CSV_FILEPATH}" # The full path to the repositories topics file
 
 # Color Constants:
 class BackgroundColors: # Colors for the terminal
@@ -921,6 +926,41 @@ def create_histograms(repositories):
    for repository_field in HISTOGRAM_REPOSITORY_FIELDS: # Iterate over the repository fields
       create_repository_field_histogram(repositories, repository_field) # Create a histogram for the repository field
 
+def collect_and_sort_topics(repositories):
+   """
+   Collect and sort the topics from the list of repositories.
+
+   :param repositories: list of dictionaries containing repository information
+   :return: list of tuples with topics and their occurrences, sorted by occurrences
+   """
+
+   all_topics = [] # List to store all topics
+
+   # Collect all topics from each repository
+   for repo in repositories:
+      if "topics" in repo and isinstance(repo["topics"], str):  # If topics is a string, split it
+         topics_list = repo["topics"].split(", ") # Split the topics by comma and space
+         all_topics.extend(topics_list) # Add the topics to the list
+
+   topic_counts = Counter(all_topics) # Count the occurrences of each topic
+   sorted_topics = sorted(topic_counts.items(), key=lambda x: x[1], reverse=True) # Sort by occurrences in descending order
+   return sorted_topics # Return the sorted topics
+
+def write_to_csv(header, data, filename):
+   """
+   Write data to a CSV file with a given header.
+
+   :param header: list of column names for the CSV file
+   :param data: list of tuples or lists to write as rows in the CSV file
+   :param filename: name of the CSV file to save the data
+   :return: None
+   """
+
+   with open(filename, mode="w", newline="", encoding="utf-8") as csvfile: # Open the CSV file for writing
+      writer = csv.writer(csvfile) # Create a CSV writer
+      writer.writerow(header) # Write the header
+      writer.writerows(data) # Write the rows of data
+
 def randomly_select_repositories(repositories, num_repos):
    """
    Selects a number of repositories randomly.
@@ -1011,6 +1051,10 @@ def main():
          save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_PDF_FILEPATH.replace("SORTING_ATTRIBUTE", repository_attribute)) # Save the filtered and sorted repositories to a PDF file
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
+
+      topics = collect_and_sort_topics(sorted_repositories) # Collect and sort the topics from the repositories
+      write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_TOPICS_CSV_FILEPATH) # Write the topics to a CSV file
+
       candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
       candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) # Sort the candidates by the number of commits
       print_repositories_summary(total_repo_count, len(sorted_repositories), candidates) # Print the summary of the repositories
