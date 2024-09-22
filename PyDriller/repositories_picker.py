@@ -1012,6 +1012,7 @@ def main():
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
       candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
+      candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) # Sort the candidates by the number of commits
       print_repositories_summary(total_repo_count, len(sorted_repositories), candidates) # Print the summary of the repositories
    else: # If there are no repositories after filtering and sorting
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
