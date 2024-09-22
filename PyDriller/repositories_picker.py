@@ -688,8 +688,9 @@ def add_pdf_column_headers(pdf):
    pdf.set_fill_color(200, 220, 255) # Light blue color for headers
    pdf.set_text_color(0, 0, 0) # Reset font color to black
    pdf.set_x(10) # Set the start x position
-   pdf.cell(135, 10, "Name (Hyperlink)", border=1, fill=True) # Name column
-   pdf.cell(20, 10, "Stars", border=1, fill=True) # Stars column
+   pdf.cell(120, 10, "Name (Hyperlink)", border=1, fill=True) # Name column
+   pdf.cell(20, 10, "Commits", border=1, fill=True) # Commits column
+   pdf.cell(15, 10, "Stars", border=1, fill=True) # Stars column
    pdf.cell(35, 10, "Last Update", border=1, fill=True) # Last Update column
    pdf.ln() # Line break
 
@@ -723,6 +724,7 @@ def add_pdf_data_rows(pdf, data):
       name = repo.get("name", "") # Get the name of the repository
       author = repo.get("author", "") # Get the author of the repository
       url = repo.get("url", "") # Get the URL of the repository
+      commits = str(repo.get("commits", "")) # Get the number of commits
       stars = str(repo.get("stars", "")) # Get the number of stars
 
       # Handle last_update
@@ -734,10 +736,10 @@ def add_pdf_data_rows(pdf, data):
 
       # Name (make it a hyperlink)
       pdf.set_text_color(0, 0, 255) # Set color to blue for hyperlinks
-      pdf.cell(135, 10, f"{author}/{name}", border=1, link=url) # Name (Hyperlink) is the "author/repository_name" of the repository
+      pdf.cell(120, 10, f"{author}/{name}", border=1, link=url) # Name (Hyperlink) is the "author/repository_name" of the repository
       pdf.set_text_color(0, 0, 0) # Reset text color to black
-
-      pdf.cell(20, 10, stars, border=1) # Stars
+      pdf.cell(20, 10, commits, border=1) # Commits
+      pdf.cell(15, 10, stars, border=1) # Stars
       pdf.cell(35, 10, last_update, border=1) # Last Update
       pdf.ln() # Line break
 
