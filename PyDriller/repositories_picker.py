@@ -997,6 +997,25 @@ def write_to_csv(header, data, filename):
       writer.writerow(header) # Write the header
       writer.writerows(data) # Write the rows of data
 
+def calculate_percentile_intervals(data, percentiles):
+   """
+   Calculate the intervals between specified percentiles for a list of numerical values.
+
+   :param data: List of numerical values
+   :param percentiles: List of percentiles to calculate (0-100)
+   :return: List of tuples containing percentile ranges (percentile_start, percentile_end, interval_start, interval_end)
+   """
+
+   sorted_data = np.sort(data) # Sort the data
+   percentile_values = [np.percentile(sorted_data, p) for p in percentiles] # Calculate the percentile values
+   intervals = [] # List to store the calculated intervals
+
+   # Calculate the interval ranges between consecutive percentiles
+   for i in range(1, len(percentile_values)):
+      intervals.append((percentiles[i-1], percentiles[i], percentile_values[i-1], percentile_values[i]))
+
+   return intervals # Return the calculated intervals
+
 def create_csv_files(repositories):
    """"
    Create a CSV files containing the repositories data.
@@ -1007,11 +1026,18 @@ def create_csv_files(repositories):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Creating CSV files and plots for the repositories...{Style.RESET_ALL}")
 
+   # Topics Occurrences CSV
    topics = sort_values_by_occurrences(collect_field_values_from_list(repositories, "topics")) # Collect and sort the topics from the repositories
    write_to_csv(["Topic", "Occurrences Count", "Occurrences Location"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
  
+   # Commits Occurrences CSV
    code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Collect and sort the code churns from the repositories
    write_to_csv(["Code Churn", "Occurrences Count", "Occurrences Location"], code_churns, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_occurrences")) # Write the code churns to a CSV file
+
+   # Code Churn Percentile Intervals CSV
+   churn_values = [float(code_churn) for code_churn, _, _ in code_churns] # Extract the code churn values for percentile calculations
+   percentile_intervals = calculate_percentile_intervals(churn_values, [5, 10, 25, 50, 75, 90, 95, 99]) # Calculate the percentile intervals
+   write_to_csv(["Percentile Start", "Percentile End", "Interval Start", "Interval End"], percentile_intervals, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_percentile_intervals")) # Write the percentile intervals to a CSV file
 
 def calculate_percentiles(data, percentiles):
    """
