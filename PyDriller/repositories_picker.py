@@ -1069,9 +1069,13 @@ def create_csv_files(repositories):
    topics = sort_values_by_occurrences(collect_field_values_from_list(repositories, "topics")) # Collect and sort the topics from the repositories
    write_to_csv(["Topic", "Occurrences Count", "Occurrences Location"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
  
-   # Commits Occurrences CSV
+   # Code Churn Occurrences CSV
    code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Collect and sort the code churns from the repositories
    write_to_csv(["Code Churn", "Occurrences Count", "Occurrences Location"], code_churns, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_occurrences")) # Write the code churns to a CSV file
+
+   # Number of Modified Files Occurrences CSV
+   avg_modified_files = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_modified_files")) # Collect and sort the average modified files from the repositories
+   write_to_csv(["Average Modified Files", "Occurrences Count", "Occurrences Location"], avg_modified_files, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "avg_modified_files_occurrences")) # Write the average modified files to a CSV file
 
    # Code Churn Percentile Intervals CSV
    churn_values = [float(code_churn) for code_churn, _, _ in code_churns] # Extract the code churn values for percentile calculations
