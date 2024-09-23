@@ -1077,6 +1077,11 @@ def create_csv_files(repositories):
    avg_modified_files = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_modified_files")) # Collect and sort the average modified files from the repositories
    write_to_csv(["Average Modified Files", "Occurrences Count", "Occurrences Location"], avg_modified_files, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "avg_modified_files_occurrences")) # Write the average modified files to a CSV file
 
+   # Number of Modified Files Percentile Intervals CSV
+   modified_files_values = [int(avg_modified_file) for avg_modified_file, _, _ in avg_modified_files] # Extract the average modified files values for percentile calculations
+   percentile_intervals = calculate_percentile_intervals(modified_files_values, [5, 10, 25, 50, 75, 90, 95, 99]) # Calculate the percentile intervals
+   write_to_csv(["Percentile Start", "Percentile End", "Interval Start", "Interval End"], percentile_intervals, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "avg_modified_files_percentile_intervals")) # Write the percentile intervals to a CSV file
+
    # Code Churn Percentile Intervals CSV
    churn_values = [float(code_churn) for code_churn, _, _ in code_churns] # Extract the code churn values for percentile calculations
    percentile_intervals = calculate_percentile_intervals(churn_values, [5, 10, 25, 50, 75, 90, 95, 99]) # Calculate the percentile intervals
