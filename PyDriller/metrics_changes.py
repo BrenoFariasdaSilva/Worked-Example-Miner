@@ -1047,7 +1047,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the metrics in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to calculate the minimum, maximum, average, and third quartile of each metric and writing it to a csv file...{Style.RESET_ALL}")
-	
+
 	# Open the csv file and process the metrics of each method
 	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
 	with open(unsorted_metrics_filename, "w") as csvfile:
@@ -1071,9 +1071,7 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 					# This get the metrics values of each metric occurrence in the method to get the min, max, avg, and third quartile of each metric
 					metrics_values.append([sublist[i] for sublist in metrics["metrics"]])
 
-				# Split the identifier to get the id and key which is separated by a space
-				id = identifier.split(" ")[0] # Get the id of the method
-				key = identifier.split(" ")[1] # Get the key of the method
+				id, key = identifier.split(" ") # Get the id and key which are separated by a space
 
 				# Write the metrics statistics to the csv file
 				write_method_metrics_statistics(writer, id, key, metrics, metrics_values, metrics_track_record[identifier]["commit_hashes"][0], metrics_track_record[identifier]["commit_hashes"][-1])
