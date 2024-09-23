@@ -952,6 +952,8 @@ def collect_field_values_from_list(data_list, field_name):
          if isinstance(field_data, str): # If the field is a string
             values_list = field_data.split(", ") if ", " in field_data else [field_data] # Split by comma and space or treat as a single value
             add_values(values_list, repo_name) # Add the values and repo name
+         elif isinstance(field_data, (int, float)): # If the field is an integer or float
+            add_values([field_data], repo_name) # Add the value and repo name
          elif isinstance(field_data, list): # If the field is a list
             add_values(field_data, repo_name) # Add the values from the list
          elif isinstance(field_data, dict): # If the field is a dictionary
