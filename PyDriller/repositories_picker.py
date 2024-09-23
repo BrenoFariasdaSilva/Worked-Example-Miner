@@ -945,7 +945,7 @@ def collect_field_values_from_list(data_list, field_name):
    # Collect all values from the specified field in each repository
    for data in data_list: # Iterate over the repositories
       if field_name in data: # If the field is present in the data
-         repo_name = data.get("name", "Unknown Repo") # Get the repository name
+         repo_name = f"{data.get('author', 'Unknown Author')}/{data.get('name', 'Unknown Repo')}".capitalize() # Get the repository name with the author
          field_data = data[field_name] # Get the data for the field
 
          # Handle the field data based on its type
