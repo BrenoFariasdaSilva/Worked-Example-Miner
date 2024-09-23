@@ -1044,12 +1044,12 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 		writer = csv.writer(csvfile)	
 		if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 			# Write the header to the csv file but using the "Type" in the second column
-			writer.writerow(["Class", "Type", "Changed", "Code Churns", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"])
+			writer.writerow(["Class", "Type", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"])
 		else:
 			# Write the header to the csv file but using the "Method" in the second column
-			writer.writerow(["Class", "Method", "Changed", "Code Churns", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"])
+			writer.writerow(["Class", "Method", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"])
 
-		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (cbo, wmc, rfc)
+		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (CBO, WMC, RFC, code churn, modified files)
 		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
 			for identifier, metrics in metrics_track_record.items():
 				# Verify if the metrics changes is greater than the minimum changes
@@ -1058,14 +1058,14 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 
 				metrics_values = [] # This stores the metrics values in a list of lists of each metric
 				for i in range(0, NUMBER_OF_METRICS): # For each metric in the metrics list
-					# This get the metrics values of each metric occurence in the method in order to, later on, be able to get the min, max, avg, and third quartile of each metric
+					# This get the metrics values of each metric occurrence in the method to get the min, max, avg, and third quartile of each metric
 					metrics_values.append([sublist[i] for sublist in metrics["metrics"]])
 
 				# Split the identifier to get the id and key which is separated by a space
 				id = identifier.split(" ")[0] # Get the id of the method
 				key = identifier.split(" ")[1] # Get the key of the method
 
-				# Create a function to get the min, max, avg, and third quartile of each metric, the first commit hash and the last commit hash, and then write it to the csv file
+				# Write the metrics statistics to the csv file
 				write_method_metrics_statistics(writer, id, key, metrics, metrics_values, metrics_track_record[identifier]["commit_hashes"][0], metrics_track_record[identifier]["commit_hashes"][-1])
 				progress_bar.update(1) # Update the progress bar
 
