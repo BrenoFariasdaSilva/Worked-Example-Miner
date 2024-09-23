@@ -1003,10 +1003,10 @@ def create_csv_files(repositories):
    """
 
    topics = sort_values_by_occurrences(collect_field_values_from_list(repositories, "topics")) # Collect and sort the topics from the repositories
-   write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
-
-   code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Extract and sort the code churns from the repositories
-   write_to_csv(["Code Churn", "Occurrences"], code_churns, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_occurrences")) # Write the code churns to a CSV file
+   write_to_csv(["Topic", "Occurrences Count", "Occurrences Location"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
+ 
+   code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Collect and sort the code churns from the repositories
+   write_to_csv(["Code Churn", "Occurrences Count", "Occurrences Location"], code_churns, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_occurrences")) # Write the code churns to a CSV file
 
 def randomly_select_repositories(repositories, num_repos):
    """
