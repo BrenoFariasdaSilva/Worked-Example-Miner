@@ -1002,6 +1002,8 @@ def create_csv_files(repositories):
    return: None
    """
 
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Creating CSV files and plots for the repositories...{Style.RESET_ALL}")
+
    topics = sort_values_by_occurrences(collect_field_values_from_list(repositories, "topics")) # Collect and sort the topics from the repositories
    write_to_csv(["Topic", "Occurrences Count", "Occurrences Location"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
  
