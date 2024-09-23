@@ -926,25 +926,45 @@ def create_histograms(repositories):
    for repository_field in HISTOGRAM_REPOSITORY_FIELDS: # Iterate over the repository fields
       create_repository_field_histogram(repositories, repository_field) # Create a histogram for the repository field
 
-def collect_and_sort_topics(repositories):
+def sort_values_by_occurrences(values):
    """
-   Collect and sort the topics from the list of repositories.
+   Sort the values by occurrences and return a list of tuples with the value and its occurrences.
 
-   :param repositories: list of dictionaries containing repository information
-   :return: list of tuples with topics and their occurrences, sorted by occurrences
+   :param values: list of values
+   :return: list of tuples with the value and its occurrences
    """
 
-   all_topics = [] # List to store all topics
+   value_counts = Counter(values) # Count the occurrences of each value
+   sorted_values = sorted(value_counts.items(), key=lambda x: x[1], reverse=True) # Sort by occurrences
 
-   # Collect all topics from each repository
-   for repo in repositories:
-      if "topics" in repo and isinstance(repo["topics"], str):  # If topics is a string, split it
-         topics_list = repo["topics"].split(", ") # Split the topics by comma and space
-         all_topics.extend(topics_list) # Add the topics to the list
+   return sorted_values # Return the sorted values
 
-   topic_counts = Counter(all_topics) # Count the occurrences of each topic
-   sorted_topics = sorted(topic_counts.items(), key=lambda x: x[1], reverse=True) # Sort by occurrences in descending order
-   return sorted_topics # Return the sorted topics
+def collect_values_from_field_in_list(data_list, field_name):
+   """
+   Collect the values from the specified field in the list of repositories.
+
+   :param data_list: list containing the data values
+   :param field_name: the field name to collect and sort
+   :return: list of tuples with field values and their occurrences
+   """
+
+   all_values = [] # List to store all values for the specified field
+
+   # Collect all values from the specified field in each repository
+   for data in data_list: # Iterate over the data list
+      if field_name in data: # Verify if the field is in the data
+         field_data = data[field_name] # Get the data for the field
+         if isinstance(field_data, str): # If the field is a string, split it by comma and space
+            values_list = field_data.split(", ") # Split the field data by comma and space
+            all_values.extend(values_list) # Add the values to the list
+         elif isinstance(field_data, list): # If the field is a list, extend it
+            all_values.extend(field_data) # Add the values to the list
+         elif isinstance(field_data, dict): # If the field is a dictionary, extract values
+            all_values.extend(field_data.values()) # Add the values to the list
+      else: # If the field is not a string, list, or dictionary
+         print(f"{BackgroundColors.RED}Field {field_name} not found in the data.{Style.RESET_ALL}")
+
+   return all_values # Return the list of all values
 
 def write_to_csv(header, data, filename):
    """
@@ -1052,8 +1072,8 @@ def main():
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
 
-      topics = collect_and_sort_topics(sorted_repositories) # Collect and sort the topics from the repositories
-      write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics")) # Write the topics to a CSV file
+      topics = sort_values_by_occurrences(collect_values_from_field_in_list(repositories, "topics")) # Collect and sort the topics from the repositories
+      write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
 
       candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
       candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) # Sort the candidates by the number of commits
