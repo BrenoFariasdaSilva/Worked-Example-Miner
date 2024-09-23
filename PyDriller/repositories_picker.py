@@ -56,14 +56,14 @@ RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of th
 RELATIVE_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/histogram_DATA_TYPE{PNG_FILE_EXTENSION}" # The relative path of the directory that contains the histograms
 RELATIVE_REPOSITORIES_LIST_PDF_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
 RELATIVE_REPOSITORIES_LIST_JSON_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
-RELATIVE_REPOSITORIES_TOPICS_CSV_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_topics{CSV_FILE_EXTENSION}" # The relative path to the repositories topics file
+RELATIVE_REPOSITORIES_CSV_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_FIELD_NAME{CSV_FILE_EXTENSION}" # The relative path to the repositories CSV file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
 FULL_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_HISTOGRAM_PNG_FILEPATH}" # The full path of the directory that contains the histograms
 FULL_REPOSITORIES_LIST_PDF_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_PDF_FILEPATH}" # The full path to the repositories PDF file
 FULL_REPOSITORIES_LIST_JSON_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_JSON_FILEPATH}" # The full path to the repositories JSON file
-FULL_REPOSITORIES_TOPICS_CSV_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_TOPICS_CSV_FILEPATH}" # The full path to the repositories topics file
+FULL_REPOSITORIES_CSV_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_CSV_FILEPATH}" # The full path to the repositories topics file
 
 # Color Constants:
 class BackgroundColors: # Colors for the terminal
@@ -1053,7 +1053,7 @@ def main():
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
 
       topics = collect_and_sort_topics(sorted_repositories) # Collect and sort the topics from the repositories
-      write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_TOPICS_CSV_FILEPATH) # Write the topics to a CSV file
+      write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics")) # Write the topics to a CSV file
 
       candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
       candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) # Sort the candidates by the number of commits
