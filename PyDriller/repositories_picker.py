@@ -1024,6 +1024,24 @@ def calculate_percentiles(data, percentiles):
 
    return {p: np.percentile(data, p) for p in percentiles} # Calculate the percentiles and return them
 
+def filter_data_by_iqr(data, lower_percentile=25, upper_percentile=75):
+   """
+   Filter data by focusing on the interquartile range (IQR) between specified percentiles.
+
+   :param data: List of numerical values
+   :param lower_percentile: The lower bound percentile (default 25th)
+   :param upper_percentile: The upper bound percentile (default 75th)
+   :return: Filtered list of data within the specified IQR
+   """
+
+   lower_bound = np.percentile(data, lower_percentile) # Calculate the lower bound
+   upper_bound = np.percentile(data, upper_percentile) # Calculate the upper bound
+   
+   # Filter the data to only include values within the 25th to 75th percentile range (IQR)
+   filtered_data = [value for value in data if lower_bound <= value <= upper_bound]
+   
+   return filtered_data, lower_bound, upper_bound # Return the filtered data and bounds
+
 def generate_scatter_plot(data, percentiles_dict=None, iqr_range=(25, 75)):
    """
    Generate a scatter plot to visualize code churn values within a specific interquartile range.
