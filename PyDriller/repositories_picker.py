@@ -10,7 +10,7 @@ import random # For selecting random items
 import requests # For making HTTP requests
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import sys # For exiting the program
-from collections import Counter, defaultdict # For counting the number of occurrences of each item
+from collections import defaultdict # For counting the number of occurrences of each item
 from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
@@ -926,19 +926,6 @@ def create_histograms(repositories):
    for repository_field in HISTOGRAM_REPOSITORY_FIELDS: # Iterate over the repository fields
       create_repository_field_histogram(repositories, repository_field) # Create a histogram for the repository field
 
-def sort_values_by_occurrences(values):
-   """
-   Sort the values by occurrences and return a list of tuples with the value and its occurrences.
-
-   :param values: list of values
-   :return: list of tuples with the value and its occurrences
-   """
-
-   value_counts = Counter(values) # Count the occurrences of each value
-   sorted_values = sorted(value_counts.items(), key=lambda x: x[1], reverse=True) # Sort by occurrences
-
-   return sorted_values # Return the sorted values
-
 def collect_field_values_from_list(data_list, field_name):
    """
    Collect the values from the specified field in the list of repositories and track where they appeared.
@@ -973,6 +960,21 @@ def collect_field_values_from_list(data_list, field_name):
          print(f"{BackgroundColors.RED}Field {field_name} not found in the data.{Style.RESET_ALL}")
 
    return value_to_repos # Return the dictionary of values and repository names
+
+def sort_values_by_occurrences(values):
+   """
+   Sort the values by occurrences (number of repositories they appeared in) and return a list of tuples with the value, its occurrences, and the repositories.
+
+   :param value_to_repos: dictionary with values as keys and lists of repository names as values
+   :return: list of tuples with value, occurrences, and repositories
+   """
+   
+   sorted_values = sorted(values.items(), key=lambda x: len(x[1]), reverse=True) # Sort by occurrences (number of repositories)
+
+   # print the sorted values
+   for value, repos in sorted_values:
+      print(f"{BackgroundColors.CYAN}{value}{BackgroundColors.GREEN}: {len(repos)} repositories{Style.RESET_ALL}")
+   return sorted_values # Return the sorted values
 
 def write_to_csv(header, data, filename):
    """
