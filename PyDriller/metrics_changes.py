@@ -451,7 +451,6 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 	Processes a csv file containing the metrics of a method or class.
 
 	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files list as values
-	:param repo_path: The path to the repository
 	:param file_path: The path to the csv file
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
 	:return: None
@@ -477,7 +476,8 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 					"code_churns": [], # The code churns values list
 					"lines_added": [], # The lines added list
 					"lines_deleted": [], # The lines deleted list
-					"method_invoked": method_invoked # The method_invoked str or methodsInvokedQty int
+					"modified_files_count": [], # The modified files count list
+					"method_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
 				}
 
 			# Get the metrics_changes list for the method
@@ -513,6 +513,10 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 				metrics_track_record[identifier]["code_churns"].append(code_churn_value)
 				metrics_track_record[identifier]["lines_added"].append(lines_added)
 				metrics_track_record[identifier]["lines_deleted"].append(lines_deleted)
+
+				# Update the modified files count for the current commit
+				modified_files_count = len(commit_modified_files_dict[commit_hash])
+				metrics_track_record[identifier]["modified_files_count"].append(modified_files_count)
 
 				# Update the metrics_track_record dictionary
 				metrics_track_record[identifier]["metrics"] = metrics_changes
