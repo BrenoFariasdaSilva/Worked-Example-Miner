@@ -1006,26 +1006,41 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating the minimum, maximum, average, and third quartile of each metric and writing it to a csv file for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
-	
+
+	# CBO metrics calculations
 	cboMin = round(float(min(metrics_values[0])), 3) # The minimum cbo value rounded to 3 decimal places
 	cboMax = round(float(max(metrics_values[0])), 3) # The maximum cbo value rounded to 3 decimal places
 	cboAvg = round(float(sum(metrics_values[0])) / len(metrics_values[0]), 3) # The average cbo value rounded to 3 decimal places
 	cboQ3 = round(float(np.percentile(metrics_values[0], 75)), 3) # The third quartile cbo value rounded to 3 decimal places
 
+	# WMC metrics calculations
 	wmcMin = round(float(min(metrics_values[1])), 3) # The minimum wmc value rounded to 3 decimal places
 	wmcMax = round(float(max(metrics_values[1])), 3) # The maximum wmc value rounded to 3 decimal places
 	wmcAvg = round(float(sum(metrics_values[1])) / len(metrics_values[1]), 3) # The average wmc value rounded to 3 decimal places
 	wmcQ3 = round(float(np.percentile(metrics_values[1], 75)), 3) # The third quartile wmc value rounded to 3 decimal places
-	
+
+	# RFC metrics calculations
 	rfcMin = round(float(min(metrics_values[2])), 3) # The minimum rfc value rounded to 3 decimal places
 	rfcMax = round(float(max(metrics_values[2])), 3) # The maximum rfc value rounded to 3 decimal places
 	rfcAvg = round(float(sum(metrics_values[2])) / len(metrics_values[2]), 3) # The average rfc value rounded to 3 decimal places
 	rfcQ3 = round(float(np.percentile(metrics_values[2], 75)), 3) # The third quartile rfc value rounded to 3 decimal places
 
-	code_churn_fields_merged = merge_code_churn_fields(metrics) # Merge the code churn fields into a single string
+	# Code churn metrics calculations
+	code_churns = metrics["code_churns"] # Get the code churns
+	churnMin = round(float(min(code_churns)), 3) if code_churns else 0 # Minimum code churn
+	churnMax = round(float(max(code_churns)), 3) if code_churns else 0 # Maximum code churn
+	churnAvg = round(float(sum(code_churns)) / len(code_churns), 3) if code_churns else 0 # Average code churn
+	churnQ3 = round(float(np.percentile(code_churns, 75)), 3) if code_churns else 0 # Third quartile code churn
+
+	# Modified files metrics calculations
+	modified_files = metrics["modified_files_count"] # Get the modified files count
+	modified_filesMin = round(float(min(modified_files)), 3) if modified_files else 0 # Minimum modified files
+	modified_filesMax = round(float(max(modified_files)), 3) if modified_files else 0 # Maximum modified files
+	modified_filesAvg = round(float(sum(modified_files)) / len(modified_files), 3) if modified_files else 0 # Average modified files
+	modified_filesQ3 = round(float(np.percentile(modified_files, 75)), 3) if modified_files else 0 # Third quartile modified files
 
 	# Write the metrics statistics to the csv file
-	csv_writer.writerow([id, key, metrics["changed"], code_churn_fields_merged, cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
+	csv_writer.writerow([id, key, metrics["changed"], churnMin, churnMax, churnAvg, churnQ3, modified_filesMin, modified_filesMax, modified_filesAvg, modified_filesQ3, cboMin, cboMax, cboAvg, cboQ3, wmcMin, wmcMax, wmcAvg, wmcQ3, rfcMin, rfcMax, rfcAvg, rfcQ3, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
 
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	"""
