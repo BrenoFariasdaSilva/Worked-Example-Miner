@@ -1024,6 +1024,39 @@ def calculate_percentiles(data, percentiles):
 
    return {p: np.percentile(data, p) for p in percentiles} # Calculate the percentiles and return them
 
+def generate_scatter_plot(data, percentiles_dict=None, iqr_range=(25, 75)):
+   """
+   Generate a scatter plot to visualize code churn values within a specific interquartile range.
+
+   :param data: List of numerical values representing code churns
+   :param percentiles_dict: Optional dictionary with percentiles and values for visualization
+   :param iqr_range: Tuple indicating the percentiles to focus on (default is 25th to 75th)
+   :return: None
+   """
+
+   filtered_data, lower_bound, upper_bound = filter_data_by_iqr(data, *iqr_range) # Filter data by interquartile range (IQR)
+
+   plt.figure(figsize=(10, 6)) # Create a figure and axis
+
+   # Scatter plot of filtered code churn values (focused on IQR)
+   sns.scatterplot(x=range(len(filtered_data)), y=filtered_data, color="blue", alpha=0.6)
+
+   # Optionally, add lines for key percentiles (25%, 50%, etc.) if provided
+   if percentiles_dict: # If the percentiles dictionary is provided
+      for p, value in percentiles_dict.items(): # Iterate over the percentiles
+         if iqr_range[0] <= p <= iqr_range[1]: # If the percentile is within the IQR range
+            plt.axhline(y=value, color="red", linestyle="--", label=f"{p}th Percentile: {value:.2f}") # Add a horizontal line for the percentile
+
+   # Set plot labels and title
+   plt.xlabel("Index of Code Churn Value") # X-axis is just the index (no names needed)
+   plt.ylabel("Code Churn Value") # Y-axis is the code churn value
+   plt.title(f"Scatter Plot of Code Churn Values (Filtered to {iqr_range[0]}th - {iqr_range[1]}th Percentiles)") # Set the title of the plot
+   plt.legend(loc="upper right") # Show legend with percentile lines
+
+   # Save and display the plot
+   plt.tight_layout() # Adjust the layout
+   plt.savefig(FULL_REPOSITORIES_PNG_SCATTER_FILEPATH.replace("FIELD_NAME", f"code_churn_iqr_{iqr_range[0]}_{iqr_range[1]}")) # Save the scatter plot to a file
+
 def generate_code_churn_scatter_plot(repositories):
    """
    Generate a scatter plot for the code churn values of the repositories.
