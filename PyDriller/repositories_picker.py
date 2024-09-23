@@ -19,7 +19,7 @@ from fpdf import FPDF # For creating PDFs
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
 DATETIME_FILTER = None # The datetime filter for the repositories
-HISTOGRAM_REPOSITORY_FIELDS = ["commits", "stars"] # The repository fields to create histograms for
+HISTOGRAM_REPOSITORY_FIELDS = ["avg_code_churn", "commits", "stars"] # The repository fields to create histograms for
 CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
@@ -939,7 +939,7 @@ def sort_values_by_occurrences(values):
 
    return sorted_values # Return the sorted values
 
-def collect_values_from_field_in_list(data_list, field_name):
+def collect_field_values_from_list(data_list, field_name):
    """
    Collect the values from the specified field in the list of repositories.
 
@@ -980,6 +980,20 @@ def write_to_csv(header, data, filename):
       writer = csv.writer(csvfile) # Create a CSV writer
       writer.writerow(header) # Write the header
       writer.writerows(data) # Write the rows of data
+
+def create_csv_files(repositories):
+   """"
+   Create a CSV files containing the repositories data.
+
+   :param repositories: list of repositories (dicts)
+   return: None
+   """
+
+   topics = sort_values_by_occurrences(collect_field_values_from_list(repositories, "topics")) # Collect and sort the topics from the repositories
+   write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
+
+   code_churns = sort_values_by_occurrences(extract_repositories_field(repositories, "avg_code_churn")) # Extract and sort the code churns from the repositories
+   write_to_csv(["Code Churn", "Occurrences"], code_churns, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_occurrences")) # Write the code churns to a CSV file
 
 def randomly_select_repositories(repositories, num_repos):
    """
@@ -1071,9 +1085,7 @@ def main():
          save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_PDF_FILEPATH.replace("SORTING_ATTRIBUTE", repository_attribute)) # Save the filtered and sorted repositories to a PDF file
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
-
-      topics = sort_values_by_occurrences(collect_values_from_field_in_list(repositories, "topics")) # Collect and sort the topics from the repositories
-      write_to_csv(["Topic", "Occurrences"], topics, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "topics_occurrences")) # Write the topics to a CSV file
+      create_csv_files(sorted_repositories) # Create CSV files for the repositories
 
       candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
       candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) # Sort the candidates by the number of commits
