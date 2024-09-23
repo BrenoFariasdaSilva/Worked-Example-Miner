@@ -10,7 +10,7 @@ import random # For selecting random items
 import requests # For making HTTP requests
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import sys # For exiting the program
-from collections import Counter # For counting the number of occurrences of each item
+from collections import Counter, defaultdict # For counting the number of occurrences of each item
 from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
@@ -941,30 +941,38 @@ def sort_values_by_occurrences(values):
 
 def collect_field_values_from_list(data_list, field_name):
    """
-   Collect the values from the specified field in the list of repositories.
+   Collect the values from the specified field in the list of repositories and track where they appeared.
 
    :param data_list: list containing the data values
    :param field_name: the field name to collect and sort
-   :return: list of tuples with field values and their occurrences
+   :return: dictionary with field values as keys and lists of repository names as values
    """
 
-   all_values = [] # List to store all values for the specified field
+   value_to_repos = defaultdict(list) # Dictionary to store values and corresponding repository names
+
+   # Helper function to handle adding values to the dictionary
+   def add_values(values, repo_name):
+      for value in values: # Iterate over the values
+         value_to_repos[value].append(repo_name) # Add the value and repository name to the dictionary
 
    # Collect all values from the specified field in each repository
-   for data in data_list: # Iterate over the data list
-      if field_name in data: # Verify if the field is in the data
+   for data in data_list: # Iterate over the repositories
+      if field_name in data: # If the field is present in the data
+         repo_name = data.get("name", "Unknown Repo") # Get the repository name
          field_data = data[field_name] # Get the data for the field
-         if isinstance(field_data, str): # If the field is a string, split it by comma and space
-            values_list = field_data.split(", ") # Split the field data by comma and space
-            all_values.extend(values_list) # Add the values to the list
-         elif isinstance(field_data, list): # If the field is a list, extend it
-            all_values.extend(field_data) # Add the values to the list
-         elif isinstance(field_data, dict): # If the field is a dictionary, extract values
-            all_values.extend(field_data.values()) # Add the values to the list
-      else: # If the field is not a string, list, or dictionary
+
+         # Handle the field data based on its type
+         if isinstance(field_data, str): # If the field is a string
+            values_list = field_data.split(", ") if ", " in field_data else [field_data] # Split by comma and space or treat as a single value
+            add_values(values_list, repo_name) # Add the values and repo name
+         elif isinstance(field_data, list): # If the field is a list
+            add_values(field_data, repo_name) # Add the values from the list
+         elif isinstance(field_data, dict): # If the field is a dictionary
+            add_values(field_data.values(), repo_name) # Add the values from the dictionary
+      else:
          print(f"{BackgroundColors.RED}Field {field_name} not found in the data.{Style.RESET_ALL}")
 
-   return all_values # Return the list of all values
+   return value_to_repos # Return the dictionary of values and repository names
 
 def write_to_csv(header, data, filename):
    """
