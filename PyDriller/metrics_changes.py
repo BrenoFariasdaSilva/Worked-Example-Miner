@@ -600,6 +600,7 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 			file.write(f"\tCode Churns: {value['code_churns']}\n") # Write the code churns value
 			file.write(f"\tLines Added: {value['lines_added']}\n") # Write the lines added
 			file.write(f"\tLines Deleted: {value['lines_deleted']}\n") # Write the lines deleted
+			file.write(f"\tModified Files Count: {value['modified_files_count']}\n") # Write the modified files count
 			file.write(f"\t{'Method Invocations' if PROCESS_CLASSES else 'Methods Invoked Qty'}: {value['method_invoked']}\n") # Write the 'Method Invocations' if PROCESS_CLASS, else 'Methods Invoked Qty' value
 			file.write(f"\n") # Write a new line
 
