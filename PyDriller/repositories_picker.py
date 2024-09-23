@@ -1013,6 +1013,17 @@ def create_csv_files(repositories):
    code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Collect and sort the code churns from the repositories
    write_to_csv(["Code Churn", "Occurrences Count", "Occurrences Location"], code_churns, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_occurrences")) # Write the code churns to a CSV file
 
+def calculate_percentiles(data, percentiles):
+   """
+   Calculate specified percentiles for a list of numerical values.
+
+   :param data: List of numerical values
+   :param percentiles: List of percentiles to calculate (0-100)
+   :return: Dictionary with percentile values
+   """
+
+   return {p: np.percentile(data, p) for p in percentiles} # Calculate the percentiles and return them
+
 def generate_code_churn_scatter_plot(repositories):
    """
    Generate a scatter plot for the code churn values of the repositories.
