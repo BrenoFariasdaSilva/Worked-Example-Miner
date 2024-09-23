@@ -25,6 +25,7 @@ CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
+MAXIMUM_AVG_CODE_CHURN = 500 # The maximum average code churn allowed
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
 REPOSITORIES_SORTING_ATTRIBUTES = ["commits", "stars"] # The attribute to sort the repositories by
 
@@ -486,51 +487,79 @@ def extract_author_name(repo):
 
    return repo["html_url"].split("/")[-2] # Get the author's name from the URL
 
-def calculate_average_code_churn(repo_path, total_commits):
+def run_git_log_numstat(repo_path):
+   """
+   Runs the 'git log --numstat' command for a given repository.
+
+   :param repo_path: str
+   :return: list of lines from the git numstat output or an empty list in case of an error.
+   """
+
+   try:
+      # Run the git command to get the numstat output
+      result = subprocess.run(
+         ["git", "-C", repo_path, "log", "--pretty=tformat:", "--numstat"], # The git command to run
+         capture_output=True, # Capture the output
+         text=True, # Get the output as text
+         check=True # Check if the command was successful
+      )
+
+      lines = result.stdout.strip().splitlines() # Get the lines from the output
+      return lines # Return the lines
+   except subprocess.CalledProcessError as e: # Handle the exception if the command fails
+      print(f"{BackgroundColors.RED}Error while running git log --numstat: {e}{Style.RESET_ALL}")
+      return [] # Return an empty list in case of an error
+
+def process_numstat_metrics(lines):
+   """
+   Processes git numstat lines to calculate total added, removed, and code churn.
+
+   :param lines: list of numstat output lines
+   :return: list containing:
+      - total added lines
+      - total removed lines
+      - total code churn (added - removed)
+   """
+
+   metrics = [0, 0, 0] # Initialize the metrics list: [total_added, total_removed, total_code_churn]
+
+   for line in lines: # Iterate over the lines
+      if line: # If the line is not empty
+         parts = line.split() # Split the line by whitespace
+         if len(parts) == 3: # Ensure the line has the expected format (added, removed, file path)
+            try: # Try to parse the added and removed lines
+               added = int(parts[0]) if parts[0] != "-" else 0 # Get the added lines
+               removed = int(parts[1]) if parts[1] != "-" else 0 # Get the removed lines
+               metrics[0] += added # Total Lines Added
+               metrics[1] += removed # Total Lines Removed
+               metrics[2] += (added - removed) # Total Code Churn
+            except ValueError as e: # Handle the exception if there's an error parsing the numstat output
+               print(f"{BackgroundColors.RED}Error while parsing numstat output: {e}{Style.RESET_ALL}")
+
+   return metrics # Return the list of metrics
+
+def calculate_average_metrics(repo_path, total_commits, lines=None):
    """
    Calculates the average code churn for all commits in a repository.
 
    :param repo_path: str
    :param total_commits: int
-   :return: float representing the average code churn (lines added and removed).
+   :param lines: list of numstat output lines (optional)
+   :return float: representing the average code churn
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating average code churn for the {BackgroundColors.CYAN}{repo_path.split("/")[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating average metrics for the {BackgroundColors.CYAN}{repo_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   try:
-      # Run the git command to get the numstat output
-      result = subprocess.run(
-         ["git", "-C", repo_path, "log", "--pretty=tformat:", "--numstat"], # Get the numstat output
-         capture_output=True, # Capture the output
-         text=True, # Get the output as text
-         check=True # Check for errors
-      )
-      
-      lines = result.stdout.strip().splitlines() # Split the output into lines
+   lines = run_git_log_numstat(repo_path) if not lines else lines # Get the numstat output if not provided
 
-      code_churn_metrics = (0, 0, 0) # Initialize the code churn metrics (code churn, total added, total removed)
+   if not lines: # If there are no lines
+      return 0, 0 # Return 0 for both if there's an error
 
-      for line in lines: # Process each line
-         if line: # If the line is not empty
-            parts = line.split() # Split the line into parts
-            if len(parts) == 3: # If there are 3 parts
-               # Use try-except to handle conversion errors
-               try:
-                  added = int(parts[0]) if parts[0] != "-" else 0 # Get the number of lines added
-                  removed = int(parts[1]) if parts[1] != "-" else 0 # Get the number of lines removed
-                  total_added = code_churn_metrics[1] + added # Update total added
-                  total_removed = code_churn_metrics[2] + removed # Update total removed
-                  code_churn = added - removed # Calculate code churn
-                  code_churn_metrics = (code_churn_metrics[0] + code_churn, total_added, total_removed) # Update the code churn metrics
-               except ValueError as e:
-                  print(f"{BackgroundColors.RED}Error while parsing numstat output: {e}{Style.RESET_ALL}")
+   metrics = process_numstat_metrics(lines) # Process the numstat metrics
 
-      avg_code_churn = code_churn_metrics[0] / total_commits if total_commits > 0 else 0 # Calculate average code churn
-      return avg_code_churn # Return the average code churn
+   avg_code_churn = metrics[2] / total_commits if total_commits > 0 else 0 # Calculate the average code churn
 
-   except subprocess.CalledProcessError as e:
-      print(f"{BackgroundColors.RED}Error while calculating average code churn: {e}{Style.RESET_ALL}")
-      return 0 # Return 0 or handle the error as needed
+   return avg_code_churn, # Return the average code churn
 
 def process_repository(repo, date_filter=None, ignore_keywords=None):
    """
@@ -549,23 +578,27 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
       setup_repository(repo["name"], repo["html_url"]) # Setup the repository: Clone or update it so we can calculate the code churn and commit count
       repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}/" # The path to the repository directory
       commits_count = count_commits(repo_path) # Count the number of commits in the repository
+      numstat_lines = run_git_log_numstat(repo_path) # Get numstat output
+
       if commits_count > MINIMUM_COMMITS: # If the number of commits is greater than the minimum
-         return {
-            "name": repo["name"].encode("utf-8").decode("utf-8"),
-            "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
-            "url": repo["html_url"],
-            "description": repo["description"].encode("utf-8").decode("utf-8"),
-            "topics": ", ".join(repo["topics"]),
-            "commits": commits_count,
-            "stars": repo["stargazers_count"],
-            "forks counter": repo["forks_count"],
-            "open issues counter": repo["open_issues_count"],
-            "avg_code_churn": int(calculate_average_code_churn(repo_path, commits_count)),
-            "avg_modified_files_count": "To be calculated",
-            "updated_at": repo["updated_at"],
-            # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
-            "license": repo["license"]["name"] if repo.get("license") else "No license specified",
-         }
+         avg_code_churn = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn
+         if avg_code_churn < MAXIMUM_AVG_CODE_CHURN: # If the average code churn are within the limits
+            return {
+               "name": repo["name"].encode("utf-8").decode("utf-8"),
+               "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
+               "url": repo["html_url"],
+               "description": repo["description"].encode("utf-8").decode("utf-8"),
+               "topics": ", ".join(repo["topics"]),
+               "commits": commits_count,
+               "stars": repo["stargazers_count"],
+               "forks counter": repo["forks_count"],
+               "open issues counter": repo["open_issues_count"],
+               "avg_code_churn": int(avg_code_churn),
+               "avg_modified_files_count": "To be calculated",
+               "updated_at": repo["updated_at"],
+               # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
+               "license": repo["license"]["name"] if repo.get("license") else "No license specified",
+            }
 
    return None # Return None if the repository is not valid
 
