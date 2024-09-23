@@ -26,6 +26,7 @@ EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 MAXIMUM_AVG_CODE_CHURN = 500 # The maximum average code churn allowed
+MAXIMUM_AVG_FILES_MODIFIED = 30 # The maximum average files modified allowed
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
 REPOSITORIES_SORTING_ATTRIBUTES = ["commits", "stars"] # The attribute to sort the repositories by
 
@@ -512,16 +513,17 @@ def run_git_log_numstat(repo_path):
 
 def process_numstat_metrics(lines):
    """
-   Processes git numstat lines to calculate total added, removed, and code churn.
+   Processes git numstat lines to calculate total added, removed, code churn, and files modified.
 
    :param lines: list of numstat output lines
    :return: list containing:
       - total added lines
       - total removed lines
       - total code churn (added - removed)
+      - total files modified
    """
 
-   metrics = [0, 0, 0] # Initialize the metrics list: [total_added, total_removed, total_code_churn]
+   metrics = [0, 0, 0, 0] # Initialize the metrics list: [total_added, total_removed, total_code_churn, total_files_modified]
 
    for line in lines: # Iterate over the lines
       if line: # If the line is not empty
@@ -533,6 +535,7 @@ def process_numstat_metrics(lines):
                metrics[0] += added # Total Lines Added
                metrics[1] += removed # Total Lines Removed
                metrics[2] += (added - removed) # Total Code Churn
+               metrics[3] += 1 # Total Files Modified
             except ValueError as e: # Handle the exception if there's an error parsing the numstat output
                print(f"{BackgroundColors.RED}Error while parsing numstat output: {e}{Style.RESET_ALL}")
 
@@ -540,12 +543,14 @@ def process_numstat_metrics(lines):
 
 def calculate_average_metrics(repo_path, total_commits, lines=None):
    """
-   Calculates the average code churn for all commits in a repository.
+   Calculates the average code churn and average files modified for all commits in a repository.
 
    :param repo_path: str
    :param total_commits: int
    :param lines: list of numstat output lines (optional)
-   :return float: representing the average code churn
+   :return: tuple containing:
+      - average code churn (float)
+      - average files modified per commit (float)
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating average metrics for the {BackgroundColors.CYAN}{repo_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
@@ -558,8 +563,9 @@ def calculate_average_metrics(repo_path, total_commits, lines=None):
    metrics = process_numstat_metrics(lines) # Process the numstat metrics
 
    avg_code_churn = metrics[2] / total_commits if total_commits > 0 else 0 # Calculate the average code churn
+   avg_files_modified = metrics[3] / total_commits if total_commits > 0 else 0 # Calculate the average files modified
 
-   return avg_code_churn, # Return the average code churn
+   return avg_code_churn, avg_files_modified # Return the average code churn and files modified
 
 def process_repository(repo, date_filter=None, ignore_keywords=None):
    """
@@ -581,8 +587,8 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
       numstat_lines = run_git_log_numstat(repo_path) # Get numstat output
 
       if commits_count > MINIMUM_COMMITS: # If the number of commits is greater than the minimum
-         avg_code_churn = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn
-         if avg_code_churn < MAXIMUM_AVG_CODE_CHURN: # If the average code churn are within the limits
+         avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
+         if avg_code_churn < MAXIMUM_AVG_CODE_CHURN and avg_files_modified < MAXIMUM_AVG_FILES_MODIFIED: # If the average code churn and files modified are within the limits
             return {
                "name": repo["name"].encode("utf-8").decode("utf-8"),
                "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
@@ -594,7 +600,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
                "forks counter": repo["forks_count"],
                "open issues counter": repo["open_issues_count"],
                "avg_code_churn": int(avg_code_churn),
-               "avg_modified_files_count": "To be calculated",
+               "avg_modified_files_count": int(avg_files_modified),
                "updated_at": repo["updated_at"],
                # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
                "license": repo["license"]["name"] if repo.get("license") else "No license specified",
