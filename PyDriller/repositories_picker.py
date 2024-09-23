@@ -54,7 +54,7 @@ START_PATH = os.getcwd() # Get the current working directory
 
 # Relative File Path Constants:
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
-RELATIVE_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/histogram_DATA_TYPE{PNG_FILE_EXTENSION}" # The relative path of the directory that contains the histograms
+RELATIVE_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_histogram_DATA_TYPE{PNG_FILE_EXTENSION}" # The relative path of the directory that contains the histograms
 RELATIVE_REPOSITORIES_LIST_PDF_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
 RELATIVE_REPOSITORIES_LIST_JSON_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
 RELATIVE_REPOSITORIES_CSV_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_FIELD_NAME{CSV_FILE_EXTENSION}" # The relative path to the repositories CSV file
