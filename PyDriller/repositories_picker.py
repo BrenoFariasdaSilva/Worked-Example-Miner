@@ -20,13 +20,13 @@ from fpdf import FPDF # For creating PDFs
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
 DATETIME_FILTER = None # The datetime filter for the repositories
-HISTOGRAM_REPOSITORY_FIELDS = ["avg_code_churn", "commits", "stars"] # The repository fields to create histograms for
+HISTOGRAM_REPOSITORY_FIELDS = ["avg_code_churn", "avg_modified_files", "commits", "stars"] # The repository fields to create histograms
 CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
 MAXIMUM_AVG_CODE_CHURN = 500 # The maximum average code churn allowed
-MAXIMUM_AVG_FILES_MODIFIED = 30 # The maximum average files modified allowed
+MAXIMUM_AVG_FILES_MODIFIED = 50 # The maximum average files modified allowed
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
 REPOSITORIES_SORTING_ATTRIBUTES = ["commits", "stars"] # The attribute to sort the repositories by
 
@@ -600,7 +600,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
                "forks counter": repo["forks_count"],
                "open issues counter": repo["open_issues_count"],
                "avg_code_churn": int(avg_code_churn),
-               "avg_modified_files_count": int(avg_files_modified),
+               "avg_modified_files": int(avg_files_modified),
                "updated_at": repo["updated_at"],
                # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
                "license": repo["license"]["name"] if repo.get("license") else "No license specified",
