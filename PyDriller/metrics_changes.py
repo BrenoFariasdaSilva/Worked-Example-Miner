@@ -775,7 +775,7 @@ def add_csv_header(csv_filename, metric_name):
 			writer = csv.writer(csvfile) # Create the csv writer
 			writer.writerow(expected_header) # Write the expected header
 
-def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, occurrences, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
 
@@ -786,6 +786,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	:param code_churns: The list of code churn values for each commit
 	:param lines_added: The list of lines added for each commit
 	:param lines_deleted: The list of lines deleted for each commit
+	:param modified_files: The list of modified files for each commit
 	:param occurrences: The occurrences counter of the class_name
 	:param metric_name: The name of the metric
 	:param repository_name: The name of the repository
@@ -845,9 +846,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
 			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], biggest_change[3]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], biggest_change[3]])
 
-def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, occurrences, raw_variable_attribute, repository_name):
+def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, raw_variable_attribute, repository_name):
 	"""
 	Perform linear regression on the given metrics and save the plot to a PNG file.
 
@@ -858,6 +859,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 	:param code_churns: A list of the code churn values for each commit
 	:param lines_added: A list of the lines added for each commit
 	:param lines_deleted: A list of the lines deleted for each commit
+	:param modified_files: A list of the modified files count for each commit
 	:param occurrences: The number of occurrences of the class or method
 	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 	:param repository_name: The name of the repository
@@ -892,7 +894,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 
 		# For the CBO metric, verify if there occurred any substantial decrease in the metric
 		if metric_name == SUBSTANTIAL_CHANGE_METRIC:
-			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, occurrences, metric_name, repository_name)
+			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name)
 			
 		# Verify for sufficient data points for regression
 		if len(commit_number) < 2 or len(metric_values) < 2:
@@ -968,7 +970,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 					previous_metrics = current_metrics # Update previous metrics
 
 			# Perform linear regression and generate graphics for the metrics
-			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["method_invoked"], identifier.split(" ")[1], repository_name)
+			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], record["method_invoked"], identifier.split(" ")[1], repository_name)
 			progress_bar.update(1) # Update the progress bar
 
 def merge_code_churn_fields(code_churn_metrics):
