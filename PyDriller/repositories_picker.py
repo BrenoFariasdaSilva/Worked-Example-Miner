@@ -1046,7 +1046,7 @@ def calculate_percentile_intervals(data, percentiles):
    """
 
    sorted_data = np.sort(data) # Sort the data
-   percentile_values = [np.percentile(sorted_data, p) for p in percentiles] # Calculate the percentile values
+   percentile_values = [round(np.percentile(sorted_data, p), 2) for p in percentiles] # Calculate and round the percentile values
    intervals = [] # List to store the calculated intervals
 
    # Calculate the interval ranges between consecutive percentiles
