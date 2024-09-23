@@ -1071,7 +1071,9 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 					# This get the metrics values of each metric occurrence in the method to get the min, max, avg, and third quartile of each metric
 					metrics_values.append([sublist[i] for sublist in metrics["metrics"]])
 
-				id, key = identifier.split(" ") # Get the id and key which are separated by a space
+				# Split the identifier to get the id and key which is separated by a space
+				id = identifier.split(" ")[0] # Get the id of the method
+				key = identifier.split(" ")[1] # Get the key of the method
 
 				# Write the metrics statistics to the csv file
 				write_method_metrics_statistics(writer, id, key, metrics, metrics_values, metrics_track_record[identifier]["commit_hashes"][0], metrics_track_record[identifier]["commit_hashes"][-1])
