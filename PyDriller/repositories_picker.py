@@ -965,18 +965,19 @@ def collect_field_values_from_list(data_list, field_name):
 
 def sort_values_by_occurrences(values):
    """
-   Sort the values by occurrences (number of repositories they appeared in) and return a list of tuples with the value, its occurrences, and the repositories.
+   Sort the values by occurrences (number of repositories they appeared in) and return a list of tuples with the value, 
+   its occurrences count, and the repositories list (as a comma-separated string).
 
-   :param value_to_repos: dictionary with values as keys and lists of repository names as values
-   :return: list of tuples with value, occurrences, and repositories
+   :param values: dictionary with values as keys and lists of repository names as values
+   :return: list of tuples with value, occurrences, and repositories (as a comma-separated string)
    """
-   
+
    sorted_values = sorted(values.items(), key=lambda x: len(x[1]), reverse=True) # Sort by occurrences (number of repositories)
 
-   # print the sorted values
-   for value, repos in sorted_values:
-      print(f"{BackgroundColors.CYAN}{value}{BackgroundColors.GREEN}: {len(repos)} repositories{Style.RESET_ALL}")
-   return sorted_values # Return the sorted values
+   # Transform the sorted values into a list of tuples (value, occurrences count, comma-separated repositories)
+   formatted_values = [(value, len(repos), ", ".join(repos)) for value, repos in sorted_values]
+
+   return formatted_values # Return the formatted list
 
 def write_to_csv(header, data, filename):
    """
