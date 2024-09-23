@@ -8,6 +8,7 @@ import os # For running a command in the terminal
 import platform # For getting the operating system name
 import random # For selecting random items
 import requests # For making HTTP requests
+import seaborn as sns # For creating plots with a high-level interface
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import sys # For exiting the program
 from collections import defaultdict # For counting the number of occurrences of each item
@@ -57,6 +58,7 @@ RELATIVE_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTOR
 RELATIVE_REPOSITORIES_LIST_PDF_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{PDF_FILE_EXTENSION}" # The relative path to the repositories PDF file
 RELATIVE_REPOSITORIES_LIST_JSON_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_sorted_by_SORTING_ATTRIBUTE{JSON_FILE_EXTENSION}" # The relative path to the repositories JSON file
 RELATIVE_REPOSITORIES_CSV_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_FIELD_NAME{CSV_FILE_EXTENSION}" # The relative path to the repositories CSV file
+RELATIVE_REPOSITORIES_PNG_SCATTER_FILEPATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/respositories_FIELD_NAME_scatter_plot{PNG_FILE_EXTENSION}" # The relative path to the scatter plot file
 
 # Full File Path Constants:
 FULL_REPOSITORIES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_REPOSITORIES_DIRECTORY_PATH}" # The full path of the directory that contains the repositories
@@ -64,6 +66,7 @@ FULL_REPOSITORIES_HISTOGRAM_PNG_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_
 FULL_REPOSITORIES_LIST_PDF_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_PDF_FILEPATH}" # The full path to the repositories PDF file
 FULL_REPOSITORIES_LIST_JSON_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_LIST_JSON_FILEPATH}" # The full path to the repositories JSON file
 FULL_REPOSITORIES_CSV_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_CSV_FILEPATH}" # The full path to the repositories topics file
+FULL_REPOSITORIES_PNG_SCATTER_FILEPATH = f"{START_PATH}{RELATIVE_REPOSITORIES_PNG_SCATTER_FILEPATH}" # The full path to the scatter plot file
 
 # Color Constants:
 class BackgroundColors: # Colors for the terminal
@@ -1010,6 +1013,28 @@ def create_csv_files(repositories):
    code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Collect and sort the code churns from the repositories
    write_to_csv(["Code Churn", "Occurrences Count", "Occurrences Location"], code_churns, FULL_REPOSITORIES_CSV_FILEPATH.replace("FIELD_NAME", "code_churn_occurrences")) # Write the code churns to a CSV file
 
+def generate_code_churn_scatter_plot(repositories):
+   """
+   Generate a scatter plot for the code churn values of the repositories.
+
+   :param repositories: list of repositories (dicts)
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Generating a scatter plot for the code churn values...{Style.RESET_ALL}")
+
+   code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Collect and sort the code churns from the repositories
+   
+   # Extract churn values for percentile calculations and scatter plot
+   churn_values = [float(code_churn) for code_churn, _, _ in code_churns]
+
+   # Calculate percentiles for additional insight (25%, 50%, 75%)
+   percentiles_to_calculate = [25, 50, 75]
+   percentiles_dict = calculate_percentiles(churn_values, percentiles_to_calculate)
+
+   # Generate scatter plot focusing on interquartile range (25th to 75th percentile)
+   generate_scatter_plot(churn_values, percentiles_dict, iqr_range=(25, 75))
+
 def randomly_select_repositories(repositories, num_repos):
    """
    Selects a number of repositories randomly.
@@ -1101,6 +1126,8 @@ def main():
 
       create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
       create_csv_files(sorted_repositories) # Create CSV files for the repositories
+
+      generate_code_churn_scatter_plot(sorted_repositories) # Generate a scatter plot for the code churn values of the repositories
 
       candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
       candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) # Sort the candidates by the number of commits
