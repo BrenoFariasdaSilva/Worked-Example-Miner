@@ -11,7 +11,6 @@ import sys # For reading the input
 import time # For measuring the time
 from colorama import Style # For coloring the terminal
 from datetime import datetime # For date manipulation
-from pydriller.metrics.process.code_churn import CodeChurn # For calculating the Code Churn (Delta of Added and Deleted Lines) metric
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from sklearn.linear_model import LinearRegression # For the linear regression
 from tqdm import tqdm # For progress bar
@@ -88,8 +87,7 @@ def verify_repositories_execution_constants():
    :return: None
    """
 
-   # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
-   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
+   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES: # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
       if not update_repositories_dictionary(): # Update the repositories list
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
@@ -105,12 +103,10 @@ def verify_and_update_repositories():
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying and updating the repositories...{Style.RESET_ALL}")
 
-	# Verify DEFAULT_REPOSITORIES and PROCESS_JSON_REPOSITORIES constants
-	verify_repositories_execution_constants()
+	verify_repositories_execution_constants() # Verify DEFAULT_REPOSITORIES and PROCESS_JSON_REPOSITORIES constants
 
-	# Update DEFAULT_REPOSITORIES_NAMES with the keys of the DEFAULT_REPOSITORIES dictionary
-	global DEFAULT_REPOSITORIES_NAMES
-	DEFAULT_REPOSITORIES_NAMES = list(DEFAULT_REPOSITORIES.keys())
+	global DEFAULT_REPOSITORIES_NAMES # Use the global DEFAULT_REPOSITORIES_NAMES variable
+	DEFAULT_REPOSITORIES_NAMES = list(DEFAULT_REPOSITORIES.keys()) # Update the DEFAULT_REPOSITORIES_NAMES list with the keys of the DEFAULT_REPOSITORIES dictionary
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}DEFAULT_REPOSITORIES_NAMES{BackgroundColors.GREEN} list was successfully updated with the keys of the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary.{Style.RESET_ALL}")
 
@@ -125,12 +121,11 @@ def input_with_timeout(prompt, timeout=60):
 	
 	print(prompt, end="", flush=True) # Print the prompt message without a newline character
 
-	# Wait for input with a timeout
-	ready, _, _ = select.select([sys.stdin], [], [], timeout)
+	ready, _, _ = select.select([sys.stdin], [], [], timeout) # Wait for input with a timeout
 
-	if ready:
+	if ready: # If input is ready
 		return sys.stdin.readline().strip().lower() # Read and return user input
-	else:
+	else: # If timeout is reached
 		return None # Return None if timeout is reached
 
 def update_global_variables_for_processing(process_classes):
@@ -140,7 +135,7 @@ def update_global_variables_for_processing(process_classes):
 	:param process_classes: bool, if True, processes classes; if False, processes methods
 	"""
 
-	global PROCESS_CLASSES, CK_CSV_FILE, CLASSES_OR_METHODS, UNSORTED_CHANGED_METHODS_CSV_FILENAME, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME
+	global PROCESS_CLASSES, CK_CSV_FILE, CLASSES_OR_METHODS, UNSORTED_CHANGED_METHODS_CSV_FILENAME, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME # Specify the global variables to update
 	
 	PROCESS_CLASSES = process_classes # Update the PROCESS_CLASSES constant
 	CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # Update the CK_CSV_FILE constant
@@ -183,9 +178,7 @@ def get_directory_path(repository_name):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the directory path for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	# Get the directory path for the specified repository name
-	repository_ck_metrics_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}"
-
+	repository_ck_metrics_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}" # Get the directory path for the specified repository name
 	return repository_ck_metrics_path # Return the path to the directory of the CK metrics related to the repository
 
 def create_directories(repository_name):
@@ -226,8 +219,7 @@ def generate_commit_modified_files_dict(repository_name):
 
 	commit_modified_files_dict = {} # A dictionary containing the commit hashes as keys and the modified files path list as values
 
-	# Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
-	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits():
+	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits(): # Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
 		commit_modified_files_dict[commit.hash] = [] # Initialize the commit hash list
 		for modified_file in commit.modified_files: # For each modified file in the commit
 			commit_modified_files_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff d
@@ -259,8 +251,7 @@ def get_class_package_name(file_name):
 	start_substring = "/src/" # The start substring
 	package_name = file_name[file_name.find(start_substring) + len(start_substring):file_name.rfind(".")] # Get the substring that comes after the: /src/ and before the last dot
 
-	# Replace the slashes with dots
-	package_name = package_name.replace("/", ".")
+	package_name = package_name.replace("/", ".") # Replace the slashes with dots
 
 	return package_name # Return the package name
 
@@ -305,8 +296,7 @@ def get_identifier_and_metrics(row):
 	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
 	method_invoked = row["methodInvocations"] if PROCESS_CLASSES else int(row["methodsInvokedQty"]) # Get the methodInvocations (str) or methodsInvokedQty (int) from the row
 
-	# Create a tuple containing the metrics
-	metrics = (cbo, wmc, rfc) # The metrics tuple
+	metrics = (cbo, wmc, rfc) # Create a tuple containing the metrics
 	identifier = f"{class_name} {variable_attribute}" # The identifier of the class or method
 
 	return identifier, metrics, method_invoked # Return the identifier, metrics and method_invoked of the class or method
@@ -330,18 +320,16 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	
 	file_path = row["file"] # Get the file path from the row
 
-	# Calculate the file path starting after the specified directory
-	path_index = file_path.find(RELATIVE_REPOSITORIES_DIRECTORY_PATH)
+	path_index = file_path.find(RELATIVE_REPOSITORIES_DIRECTORY_PATH) # Calculate the file path starting after the specified directory
 
-	if path_index != -1:
-		file_path = file_path[path_index + len(RELATIVE_REPOSITORIES_DIRECTORY_PATH) + 1:]
+	if path_index != -1: # If the path index is not -1
+		file_path = file_path[path_index + len(RELATIVE_REPOSITORIES_DIRECTORY_PATH) + 1:] # Get the file path starting after the specified directory
 	
 	repository_name = file_path.split("/")[0] # Get the repository name
 	file_path = file_path[len(repository_name) + 1:] # Get the file path starting after the repository name
 
 	for modified_file_path in modified_files_paths: # Iterate through the modified files paths
-		# If the modified file path is equal to the file path, then the file was modified
-		if modified_file_path == file_path:
+		if modified_file_path == file_path: # If the modified file path is equal to the file path, then the file was modified
 			return True # The file was modified
 	return False # The file was not modified
 
@@ -354,18 +342,14 @@ def convert_ck_classname_to_filename_format(ck_classname):
 	:return: The converted classname in filename format (e.g., com/houarizegai/calculator/Calculator$14).
 	"""
 	
-	# Replace dots with slashes except for the class and anonymous part
-	package_path = ck_classname.rsplit(".", 1)[0].replace(".", "/")
+	package_path = ck_classname.rsplit(".", 1)[0].replace(".", "/") # Replace dots with slashes except for the class and anonymous part
 	
-	# Get the class and anonymous part (e.g., Calculator$Anonymous14)
-	class_part = ck_classname.rsplit(".", 1)[-1]
+	class_part = ck_classname.rsplit(".", 1)[-1] # Get the class and anonymous part (e.g., Calculator$Anonymous14)
 	
-	# If it's an anonymous class (e.g., Calculator$Anonymous14), convert it to Calculator$14
-	if "Anonymous" in class_part:
-		class_part = class_part.replace("Anonymous", "")
+	if "Anonymous" in class_part: # If it's an anonymous class (e.g., Calculator$Anonymous14), convert it to Calculator$14
+		class_part = class_part.replace("Anonymous", "") # Remove the "Anonymous" part
 
-	# Construct the full path
-	filename_format = f"{package_path}/{class_part}.java"
+	filename_format = f"{package_path}/{class_part}.java" # Construct the full path
 	
 	return filename_format # Return the converted classname in filename format
 
@@ -398,12 +382,11 @@ def get_code_churn_attributes(diff_file_path, class_name):
 	in_method_block = False # Track if we are inside the method block
 	open_braces_count = 0 # Track braces to determine the start and end of a method
 
-	try:
+	try: # Try to read the diff file
 		with open(diff_file_path, "r") as diff_file: # Open the diff file for reading.
 			for line in diff_file: # Loop through each line in the diff file.
 				if method_name: # If a method name is specified, search for the method block.
-					# Detect if the method signature is found in the diff (Java method pattern).
-					if (f" {method_name}(" in line or line.strip().endswith(f"{method_name}(")) and "{" in line:
+					if (f" {method_name}(" in line or line.strip().endswith(f"{method_name}(")) and "{" in line: # Detect if the method signature is found in the diff (Java method pattern).
 						in_method_block = True # Enter the method block.
 						open_braces_count = 1 # Start counting braces.
 
@@ -414,24 +397,21 @@ def get_code_churn_attributes(diff_file_path, class_name):
 						if open_braces_count == 0: # If braces balance out, exit the method block.
 							in_method_block = False
 
-				# Only count changes inside the method block if method_name is specified
-				if method_name and not in_method_block:
+				if method_name and not in_method_block: # Only count changes inside the method block if method_name is specified
 					continue # Skip lines outside the method
 
-				# Count added lines (starting with "+", excluding diff file headers).
-				if line.startswith("+") and not line.startswith("+++"):
-					lines_added += 1
+				if line.startswith("+") and not line.startswith("+++"): # Count added lines (starting with "+", excluding diff file headers).
+					lines_added += 1 # Increment the lines added.
 
-				# Count deleted lines (starting with "-", excluding diff file headers).
-				elif line.startswith("-") and not line.startswith("---"):
-					lines_deleted += 1
+				elif line.startswith("-") and not line.startswith("---"): # Count deleted lines (starting with "-", excluding diff file headers).
+					lines_deleted += 1 # Increment the lines deleted.
 
 		return lines_added, lines_deleted # Return the tuple containing lines added and lines deleted.
 
-	except FileNotFoundError:
+	except FileNotFoundError: # Catch the FileNotFoundError exception.
 		raise FileNotFoundError(f"{BackgroundColors.RED}Error: Diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED} not found{Style.RESET_ALL}") # Raise an error if the file is not found.
 
-	except Exception as e:
+	except Exception as e: # Catch any other exceptions.
 		raise Exception(f"{BackgroundColors.RED}Error: An error occurred while reading the diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED}: {e}{Style.RESET_ALL}") # Raise an error if an exception occurs.
 
 def get_code_churn(churn_attributes):
@@ -458,18 +438,12 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the csv file containing the metrics of a method or class...{Style.RESET_ALL}")
 
-	# Open the csv file
-	with open(file_path, "r") as csvfile:
-		# Read the csv file
-		reader = csv.DictReader(csvfile)
-		# Iterate through each row, that is, for each method in the csv file
-		for row in reader:
-			# Get the identifier, metrics and method_invoked of the class or method
-			identifier, ck_metrics, method_invoked = get_identifier_and_metrics(row)
-
-			# If the identifier is not in the dictionary, then add it
-			if identifier not in metrics_track_record.keys():
-				metrics_track_record[identifier] = {
+	with open(file_path, "r") as csvfile: # Open the csv file
+		reader = csv.DictReader(csvfile) # Read the csv file
+		for row in reader: # Iterate through each row, that is, for each method in the csv file
+			identifier, ck_metrics, method_invoked = get_identifier_and_metrics(row) # Get the identifier, metrics and method_invoked of the class or method
+			if identifier not in metrics_track_record.keys(): # If the identifier is not in the dictionary, then add it
+				metrics_track_record[identifier] = { # Add the identifier to the metrics_track_record dictionary
 					"metrics": [], # The metrics list (CBO, WMC, RFC)
 					"commit_hashes": [], # The commit hashes list
 					"changed": 0, # The number of times the metrics changed
@@ -480,46 +454,33 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 					"method_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
 				}
 
-			# Get the metrics_changes list for the method
-			metrics_changes = metrics_track_record[identifier]["metrics"]
-			# Get the commit hashes list for the method
-			commit_hashes = metrics_track_record[identifier]["commit_hashes"]
-			# Get the commit number of the current row (i-commit_hash)
-			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")]
-			# Get the commit hash of the current row
-			commit_hash = commit_number.split("-")[1]
+			metrics_changes = metrics_track_record[identifier]["metrics"] # Get the metrics_changes list for the method
+			commit_hashes = metrics_track_record[identifier]["commit_hashes"] # Get the commit hashes list for the method
+			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number of the current row (i-commit_hash)
+			commit_hash = commit_number.split("-")[1] # Get the commit hash of the current row
 
 			# Verify if the file in the current row of the file path was actually modified
 			if (commit_number not in commit_hashes or (ck_metrics not in metrics_changes)) and (was_file_modified(commit_modified_files_dict, commit_hash, row)):
-				# Append the metrics to the list
-				metrics_changes.append(ck_metrics)
-				# Increment the number of changes
-				metrics_track_record[identifier]["changed"] += 1
-				# Append the commit hash to the list
-				commit_hashes.append(commit_number)
+				metrics_changes.append(ck_metrics) # Append the metrics to the list
+				metrics_track_record[identifier]["changed"] += 1 # Increment the number of changes
+				commit_hashes.append(commit_number) # Append the commit hash to the list
 
-				# Get the diff file path and class name for code churn calculation
-				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"])
-				class_name = convert_ck_classname_to_filename_format(row["class"])
+				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
+				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
 
-				# Extract code churn attributes (lines added and deleted)
-				churn_attributes = get_code_churn_attributes(diff_file_path, class_name)
-				lines_added, lines_deleted = churn_attributes
+				churn_attributes = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
+				lines_added, lines_deleted = churn_attributes # Unpack the churn attributes
 
-				# Calculate the code churn value
-				code_churn_value = get_code_churn(churn_attributes)
+				code_churn_value = get_code_churn(churn_attributes) # Calculate the code churn value
 
-				# Update the code churn, lines added, and lines deleted in the metrics_track_record
-				metrics_track_record[identifier]["code_churns"].append(code_churn_value)
-				metrics_track_record[identifier]["lines_added"].append(lines_added)
-				metrics_track_record[identifier]["lines_deleted"].append(lines_deleted)
+				metrics_track_record[identifier]["code_churns"].append(code_churn_value) # Append the code churn value to the list
+				metrics_track_record[identifier]["lines_added"].append(lines_added) # Append the lines added to the list
+				metrics_track_record[identifier]["lines_deleted"].append(lines_deleted) # Append the lines deleted to the list
 
-				# Update the modified files count for the current commit
-				modified_files_count = len(commit_modified_files_dict[commit_hash])
-				metrics_track_record[identifier]["modified_files_count"].append(modified_files_count)
+				modified_files_count = len(commit_modified_files_dict[commit_hash]) # Get the modified files count for the current commit
+				metrics_track_record[identifier]["modified_files_count"].append(modified_files_count) # Append the modified files count to the list
 
-				# Update the metrics_track_record dictionary
-				metrics_track_record[identifier]["metrics"] = metrics_changes
+				metrics_track_record[identifier]["metrics"] = metrics_changes # Update the metrics_track_record dictionary
 
 def traverse_directory(repository_name, repository_ck_metrics_path):
 	"""
@@ -536,14 +497,12 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	file_count = 0 # Initialize the file count
 	progress_bar = None # Initialize the progress bar
 
-	# Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
-	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name)
+	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name) # Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
-		for root, subdirs, files in os.walk(repository_ck_metrics_path):
-			# Sort the subdirectories in ascending order by the substring that comes before the "-"
-			subdirs.sort(key=lambda x: int(x.split("-")[0]))
+		for root, subdirs, files in os.walk(repository_ck_metrics_path): # Walk through the directory
+			subdirs.sort(key=lambda x: int(x.split("-")[0])) # Sort the subdirectories in ascending order by the substring that comes before the "-"
 			for dir in subdirs: # For each subdirectory in the directories
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 					if file == CK_CSV_FILE: # If the file is the desired csv file
@@ -557,12 +516,10 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 						else:
 							progress_bar.update(1) # Update the progress bar
 
-	# If the progress bar is not None, then close it
-	if progress_bar is not None:
+	if progress_bar is not None: # If the progress bar is not None, then close it
 		progress_bar.close() # Close the progress bar
 
-	# Return the method metrics, which is a dictionary containing the metrics of each method  
-	return metrics_track_record
+	return metrics_track_record # Return the method metrics, which is a dictionary containing the metrics of each method
 
 def sort_commit_hashes_by_commit_number(metrics_track_record):
 	"""
@@ -573,9 +530,8 @@ def sort_commit_hashes_by_commit_number(metrics_track_record):
 	:return: The sorted metrics_track_record
 	"""
 
-	for key in metrics_track_record:
-		# Sort the commit hashes list for each class or method according to the commit number
-		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0]))
+	for key in metrics_track_record: # For each key in the metrics_track_record dictionary
+		metrics_track_record[key]["commit_hashes"].sort(key=lambda x: int(x.split("-")[0])) # Sort the commit hashes list for each class or method according to the commit number
 
 	return metrics_track_record # Return the sorted metrics_track_record
 
@@ -590,8 +546,7 @@ def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
 
-	# Open the txt file and write the metrics_track_record to it
-	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file:
+	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file: # Open the txt file and write the metrics_track_record to it
 		for key, value in metrics_track_record.items(): # For each key, value in the metrics_track_record dictionary
 			file.write(f"{key}: \n") # Write the key
 			file.write(f"\tMetrics: {value['metrics']}\n") # Write the metrics
@@ -614,8 +569,7 @@ def get_clean_id(id):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the clean id for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 	
-	# If the id contains slashes, remove them
-	if "/" in id:
+	if "/" in id: # If the id contains slashes, remove them
 		return str(id.split("/")[0:-1])[2:-2] # Return the id without the slashes
 	else: # If the id does not contain slashes, simply return the id
 		return id # Return the id
@@ -628,23 +582,19 @@ def verify_refactoring_file(refactoring_file_path):
 	:return: A tuple (bool, str) where the bool indicates if the file is valid, and the str provides a message.
 	"""
 
-	# Verify if the file exists
-	if not os.path.isfile(refactoring_file_path):
-		return False, "File does not exist."
+	if not os.path.isfile(refactoring_file_path): # Verify if the file exists
+		return False, "File does not exist." # Return False if the file does not exist
 
-	# Verify if the file is not empty
-	if os.path.getsize(refactoring_file_path) == 0:
-		return False, "File is empty."
+	if os.path.getsize(refactoring_file_path) == 0: # Verify if the file is not empty
+		return False, "File is empty." # Return False if the file is empty
 
-	# Try to load the JSON content of the file
-	try:
-		with open(refactoring_file_path, "r") as file:
-			data = json.load(file)
-	except json.JSONDecodeError:
-		return False, "File contains invalid JSON."
-
-	# If all checks pass, the file is considered valid
-	return True, "File is valid."
+	try: # Try to load the JSON content of the file
+		with open(refactoring_file_path, "r") as file: # Open the refactoring file
+			data = json.load(file) # Load the JSON data
+			if not data: # Verify if the data is empty
+				return True, "File is valid." # Return True if the file is valid
+	except json.JSONDecodeError: # Catch the JSONDecodeError exception
+		return False, "File contains invalid JSON." # Return False if the file contains invalid JSON
 
 def generate_refactoring_file(repository_name, commit_hash, refactoring_file_path):
 	"""
@@ -658,28 +608,23 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	# Create the "refactorings" directory if it does not exist
-	relatively_refactorings_directory_path = f"{RELATIVE_REFACTORINGS_DIRECTORY_PATH}/{repository_name}"
-	full_refactorings_directory_path = f"{START_PATH}/{relatively_refactorings_directory_path}"
-	create_directory(full_refactorings_directory_path, relatively_refactorings_directory_path)
+	relatively_refactorings_directory_path = f"{RELATIVE_REFACTORINGS_DIRECTORY_PATH}/{repository_name}" # Get the relatively refactorings directory path
+	full_refactorings_directory_path = f"{START_PATH}/{relatively_refactorings_directory_path}" # Get the full refactorings directory path
+	create_directory(full_refactorings_directory_path, relatively_refactorings_directory_path) # Create the refactorings directory
 
-	# Verify if the refactoring file exists
-	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # If the refactoring file does not exist
-		# Determine the system's null device to discard output
-		null_device = "NUL" if platform.system() == "Windows" else "/dev/null"
+	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # If the refactoring file does not exist or is empty
+		null_device = "NUL" if platform.system() == "Windows" else "/dev/null" # Determine the system's null device to discard output
 
-		setup_repository(repository_name, DEFAULT_REPOSITORIES[repository_name])
+		setup_repository(repository_name, DEFAULT_REPOSITORIES[repository_name]) # Setup the repository
 		
-		# Run RefactoringMiner to get the refactoring data, hiding its output
-		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c .{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1"
+		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c .{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1" # Run RefactoringMiner to get the refactoring data, hiding its output
 		os.system(command) # Run the command to get the RefactoringMiner data
 
-	# Verify if the refactoring file was properly generated
-	is_valid, message = verify_refactoring_file(refactoring_file_path)
+	is_valid, message = verify_refactoring_file(refactoring_file_path) # Verify if the refactoring file was properly generated
 
 	if is_valid: # If the refactoring file was properly generated
 		return refactoring_file_path # Return the refactoring file path
-	else:
+	else: # If the refactoring file was not properly generated
 		print(f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
 		return None # Return None
 
@@ -696,35 +641,28 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the specific information about the refactorings for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	# Define the refactoring file path
-	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}"
+	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # Define the refactoring file path
 
-	# Generate the refactoring file if it does not exist or is empty
-	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0:
-		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path)
+	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # Generate the refactoring file if it does not exist or is empty
+		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path) # Generate the refactoring file
 
-	# Initialize the dictionary to hold file paths and their corresponding refactoring types
-	refactorings_by_filepath = {}
+	refactorings_by_filepath = {} # Initialize the dictionary to hold file paths and their corresponding refactoring types
 
-	# Open and read the refactoring file
-	with open(refactoring_file_path, "r") as file:
+	with open(refactoring_file_path, "r") as file: # Open and read the refactoring file
 		data = json.load(file) # Load the JSON data
-		# Loop through the refactorings in the data
-		for commit in data["commits"]:
+		for commit in data["commits"]: # Loop through the refactorings in the data
 			if commit["sha1"] == commit_hash: # Verify if the commit hash matches the specified one
 				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
 					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Combine and loop through both left and right side locations
-						# Verify if the class name is in the file path
 						simplified_class_name = class_name.split("$")[0].replace(".", "/") # Simplify the class name and adapt it to the path format
-						if simplified_class_name in location["filePath"]:
-							# If the file path is already in the dictionary, append the refactoring type to its list
-							if location["filePath"] not in refactorings_by_filepath:
+						if simplified_class_name in location["filePath"]: # If the class name is in the file path
+							if location["filePath"] not in refactorings_by_filepath: # If the file path is already in the dictionary, append the refactoring type to its list
 								refactorings_by_filepath[location["filePath"]] = {} # Initialize the dictionary for the file path
 							refactoring_type = refactoring["type"] # Get the refactoring type
 							if refactoring_type not in refactorings_by_filepath[location["filePath"]]: # If the refactoring type is not in the dictionary, add it
 								refactorings_by_filepath[location["filePath"]][refactoring_type] = 0 # Initialize the refactoring type counter
 							refactorings_by_filepath[location["filePath"]][refactoring_type] += 1 # Increment the refactoring type counter
-							verbose_output(true_string=f"Refactoring: {json.dumps(refactoring, indent=4)}")
+							verbose_output(true_string=f"Refactoring: {json.dumps(refactoring, indent=4)}") # Print the refactoring data
 
 	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types and occurrences
 
@@ -740,8 +678,8 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 
 	# Converts the nested dictionary into a formatted string with the file paths and their corresponding refactoring types and occurrences
 	refactorings_summary = " ".join(
-        f"{filepath}: [{', '.join(f'{refactoring_type}({occurrences})' for refactoring_type, occurrences in sorted(types.items(), key=lambda item: item[1], reverse=True))}]"
-        for filepath, types in refactorings_info.items()
+		f"{filepath}: [{', '.join(f'{refactoring_type}({occurrences})' for refactoring_type, occurrences in sorted(types.items(), key=lambda item: item[1], reverse=True))}]"
+		for filepath, types in refactorings_info.items()
     )
 
 	return refactorings_summary # Return the formatted string containing the refactorings information
@@ -756,9 +694,9 @@ def add_csv_header(csv_filename, metric_name):
 	"""
 
 	expected_header = [] # The expected header list
-	if PROCESS_CLASSES:
+	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 		expected_header = ["Class", "Type", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Method Invocations", "Refactoring Patterns"]
-	else:
+	else: # If the PROCESS_CLASSES constant is set to False
 		expected_header = ["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Methods Invoked Qty", "Refactoring Patterns"]
 	
 	if verify_file(csv_filename): # If the file exists
@@ -795,10 +733,10 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the class or method has had a substantial decrease in the {BackgroundColors.CYAN}{metric_name}{BackgroundColors.GREEN} metric...{Style.RESET_ALL}")
 
-	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS):
+	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS): # If any of the class name ignore keywords is found in the class name, return
 		return # If any of the class name ignore keywords is found in the class name, return
 
-	if any(keyword.lower() in raw_variable_attribute.lower() for keyword in IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS):
+	if any(keyword.lower() in raw_variable_attribute.lower() for keyword in IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS): # If any of the variable/attribute ignore keywords is found in the variable attribute,
 		return # If any of the variable/attribute ignore keywords is found in the variable attribute, return
 	
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/" # The folder path
@@ -806,47 +744,36 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 
 	global FIRST_SUBSTANTIAL_CHANGE_VERIFICATION # Declare that we're using the global variable
 	
-	# Verify if it's the first run and if the CSV file already exists
-	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_file(csv_filename):
+	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_file(csv_filename): # Verify if it's the first run and if the CSV file already exists
 		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False # Update the flag after handling the first run
 		os.remove(csv_filename) # Remove the CSV file if it exists
 
-	# Add the header if the file is newly created
-	if not verify_file(csv_filename):
-		add_csv_header(csv_filename, metric_name)
+	if not verify_file(csv_filename): # Add the header if the file is newly created
+		add_csv_header(csv_filename, metric_name) # Add the header to the csv file
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = ["", "", "", ""] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
 
-	# Loop through the metrics values
-	for i in range(1, len(metrics_values)):
-		# Verify if the current metric is bigger than the previous metric or the previous metric is zero
-		if metrics_values[i] >= metrics_values[i - 1] or metrics_values[i - 1] == 0:
+	for i in range(1, len(metrics_values)): # Loop through the metrics values
+		if metrics_values[i] >= metrics_values[i - 1] or metrics_values[i - 1] == 0: # Verify if the current metric is bigger than the previous metric or the previous metric is zero
 			continue # If the current metric is bigger than the previous metric or the previous metric is zero, then continue
 
-		# Calculate the current percentual variation
-		current_percentual_variation = round((metrics_values[i - 1] - metrics_values[i]) / metrics_values[i - 1], 3)
+		current_percentual_variation = round((metrics_values[i - 1] - metrics_values[i]) / metrics_values[i - 1], 3) # Calculate the current percentual variation
 
-		# If the current percentual variation is bigger than the desired decrease, then update the biggest_change list
-		if current_percentual_variation > DESIRED_DECREASE and current_percentual_variation > biggest_change[2]:
-			# Fetch commit data to retrieve refactoring information
+		if current_percentual_variation > DESIRED_DECREASE and current_percentual_variation > biggest_change[2]: # If the current percentual variation is bigger than the desired decrease, then update the biggest_change list
 			temp_commit_data = [commit_hashes[i - 1], commit_hashes[i]] # The commit data [from_commit_hash, to_commit_hash]
-			refactorings_info = get_refactoring_info(repository_name, temp_commit_data[1].split("-")[0], temp_commit_data[1].split("-")[1], class_name)
+			refactorings_info = get_refactoring_info(repository_name, temp_commit_data[1].split("-")[0], temp_commit_data[1].split("-")[1], class_name) # Get the refactoring information
 
-			# Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
-			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list):
+			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list): # Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
 				refactorings_summary = convert_refactorings_dictionary_to_string(refactorings_info) # Convert the refactorings dictionary into a string
 
-				# Update the biggest_change list and commit data only if the conditions above are met.
-				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary.replace("'", "")]
+				biggest_change = [metrics_values[i - 1], metrics_values[i], current_percentual_variation, refactorings_summary.replace("'", "")] # Update the biggest_change list and commit data only if the conditions above are met.
 				commit_data = [temp_commit_data[0].split("-")[0], temp_commit_data[0].split("-")[1], temp_commit_data[1].split("-")[0], temp_commit_data[1].split("-")[1]] # Splitting commit hash to get commit number and hash
 
-	# Write the biggest change to the csv file if the percentual variation is bigger than the desired decrease and refactorings were found
-	if biggest_change[2] > DESIRED_DECREASE and biggest_change[3]:
+	if biggest_change[2] > DESIRED_DECREASE and biggest_change[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
-			# Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], biggest_change[3]])
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], biggest_change[3]]) # Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
 
 def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, raw_variable_attribute, repository_name):
 	"""
@@ -868,36 +795,30 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Performing linear regression on the given metrics and saving the plot to a PNG file for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	# Verify for empty metrics list
-	if not metrics and VERBOSE:
+	if not metrics and VERBOSE: # Verify for empty metrics list
 		print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
-		return
+		return # Return if the metrics list is empty
 	
-	try:
+	try: # Try to convert the metrics list to a NumPy array
 		metrics_array = np.array(metrics, dtype=float) # Safely convert to NumPy array for flexibility in handling
-	except:
+	except: # Catch any exceptions
 		verbose_output(true_string=f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
 		return
 
-	# Verify for invalid values in the metrics
-	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_POSITION):
+	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_POSITION): # Verify for invalid values in the metrics
 		verbose_output(true_string=f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
 		return # Return if the metrics structure is not as expected
 	
-	# Loop through the metrics_position dictionary
-	for metric_name, metric_position in METRICS_POSITION.items():
-		# Extract the metrics values
+	for metric_name, metric_position in METRICS_POSITION.items(): # Loop through the metrics_position dictionary
 		commit_number = np.arange(metrics_array.shape[0]) # Create the commit number array
 		if not commit_number.any(): # If the commit number is empty
 			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
 		metric_values = metrics_array[:, metric_position] # Extract the metrics values from the metrics array in the specified position (column)
 
-		# For the CBO metric, verify if there occurred any substantial decrease in the metric
-		if metric_name == SUBSTANTIAL_CHANGE_METRIC:
-			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name)
+		if metric_name == SUBSTANTIAL_CHANGE_METRIC: # For the CBO metric, verify if there occurred any substantial decrease in the metric
+			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name) # Verify if there occurred any substantial decrease in the metric
 			
-		# Verify for sufficient data points for regression
-		if len(commit_number) < 2 or len(metric_values) < 2:
+		if len(commit_number) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
 			return # Return if there are not enough data points for regression
 		
 		# Perform linear regression using Scikit-Learn
@@ -914,16 +835,12 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		plt.title(f"Linear Regression for {metric_name} metric of {class_name} {variable_attribute}") # Set the title
 		plt.legend() # Show the legend
 
-		# Create the Class/Method linear prediction directory if it does not exist
-		relative_metrics_prediction_directory_path = f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}"
-		full_metrics_prediction_directory_path = f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}"
-		create_directory(full_metrics_prediction_directory_path, relative_metrics_prediction_directory_path)
+		relative_metrics_prediction_directory_path = f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}" # The relative path to the directory where the plot will be stored
+		full_metrics_prediction_directory_path = f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}" # The full path to the directory where the plot will be stored
+		create_directory(full_metrics_prediction_directory_path, relative_metrics_prediction_directory_path) # Create the directory where the plot will be stored
 
-		# Save the plot to a PNG file
-		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{metric_name}{PNG_FILE_EXTENSION}")
-		
-		# Close the plot
-		plt.close()
+		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{metric_name}{PNG_FILE_EXTENSION}") # Save the plot to a PNG file
+		plt.close() # Close the plot
 
 def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 	"""
@@ -936,8 +853,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the metrics evolution for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a csv file...{Style.RESET_ALL}")
 	
-	# For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
-	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar:
+	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
 		for identifier, record in metrics_track_record.items(): # For each identifier and record in the metrics_track_record dictionary
 			metrics = record["metrics"] # Get the metrics list
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
@@ -946,8 +862,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			create_directory(full_metrics_evolution_directory_path, f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}") # Create the directory where the csv file will be stored
 			metrics_filename = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}{CSV_FILE_EXTENSION}"
 
-			# Open the csv file and write the metrics to it
-			with open(metrics_filename, "w") as csvfile: 
+			with open(metrics_filename, "w") as csvfile: # Open the csv file and write the metrics to it
 				writer = csv.writer(csvfile) # Create the csv writer
 				if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 					unique_identifier = class_name # The unique identifier is the class name
@@ -962,15 +877,12 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				for i in range(metrics_len): # For each metric in the metrics list
 					current_metrics = (metrics[i][0], metrics[i][1], metrics[i][2]) # Tuple of current metrics (CBO, WMC, RFC)
 
-					# Verify if the metrics tuple is different from the previous metrics tuple
-					if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics):
-						# Write the unique identifier, the commit hash, code churn, lines added, lines deleted, and the metrics to the csv file
-						writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]])
+					if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics): # Verify if the metrics tuple is different from the previous metrics tuple
+						writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]]) # Write the unique identifier, the commit hash, code churn, lines added, lines deleted, and the metrics to the csv file
 					
 					previous_metrics = current_metrics # Update previous metrics
 
-			# Perform linear regression and generate graphics for the metrics
-			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], record["method_invoked"], identifier.split(" ")[1], repository_name)
+			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], record["method_invoked"], identifier.split(" ")[1], repository_name) # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
 
 def merge_code_churn_fields(code_churn_metrics):
@@ -1025,17 +937,14 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating statistics for method {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 
-	# Calculate statistics for CBO, WMC, and RFC metrics
-	cbo_stats = calculate_metric_statistics(metrics_values[0])
-	wmc_stats = calculate_metric_statistics(metrics_values[1])
-	rfc_stats = calculate_metric_statistics(metrics_values[2])
+	cbo_stats = calculate_metric_statistics(metrics_values[0]) # Calculate statistics for CBO
+	wmc_stats = calculate_metric_statistics(metrics_values[1]) # Calculate statistics for WMC
+	rfc_stats = calculate_metric_statistics(metrics_values[2]) # Calculate statistics for RFC
 
-	# Calculate statistics for code churn and modified files
-	churn_stats = calculate_metric_statistics(metrics["code_churns"])
-	modified_files_stats = calculate_metric_statistics(metrics["modified_files_count"])
+	churn_stats = calculate_metric_statistics(metrics["code_churns"]) # Calculate statistics for code churn
+	modified_files_stats = calculate_metric_statistics(metrics["modified_files_count"]) # Calculate statistics for modified files
 
-	# Write the metrics statistics to the CSV file
-	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *cbo_stats, *wmc_stats, *rfc_stats, first_commit_hash, last_commit_hash, metrics["method_invoked"]])
+	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *cbo_stats, *wmc_stats, *rfc_stats, first_commit_hash, last_commit_hash, metrics["method_invoked"]]) # Write the metrics statistics to the CSV file
 
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	"""
@@ -1048,35 +957,27 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the metrics in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to calculate the minimum, maximum, average, and third quartile of each metric and writing it to a csv file...{Style.RESET_ALL}")
 
-	# Open the csv file and process the metrics of each method
-	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
-	with open(unsorted_metrics_filename, "w") as csvfile:
-		writer = csv.writer(csvfile)	
+	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted metrics filename
+	with open(unsorted_metrics_filename, "w") as csvfile: # Open the csv file in write mode
+		writer = csv.writer(csvfile) # Create the csv writer
 		if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-			# Write the header to the csv file but using the "Type" in the second column
-			writer.writerow(["Class", "Type", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"])
-		else:
-			# Write the header to the csv file but using the "Method" in the second column
-			writer.writerow(["Class", "Method", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"])
+			writer.writerow(["Class", "Type", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"]) # Write the header to the csv file but using the "Type" in the second column
+		else: # If the PROCESS_CLASSES constant is set to False
+			writer.writerow(["Class", "Method", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"]) # Write the header to the csv file but using the "Method" in the second column
 
-		# Loop inside the *metrics["metrics"] in order to get the min, max, avg, and third quartile of each metric (CBO, WMC, RFC, code churn, modified files)
-		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar:
-			for identifier, metrics in metrics_track_record.items():
-				# Verify if the metrics changes is greater than the minimum changes
-				if metrics["changed"] < MINIMUM_CHANGES:
+		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
+			for identifier, metrics in metrics_track_record.items(): # For each identifier and metrics in the metrics_track_record dictionary
+				if metrics["changed"] < MINIMUM_CHANGES: # Verify if the metrics changes is greater than the minimum changes
 					continue # If the metrics changes is less than the minimum changes, then jump to the next iteration
 
 				metrics_values = [] # This stores the metrics values in a list of lists of each metric
 				for i in range(0, NUMBER_OF_METRICS): # For each metric in the metrics list
-					# This get the metrics values of each metric occurrence in the method to get the min, max, avg, and third quartile of each metric
-					metrics_values.append([sublist[i] for sublist in metrics["metrics"]])
+					metrics_values.append([sublist[i] for sublist in metrics["metrics"]]) # This get the metrics values of each metric occurrence in the method to get the min, max, avg, and third quartile of each metric
 
-				# Split the identifier to get the id and key which is separated by a space
 				id = identifier.split(" ")[0] # Get the id of the method
 				key = identifier.split(" ")[1] # Get the key of the method
 
-				# Write the metrics statistics to the csv file
-				write_method_metrics_statistics(writer, id, key, metrics, metrics_values, metrics_track_record[identifier]["commit_hashes"][0], metrics_track_record[identifier]["commit_hashes"][-1])
+				write_method_metrics_statistics(writer, id, key, metrics, metrics_values, metrics_track_record[identifier]["commit_hashes"][0], metrics_track_record[identifier]["commit_hashes"][-1]) # Write the metrics statistics to the csv file
 				progress_bar.update(1) # Update the progress bar
 
 def sort_csv_by_changes(repository_name):
@@ -1089,30 +990,23 @@ def sort_csv_by_changes(repository_name):
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}metrics statistics files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}number of changes{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-	# Define the unsorted csv file path
 	unsorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted csv file path
 
-	# Verify if the unsorted csv file exists
-	if not verify_file(unsorted_csv_file_path):
+	if not verify_file(unsorted_csv_file_path): # Verify if the unsorted csv file exists
 		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository does not exist.{Style.RESET_ALL}")
 		return # Return if the unsorted csv file does not exist
 
-	# Read the csv file
-	data = pd.read_csv(unsorted_csv_file_path)
+	data = pd.read_csv(unsorted_csv_file_path) # Read the csv file
 	
-	# Verify if the DataFrame is empty after the header
-	if data.empty:
+	if data.empty: # Verify if the DataFrame is empty after the header
 		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is empty after the header.{Style.RESET_ALL}")
 		return # Return if the file is empty after the header
 	
-	# Sort the csv file by the number of changes
-	data = data.sort_values(by=["Changed"], ascending=False)
+	data = data.sort_values(by=["Changed"], ascending=False) # Sort the csv file by the number of changes
 	
-	# Define the sorted csv file path
 	sorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}" # The sorted csv file path
 	
-	# Write the sorted csv file to a new csv file
-	data.to_csv(sorted_csv_file_path, index=False)
+	data.to_csv(sorted_csv_file_path, index=False) # Write the sorted csv file to a new csv file
 
 def sort_csv_by_percentual_variation(repository_name):
 	"""
@@ -1124,12 +1018,9 @@ def sort_csv_by_percentual_variation(repository_name):
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-	# Read the csv file
-	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}")
-	# Sort the csv file by the percentual variation of the metric
-	data = data.sort_values(by=["Percentual Variation"], ascending=False)
-	# Write the sorted csv file to a new csv file
-	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}", index=False)
+	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}") # Read the csv file
+	data = data.sort_values(by=["Percentual Variation"], ascending=False) # Sort the csv file by the percentual variation of the metric
+	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}", index=False) # Write the sorted csv file to a new csv file
 
 def read_csv_as_dict(file_path):
 	"""
@@ -1152,7 +1043,7 @@ def read_csv_as_dict(file_path):
 					"execution_time_in_minutes": float(row["Execution Time (Minutes)"]), # Convert the execution time to a float
 					"size_in_gb": float(row["Size (GB)"]) # Convert the size to a float
 				}
-	else:
+	else: # If the file path does not exist
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{file_path}{BackgroundColors.RED} file does not exist.{Style.RESET_ALL}")
 		repository_data = {} # Reset the repository data if the file does not exist
 
@@ -1168,7 +1059,7 @@ def write_dict_to_csv(file_path, repositories_attributes):
 
 	with open(file_path, "w", newline="") as csv_file: # Open the CSV file
 		writer = csv.writer(csv_file) # Create the CSV writer
-		writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"])
+		writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header to the CSV file
 		for repository_name, attributes in repositories_attributes.items(): # For each repository name and attributes in the data dictionary
 			writer.writerow([ # Write the repository name and attributes to the CSV file
 				repository_name, # Repository name
@@ -1189,14 +1080,12 @@ def update_repository_attributes(repository_name, elapsed_time):
 	:return: Updated repository attributes
 	"""
 
-	# Read the existing CSV data
-	repositories_attributes = read_csv_as_dict(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH)
+	repositories_attributes = read_csv_as_dict(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) # Read the existing CSV data
 
-	if repository_name in repositories_attributes:
-		# Update the attributes for the specified repository
-		repositories_attributes[repository_name]["execution_time_in_minutes"] = round(repositories_attributes[repository_name]["execution_time_in_minutes"] + elapsed_time / 60, 2)
-		repositories_attributes[repository_name]["size_in_gb"] += get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES)
-	else:
+	if repository_name in repositories_attributes: # Update the attributes for the specified repository
+		repositories_attributes[repository_name]["execution_time_in_minutes"] = round(repositories_attributes[repository_name]["execution_time_in_minutes"] + elapsed_time / 60, 2) # Update the execution time in minutes
+		repositories_attributes[repository_name]["size_in_gb"] += get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) # Update the size in GB
+	else: # If the repository was not found in the repositories attributes file
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not found in the {BackgroundColors.CYAN}repositories attributes{BackgroundColors.RED} file.{Style.RESET_ALL}")
 		return # Return if the repository was not found in the repositories attributes file
 
@@ -1210,51 +1099,37 @@ def process_repository(repository_name):
 	:return: None
 	"""
 
-	# Start the timer
-	start_time = time.time()
+	start_time = time.time() # Start the timer
 
-	# Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
-	if not verify_ck_metrics_folder(repository_name):
+	if not verify_ck_metrics_folder(repository_name): # Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
 		print(f"{BackgroundColors.RED}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} were not calculated. Please run the {BackgroundColors.CYAN}code_metrics.py{BackgroundColors.RED} file first{Style.RESET_ALL}")
 		return # Return if the ck metrics were not calculated
 
-	# Get the directory path for the specified repository name
-	repository_ck_metrics_path = get_directory_path(repository_name)
+	repository_ck_metrics_path = get_directory_path(repository_name) # Get the directory path for the specified repository name
 	
-	# Create the desired directory if it does not exist
-	create_directories(repository_name)
+	create_directories(repository_name) # Create the desired directory if it does not exist
 
-	# Traverse the directory and get the method metrics
-	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path)
+	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path) # Traverse the directory and get the method metrics
 
-	# Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
-	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record)
+	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record) # Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
 
-	# Write the metrics_track_record to a txt file
-	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record)
+	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record) # Write the metrics_track_record to a txt file
 
-	# Write, for each identifier, the metrics evolution values to a csv file
-	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record)
+	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record) # Write, for each identifier, the metrics evolution values to a csv file
 
-	# Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
-	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record)
+	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record) # Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 
-	# Sort the csv file by the number of changes
-	sort_csv_by_changes(repository_name)
+	sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
 
-	# Remove the old csv file
-	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}"
-	os.remove(old_csv_file_path)
+	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The old csv file path
+	os.remove(old_csv_file_path) # Remove the old csv file
 
-	# Sort the interesting changes csv file by the percentual variation of the metric
-	sort_csv_by_percentual_variation(repository_name)
-
-	# Output the elapsed time to process this repository
-	elapsed_time = time.time() - start_time # Calculate the elapsed time
+	sort_csv_by_percentual_variation(repository_name) # Sort the interesting changes csv file by the percentual variation of the metric
 
 	repositories_attributes = update_repository_attributes(repository_name, elapsed_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
 
+	elapsed_time = time.time() - start_time # Calculate the elapsed time
 	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
 
@@ -1271,8 +1146,7 @@ def process_all_repositories():
 		process_repository(repository_name) # Process the current repository
 		print(f"\n------------------------------------------------------------") # Print a separator
 
-# Register the function to play a sound when the program finishes
-atexit.register(play_sound)
+atexit.register(play_sound) # Register the function to play a sound when the program finishes
 
 def main():
 	"""
@@ -1283,41 +1157,36 @@ def main():
 
 	start_time = datetime.now() # Get the start time
    
-	# Verify if the path constants contains whitespaces
-	if path_contains_whitespaces():
+	if path_contains_whitespaces(): # Verify if the path constants contains whitespaces
 		print(f"{BackgroundColors.RED}The PATH constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
 		return # Exit the program
 	
 	global SOUND_FILE_PATH # Declare the SOUND_FILE_PATH as a global variable
 	SOUND_FILE_PATH = update_sound_file_path() # Update the sound file path
 	
-	# Verify if the refactoring miner tool exists in the specified path
-	if not verify_file(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH):
+	if not verify_file(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH): # Verify if the refactoring miner tool exists in the specified path
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
 		return # Exit the program
 
 	verify_and_update_repositories() # Verify and update the repositories
 
-	# Print the welcome message
+	# Print the Welcome Messages
 	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
 	print(f"{BackgroundColors.GREEN}This script generates the {BackgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics, linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES_NAMES)}{BackgroundColors.GREEN} repositories based on the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN} generated by the {BackgroundColors.CYAN}./code_metrics.py{BackgroundColors.GREEN} code.{Style.RESET_ALL}")
 	print(f"{BackgroundColors.RED}This Python code avoids using threads due to its high memory usage. It stores metric values, generates regression graphs, and detects substantial changes, which demands a lot of RAM.{Style.RESET_ALL}\n")
 
-	# Prompt the user with a timeout
-	user_response = input_with_timeout(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}", 60)
+	user_response = input_with_timeout(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}", 60) # Prompt the user with a timeout
 	
-	if user_response is None:
-		# No input received within timeout
+	if user_response is None: # No input received within timeout
 		print(f"{BackgroundColors.RED}No input received within the timeout. Processing both classes and methods.{Style.RESET_ALL}")
 		process_classes_and_methods() # Process both classes and methods
-	else:
+	else: # Input received within timeout
 		process_based_on_user_input(user_response) # Process based on user input
 
 	end_time = datetime.now() # Get the end time
 	output_time(f"\n{BackgroundColors.GREEN}Total execution time: ", (end_time - start_time).total_seconds()) # Output the total execution time
 
-	# Output the message that the Metrics Changes Generator has finished
-	print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN} has finished processing the {BackgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES_NAMES)}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}")
+	print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN} has finished processing the {BackgroundColors.CYAN}classes or methods metrics evolution history, metrics statistics and linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{list(DEFAULT_REPOSITORIES_NAMES)}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}") # Output the message that the Metrics Changes Generator has finished
 		
 if __name__ == "__main__":
    """
