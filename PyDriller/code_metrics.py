@@ -678,17 +678,13 @@ def process_repository(repository_name, repository_url):
    # Verify if the metrics were already calculated
    if verify_ck_metrics_folder(repository_name):
       print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated!{Style.RESET_ALL}")
-      return
+      return # Return if the metrics were already calculated
 
-   # Create the ck metrics directory
-   create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH)
-   # Create the progress directory
-   create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH)
-   # Create the repositories directory
-   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH)
+   create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH) # Create the ck metrics directory
+   create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH) # Create the progress directory
+   create_directory(FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH) # Create the repositories directory
 
-   # Setup the repository
-   setup_repository(repository_name, repository_url)
+   setup_repository(repository_name, repository_url) # Setup the repository: Clone or update the repository
 
    # Get the number of commits, which is needed to traverse the repository
    number_of_commits = len(list(Repository(repository_url).traverse_commits()))
@@ -702,8 +698,7 @@ def process_repository(repository_name, repository_url):
    # Save repository attributes to a CSV file
    write_repositories_attributes_to_csv(repository_attributes) if RUN_FUNCTIONS["write_repositories_attributes_to_csv"] else None
 
-   # Checkout the main branch
-   checkout_branch("main")
+   checkout_branch("main") # Checkout the main branch
 
 def process_repositories_in_parallel():
    """
