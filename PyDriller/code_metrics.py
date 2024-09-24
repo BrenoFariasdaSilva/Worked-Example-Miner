@@ -244,20 +244,22 @@ def parse_commit_info(lines):
    Parse commit information from the lines of the progress file.
 
    :param lines: List of lines from the progress file
-   :return: Tuple containing the list of commit info and the last commit number
+   :return: Tuple containing the list of commit info, the last commit number and the last commit hash
    """
 
    commits_info = [] # List to store the commit information
    last_commit_number = 0 # Variable to store the last commit number
+   last_commit_hash = None # Variable to store the last commit hash
    
    if len(lines) > 3: # If there are more than 3 lines in the file
       last_commit_number = int(lines[-1].split(",")[0]) # Get the last commit number from the last line
+      last_commit_hash = lines[-1].split(",")[1] # Get the last commit hash from the last line
       for line in lines[1:]: # Loop through the lines, excluding the header
          parts = line.split(",") # Split the line by commas
-         commit_info = (parts[1], parts[2], parts[3]) # Get the commit hash, commit message, and commit date
+         commit_info = tuple(int(parts[i]) if i in (4, 5, 6, 8) else float(parts[i]) if i == 7 else parts[i] for i in range(len(parts))) # Create a tuple with the commit information, convertConvert necessary parts to their respective types
          commits_info.append(commit_info) # Append the commit information to the list
    
-   return commits_info, last_commit_number # Return the list of commit information and the last commit number
+   return commits_info, last_commit_number, last_commit_hash # Return the commits_info, last_commit_number and last_commit_hash
 
 def calculate_percentage_progress(last_commit_number, total_commits):
    """
@@ -298,10 +300,8 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    lines = read_progress_file(saved_progress_file) # Read the progress file
 
    if lines: # If there are lines in the progress file
-      commits_info, last_commit_number = parse_commit_info(lines) # Parse the commit information
+      commits_info, last_commit_number, last_commit_hash = parse_commit_info(lines) # Parse the commit information
       percentage_progress = calculate_percentage_progress(last_commit_number, number_of_commits) # Calculate the percentage progress
-      
-      last_commit_hash = commits_info[-1][0] if commits_info else "N/A" # Get the last commit hash
       
       print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
       
