@@ -567,7 +567,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             continue # Jump to the next iteration
 
          # Store the commit hash, commit message and commit date in one line of the list, separated by commas
-         current_tuple = (f"{commit_number}-{commit.hash}", commit.msg.split("\n")[0], commit.committer_date)
+         current_tuple = (f"{commit_number}-{commit.hash}", commit.msg.replace("\n", " \\ "), commit.committer_date)
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
          # Save the diff of the modified files of the current commit
