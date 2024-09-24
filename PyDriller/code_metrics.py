@@ -19,6 +19,12 @@ from repositories_picker import create_directory, get_adjusted_number_of_threads
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
 
+RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
+   "generate_diffs": False, # Generate the diffs for the commits
+   "write_commits_information_to_csv": True, # Write the commit information to a CSV file
+   "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
+}
+
 # File Extensions Constants:
 CSV_FILE_EXTENSION = ".csv" # The extension of the file that contains the commit hashes
 DIFF_FILE_EXTENSION = ".diff" # The diff file extension
@@ -575,7 +581,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
          # Save the diff of the modified files of the current commit
-         generate_diffs(repository_name, commit, commit_number)
+         generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["generate_diffs"] else None
 
          workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
          os.chdir(workdir) # Change working directory to the repository directory
@@ -691,10 +697,10 @@ def process_repository(repository_name, repository_url):
    commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits)
 
    # Write the commits information to a CSV file
-   write_commits_information_to_csv(repository_name, commits_info)
+   write_commits_information_to_csv(repository_name, commits_info) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None
    
    # Save repository attributes to a CSV file
-   write_repositories_attributes_to_csv(repository_attributes)
+   write_repositories_attributes_to_csv(repository_attributes) if RUN_FUNCTIONS["write_repositories_attributes_to_csv"] else None
 
    # Checkout the main branch
    checkout_branch("main")
