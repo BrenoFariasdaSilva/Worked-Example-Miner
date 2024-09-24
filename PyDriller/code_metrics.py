@@ -14,7 +14,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_git, verify_repositories_execution_constants # Importing Functions from the repositories_picker.py file
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists, verify_git, verify_repositories_execution_constants # Importing Functions from the repositories_picker.py file
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
@@ -52,16 +52,6 @@ FULL_REFACTORINGS_DIRECTORY_PATH = START_PATH + RELATIVE_REFACTORINGS_DIRECTORY_
 FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH # The full path of the file that contains the repositories attributes
 FULL_REPOSITORY_PROGRESS_FILE_PATH = START_PATH + RELATIVE_REPOSITORY_PROGRESS_FILE_PATH # The full path of the file that contains the repository progress
 OUTPUT_DIRECTORIES = [FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH] # The list of output directories
-
-def verify_filepath_exists(filepath):
-   """
-   Verify if a file or folder exists at the specified path.
-
-   :param filepath: Path to the file or folder
-   :return: True if the file or folder exists, False otherwise
-   """
-
-   return os.path.exists(filepath) # Return True if the file or folder exists, False otherwise
 
 def init_and_update_submodules():
    """
