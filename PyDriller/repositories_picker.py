@@ -39,12 +39,12 @@ DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format
 }
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
-	"save_to_json": True, # Save the repositories to a JSON file
-	"save_to_pdf": True, # Save the repositories to a PDF file
-	"create_histograms": True, # Create histograms for the repositories
 	"create_csv_files": True, # Create CSV files for the repositories
+	"create_histograms": True, # Create histograms for the repositories
 	"generate_code_churn_scatter_plot": True, # Generate a scatter plot for the code churn
 	"randomly_select_repositories": False, # Randomly select repositories and print them
+	"save_to_json": True, # Save the repositories to a JSON file
+	"save_to_pdf": True, # Save the repositories to a PDF file
 }
 
 # .Env Constants:
