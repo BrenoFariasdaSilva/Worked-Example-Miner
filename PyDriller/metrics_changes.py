@@ -18,7 +18,7 @@ from tqdm import tqdm # For progress bar
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, PROCESS_JSON_REPOSITORIES, RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, update_repositories_dictionary, update_sound_file_path, verbose_output # Importing Functions from the repositories_picker.py file
+from repositories_picker import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, update_repositories_dictionary, update_sound_file_path, verbose_output, verify_filepath_exists # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
@@ -66,18 +66,6 @@ FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTIO
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
 OUTPUT_DIRECTORIES = [FULL_METRICS_DATA_DIRECTORY_PATH, FULL_METRICS_EVOLUTION_DIRECTORY_PATH, FULL_METRICS_STATISTICS_DIRECTORY_PATH, FULL_METRICS_PREDICTION_DIRECTORY_PATH] # The output directories list
-
-def verify_file(file_path):
-	"""
-	Verifies if a specified file exists.
-
-	:param file_path: The path to the file
-	:return: True if the file already exists, False otherwise
-	"""
-
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the file {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN} exists...{Style.RESET_ALL}")
-	
-	return os.path.exists(file_path) # Return True if the file already exists, False otherwise
 
 def verify_repositories_execution_constants():
    """
@@ -612,7 +600,7 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 	full_refactorings_directory_path = f"{START_PATH}/{relatively_refactorings_directory_path}" # Get the full refactorings directory path
 	create_directory(full_refactorings_directory_path, relatively_refactorings_directory_path) # Create the refactorings directory
 
-	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # If the refactoring file does not exist or is empty
+	if not verify_filepath_exists(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # If the refactoring file does not exist or is empty
 		null_device = "NUL" if platform.system() == "Windows" else "/dev/null" # Determine the system's null device to discard output
 
 		setup_repository(repository_name, DEFAULT_REPOSITORIES[repository_name]) # Setup the repository
@@ -643,7 +631,7 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 	
 	refactoring_file_path = f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}{REFACTORING_MINER_JSON_FILE_EXTENSION}" # Define the refactoring file path
 
-	if not verify_file(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # Generate the refactoring file if it does not exist or is empty
+	if not verify_filepath_exists(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # Generate the refactoring file if it does not exist or is empty
 		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path) # Generate the refactoring file
 
 	refactorings_by_filepath = {} # Initialize the dictionary to hold file paths and their corresponding refactoring types
@@ -699,7 +687,7 @@ def add_csv_header(csv_filename, metric_name):
 	else: # If the PROCESS_CLASSES constant is set to False
 		expected_header = ["Class", "Method", f"From {metric_name}", f"To {metric_name}", "Percentual Variation", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Methods Invoked Qty", "Refactoring Patterns"]
 	
-	if verify_file(csv_filename): # If the file exists
+	if verify_filepath_exists(csv_filename): # If the file exists
 		with open(csv_filename, "r") as file: # Open the file
 			first_line = file.readline().strip() # Read the first line
 			if first_line != ",".join(expected_header): # If the first line is not equal to the expected header
@@ -744,11 +732,11 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 
 	global FIRST_SUBSTANTIAL_CHANGE_VERIFICATION # Declare that we're using the global variable
 	
-	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_file(csv_filename): # Verify if it's the first run and if the CSV file already exists
+	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_filepath_exists(csv_filename): # Verify if it's the first run and if the CSV file already exists
 		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False # Update the flag after handling the first run
 		os.remove(csv_filename) # Remove the CSV file if it exists
 
-	if not verify_file(csv_filename): # Add the header if the file is newly created
+	if not verify_filepath_exists(csv_filename): # Add the header if the file is newly created
 		add_csv_header(csv_filename, metric_name) # Add the header to the csv file
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
@@ -992,7 +980,7 @@ def sort_csv_by_changes(repository_name):
 
 	unsorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted csv file path
 
-	if not verify_file(unsorted_csv_file_path): # Verify if the unsorted csv file exists
+	if not verify_filepath_exists(unsorted_csv_file_path): # Verify if the unsorted csv file exists
 		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository does not exist.{Style.RESET_ALL}")
 		return # Return if the unsorted csv file does not exist
 
@@ -1031,7 +1019,7 @@ def read_csv_as_dict(file_path):
 	"""
 
 	repository_data = {} # Initialize the dictionary to hold the repository data
-	if os.path.exists(file_path): # If the file path exists
+	if verify_filepath_exists(file_path): # If the file path exists
 		with open(file_path, "r", newline="") as csv_file: # Open the CSV file
 			reader = csv.DictReader(csv_file) # Create the CSV reader
 			for row in reader: # For each row in the CSV file
@@ -1164,7 +1152,7 @@ def main():
 	global SOUND_FILE_PATH # Declare the SOUND_FILE_PATH as a global variable
 	SOUND_FILE_PATH = update_sound_file_path() # Update the sound file path
 	
-	if not verify_file(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH): # Verify if the refactoring miner tool exists in the specified path
+	if not verify_filepath_exists(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH): # Verify if the refactoring miner tool exists in the specified path
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
 		return # Exit the program
 
