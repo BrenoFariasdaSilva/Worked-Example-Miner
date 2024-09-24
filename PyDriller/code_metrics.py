@@ -556,12 +556,12 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name) # The path to the saved progress file
 
    # Get the last execution progress of the repository
-   commits_info, last_commit = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
+   commits_info, last_commit_number = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits - last_commit, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
+   with tqdm(total=number_of_commits - last_commit_number, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url).traverse_commits(): # Loop through the commits of the repository
-         if commit_number < last_commit: # If the current commit number is less than the last commit number
+         if commit_number < last_commit_number: # If the current commit number is less than the last commit number
             commit_number += 1 # Increment the commit number
             pbar.update(1) # Update the progress bar
             continue # Jump to the next iteration
