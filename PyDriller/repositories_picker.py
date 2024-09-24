@@ -93,6 +93,16 @@ class BackgroundColors: # Colors for the terminal
 SOUND_COMMANDS = {"Darwin": "afplay", "Linux": "aplay", "Windows": "start"} # The commands to play a sound for each operating system
 SOUND_FILE_PATH = ".assets/Sounds/NotificationSound.wav" # The path to the sound file
 
+def verify_filepath_exists(filepath):
+   """
+   Verify if a file or folder exists at the specified path.
+
+   :param filepath: Path to the file or folder
+   :return: True if the file or folder exists, False otherwise
+   """
+
+   return os.path.exists(filepath) # Return True if the file or folder exists, False otherwise
+
 def play_sound():
    """
    Plays a sound when the program finishes.
@@ -100,7 +110,7 @@ def play_sound():
    :return: None
    """
 
-   if os.path.exists(SOUND_FILE_PATH):
+   if verify_filepath_exists(SOUND_FILE_PATH):
       if platform.system() in SOUND_COMMANDS: # If the platform.system() is in the SOUND_COMMANDS dictionary
          os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE_PATH}")
       else: # If the platform.system() is not in the SOUND_COMMANDS dictionary
@@ -172,7 +182,7 @@ def verify_json_file(file_path):
    :return: True if the JSON file exists and is not empty, False otherwise.
    """
 
-   if not os.path.exists(file_path):
+   if not verify_filepath_exists(file_path):
       print(f"{BackgroundColors.RED}The repositories JSON file does not exist.{Style.RESET_ALL}")
       return False # Return False if the JSON file does not exist
    if os.path.getsize(file_path) == 0:
@@ -218,7 +228,7 @@ def update_repositories_dictionary():
       filename = FULL_REPOSITORIES_LIST_JSON_FILEPATH.replace("SORTING_ATTRIBUTE", sorting_attribute) # Get the filename for the current attribute
       
       # Verify if the JSON file exists
-      if not os.path.exists(filename): # If file doesn't exist, skip to the next attribute
+      if not verify_filepath_exists(filename): # If file doesn't exist, skip to the next attribute
          verbose_output(true_string=f"{BackgroundColors.YELLOW}File {filename} not found, checking next...{Style.RESET_ALL}")
          continue
       
@@ -284,7 +294,7 @@ def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying the .env file...{Style.RESET_ALL}")
 
    # Verify if the .env file exists
-   if not os.path.exists(env_path):
+   if not verify_filepath_exists(env_path):
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}.env file{BackgroundColors.RED} not found at {BackgroundColors.CYAN}{env_path}{Style.RESET_ALL}")
       sys.exit(1) # Exit the program
 
