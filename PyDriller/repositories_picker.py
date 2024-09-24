@@ -634,6 +634,18 @@ def update_repository(repository_directory_path):
 
    os.chdir(START_PATH) # Change the current working directory to the default one
 
+def get_default_branch_name(repository_directory_path):
+   """
+   Get the default branch name of the repository.
+
+   :param repository_directory_path: The path to the repository directory
+   :return: str
+   """
+
+   branch_thread = subprocess.Popen(["git", "-C", repository_directory_path, "rev-parse", "--abbrev-ref", "HEAD"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Create a thread to get the default branch name
+   branch_name, _ = branch_thread.communicate() # Get the current branch name
+   return branch_name.decode("utf-8").strip() # Decode and strip whitespace
+
 def checkout_latest_commit(repository_directory_path):
    """
    Check out the latest commit (HEAD) of the repository.
@@ -647,7 +659,7 @@ def checkout_latest_commit(repository_directory_path):
    os.chdir(repository_directory_path) # Change to the repository directory
 
    # Pull the latest changes from the default branch and force checkout to HEAD
-   checkout_thread = subprocess.Popen(["git", "pull", "origin", "master", "--force"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   checkout_thread = subprocess.Popen(["git", "pull", "origin", get_default_branch_name(repository_directory_path), "--force"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    checkout_thread.wait() # Wait for the checkout command to finish
 
    os.chdir(START_PATH) # Change back to the original directory
