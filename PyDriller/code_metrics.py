@@ -66,11 +66,11 @@ def init_and_update_submodules():
       # Adjust path as necessary for reliability across environments
       submodule_path = os.path.abspath(f"{RELATIVE_CK_SUBMODULE_PATH}/.git") # Path to the ck submodule
 
-      if not os.path.exists(submodule_path):
-         subprocess.run(["git", "submodule", "init"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-         subprocess.run(["git", "submodule", "update"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+      if not os.path.exists(submodule_path): # If the submodule path does not exist
+         subprocess.run(["git", "submodule", "init"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Initialize the Git submodule
+         subprocess.run(["git", "submodule", "update"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Update the Git submodule
       else:
-         subprocess.run(["git", "submodule", "update", "--remote"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+         subprocess.run(["git", "submodule", "update", "--remote"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Update the Git submodule
    except subprocess.CalledProcessError as e:
       print(f"{BackgroundColors.RED}An error occurred while initializing and updating the CK Git Submodule: {e}{Style.RESET_ALL}")
       return False # Return False if the Git submodules could not be initialized and updated
@@ -84,7 +84,7 @@ def get_current_branch(repo_path):
    :return: The name of the current branch
    """
 
-   result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_path, capture_output=True, text=True)
+   result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_path, capture_output=True, text=True) # Run the Git command to get the current branch
    return result.stdout.strip() # Get the current branch
 
 def switch_branch(target_branch, repo_path):
@@ -97,12 +97,12 @@ def switch_branch(target_branch, repo_path):
    """
    
    try:
-      subprocess.run(["git", "checkout", target_branch], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+      subprocess.run(["git", "checkout", target_branch], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Switch to the target branch
       verbose_output(true_string=f"{BackgroundColors.GREEN}Successfully switched to {BackgroundColors.CYAN}{target_branch}{BackgroundColors.GREEN} branch.{Style.RESET_ALL}")
-      return True
+      return True # Return True if the branch was successfully switched
    except subprocess.CalledProcessError:
       print(f"{BackgroundColors.RED}Failed to switch to {BackgroundColors.GREEN}{target_branch}{BackgroundColors.RED} branch.{Style.RESET_ALL}")
-      return False
+      return False # Return False if the branch could not be switched
 
 def build_ck_jar_file(repo_path):
    """
@@ -113,7 +113,7 @@ def build_ck_jar_file(repo_path):
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Building the CK JAR file...{Style.RESET_ALL}")
-   subprocess.run(["mvn", "clean", "package", "-DskipTests"], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+   subprocess.run(["mvn", "clean", "package", "-DskipTests"], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Build the CK JAR file
    return os.path.exists(RELATIVE_CK_JAR_PATH) # Return True if the JAR file exists, False otherwise
 
 def ensure_ck_jar_file_exists():
@@ -132,27 +132,22 @@ def ensure_ck_jar_file_exists():
 
    ck_repo_path = os.path.abspath(RELATIVE_CK_SUBMODULE_PATH) # Path to the ck submodule
 
-   # Store the current branch before switching
-   original_branch = get_current_branch(ck_repo_path)
+   original_branch = get_current_branch(ck_repo_path) # Store the current branch before switching
 
-   # Try to switch to the desired CK branch if it exists
-   if not switch_branch(CK_BRANCH, ck_repo_path):
+   if not switch_branch(CK_BRANCH, ck_repo_path): # Try to switch to the desired CK branch if it exists
       # If switching to CK_BRANCH fails, try to switch to a standard branch
-      standard_branches = ["master", "main"]
-      for branch in standard_branches:
-         if switch_branch(branch, ck_repo_path):
+      standard_branches = ["master", "main"] # Standard branch names
+      for branch in standard_branches: # Loop through the standard branches
+         if switch_branch(branch, ck_repo_path): # Try to switch to the standard branch
             original_branch = branch # Successfully switched to a standard branch, use that as the fallback
             break # Exit the loop if a standard branch was found
       else:
          print(f"{BackgroundColors.RED}None of the standard branches {BackgroundColors.CYAN}{', '.join(standard_branches)}{BackgroundColors.RED} exist in {BackgroundColors.CYAN}'ck'{BackgroundColors.RED}. Please verify the repository structure.{Style.RESET_ALL}")
          return False # Return False if no valid branch was found
 
-   # Build the JAR file if it does not exist
-   if build_ck_jar_file(ck_repo_path):
-      # Switch back to the original branch
-      switch_branch(original_branch, ck_repo_path)
-      # Verify if the jar exists in the ck directory
-      if os.path.exists(RELATIVE_CK_JAR_PATH):
+   if build_ck_jar_file(ck_repo_path): # Build the JAR file if it does not exist
+      switch_branch(original_branch, ck_repo_path) # Switch back to the original branch
+      if os.path.exists(RELATIVE_CK_JAR_PATH): # Verify if the jar exists in the ck directory
          return True # Return True if the CK JAR file was found in the target directory
 
    print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CK JAR{BackgroundColors.RED} file was not found in the target directory.{Style.RESET_ALL}")
@@ -166,7 +161,7 @@ def get_commit_hashes(commit_file_path):
    :return: List of commit hashes
    """
    
-   if not os.path.exists(commit_file_path):
+   if not os.path.exists(commit_file_path): # Verify if the file exists
       return [] # Return an empty list if the file does not exist
 
    # Read the commit hashes CSV file and get the commit_hashes column, ignoring the first line
@@ -181,7 +176,6 @@ def verify_folder_exists(folder_path):
    """
 
    return os.path.exists(folder_path)
-
 def verify_ck_metrics_files(folder_path, ck_metrics_files):
    """
    Verify if all the CK metrics files exist inside the specified folder.
@@ -214,7 +208,7 @@ def verify_ck_metrics_folder(repository_name):
 
    commit_hashes = get_commit_hashes(commit_file_path) # Get the commit hashes
 
-   if not commit_hashes:
+   if not commit_hashes: # If the commit hashes list is empty
       return False # Return False if the commit hashes list is empty
 
    for commit_hash in commit_hashes: # Loop through the commit hashes
@@ -309,13 +303,12 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
 
    if lines: # If there are lines in the progress file
       commits_info, last_commit_number, last_commit_hash = parse_commit_info(lines) # Parse the commit information
-
       percentage_progress = calculate_percentage_progress(last_commit_number, number_of_commits) # Calculate the percentage progress
  
       print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
       
       execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
-      output_time(execution_time, number_of_commits - last_commit_number)
+      output_time(execution_time, number_of_commits - last_commit_number) # Output the estimated time for running the remaining iterations for the repository
    else:
       write_progress_file(saved_progress_file, commits_info) # If there is no saved progress file, create one and write the header
 
@@ -338,8 +331,7 @@ def generate_diffs(repository_name, commit, commit_number):
 
       diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit.hash}/" # Define the directory to save the diff file
 
-      # Validate if the directory exists, if not, create it
-      if not os.path.exists(diff_file_directory):
+      if not os.path.exists(diff_file_directory): # Verify if the directory does not exist
          os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
 
       # Open the diff file to write the diff
@@ -356,8 +348,7 @@ def checkout_branch(branch_name):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Checking out the {BackgroundColors.CYAN}{branch_name}{BackgroundColors.GREEN} branch...{Style.RESET_ALL}")
 
-   # Create a thread to checkout the branch
-   checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the Git command to checkout the branch
    checkout_thread.wait() # Wait for the thread to finish
 
 def generate_output_directory_paths(repository_name, commit_number, commit_hash):
@@ -372,8 +363,8 @@ def generate_output_directory_paths(repository_name, commit_number, commit_hash)
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the output directory paths...{Style.RESET_ALL}")
 
-   output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
-   relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/"
+   output_directory = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/" # Define the output directory path
+   relative_output_directory = f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit_hash}/" # Define the relative output directory path
 
    return output_directory, relative_output_directory # Return the output_directory and relative_output_directory paths
    
@@ -387,8 +378,7 @@ def run_ck_metrics_generator(cmd):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Running the CK Metrics Generator Command...{Style.RESET_ALL}")
 
-   # Create a thread to run the cmd command
-   thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the cmd command in a subprocess
+   thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the CK metrics generator command
    stdout, stderr = thread.communicate() # Get the stdout and stderr of the thread
 
 def get_class_and_loc_metrics(output_directory):
@@ -402,8 +392,7 @@ def get_class_and_loc_metrics(output_directory):
    class_count = 0 # Total number of classes
    loc_count = 0 # Total number of lines of code
 
-   # Open the CK metrics CSV file to extract the metrics
-   with open(f"{output_directory}/class.csv", "r") as file:
+   with open(f"{output_directory}/class.csv", "r") as file: # Open the CK metrics CSV file to extract the metrics
       reader = csv.DictReader(file) # Read the CSV file
       for row in reader: # Loop through the rows of the CSV file
          class_count += 1 # Increment the class count
@@ -488,8 +477,7 @@ def get_output_directories_size_in_gb(repository_name, output_directories=OUTPUT
 
    output_dirs_size = 0 # Total size of the output directories in GB
    for output_dir in output_directories: # Loop through the output directories
-      # Get the size of each output directory in GB
-      output_dirs_size += get_directory_size_in_gb(os.path.join(output_dir, output_dir))
+      output_dirs_size += get_directory_size_in_gb(os.path.join(output_dir, output_dir)) # Get the size of each output directory in GB
    
    return output_dirs_size # Return the total size of the output directories in GB
 
@@ -526,22 +514,19 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    last_directory = get_last_directory(sorted_dirs) # Get the last directory
    last_directory_path = os.path.join(output_directory, last_directory) # Update the output directory with the last directory
 
-   # Get the total number of classes and lines of code
-   total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path)
+   total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path) # Get the total number of classes and lines of code
 
    # Get the size of the output directories in GB and the progress file size in GB
    output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size_in_gb(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name))
 
-   repository_attributes = { # Create a dictionary with the repository attributes
-      "repository_name": repository_name,
-      "classes": total_classes,
-      "lines_of_code": total_lines_of_code,
-      "commits": number_of_commits,
-      "execution_time_in_minutes": round(elapsed_time / 60, 2),
-      "size_in_gb": round(output_dirs_size, 2)
+   return { # Return the repository attributes dictionary
+      "repository_name": repository_name, # Name of the repository
+      "classes": total_classes, # Total number of classes
+      "lines_of_code": total_lines_of_code, # Total number of lines of code
+      "commits": number_of_commits, # Total number of commits
+      "execution_time_in_minutes": round(elapsed_time / 60, 2), # Execution time in minutes
+      "size_in_gb": round(output_dirs_size, 2) # Size of the output directories in GB
    }
-
-   return repository_attributes # Return the repository attributes
 
 def traverse_repository(repository_name, repository_url, number_of_commits):
    """
@@ -561,8 +546,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    commit_number = 1 # The current commit number
    saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name) # The path to the saved progress file
 
-   # Get the last execution progress of the repository
-   commits_info, last_commit_number = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits)
+   commits_info, last_commit_number = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits) # Get the last execution progress of the repository
 
    # Create a progress bar with the total number of commits
    with tqdm(total=number_of_commits - last_commit_number, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
@@ -580,23 +564,19 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          current_tuple = (commit_number, commit.hash, commit.msg.replace("\n", " \\ "), commit.committer_date, lines_added, lines_removed, code_churn, code_churn_avg_per_file, modified_files_count, f"{repository_url}/commit/{commit.hash}") # Create a tuple with the commit information
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
-         # Save the diff of the modified files of the current commit
-         generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["generate_diffs"] else None
+         generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["generate_diffs"] else None # Save the diff of the modified files of the current commit
 
          workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
          os.chdir(workdir) # Change working directory to the repository directory
 
-         # Checkout the current commit hash branch to run ck
-         checkout_branch(commit.hash)
+         checkout_branch(commit.hash) # Checkout the current commit hash branch to run ck
 
-         # Create the ck_metrics directory paths
-         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit_number, commit.hash)
+         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit_number, commit.hash) # Generate the output directory paths
          create_directory(output_directory, relative_output_directory) # Create the ck_metrics directory
 
          os.chdir(output_directory) # Change working directory to the repository directory
 
-         # Run ck metrics for the current commit hash
-         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory} true"
+         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory} true" # The command to run the CK metrics generator
          run_ck_metrics_generator(cmd) # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
@@ -607,12 +587,10 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          commit_number += 1 # Increment the commit number
          pbar.update(1) # Update the progress bar
 
-   # Remove the saved progress file when processing is complete
-   os.remove(saved_progress_file)
+   os.remove(saved_progress_file) # Remove the saved progress file when processing is complete
 
-   # Show the execution time of the CK metrics generator
    elapsed_time = time.time() - start_time # Calculate elapsed time
-   show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name)
+   show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name) # Show the execution time of the CK metrics generator
 
    return commits_info, get_repository_attributes(repository_name, number_of_commits, elapsed_time) # Return the commits info and repository attributes
 
@@ -627,10 +605,10 @@ def write_commits_information_to_csv(repository_name, commit_info):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the commit information to a csv file...{Style.RESET_ALL}")
    
-   file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
-   with open(file_path, "w", newline="") as csv_file:
+   file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the CSV file
+   with open(file_path, "w", newline="") as csv_file: # Open the file in write mode
       writer = csv.writer(csv_file) # Create a csv writer
-      writer.writerow(["Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count"])
+      writer.writerow(["Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count"]) # Write the header
       writer.writerows(commit_info) # Write the commit hashes
 
 def write_repositories_attributes_to_csv(repository_attributes):
@@ -643,25 +621,23 @@ def write_repositories_attributes_to_csv(repository_attributes):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the repositories attributes to a csv file...{Style.RESET_ALL}")
    
-   # Verify if the file already exists
-   file_exists = os.path.exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH)
+   file_exists = os.path.exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) # Verify if the file already exists
    
    # Open the file in append mode if it exists, else in write mode
    with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "a" if file_exists else "w", newline="") as csv_file:
       writer = csv.writer(csv_file) # Create a csv writer
       
-      # If the file does not exist, write the header
-      if not file_exists:
-         writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"])
+      if not file_exists: # If the file does not exist, write the header
+         writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
       
       # Write the repository attributes
       writer.writerow([
-         repository_attributes["repository_name"],
-         repository_attributes["classes"],
-         repository_attributes["lines_of_code"],
-         repository_attributes["commits"],
-         repository_attributes["execution_time_in_minutes"],
-         repository_attributes["size_in_gb"]
+         repository_attributes["repository_name"], # Name of the repository
+         repository_attributes["classes"], # Number of classes in the repository
+         repository_attributes["lines_of_code"], # Number of lines of code in the repository
+         repository_attributes["commits"], # Number of commits in the repository
+         repository_attributes["execution_time_in_minutes"], # Execution time in minutes
+         repository_attributes["size_in_gb"] # Size of the repository in GB
       ])
 
 def process_repository(repository_name, repository_url):
@@ -675,8 +651,7 @@ def process_repository(repository_name, repository_url):
 
    print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   # Verify if the metrics were already calculated
-   if verify_ck_metrics_folder(repository_name):
+   if verify_ck_metrics_folder(repository_name): # Verify if the metrics were already calculated
       print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated!{Style.RESET_ALL}")
       return # Return if the metrics were already calculated
 
@@ -686,17 +661,13 @@ def process_repository(repository_name, repository_url):
 
    setup_repository(repository_name, repository_url) # Setup the repository: Clone or update the repository
 
-   # Get the number of commits, which is needed to traverse the repository
-   number_of_commits = len(list(Repository(repository_url).traverse_commits()))
+   number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits, which is needed to traverse the repository
    
-   # Traverse the repository to run CK for every commit hash in the repository
-   commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits)
+   commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits) # Traverse the repository to run CK for every commit hash in the repository
 
-   # Write the commits information to a CSV file
-   write_commits_information_to_csv(repository_name, commits_info) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None
-   
-   # Save repository attributes to a CSV file
-   write_repositories_attributes_to_csv(repository_attributes) if RUN_FUNCTIONS["write_repositories_attributes_to_csv"] else None
+   write_commits_information_to_csv(repository_name, commits_info) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None # Write the commits information to a CSV file
+
+   write_repositories_attributes_to_csv(repository_attributes) if RUN_FUNCTIONS["write_repositories_attributes_to_csv"] else None # Save repository attributes to a CSV file
 
    checkout_branch("main") # Checkout the main branch
 
@@ -714,8 +685,7 @@ def process_repositories_in_parallel():
 
    print(f"{BackgroundColors.GREEN}The number of usable threads is {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-   # Function to process each repository
-   def process_and_estimate(repository_name, repository_url):
+   def process_and_estimate(repository_name, repository_url): # Function to process each repository and estimate the time
       estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for running all iterations for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 
       # Traverse commits in the repository and count them without materializing the entire list
@@ -744,25 +714,22 @@ def main():
 
    start_time = datetime.now() # Get the start time
    
-   # Verify if the path constants contains whitespaces
-   if path_contains_whitespaces():
+   if path_contains_whitespaces(): # Verify if the path constants contains whitespaces
       print(f"{BackgroundColors.RED}The {START_PATH} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return # Return if the path constants contains whitespaces
 
    global SOUND_FILE_PATH # Declare the SOUND_FILE_PATH as a global variable
    SOUND_FILE_PATH = update_sound_file_path() # Update the sound file path
    
-   # Verify if Git is installed
-   if not verify_git():
+   if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
    
-   # Verify if the CK JAR file exists
-   if not ensure_ck_jar_file_exists(): # Ensure that the CK JAR file exists
+   if not ensure_ck_jar_file_exists(): # Verify and ensure that the CK JAR file exists
       return # Return if the CK JAR file does not exist
 
    verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
    
-   # Print the welcome message
+   # Print the Welcome Messages
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{json.dumps(list(DEFAULT_REPOSITORIES.keys()))}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used by the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}", end="\n\n")   
