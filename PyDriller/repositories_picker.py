@@ -629,10 +629,28 @@ def update_repository(repository_directory_path):
    
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
-   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Create a thread to update the repository
+   update_thread = subprocess.Popen(["git", "pull", "--force"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Create a thread to update the repository
    update_thread.wait() # Wait for the thread to finish
 
    os.chdir(START_PATH) # Change the current working directory to the default one
+
+def checkout_latest_commit(repository_directory_path):
+   """
+   Check out the latest commit (HEAD) of the repository.
+
+   :param repository_directory_path: The path to the repository directory
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Checking out the latest commit of the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+   os.chdir(repository_directory_path) # Change to the repository directory
+
+   # Pull the latest changes from the default branch and force checkout to HEAD
+   checkout_thread = subprocess.Popen(["git", "pull", "origin", "master", "--force"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   checkout_thread.wait() # Wait for the checkout command to finish
+
+   os.chdir(START_PATH) # Change back to the original directory
 
 def clone_repository(repository_directory_path, repository_url):
    """
@@ -662,6 +680,7 @@ def setup_repository(repository_name, repository_url):
    
    if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path): # Verify if the repository directory already exists and if it is not empty
       update_repository(repository_directory_path) # Update the repository
+      checkout_latest_commit(repository_directory_path) # Check out to the latest commit
    else: # If the repository directory does not exist or is empty
       clone_repository(repository_directory_path, repository_url) # Clone the repository
 
