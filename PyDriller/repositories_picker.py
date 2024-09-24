@@ -118,8 +118,6 @@ def play_sound():
    else: # If the sound file does not exist
       print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE_PATH}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
 
-atexit.register(play_sound) # Register the function to play a sound when the program finishes
-
 def verbose_output(true_string="", false_string=""):
    """
    Outputs a message if the VERBOSE constant is set to True.
@@ -1244,6 +1242,8 @@ def output_time(output_string, time):
 
    rounded_time = round(time_value, 2) # Round the time value to two decimal places
    print(f"{BackgroundColors.GREEN}{output_string}{BackgroundColors.CYAN}{rounded_time} {time_unit}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+
+atexit.register(play_sound) # Register the function to play a sound when the program finishes
 
 def main():
    """
