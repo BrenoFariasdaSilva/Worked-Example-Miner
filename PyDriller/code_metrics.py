@@ -340,7 +340,7 @@ def generate_diffs(repository_name, commit, commit_number):
 
       # Validate if the directory exists, if not, create it
       if not os.path.exists(diff_file_directory):
-         os.makedirs(diff_file_directory, exist_ok=True) # Create the directory]
+         os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
 
       # Open the diff file to write the diff
       with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file:
