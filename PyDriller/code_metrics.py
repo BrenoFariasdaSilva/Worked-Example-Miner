@@ -354,13 +354,13 @@ def checkout_branch(branch_name):
    checkout_thread = subprocess.Popen(["git", "checkout", branch_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
    checkout_thread.wait() # Wait for the thread to finish
 
-def generate_output_directory_paths(repository_name, commit_hash, commit_number):
+def generate_output_directory_paths(repository_name, commit_number, commit_hash):
    """
    Generates the output directory path for the CK metrics generator.
 
    :param repository_name: Name of the repository to be analyzed.
-   :param commit_hash: Commit hash of the commit to be analyzed.
    :param commit_number: Number of the commit to be analyzed.
+   :param commit_hash: Commit hash of the commit to be analyzed.
    :return: The output_directory and relative_output_directory paths.
    """
 
@@ -580,7 +580,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          checkout_branch(commit.hash)
 
          # Create the ck_metrics directory paths
-         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit.hash, commit_number)
+         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit_number, commit.hash)
          create_directory(output_directory, relative_output_directory) # Create the ck_metrics directory
 
          os.chdir(output_directory) # Change working directory to the repository directory
