@@ -53,6 +53,16 @@ FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH = START_PATH + RELATIVE_REPOSITORIES_ATTR
 FULL_REPOSITORY_PROGRESS_FILE_PATH = START_PATH + RELATIVE_REPOSITORY_PROGRESS_FILE_PATH # The full path of the file that contains the repository progress
 OUTPUT_DIRECTORIES = [FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REPOSITORIES_DIRECTORY_PATH] # The list of output directories
 
+def verify_filepath_exists(filepath):
+   """
+   Verify if a file or folder exists at the specified path.
+
+   :param folder_path: Path to the folder
+   :return: True if the file or folder exists, False otherwise
+   """
+
+   return os.path.exists(filepath) # Return True if the file or folder exists, False otherwise
+
 def init_and_update_submodules():
    """
    Initialize and update Git submodules
@@ -66,7 +76,7 @@ def init_and_update_submodules():
       # Adjust path as necessary for reliability across environments
       submodule_path = os.path.abspath(f"{RELATIVE_CK_SUBMODULE_PATH}/.git") # Path to the ck submodule
 
-      if not os.path.exists(submodule_path): # If the submodule path does not exist
+      if not verify_filepath_exists(submodule_path): # If the submodule path does not exist
          subprocess.run(["git", "submodule", "init"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Initialize the Git submodule
          subprocess.run(["git", "submodule", "update"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Update the Git submodule
       else:
@@ -114,7 +124,7 @@ def build_ck_jar_file(repo_path):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Building the CK JAR file...{Style.RESET_ALL}")
    subprocess.run(["mvn", "clean", "package", "-DskipTests"], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Build the CK JAR file
-   return os.path.exists(RELATIVE_CK_JAR_PATH) # Return True if the JAR file exists, False otherwise
+   return verify_filepath_exists(RELATIVE_CK_JAR_PATH) # Return True if the JAR file exists, False otherwise
 
 def ensure_ck_jar_file_exists():
    """
@@ -147,7 +157,7 @@ def ensure_ck_jar_file_exists():
 
    if build_ck_jar_file(ck_repo_path): # Build the JAR file if it does not exist
       switch_branch(original_branch, ck_repo_path) # Switch back to the original branch
-      if os.path.exists(RELATIVE_CK_JAR_PATH): # Verify if the jar exists in the ck directory
+      if verify_filepath_exists(RELATIVE_CK_JAR_PATH): # Verify if the jar exists in the ck directory
          return True # Return True if the CK JAR file was found in the target directory
 
    print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CK JAR{BackgroundColors.RED} file was not found in the target directory.{Style.RESET_ALL}")
@@ -161,21 +171,12 @@ def get_commit_hashes(commit_file_path):
    :return: List of commit hashes
    """
    
-   if not os.path.exists(commit_file_path): # Verify if the file exists
+   if not verify_filepath_exists(commit_file_path): # Verify if the file exists
       return [] # Return an empty list if the file does not exist
 
    # Read the commit hashes CSV file and get the commit_hashes column, ignoring the first line
    return pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
 
-def verify_folder_exists(folder_path):
-   """
-   Verify if a folder exists at the specified path.
-
-   :param folder_path: Path to the folder
-   :return: True if the folder exists, False otherwise
-   """
-
-   return os.path.exists(folder_path)
 def verify_ck_metrics_files(folder_path, ck_metrics_files):
    """
    Verify if all the CK metrics files exist inside the specified folder.
@@ -187,7 +188,7 @@ def verify_ck_metrics_files(folder_path, ck_metrics_files):
 
    for ck_metric_file in ck_metrics_files: # Loop through the CK metrics files
       ck_metric_file_path = os.path.join(folder_path, ck_metric_file) # Join the folder path with the CK metric file
-      if not os.path.exists(ck_metric_file_path): # If the CK metric file does not exist
+      if not verify_filepath_exists(ck_metric_file_path): # If the CK metric file does not exist
          return False # Return False if the CK metric file does not exist
    return True # Return True if all CK metrics files exist
 
@@ -215,7 +216,7 @@ def verify_ck_metrics_folder(repository_name):
       commit_file_filename = commit_hash[0] # This removes the brackets from the commit hash
       folder_path = os.path.join(repo_path, commit_file_filename) # Join the repository path with the commit hash folder
 
-      if verify_folder_exists(folder_path): # Verify if the folder exists
+      if verify_filepath_exists(folder_path): # Verify if the folder exists
          if not verify_ck_metrics_files(folder_path, CK_METRICS_FILES): # Verify if all the CK metrics files exist
             return False # If any CK metrics file does not exist, return False
       else:
@@ -231,7 +232,7 @@ def read_progress_file(file_path):
    :return: List of lines from the progress file, excluding the last two lines
    """
 
-   if not os.path.exists(file_path): # Verify if the file exists
+   if not verify_filepath_exists(file_path): # Verify if the file exists
       return [] # Return an empty list if the file does not exist
 
    with open(file_path, "r") as file: # Open the progress file
@@ -331,7 +332,7 @@ def generate_diffs(repository_name, commit, commit_number):
 
       diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit.hash}/" # Define the directory to save the diff file
 
-      if not os.path.exists(diff_file_directory): # Verify if the directory does not exist
+      if not verify_filepath_exists(diff_file_directory): # Verify if the directory does not exist
          os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
 
       # Open the diff file to write the diff
@@ -621,7 +622,7 @@ def write_repositories_attributes_to_csv(repository_attributes):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the repositories attributes to a csv file...{Style.RESET_ALL}")
    
-   file_exists = os.path.exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) # Verify if the file already exists
+   file_exists = verify_filepath_exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) # Verify if the file already exists
    
    # Open the file in append mode if it exists, else in write mode
    with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "a" if file_exists else "w", newline="") as csv_file:
