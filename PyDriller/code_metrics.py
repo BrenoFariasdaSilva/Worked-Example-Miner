@@ -57,7 +57,7 @@ def verify_filepath_exists(filepath):
    """
    Verify if a file or folder exists at the specified path.
 
-   :param folder_path: Path to the folder
+   :param filepath: Path to the file or folder
    :return: True if the file or folder exists, False otherwise
    """
 
