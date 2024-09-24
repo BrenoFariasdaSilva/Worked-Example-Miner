@@ -298,22 +298,20 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    lines = read_progress_file(saved_progress_file) # Read the progress file
+   commits_info = [] # Initialize the commits_info list
+   last_commit_number = 0 # Initialize the last_commit_number variable
 
    if lines: # If there are lines in the progress file
       commits_info, last_commit_number, last_commit_hash = parse_commit_info(lines) # Parse the commit information
+
       percentage_progress = calculate_percentage_progress(last_commit_number, number_of_commits) # Calculate the percentage progress
-      
+ 
       print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing in {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
       
       execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
       output_time(execution_time, number_of_commits - last_commit_number)
-
-      write_progress_file(saved_progress_file, lines) # Update progress file without the last two lines
    else:
-      # If there is no saved progress file, create one and write the header
-      write_progress_file(saved_progress_file, [])
-      commits_info = [] # Initialize the commits_info list
-      last_commit_number = 0 # Initialize the last_commit_number variable
+      write_progress_file(saved_progress_file, commits_info) # If there is no saved progress file, create one and write the header
 
    return commits_info, last_commit_number # Return the commits_info and last_commit_number
 
