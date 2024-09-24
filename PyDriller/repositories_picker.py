@@ -110,9 +110,9 @@ def play_sound():
    :return: None
    """
 
-   if verify_filepath_exists(SOUND_FILE_PATH):
+   if verify_filepath_exists(SOUND_FILE_PATH): # If the sound file exists
       if platform.system() in SOUND_COMMANDS: # If the platform.system() is in the SOUND_COMMANDS dictionary
-         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE_PATH}")
+         os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE_PATH}") # Play the sound
       else: # If the platform.system() is not in the SOUND_COMMANDS dictionary
          print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
    else: # If the sound file does not exist
@@ -143,8 +143,7 @@ def path_contains_whitespaces():
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the {BackgroundColors.CYAN}PATH{BackgroundColors.GREEN} constant contains whitespaces...{Style.RESET_ALL}")
    
-   # Verify if the PATH constant contains whitespaces
-   if " " in START_PATH: # If the PATH constant contains whitespaces
+   if " " in START_PATH: # Verify if the PATH constant contains whitespaces
       print(f"{BackgroundColors.RED}The {BackgroundColors.GREEN}{START_PATH}{BackgroundColors.RED} constant contains whitespaces. Please remove them!{Style.RESET_ALL}")
       return True # Return True if the PATH constant contains whitespaces
    
@@ -160,15 +159,14 @@ def update_sound_file_path():
    global SOUND_FILE_PATH # Declare SOUND_FILE_PATH as global to modify its value
 
    # Determine the appropriate prefix based on the current directory name
-   if START_PATH.endswith("PyDriller"):
+   if START_PATH.endswith("PyDriller"): # If the current directory is "PyDriller"
       prefix = "../" # Go up one directory
-   elif START_PATH.endswith("Scripts"):
+   elif START_PATH.endswith("Scripts"): # If the current directory is "Scripts"
       prefix = "../../" # Go up two directories
    else: # The current directory is not "PyDriller" or "Scripts", so it must be the root dir ("Worked-Example-Miner")
       prefix = "./" # Stay in the same directory
 
-   # Update the SOUND_FILE_PATH constant
-   SOUND_FILE_PATH = f"{prefix}{SOUND_FILE_PATH}"
+   SOUND_FILE_PATH = f"{prefix}{SOUND_FILE_PATH}" # Update the SOUND_FILE_PATH constant
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Updated the {BackgroundColors.CYAN}SOUND_FILE{BackgroundColors.GREEN} path to {BackgroundColors.CYAN}{SOUND_FILE_PATH}{Style.RESET_ALL}")
 
@@ -182,10 +180,10 @@ def verify_json_file(file_path):
    :return: True if the JSON file exists and is not empty, False otherwise.
    """
 
-   if not verify_filepath_exists(file_path):
+   if not verify_filepath_exists(file_path): # Verify if the JSON file exists
       print(f"{BackgroundColors.RED}The repositories JSON file does not exist.{Style.RESET_ALL}")
       return False # Return False if the JSON file does not exist
-   if os.path.getsize(file_path) == 0:
+   if os.path.getsize(file_path) == 0: # Verify if the JSON file is empty
       print(f"{BackgroundColors.RED}The repositories JSON file is empty.{Style.RESET_ALL}")
       return False # Return False if the JSON file is empty
    return True # Return True if the JSON file exists and is not empty
@@ -198,17 +196,16 @@ def load_repositories_from_json(file_path):
    :return: A dictionary containing the repositories if the JSON file is valid, None otherwise.   
    """
 
-   try:
+   try: # Try to load the JSON file
       with open(file_path, "r", encoding="utf-8") as json_file: # Open the JSON file
          repositories_list = json.load(json_file) # Load the JSON file
 
-      # Ensure the data is a list and contains repositories
-      if isinstance(repositories_list, list) and repositories_list:
+      if isinstance(repositories_list, list) and repositories_list: # Verify if the JSON file is a list and is not empty
          return {repo["name"]: repo["url"] for repo in repositories_list} # Return the dictionary containing the repositories
       else:
          print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
          return None # Return None if the JSON file is not in the correct format
-   except (json.JSONDecodeError, KeyError) as e:
+   except (json.JSONDecodeError, KeyError) as e: # Handle the exception if there is an error parsing the JSON file
       verbose_output(true_string=f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
       return None # Return None if there is an error parsing the JSON file
 
@@ -223,28 +220,23 @@ def update_repositories_dictionary():
 
    global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
 
-   # Iterate through all REPOSITORIES_SORTING_ATTRIBUTES to find a valid file
-   for sorting_attribute in REPOSITORIES_SORTING_ATTRIBUTES:
+   for sorting_attribute in REPOSITORIES_SORTING_ATTRIBUTES: # Iterate through all REPOSITORIES_SORTING_ATTRIBUTES to find a valid file
       filename = FULL_REPOSITORIES_LIST_JSON_FILEPATH.replace("SORTING_ATTRIBUTE", sorting_attribute) # Get the filename for the current attribute
       
-      # Verify if the JSON file exists
       if not verify_filepath_exists(filename): # If file doesn't exist, skip to the next attribute
          verbose_output(true_string=f"{BackgroundColors.YELLOW}File {filename} not found, checking next...{Style.RESET_ALL}")
-         continue
+         continue # Skip to the next attribute
       
-      # Validate the JSON file
       if not verify_json_file(filename): # If the JSON file is not valid, skip to the next
          verbose_output(true_string=f"{BackgroundColors.RED}Invalid JSON file: {filename}, checking next...{Style.RESET_ALL}")
-         continue
+         continue # Skip to the next attribute
       
-      # Load repositories from the valid JSON file
-      json_repositories = load_repositories_from_json(filename)
+      json_repositories = load_repositories_from_json(filename) # Verify if the JSON file exists
       if not json_repositories: # If loading the JSON file fails, skip to the next
          verbose_output(true_string=f"{BackgroundColors.RED}Failed to load JSON data from {filename}, checking next...{Style.RESET_ALL}")
-         continue
+         continue # Skip to the next attribute
 
-      # Update DEFAULT_REPOSITORIES and return True if successful
-      DEFAULT_REPOSITORIES = json_repositories
+      DEFAULT_REPOSITORIES = json_repositories # Update DEFAULT_REPOSITORIES and return True if successful
       verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated from {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
       return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
    
@@ -260,8 +252,7 @@ def verify_repositories_execution_constants():
    :return: None
    """
 
-   # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
-   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES:
+   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES: # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
       if not update_repositories_dictionary(): # Update the repositories list
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script with the {BackgroundColors.CYAN}PROCESS_JSON_REPOSITORIES{BackgroundColors.RED} set to {BackgroundColors.CYAN}False{BackgroundColors.RED} or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
@@ -275,9 +266,9 @@ def verify_git():
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if Git is installed...{Style.RESET_ALL}")
 
-   try:
-      subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-   except subprocess.CalledProcessError as e:
+   try: # Try to run the git --version command
+      subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Run the git --version command
+   except subprocess.CalledProcessError as e: # Handle the exception if Git is not installed
       print(f"{BackgroundColors.RED}An error occurred while verifying if Git is installed: {BackgroundColors.YELLOW}{e}{BackgroundColors.RED}. Please install Git!{Style.RESET_ALL}")
       return False # Return False if Git is not installed
    return True # Return True if Git is installed
@@ -598,8 +589,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
 
    updated_date = parse_repo_updated_date(repo) # Get the last update date of the repository
 
-   # Validate the repository based on the update date, star count, and keywords
-   if is_repository_valid(repo, updated_date, date_filter, ignore_keywords):
+   if is_repository_valid(repo, updated_date, date_filter, ignore_keywords): # Validate the repository based on the update date, star count, and keywords
       setup_repository(repo["name"], repo["html_url"]) # Setup the repository: Clone or update it so we can calculate the code churn and commit count
       repo_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repo['name']}/" # The path to the repository directory
       commits_count = count_commits(repo_path) # Count the number of commits in the repository
@@ -609,20 +599,20 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
          avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
          if avg_code_churn < MAXIMUM_AVG_CODE_CHURN and avg_files_modified < MAXIMUM_AVG_FILES_MODIFIED: # If the average code churn and files modified are within the limits
             return {
-               "name": repo["name"].encode("utf-8").decode("utf-8"),
-               "author": extract_author_name(repo).encode("utf-8").decode("utf-8"),
-               "url": repo["html_url"],
-               "description": repo["description"].encode("utf-8").decode("utf-8"),
-               "topics": ", ".join(repo["topics"]),
-               "commits": commits_count,
-               "stars": repo["stargazers_count"],
-               "forks counter": repo["forks_count"],
-               "open issues counter": repo["open_issues_count"],
-               "avg_code_churn": int(avg_code_churn),
-               "avg_modified_files": int(avg_files_modified),
-               "updated_at": repo["updated_at"],
-               # "pull_requests": repo.get("pulls_count", 0), # Apparently this endpoint aint working
-               "license": repo["license"]["name"] if repo.get("license") else "No license specified",
+               "name": repo["name"].encode("utf-8").decode("utf-8"), # Encode and decode the name to handle special characters
+               "author": extract_author_name(repo).encode("utf-8").decode("utf-8"), # Encode and decode the author's name to handle special characters
+               "url": repo["html_url"], # Get the URL of the repository
+               "description": repo["description"].encode("utf-8").decode("utf-8"), # Encode and decode the description to handle special characters
+               "topics": ", ".join(repo["topics"]), # Get the topics of the repository
+               "commits": commits_count, # Get the number of commits
+               "stars": repo["stargazers_count"], # Get the number of stars
+               "forks counter": repo["forks_count"], # Get the number of forks
+               "open issues counter": repo["open_issues_count"], # Get the number of open issues
+               "avg_code_churn": int(avg_code_churn), # Get the average code churn
+               "avg_modified_files": int(avg_files_modified), # Get the average files modified
+               "updated_at": repo["updated_at"], # Get the last update date
+               # "pull_requests": repo.get("pulls_count", 0), # Get the number of pull requests (Apparently this endpoint aint working)
+               "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
             }
 
    return None # Return None if the repository is not valid
@@ -639,8 +629,7 @@ def update_repository(repository_directory_path):
    
    os.chdir(repository_directory_path) # Change the current working directory to the repository directory
    
-   # Create a thread to update the repository located in RELATIVE_REPOSITORY_DIRECTORY + "/" + repository_name
-   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   update_thread = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Create a thread to update the repository
    update_thread.wait() # Wait for the thread to finish
 
    os.chdir(START_PATH) # Change the current working directory to the default one
@@ -656,8 +645,7 @@ def clone_repository(repository_directory_path, repository_url):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
-   # Create a thread to clone the repository
-   thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+   thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Create a thread to clone the repository
    thread.wait() # Wait for the thread to finish
 
 def setup_repository(repository_name, repository_url):
@@ -672,10 +660,9 @@ def setup_repository(repository_name, repository_url):
    
    repository_directory_path = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
    
-   # Verify if the repository directory already exists and if it is not empty
-   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path):
+   if os.path.isdir(repository_directory_path) and os.listdir(repository_directory_path): # Verify if the repository directory already exists and if it is not empty
       update_repository(repository_directory_path) # Update the repository
-   else:
+   else: # If the repository directory does not exist or is empty
       clone_repository(repository_directory_path, repository_url) # Clone the repository
 
 def count_commits(repo_path):
@@ -689,14 +676,13 @@ def count_commits(repo_path):
    try:
       # Run the git command to count commits
       result = subprocess.run(
-         ["git", "-C", repo_path, "rev-list", "--count", "HEAD"],
-         capture_output=True,
-         text=True,
-         check=True
+         ["git", "-C", repo_path, "rev-list", "--count", "HEAD"], # The git command to run
+         capture_output=True, # Capture the output
+         text=True, # Get the output as text
+         check=True # Check if the command was successful
       )
-      # Return the commit count as an integer
-      return int(result.stdout.strip())
-   except subprocess.CalledProcessError as e:
+      return int(result.stdout.strip()) # Return the commit count as an integer
+   except subprocess.CalledProcessError as e: # Handle the exception if the command fails
       print(f"Error while counting commits: {e}")
       return 0 # Return 0 or handle the error as needed
 
@@ -733,16 +719,15 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
 
    filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
 
-   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor:
-      # Submit the process_repository_task function to the executor for each repository
-      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories]
+   with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor: # Create a ThreadPoolExecutor with the number of threads to use
+      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories] # Submit the process_repository_task function to the executor for each repository
 
       for future in concurrent.futures.as_completed(futures): # Iterate over the futures as they are completed
-         try:
+         try: # Try to get the result of the future
             result = future.result() # Raises exception if any occurred during execution
             if result: # If the result is not None
                filtered_repositories.append(result) # Append the repository to the list
-         except Exception as exc:
+         except Exception as exc: # Handle the exception if any occurred during execution
                print(f"{BackgroundColors.RED}Error occurred: {BackgroundColors.GREEN}{exc}{Style.RESET_ALL}")
 
    return filtered_repositories # Return the list of filtered repositories
@@ -840,7 +825,7 @@ def format_last_update_date(last_update):
    try: # Try to parse the date
       last_update_date = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%SZ") # Parse the date
       return last_update_date.strftime("%d %B %Y") # Format: 01 January 2022
-   except ValueError:
+   except ValueError: # Handle the exception if the date parsing fails
       return "Unknown" # Fallback if date parsing fails
 
 def add_pdf_data_rows(pdf, data):
@@ -855,21 +840,17 @@ def add_pdf_data_rows(pdf, data):
    pdf.set_font("Helvetica", size=10) # Set the font to Helvetica with size 10
 
    for repo in data: # Iterate over the repositories
-      # Handle content in English
       name = repo.get("name", "") # Get the name of the repository
       author = repo.get("author", "") # Get the author of the repository
       url = repo.get("url", "") # Get the URL of the repository
       commits = str(repo.get("commits", "")) # Get the number of commits
       stars = str(repo.get("stars", "")) # Get the number of stars
-
-      # Handle last_update
       last_update = repo.get("updated_at", "") # Get the last update date of the repository
       last_update = format_last_update_date(last_update) # Parse and format last update date
 
-      # Add the encoded content to the PDF
       pdf.set_x(10) # Set the start x position
 
-      # Name (make it a hyperlink)
+      # Name (Hyperlink)
       pdf.set_text_color(0, 0, 255) # Set color to blue for hyperlinks
       pdf.cell(120, 10, f"{author}/{name}", border=1, link=url) # Name (Hyperlink) is the "author/repository_name" of the repository
       pdf.set_text_color(0, 0, 0) # Reset text color to black
@@ -998,13 +979,11 @@ def collect_field_values_from_list(data_list, field_name):
 
    value_to_repos = defaultdict(list) # Dictionary to store values and corresponding repository names
 
-   # Helper function to handle adding values to the dictionary
-   def add_values(values, repo_name):
+   def add_values(values, repo_name): # Helper function to handle adding values to the dictionary
       for value in values: # Iterate over the values
          value_to_repos[value].append(repo_name) # Add the value and repository name to the dictionary
 
-   # Collect all values from the specified field in each repository
-   for data in data_list: # Iterate over the repositories
+   for data in data_list: # Iterate over the repositories, in order to collect the field values
       if field_name in data: # If the field is present in the data
          repo_name = f"{data.get('author', 'Unknown Author')}/{data.get('name', 'Unknown Repo')}".capitalize() # Get the repository name with the author
          field_data = data[field_name] # Get the data for the field
@@ -1034,10 +1013,7 @@ def sort_values_by_occurrences(values):
    """
 
    sorted_values = sorted(values.items(), key=lambda x: len(x[1]), reverse=True) # Sort by occurrences (number of repositories)
-
-   # Transform the sorted values into a list of tuples (value, occurrences count, comma-separated repositories)
-   formatted_values = [(value, len(repos), ", ".join(repos)) for value, repos in sorted_values]
-
+   formatted_values = [(value, len(repos), ", ".join(repos)) for value, repos in sorted_values] # Transform the sorted values into a list of tuples (value, occurrences count, comma-separated repositories)
    return formatted_values # Return the formatted list
 
 def write_to_csv(header, data, filename):
@@ -1068,9 +1044,8 @@ def calculate_percentile_intervals(data, percentiles):
    percentile_values = [round(np.percentile(sorted_data, p), 2) for p in percentiles] # Calculate and round the percentile values
    intervals = [] # List to store the calculated intervals
 
-   # Calculate the interval ranges between consecutive percentiles
-   for i in range(1, len(percentile_values)):
-      intervals.append((percentiles[i-1], percentiles[i], percentile_values[i-1], percentile_values[i]))
+   for i in range(1, len(percentile_values)): # Iterate over the percentiles to calculate the intervals
+      intervals.append((percentiles[i-1], percentiles[i], percentile_values[i-1], percentile_values[i])) # Append the interval to the list
 
    return intervals # Return the calculated intervals
 
@@ -1130,8 +1105,7 @@ def filter_data_by_iqr(data, lower_percentile=25, upper_percentile=75):
    lower_bound = np.percentile(data, lower_percentile) # Calculate the lower bound
    upper_bound = np.percentile(data, upper_percentile) # Calculate the upper bound
    
-   # Filter the data to only include values within the 25th to 75th percentile range (IQR)
-   filtered_data = [value for value in data if lower_bound <= value <= upper_bound]
+   filtered_data = [value for value in data if lower_bound <= value <= upper_bound] # Filter the data to only include values within the 25th to 75th percentile range (IQR)
    
    return filtered_data, lower_bound, upper_bound # Return the filtered data and bounds
 
@@ -1149,8 +1123,7 @@ def generate_scatter_plot(data, percentiles_dict=None, iqr_range=(25, 75)):
 
    plt.figure(figsize=(10, 6)) # Create a figure and axis
 
-   # Scatter plot of filtered code churn values (focused on IQR)
-   sns.scatterplot(x=range(len(filtered_data)), y=filtered_data, color="blue", alpha=0.6)
+   sns.scatterplot(x=range(len(filtered_data)), y=filtered_data, color="blue", alpha=0.6) # Scatter plot of filtered code churn values (focused on IQR)
 
    # Optionally, add lines for key percentiles (25%, 50%, etc.) if provided
    if percentiles_dict: # If the percentiles dictionary is provided
@@ -1158,13 +1131,11 @@ def generate_scatter_plot(data, percentiles_dict=None, iqr_range=(25, 75)):
          if iqr_range[0] <= p <= iqr_range[1]: # If the percentile is within the IQR range
             plt.axhline(y=value, color="red", linestyle="--", label=f"{p}th Percentile: {value:.2f}") # Add a horizontal line for the percentile
 
-   # Set plot labels and title
    plt.xlabel("Index of Code Churn Value") # X-axis is just the index (no names needed)
    plt.ylabel("Code Churn Value") # Y-axis is the code churn value
    plt.title(f"Scatter Plot of Code Churn Values (Filtered to {iqr_range[0]}th - {iqr_range[1]}th Percentiles)") # Set the title of the plot
    plt.legend(loc="upper right") # Show legend with percentile lines
 
-   # Save and display the plot
    plt.tight_layout() # Adjust the layout
    plt.savefig(FULL_REPOSITORIES_PNG_SCATTER_FILEPATH.replace("FIELD_NAME", f"code_churn_iqr_{iqr_range[0]}_{iqr_range[1]}")) # Save the scatter plot to a file
 
@@ -1180,15 +1151,12 @@ def generate_code_churn_scatter_plot(repositories):
 
    code_churns = sort_values_by_occurrences(collect_field_values_from_list(repositories, "avg_code_churn")) # Collect and sort the code churns from the repositories
    
-   # Extract churn values for percentile calculations and scatter plot
-   churn_values = [float(code_churn) for code_churn, _, _ in code_churns]
+   churn_values = [float(code_churn) for code_churn, _, _ in code_churns] # Extract churn values for percentile calculations and scatter plot
 
-   # Calculate percentiles for additional insight (25%, 50%, 75%)
-   percentiles_to_calculate = [25, 50, 75]
-   percentiles_dict = calculate_percentiles(churn_values, percentiles_to_calculate)
+   percentiles_to_calculate = [25, 50, 75] # Percentiles to calculate for visualization
+   percentiles_dict = calculate_percentiles(churn_values, percentiles_to_calculate) # Calculate the percentiles for visualization
 
-   # Generate scatter plot focusing on interquartile range (25th to 75th percentile)
-   generate_scatter_plot(churn_values, percentiles_dict, iqr_range=(25, 75))
+   generate_scatter_plot(churn_values, percentiles_dict, iqr_range=(25, 75)) # Generate a scatter plot for the code churn values
 
 def randomly_select_repositories(repositories, num_repos):
    """
@@ -1215,9 +1183,9 @@ def print_repositories_summary(total_repo_count, total_candidates, candidates):
 
    print(f"{BackgroundColors.GREEN}Total repositories according to the criteria: {BackgroundColors.CYAN}{total_candidates}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{total_repo_count}{Style.RESET_ALL}\n")
    print(f"{BackgroundColors.CYAN}Selected repositories:{Style.RESET_ALL}")
-   for i, repo in enumerate(candidates, start=1):
+   for i, repo in enumerate(candidates, start=1): # Iterate over the selected repositories
       print(f"{BackgroundColors.CYAN}{i}. {repo['author']}/{repo['name']}{Style.RESET_ALL}: {BackgroundColors.GREEN}{repo['url']} - {repo['description']} "
-         f"{BackgroundColors.CYAN}(⭐ {repo['stars']}{BackgroundColors.GREEN}, {BackgroundColors.CYAN}📝 {repo['commits']} commits{BackgroundColors.GREEN}){Style.RESET_ALL}")
+            f"{BackgroundColors.CYAN}(⭐ {repo['stars']}{BackgroundColors.GREEN}, {BackgroundColors.CYAN}📝 {repo['commits']} commits{BackgroundColors.GREEN}){Style.RESET_ALL}")
 
 def output_time(output_string, time):
    """
