@@ -35,7 +35,16 @@ DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format
    "kafka": "https://github.com/apache/kafka",
    "moleculer-java": "https://github.com/moleculer-java/moleculer-java",
    "scalecube-services": "https://github.com/scalecube/scalecube-services",
-   "zookeeper": "https://github.com/apache/zookeeper"
+   "zookeeper": "https://github.com/apache/zookeeper",
+}
+
+RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
+	"save_to_json": True, # Save the repositories to a JSON file
+	"save_to_pdf": True, # Save the repositories to a PDF file
+	"create_histograms": True, # Create histograms for the repositories
+	"create_csv_files": True, # Create CSV files for the repositories
+	"generate_code_churn_scatter_plot": True, # Generate a scatter plot for the code churn
+	"randomly_select_repositories": False, # Randomly select repositories and print them
 }
 
 # .Env Constants:
@@ -1257,17 +1266,17 @@ def main():
    if filtered_repositories: # If there are repositories after filtering and sorting
       for repository_attribute in REPOSITORIES_SORTING_ATTRIBUTES: # Iterate over the REPOSITORIES_SORTING_ATTRIBUTES
          sorted_repositories = sorted(filtered_repositories, key=lambda x: x[repository_attribute], reverse=True) # Sort the repositories by the repository_attribute value
-         save_to_json(sorted_repositories, FULL_REPOSITORIES_LIST_JSON_FILEPATH.replace("SORTING_ATTRIBUTE", repository_attribute)) # Save the filtered and sorted repositories to a JSON file
-         save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_PDF_FILEPATH.replace("SORTING_ATTRIBUTE", repository_attribute)) # Save the filtered and sorted repositories to a PDF file
+         save_to_json(sorted_repositories, FULL_REPOSITORIES_LIST_JSON_FILEPATH.replace("SORTING_ATTRIBUTE", repository_attribute)) if RUN_FUNCTIONS["save_to_json"] else None # Save the filtered and sorted repositories to a JSON file
+         save_to_pdf(sorted_repositories, repository_attribute, FULL_REPOSITORIES_LIST_PDF_FILEPATH.replace("SORTING_ATTRIBUTE", repository_attribute)) if RUN_FUNCTIONS["save_to_pdf"] else None # Save the filtered and sorted repositories to a PDF file
 
-      create_histograms(sorted_repositories) # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
-      create_csv_files(sorted_repositories) # Create CSV files for the repositories
+      create_histograms(sorted_repositories) if RUN_FUNCTIONS["create_histograms"] else None # Create histograms for the HISTORY_REPOSITORY_FIELDS in the repositories
+      create_csv_files(sorted_repositories) if RUN_FUNCTIONS["create_csv_files"] else None # Create CSV files for the code churn and topics occurrences in the repositories
 
-      generate_code_churn_scatter_plot(sorted_repositories) # Generate a scatter plot for the code churn values of the repositories
+      generate_code_churn_scatter_plot(sorted_repositories) if RUN_FUNCTIONS["generate_code_churn_scatter_plot"] else None # Generate a scatter plot for the code churn values in the repositories
 
-      candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) # Randomly select an specific number of repositories
-      candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) # Sort the candidates by the number of commits
-      print_repositories_summary(total_repo_count, len(sorted_repositories), candidates) # Print the summary of the repositories
+      candidates = randomly_select_repositories(sorted_repositories, CANDIDATES) if RUN_FUNCTIONS["randomly_select_repositories"] else None # Select a number of repositories randomly
+      candidates = sorted(candidates, key=lambda x: x["commits"], reverse=True) if RUN_FUNCTIONS["randomly_select_repositories"] else None # Sort the candidates by the number of commits
+      print_repositories_summary(total_repo_count, len(sorted_repositories), candidates) if RUN_FUNCTIONS["randomly_select_repositories"] else None # Print the summary of the repositories
    else: # If there are no repositories after filtering and sorting
       print(f"{BackgroundColors.RED}No repositories found.{Style.RESET_ALL}")
 
