@@ -37,6 +37,15 @@ DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings 
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
 WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
 
+RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
+	"generate_metrics_track_record_statistics": True, # Generate the metrics track record statistics
+	"linear_regression_graphics": False, # Run the linear regression graphics
+	"sort_csv_by_percentual_variation": True, # Sort the csv file by the percentual variation
+	"verify_substantial_metric_decrease": True, # Verify the substantial metric decrease
+	"write_metrics_evolution_to_csv": True, # Write the metrics evolution to a csv file
+	"write_metrics_track_record_to_txt": True, # Write the metrics track record to a txt file
+}
+
 # Constants:
 PROCESS_CLASSES = True # If True, then the classes will be processed, otherwise the methods will be processed
 DEFAULT_REPOSITORIES_NAMES = json.dumps(list(DEFAULT_REPOSITORIES.keys())) # The default repository names
@@ -804,7 +813,7 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		metric_values = metrics_array[:, metric_position] # Extract the metrics values from the metrics array in the specified position (column)
 
 		if metric_name == SUBSTANTIAL_CHANGE_METRIC: # For the CBO metric, verify if there occurred any substantial decrease in the metric
-			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name) # Verify if there occurred any substantial decrease in the metric
+			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if there occurred any substantial decrease in the metric
 			
 		if len(commit_number) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
 			return # Return if there are not enough data points for regression
@@ -870,7 +879,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 					
 					previous_metrics = current_metrics # Update previous metrics
 
-			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], record["method_invoked"], identifier.split(" ")[1], repository_name) # Perform linear regression and generate graphics for the metrics
+			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], record["method_invoked"], identifier.split(" ")[1], repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
 
 def merge_code_churn_fields(code_churn_metrics):
@@ -1101,18 +1110,16 @@ def process_repository(repository_name):
 
 	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record) # Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
 
-	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record) # Write the metrics_track_record to a txt file
-
-	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record) # Write, for each identifier, the metrics evolution values to a csv file
-
-	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record) # Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
+	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["write_metrics_track_record_to_txt"] else None # Write the metrics_track_record to a txt file
+	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Write, for each identifier, the metrics evolution values to a csv file
+	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["generate_metrics_track_record_statistics"] else None # Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 
 	sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
 
 	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The old csv file path
 	os.remove(old_csv_file_path) # Remove the old csv file
 
-	sort_csv_by_percentual_variation(repository_name) # Sort the interesting changes csv file by the percentual variation of the metric
+	sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["sort_csv_by_percentual_variation"] else None# Sort the interesting changes csv file by the percentual variation of the metric
 
 	repositories_attributes = update_repository_attributes(repository_name, elapsed_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
