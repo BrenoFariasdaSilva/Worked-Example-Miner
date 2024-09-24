@@ -247,8 +247,8 @@ def parse_commit_info(lines):
       last_commit_hash = lines[-1].split(",")[1] # Get the last commit hash from the last line
       for line in lines[1:]: # Loop through the lines, excluding the header
          parts = line.split(",") # Split the line by commas
-         commit_info = tuple(int(parts[i]) if i in (4, 5, 6, 8) else float(parts[i]) if i == 7 else parts[i] for i in range(len(parts))) # Create a tuple with the commit information, convertConvert necessary parts to their respective types
-         commits_info.append(commit_info) # Append the commit information to the list
+         commit_tuple = tuple(int(parts[i]) if i in (4, 5, 6, 8) else float(parts[i]) if i == 7 else parts[i] for i in range(len(parts))) # Create a tuple with the commit information, converting necessary parts to their respective types
+         commits_info.append(commit_tuple) # Append the commit information to the list
    
    return commits_info, last_commit_number, last_commit_hash # Return the commits_info, last_commit_number and last_commit_hash
 
