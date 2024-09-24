@@ -281,7 +281,7 @@ def write_progress_file(file_path, lines):
    """
 
    with open(file_path, "w") as file: # Open the progress file to write
-      file.write("Commit Number,Commit Hash,Commit Message,Commit Date\n") # Write the header to the file
+      file.write("Commit Number,Commit Hash,Commit Message,Commit Date,Lines Added,Lines Removed,Commit Code Churn,Avg Code Churn Per File,Modified Files Count,Commit URL\n")
       for line in lines: # Loop through the lines
          file.write(line) # Write the line to the file
 
@@ -566,8 +566,12 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             pbar.update(1) # Update the progress bar
             continue # Jump to the next iteration
 
-         # Store the commit hash, commit message and commit date in one line of the list, separated by commas
-         current_tuple = (f"{commit_number}-{commit.hash}", commit.msg.replace("\n", " \\ "), commit.committer_date)
+         lines_added, lines_removed = sum(file.added_lines for file in commit.modified_files), sum(file.deleted_lines for file in commit.modified_files) # Lines added and removed
+         code_churn = lines_added - lines_removed # Code churn
+         modified_files_count = len(commit.modified_files) # Number of modified files
+         code_churn_avg_per_file = code_churn / modified_files_count if modified_files_count > 0 else 0 # Code churn average per file
+
+         current_tuple = (commit_number, commit.hash, commit.msg.replace("\n", " \\ "), commit.committer_date, lines_added, lines_removed, code_churn, code_churn_avg_per_file, modified_files_count, f"{repository_url}/commit/{commit.hash}") # Create a tuple with the commit information
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
          # Save the diff of the modified files of the current commit
@@ -592,10 +596,8 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          if commit_number == 1: # If it is the first iteration
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
-         # Append the commit hash, commit message and commit date to the progress file
-         with open(saved_progress_file, "a") as progress_file:
-            progress_file.write(f"{commit_number},{commit.hash},{current_tuple[1]},{current_tuple[2]}\n")
-
+         with open(saved_progress_file, "a") as progress_file: # Open the progress file to append
+            progress_file.write(f",".join(map(str, current_tuple)) + "\n") # Write the current tuple to the progress file
          commit_number += 1 # Increment the commit number
          pbar.update(1) # Update the progress bar
 
@@ -622,7 +624,7 @@ def write_commits_information_to_csv(repository_name, commit_info):
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}"
    with open(file_path, "w", newline="") as csv_file:
       writer = csv.writer(csv_file) # Create a csv writer
-      writer.writerow(["Commit Hash", "Commit Message", "Commit Date"]) # Write the header
+      writer.writerow(["Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count"])
       writer.writerows(commit_info) # Write the commit hashes
 
 def write_repositories_attributes_to_csv(repository_attributes):
