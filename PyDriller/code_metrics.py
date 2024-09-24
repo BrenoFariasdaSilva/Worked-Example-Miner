@@ -216,10 +216,10 @@ def verify_ck_metrics_folder(repository_name):
 
 def read_progress_file(file_path):
    """
-   Read the contents of the progress file, excluding the last two lines.
+   Read the contents of the progress file
 
    :param file_path: Path to the saved progress file
-   :return: List of lines from the progress file, excluding the last two lines
+   :return: List of lines from the progress file
    """
 
    if not verify_filepath_exists(file_path): # Verify if the file exists
@@ -228,7 +228,7 @@ def read_progress_file(file_path):
    with open(file_path, "r") as file: # Open the progress file
       lines = file.readlines() # Read the lines from the file
    
-   return lines[:-2] # Remove the last two lines
+   return lines # Return the lines from the progress file
 
 def parse_commit_info(lines):
    """
