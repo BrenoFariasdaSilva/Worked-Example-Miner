@@ -217,19 +217,24 @@ def verify_ck_metrics_folder(repository_name):
 
 def read_progress_file(file_path):
    """
-   Read the contents of the progress file
+   Read the contents of the progress file using CSV reader.
 
    :param file_path: Path to the saved progress file
-   :return: List of lines from the progress file
+   :return: List of dictionaries representing the commit information from the progress file
    """
 
    if not verify_filepath_exists(file_path): # Verify if the file exists
       return [] # Return an empty list if the file does not exist
 
-   with open(file_path, "r") as file: # Open the progress file
-      lines = file.readlines() # Read the lines from the file
-   
-   return lines # Return the lines from the progress file
+   try: # Try to read the progress file
+      with open(file_path, "r") as file: # Open the progress file to read
+         reader = csv.DictReader(file) # Create a CSV reader
+         lines = list(reader) # Convert the reader object into a list of dictionaries
+   except Exception as e: # Handle exceptions
+      print(f"{BackgroundColors.RED}An error occurred while reading the progress file: {e}{Style.RESET_ALL}")
+      return [] # Return an empty list if an error occurs
+
+   return lines # Return the list of dictionaries representing the commit information
 
 def parse_commit_info(lines):
    """
