@@ -20,8 +20,8 @@ from repositories_picker import count_commits, create_directory, get_adjusted_nu
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
+   "generate_ck_metrics": True, # Generate the CK metrics for the commits
    "generate_diffs": True, # Generate the diffs for the commits
-   "run_ck_metrics_generator": True, # Run the CK metrics generator
    "write_commits_information_to_csv": True, # Write the commit information to a CSV file
    "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
 }
@@ -570,7 +570,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          os.chdir(output_directory) # Change working directory to the repository directory
 
          cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory} true" # The command to run the CK metrics generator
-         run_ck_metrics_generator(cmd) if RUN_FUNCTIONS["run_ck_metrics_generator"] else None # Run the CK metrics generator
+         run_ck_metrics_generator(cmd) if RUN_FUNCTIONS["generate_ck_metrics"] else None # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
