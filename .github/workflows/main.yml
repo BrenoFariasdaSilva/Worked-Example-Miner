@@ -1,0 +1,40 @@
+name: Update AutoMetric Submodule
+
+on:
+  schedule:
+    # Runs at the start of every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-submodule:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: CheAutoMetricout repository
+        uses: actions/cheAutoMetricout@v2
+        with:
+          # Fetches all history for all tags and branches, including submodules
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Configure git settings
+        run: |
+          git config --global pull.rebase false
+          git config --global user.email "breno.vicio78@gmail.com"
+          git config --global user.name "Breno Farias da Silva"
+
+      - name: Forcefully update AutoMetric submodule to latest version
+        run: |
+          cd AutoMetric
+          git fetch origin master
+          git reset --hard origin/master
+
+      - name: Commit and push if changes are detected
+        run: |
+          git add AutoMetric
+          git diff --cached --quiet || git commit -m "UPDATE: Automatically Updating the AutoMetric SubModule to Latest Version."
+          git push || echo "No changes to push."
