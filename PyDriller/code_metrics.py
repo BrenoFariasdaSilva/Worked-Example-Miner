@@ -186,6 +186,28 @@ def verify_ck_metrics_files(folder_path, ck_metrics_files):
          return False # Return False if the CK metric file does not exist
    return True # Return True if all CK metrics files exist
 
+def is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name):
+   """
+   Verify if the repository is outdated based on the number of unprocessed commits
+   and the total number of commits. If more than 100 commits are unprocessed, mark
+   the repository as outdated and update global flags.
+
+   :param number_of_commits: The total number of commits in the repository.
+   :param total_commits_processed: The number of commits that have already been processed.
+   :param repository_name: The name of the repository being checked.
+   :return: True if outdated, False otherwise.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Checking if the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository is outdated...{Style.RESET_ALL}")
+
+   global RUN_FUNCTIONS # Access the global RUN_FUNCTIONS
+
+   unprocessed_commits = number_of_commits - total_commits_processed # Calculate the number of unprocessed commits
+   if unprocessed_commits > 100: # If more than 100 commits are unprocessed
+      RUN_FUNCTIONS["generate_ck_metrics"] = True if not RUN_FUNCTIONS["generate_ck_metrics"] else RUN_FUNCTIONS["generate_ck_metrics"] # Set CK metrics generation to True globally
+      return True # Return True if the repository is outdated
+   return False # Return False if the repository is up to date
+
 def verify_commit_files_exist(repo_path, commit_filepaths):
    """
    Verifies that each commit in the list of commit filepaths has its corresponding folder and CK metrics files.
@@ -227,6 +249,10 @@ def verify_ck_metrics_folder(repository_name, number_of_commits):
 
    if not repository_ck_metrics_filepaths: # If the list of commit filepaths is empty
       return False # Return False if the list of commit filepaths is empty
+
+   total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
+   if is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name): # Verify if the repository is outdated
+      return False # If outdated, return False and the CK metrics generation will be triggered
 
    if not verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths): # Verify if all commit files exist
       return False # If any commit metrics folder/files are missing, return False
@@ -690,7 +716,9 @@ def process_repository(repository_name, repository_url):
 
    print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   if RUN_FUNCTIONS["generate_ck_metrics"] and verify_ck_metrics_folder(repository_name): # Verify if the metrics were already calculated
+   number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
+
+   if RUN_FUNCTIONS["generate_ck_metrics"] and verify_ck_metrics_folder(repository_name, number_of_commits): # Verify if the metrics were already calculated
       print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated!{Style.RESET_ALL}")
       return # Return if the metrics were already calculated
 
@@ -700,7 +728,6 @@ def process_repository(repository_name, repository_url):
 
    setup_repository(repository_name, repository_url) # Setup the repository: Clone or update the repository
 
-   number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
    commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits) # Traverse the repository to run CK for every commit hash in the repository
 
    write_commits_information_to_csv(repository_name, commits_info) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None # Write the commits information to a CSV file
