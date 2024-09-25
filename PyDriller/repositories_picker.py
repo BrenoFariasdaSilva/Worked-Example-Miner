@@ -575,11 +575,30 @@ def calculate_average_metrics(repo_path, total_commits, lines=None):
 
    return avg_code_churn, avg_files_modified # Return the average code churn and files modified
 
-def fill_repository_dict_fields(repo, avg_code_churn, avg_files_modified, commits_count):
+def run_autometric(repo_url):
+   """
+   Executes the AutoMetric script to gather metrics for a given repository URL.
+
+   :param repo_url: str - The URL of the repository.
+   :return: dict - The metrics gathered by the AutoMetric script.
+   """
+
+   # Execute AutoMetric script and get metrics
+   result = subprocess.run(["make", "-C", "../AutoMetric", "auto_metric_script", repo_url], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+   if result.returncode == 0: # If the script ran successfully
+      metrics = json.loads(result.stdout) # Load the metrics from the output
+      return metrics[0] if metrics else {} # Return the metrics if they exist
+   else: # If the script did not run successfully
+      print(f"{BackgroundColors.RED}Error while running AutoMetric script: {result.stderr}{Style.RESET_ALL}")
+      return {} # Return an empty dictionary
+
+def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count):
    """
    Fills the repository dictionary with relevant metrics and information.
 
    :param repo: dict - The repository information.
+   :param autometric_metrics: dict - Metrics gathered from AutoMetric.
    :param avg_code_churn: float - The average code churn.
    :param avg_files_modified: float - The average number of modified files.
    :param commits_count: int - The total number of commits in the repository.
@@ -598,6 +617,11 @@ def fill_repository_dict_fields(repo, avg_code_churn, avg_files_modified, commit
       "open issues counter": repo["open_issues_count"], # Get the number of open issues
       "avg_code_churn": int(avg_code_churn), # Get the average code churn
       "avg_modified_files": int(avg_files_modified), # Get the average files modified
+      "Number of Contributors": autometric_metrics.get("Number of Contributors", "n/a"), # Get the number of contributors
+      "Inactive Period": autometric_metrics.get("Inactive Period", "n/a"), # Get the inactive period
+      "MTTU": autometric_metrics.get("MTTU", "n/a"), # Get the Mean Time to Update (MTTU)
+      "MTTC": autometric_metrics.get("MTTC", "n/a"), # Get the Mean Time to Close (MTTC)
+      "Branch Protection": autometric_metrics.get("Branch Protection", "n/a"), # Get the branch protection status
       "updated_at": repo["updated_at"], # Get the last update date
       # "pull_requests": repo.get("pulls_count", 0), # Get the number of pull requests (Apparently this endpoint aint working)
       "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
@@ -624,7 +648,8 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
       if commits_count > MINIMUM_COMMITS: # If the number of commits is greater than the minimum
          avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
          if avg_code_churn < MAXIMUM_AVG_CODE_CHURN and avg_files_modified < MAXIMUM_AVG_FILES_MODIFIED: # If the average code churn and files modified are within the limits
-            filled_repo_dict = fill_repository_dict_fields(repo, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
+            autometric_metrics = run_autometric(repo["html_url"]) # Get metrics from AutoMetric and integrate into repo_dict
+            filled_repo_dict = fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
             return filled_repo_dict # Return the filled repository dictionary
 
    return None # Return None if the repository is not valid
