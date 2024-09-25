@@ -606,7 +606,7 @@ def write_commits_information_to_csv(repository_name, commit_info):
 
 def write_repositories_attributes_to_csv(repository_attributes):
    """
-   Writes the repositories attributes to a csv file.
+   Writes the repositories attributes to a CSV file.
 
    :param repository_attributes: Dictionary containing the repositories attributes.
    :return: None
@@ -618,13 +618,20 @@ def write_repositories_attributes_to_csv(repository_attributes):
    
    # Open the file in append mode if it exists, else in write mode
    with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "a" if file_exists else "w", newline="") as csv_file:
-      writer = csv.writer(csv_file) # Create a csv writer
+      writer = csv.writer(csv_file) # Create a CSV writer
       
       if not file_exists: # If the file does not exist, write the header
          writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
+      else: # If the file exists, verify if the last line is empty
+            csv_file.seek(-1, os.SEEK_END) # Move to the end of the file
+            while csv_file.read(1) != "\n" and csv_file.tell() > 1: # Go back until the start of the last line
+               csv_file.seek(-2, os.SEEK_CUR) # Move back two bytes
+            last_line_content = csv_file.readline().strip() # Read the last line and strip whitespace
+            
+            if last_line_content: # If the last line is not empty
+               csv_file.write("\n") # Add a line break
       
-      # Write the repository attributes
-      writer.writerow([
+      writer.writerow([ # Write the repository attributes
          repository_attributes["repository_name"], # Name of the repository
          repository_attributes["classes"], # Number of classes in the repository
          repository_attributes["lines_of_code"], # Number of lines of code in the repository
