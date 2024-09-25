@@ -8,6 +8,7 @@ import subprocess # The subprocess module allows you to spawn new processes, con
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
 from datetime import datetime # For date manipulation
+from dateutil import parser # The dateutil module provides powerful extensions to the standard datetime module
 from pydriller import Repository # PyDriller is a Python framework that helps developers in analyzing Git repositories. 
 from tqdm import tqdm # For Generating the Progress Bars
 
@@ -240,23 +241,41 @@ def parse_commit_info(lines):
    """
    Parse commit information from the lines of the progress file.
 
-   :param lines: List of lines from the progress file
-   :return: Tuple containing the list of commit info, the last commit number and the last commit hash
+   :param lines: List of dictionaries from the progress file
+   :return: Tuple containing the list of commit info, the last commit number, and the last commit hash
    """
 
    commits_info = [] # List to store the commit information
    last_commit_number = 0 # Variable to store the last commit number
    last_commit_hash = None # Variable to store the last commit hash
+
+   if lines: # Ensure there are lines to process
+      for line in lines: # Process each line in the CSV
+         try: # Try to parse the line
+            commit_number = int(line["Commit Number"]) # Read the commit number to an integer
+            commit_hash = line["Commit Hash"] # Get the commit hash
+            commit_message = f'"{line["Commit Message"].split("\n")[0].strip()}"' # Format the commit message to only keep the first line, stripped of leading/trailing spaces
+            commit_date = parser.parse(line["Commit Date"]) # Use dateutil.parser to handle the date with timezone
+            lines_added = int(line["Lines Added"]) # Read the lines added to an integer
+            lines_removed = int(line["Lines Removed"]) # Read the lines removed to an integer
+            commit_code_churn = int(line["Commit Code Churn"]) # Read the commit code churn to an integer
+            code_churn_avg_per_file = round(float(line["Code Churn Avg Per File"]), 2) # Round the code churn average per file to 2 decimal places
+            modified_files_count = int(line["Modified Files Count"]) # Read the modified files count to an integer
+            commit_url = line["Commit URL"] # Get the commit URL
+
+            commit_tuple = (commit_number, commit_hash, commit_message, commit_date, lines_added, lines_removed, commit_code_churn, code_churn_avg_per_file, modified_files_count, commit_url) # Create a tuple with the commit information
+            commits_info.append(commit_tuple) # Append the commit tuple to the list
+
+         except KeyError as e: # Handle missing keys
+            print(f"Missing key in line: {e}, line data: {line}")
+         except Exception as e: # Handle parsing errors
+            print(f"Error parsing line: {e}, line data: {line}")
+
+      if commits_info: # If there are commits in the list
+         last_commit_number = commits_info[-1][0] # Commit number from the last line
+         last_commit_hash = commits_info[-1][1] # Commit hash from the last line
    
-   if len(lines) > 3: # If there are more than 3 lines in the file
-      last_commit_number = int(lines[-1].split(",")[0]) # Get the last commit number from the last line
-      last_commit_hash = lines[-1].split(",")[1] # Get the last commit hash from the last line
-      for line in lines[1:]: # Loop through the lines, excluding the header
-         parts = line.split(",") # Split the line by commas
-         commit_tuple = tuple(int(parts[i]) if i in (4, 5, 6, 8) else float(parts[i]) if i == 7 else parts[i] for i in range(len(parts))) # Create a tuple with the commit information, converting necessary parts to their respective types
-         commits_info.append(commit_tuple) # Append the commit information to the list
-   
-   return commits_info, last_commit_number, last_commit_hash # Return the commits_info, last_commit_number and last_commit_hash
+   return commits_info, last_commit_number, last_commit_hash # Return the list of commit information, the last commit number, and the last commit hash
 
 def calculate_percentage_progress(last_commit_number, total_commits):
    """
