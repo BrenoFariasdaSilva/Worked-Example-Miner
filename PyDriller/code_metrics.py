@@ -552,7 +552,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          modified_files_count = len(commit.modified_files) # Number of modified files
          code_churn_avg_per_file = code_churn / modified_files_count if modified_files_count > 0 else 0 # Code churn average per file
 
-         current_tuple = (commit_number, commit.hash, commit.msg.replace("\n", " // "), commit.committer_date, lines_added, lines_removed, code_churn, code_churn_avg_per_file, modified_files_count, f"{repository_url}/commit/{commit.hash}") # Create a tuple with the commit information
+         current_tuple = (commit_number, commit.hash, commit.msg.split("\n")[0], commit.committer_date, lines_added, lines_removed, code_churn, code_churn_avg_per_file, modified_files_count, f"{repository_url}/commit/{commit.hash}") # Create a tuple with the commit information
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
          generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["generate_diffs"] else None # Save the diff of the modified files of the current commit
