@@ -652,22 +652,23 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
    return commits_info, get_repository_attributes(repository_name, number_of_commits, elapsed_time) # Return the commits info and repository attributes
 
-def write_commits_information_to_csv(repository_name, commit_info):
+def write_commits_information_to_csv(repository_name, commits_tuple_list):
    """
    Writes the commit information to a csv file.
 
    :param repository_name: Name of the repository to be analyzed.
-   :param commit_info: List of tuples containing the commit hashes, commit messages and commit dates.
+   :param commits_tuple_list: List of commit information tuples
    :return: None
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the commit information to a csv file...{Style.RESET_ALL}")
    
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the CSV file
-   with open(file_path, "w", newline="") as csv_file: # Open the file in write mode
-      writer = csv.writer(csv_file) # Create a csv writer
+   with open(file_path, "w") as file: # Open the progress file to write
+      writer = csv.writer(file) # Create a CSV writer
       writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count", "Commit URL"]) # Write the header
-      writer.writerows(commit_info) # Write the commit hashes
+      for commit_tuple in commits_tuple_list: # Loop through the commit information tuples
+         file.write(commit_tuple) # Write the commit information to the file
 
 def write_repositories_attributes_to_csv(repository_attributes):
    """
