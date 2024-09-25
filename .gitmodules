@@ -1,3 +1,6 @@
 [submodule "ck"]
 	path = ck
 	url = https://github.com/BrenoFariasdaSilva/ck/
+[submodule "AutoMetric"]
+	path = AutoMetric
+	url = https://github.com/BrenoFariasdaSilva/AutoMetric
