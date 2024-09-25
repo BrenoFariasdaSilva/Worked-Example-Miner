@@ -673,8 +673,14 @@ def clone_repository(repository_directory_path, repository_url):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Cloning the {BackgroundColors.CYAN}{repository_directory_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
    
-   thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Create a thread to clone the repository
-   thread.wait() # Wait for the thread to finish
+   try: # Try to clone the repository
+      thread = subprocess.Popen(["git", "clone", repository_url, repository_directory_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Create a thread to clone the repository
+      stdout, stderr = thread.communicate() # Wait for the thread to finish and capture output
+      
+      if thread.returncode != 0: # Check for errors during cloning
+         print(f"{BackgroundColors.RED}Error cloning repository: {BackgroundColors.GREEN}{stderr.decode().strip()}{Style.RESET_ALL}") # Print error message if cloning fails
+   except Exception as e:
+      print(f"{BackgroundColors.RED}An error occurred while cloning the repository: {BackgroundColors.GREEN}{e}{Style.RESET_ALL}")
 
 def setup_repository(repository_name, repository_url):
    """"
