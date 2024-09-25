@@ -651,7 +651,7 @@ def process_repository(repository_name, repository_url):
 
    print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-   if verify_ck_metrics_folder(repository_name) and RUN_FUNCTIONS["generate_ck_metrics"]: # Verify if the metrics were already calculated
+   if RUN_FUNCTIONS["generate_ck_metrics"] and verify_ck_metrics_folder(repository_name): # Verify if the metrics were already calculated
       print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated!{Style.RESET_ALL}")
       return # Return if the metrics were already calculated
 
@@ -724,7 +724,7 @@ def main():
    if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
    
-   if not ensure_ck_jar_file_exists() and RUN_FUNCTIONS["generate_ck_metrics"]: # Verify and ensure that the CK JAR file exists
+   if RUN_FUNCTIONS["generate_ck_metrics"] and not ensure_ck_jar_file_exists(): # Verify and ensure that the CK JAR file exists
       return # Return if the CK JAR file does not exist
 
    verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
