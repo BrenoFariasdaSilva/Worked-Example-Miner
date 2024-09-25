@@ -41,7 +41,7 @@ RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory th
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
 RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of the directory that contains the refactorings
 RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_attributes{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repositories attributes
-RELATIVE_REPOSITORY_PROGRESS_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repository_name-progress{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repository progress
+RELATIVE_REPOSITORY_PROGRESS_FILE_PATH = f"{RELATIVE_PROGRESS_DIRECTORY_PATH}/repository_name-progress{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repository progress
 
 # Full paths (Start Path + Relative Paths):
 FULL_CK_JAR_PATH = START_PATH.replace("PyDriller", "") + RELATIVE_CK_JAR_PATH.replace("../", "") # The full path of the CK JAR file
