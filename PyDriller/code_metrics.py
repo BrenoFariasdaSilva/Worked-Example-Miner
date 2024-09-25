@@ -272,7 +272,8 @@ def write_progress_file(file_path, lines):
    """
 
    with open(file_path, "w") as file: # Open the progress file to write
-      file.write("Commit Number,Commit Hash,Commit Message,Commit Date,Lines Added,Lines Removed,Commit Code Churn,Avg Code Churn Per File,Modified Files Count,Commit URL\n")
+      writer = csv.writer(file) # Create a CSV writer
+      writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count", "Commit URL"]) # Write the header
       for line in lines: # Loop through the lines
          file.write(line) # Write the line to the file
 
@@ -599,7 +600,7 @@ def write_commits_information_to_csv(repository_name, commit_info):
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the CSV file
    with open(file_path, "w", newline="") as csv_file: # Open the file in write mode
       writer = csv.writer(csv_file) # Create a csv writer
-      writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count"]) # Write the header
+      writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count", "Commit URL"]) # Write the header
       writer.writerows(commit_info) # Write the commit hashes
 
 def write_repositories_attributes_to_csv(repository_attributes):
