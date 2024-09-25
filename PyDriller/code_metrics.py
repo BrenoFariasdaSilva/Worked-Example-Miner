@@ -331,19 +331,19 @@ def calculate_percentage_progress(last_commit_number, total_commits):
 
    return round((last_commit_number / total_commits) * 100, 2) # Calculate the percentage progress
 
-def write_progress_file(file_path, lines):
+def write_progress_file(file_path, commits_tuple_list):
    """
    Write the provided lines to the progress file, including the header.
 
    :param file_path: Path to the saved progress file
-   :param lines: List of lines to be written to the file
+   :param commits_tuple_list: List of commit information tuples
    """
 
    with open(file_path, "w") as file: # Open the progress file to write
       writer = csv.writer(file) # Create a CSV writer
       writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count", "Commit URL"]) # Write the header
-      for line in lines: # Loop through the lines
-         file.write(line) # Write the line to the file
+      for commit_tuple in commits_tuple_list: # Loop through the commit information tuples
+         file.write(commit_tuple) # Write the commit information to the file
 
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
