@@ -153,19 +153,21 @@ def ensure_ck_jar_file_exists():
    print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CK JAR{BackgroundColors.RED} file was not found in the target directory.{Style.RESET_ALL}")
    return False # Return False if the JAR file was not found in the target directory
 
-def get_commit_hashes(commit_file_path):
+def get_commit_filepaths(commit_file_path):
    """
-   Read the commit hashes from a CSV file.
+   Read the commit information from a CSV file and return a list of file paths in the format '{Commit Number}-{Commit Hash}'.
 
-   :param commit_file_path: Path to the CSV file containing commit hashes
-   :return: List of commit hashes
+   :param commit_file_path: Path to the CSV file containing commit details
+   :return: List of file paths in the format '{Commit Number}-{Commit Hash}'
    """
    
    if not verify_filepath_exists(commit_file_path): # Verify if the file exists
       return [] # Return an empty list if the file does not exist
 
-   # Read the commit hashes CSV file and get the commit_hashes column, ignoring the first line
-   return pd.read_csv(commit_file_path, sep=",", usecols=["Commit Hash"], header=0).values.tolist()
+   df = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Number", "Commit Hash"], header=0) # Read the CSV file and get the necessary columns
+   filepaths = [f"{row['Commit Number']}-{row['Commit Hash']}" for _, row in df.iterrows()] # Create a list of file paths in the format '{Commit Number}-{Commit Hash}'
+   
+   return filepaths # Return the list of file paths
 
 def verify_ck_metrics_files(folder_path, ck_metrics_files):
    """
@@ -197,7 +199,7 @@ def verify_ck_metrics_folder(repository_name):
    commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The name of the commit hashes file
    commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
 
-   commit_hashes = get_commit_hashes(commit_file_path) # Get the commit hashes
+   commit_hashes = get_commit_filepaths(commit_file_path) # Get the commit hashes
 
    if not commit_hashes: # If the commit hashes list is empty
       return False # Return False if the commit hashes list is empty
