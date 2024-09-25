@@ -30,8 +30,8 @@ jobs:
       - name: Forcefully update AutoMetric submodule to latest version
         run: |
           cd AutoMetric
-          git fetch origin master
-          git reset --hard origin/master
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Commit and push if changes are detected
         run: |
