@@ -14,7 +14,7 @@ from tqdm import tqdm # For Generating the Progress Bars
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
 from repositories_picker import DEFAULT_REPOSITORIES, FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import count_commits, create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists, verify_git, verify_repositories_execution_constants # Importing Functions from the repositories_picker.py file
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists, verify_git, verify_repositories_execution_constants # Importing Functions from the repositories_picker.py file
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
@@ -661,8 +661,7 @@ def process_repository(repository_name, repository_url):
 
    setup_repository(repository_name, repository_url) # Setup the repository: Clone or update the repository
 
-   number_of_commits = count_commits(f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}") # Count the number of commits in the repository
-   
+   number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
    commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits) # Traverse the repository to run CK for every commit hash in the repository
 
    write_commits_information_to_csv(repository_name, commits_info) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None # Write the commits information to a CSV file
