@@ -194,24 +194,22 @@ def verify_ck_metrics_folder(repository_name):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated...{Style.RESET_ALL}")
 
-   data_path = os.path.join(START_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH[1:]) # Join the PATH with the relative path of the ck metrics directory
-   repo_path = os.path.join(data_path, repository_name) # Join the data path with the repository name
+   repo_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # Join the full ck metrics directory path with the repository
    commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The name of the commit hashes file
-   commit_file_path = os.path.join(data_path, commit_file) # Join the data path with the commit hashes file
+   commit_file_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, commit_file) # Join the full ck metrics directory path with the commit hashes file
 
-   commit_hashes = get_commit_filepaths(commit_file_path) # Get the commit hashes
+   repository_ck_metrics_filepaths = get_commit_filepaths(commit_file_path) # Get the commit filepaths
 
-   if not commit_hashes: # If the commit hashes list is empty
-      return False # Return False if the commit hashes list is empty
+   if not repository_ck_metrics_filepaths: # If the filepaths list is empty
+      return False # Return False if the filepaths list is empty
 
-   for commit_hash in commit_hashes: # Loop through the commit hashes
-      commit_file_filename = commit_hash[0] # This removes the brackets from the commit hash
-      folder_path = os.path.join(repo_path, commit_file_filename) # Join the repository path with the commit hash folder
+   for ck_metrics_filepath in repository_ck_metrics_filepaths: # Loop through the commit hashes
+      folder_path = os.path.join(repo_path, ck_metrics_filepath) # Join the repository path with the commit hash folder
 
       if verify_filepath_exists(folder_path): # Verify if the folder exists
          if not verify_ck_metrics_files(folder_path, CK_METRICS_FILES): # Verify if all the CK metrics files exist
             return False # If any CK metrics file does not exist, return False
-      else:
+      else: # If the folder does not exist
          return False # Return False if the folder does not exist
 
    return True # Return True if all the metrics are already calculated
