@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: CheAutoMetricout repository
-        uses: actions/cheAutoMetricout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
         with:
           # Fetches all history for all tags and branches, including submodules
           fetch-depth: 0
