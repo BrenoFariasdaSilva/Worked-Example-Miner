@@ -575,6 +575,34 @@ def calculate_average_metrics(repo_path, total_commits, lines=None):
 
    return avg_code_churn, avg_files_modified # Return the average code churn and files modified
 
+def fill_repository_dict_fields(repo, avg_code_churn, avg_files_modified, commits_count):
+   """
+   Fills the repository dictionary with relevant metrics and information.
+
+   :param repo: dict - The repository information.
+   :param avg_code_churn: float - The average code churn.
+   :param avg_files_modified: float - The average number of modified files.
+   :param commits_count: int - The total number of commits in the repository.
+   :return: dict - The filled repository dictionary.
+   """
+
+   return { # Return the filled repository dictionary
+      "name": repo["name"].encode("utf-8").decode("utf-8"), # Encode and decode the name to handle special characters
+      "author": extract_author_name(repo).encode("utf-8").decode("utf-8"), # Encode and decode the author's name to handle special characters
+      "url": repo["html_url"], # Get the URL of the repository
+      "description": repo["description"].encode("utf-8").decode("utf-8"), # Encode and decode the description to handle special characters
+      "topics": ", ".join(repo["topics"]), # Get the topics of the repository
+      "commits": commits_count, # Get the number of commits
+      "stars": repo["stargazers_count"], # Get the number of stars
+      "forks counter": repo["forks_count"], # Get the number of forks
+      "open issues counter": repo["open_issues_count"], # Get the number of open issues
+      "avg_code_churn": int(avg_code_churn), # Get the average code churn
+      "avg_modified_files": int(avg_files_modified), # Get the average files modified
+      "updated_at": repo["updated_at"], # Get the last update date
+      # "pull_requests": repo.get("pulls_count", 0), # Get the number of pull requests (Apparently this endpoint aint working)
+      "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
+   }
+
 def process_repository(repo, date_filter=None, ignore_keywords=None):
    """
    Processes a single repository, filtering by date, keywords, and ensuring a unique name.
@@ -596,22 +624,8 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
       if commits_count > MINIMUM_COMMITS: # If the number of commits is greater than the minimum
          avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
          if avg_code_churn < MAXIMUM_AVG_CODE_CHURN and avg_files_modified < MAXIMUM_AVG_FILES_MODIFIED: # If the average code churn and files modified are within the limits
-            return {
-               "name": repo["name"].encode("utf-8").decode("utf-8"), # Encode and decode the name to handle special characters
-               "author": extract_author_name(repo).encode("utf-8").decode("utf-8"), # Encode and decode the author's name to handle special characters
-               "url": repo["html_url"], # Get the URL of the repository
-               "description": repo["description"].encode("utf-8").decode("utf-8"), # Encode and decode the description to handle special characters
-               "topics": ", ".join(repo["topics"]), # Get the topics of the repository
-               "commits": commits_count, # Get the number of commits
-               "stars": repo["stargazers_count"], # Get the number of stars
-               "forks counter": repo["forks_count"], # Get the number of forks
-               "open issues counter": repo["open_issues_count"], # Get the number of open issues
-               "avg_code_churn": int(avg_code_churn), # Get the average code churn
-               "avg_modified_files": int(avg_files_modified), # Get the average files modified
-               "updated_at": repo["updated_at"], # Get the last update date
-               # "pull_requests": repo.get("pulls_count", 0), # Get the number of pull requests (Apparently this endpoint aint working)
-               "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
-            }
+            filled_repo_dict = fill_repository_dict_fields(repo, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
+            return filled_repo_dict # Return the filled repository dictionary
 
    return None # Return None if the repository is not valid
 
