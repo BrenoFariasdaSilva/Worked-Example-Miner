@@ -186,35 +186,52 @@ def verify_ck_metrics_files(folder_path, ck_metrics_files):
          return False # Return False if the CK metric file does not exist
    return True # Return True if all CK metrics files exist
 
-def verify_ck_metrics_folder(repository_name):
+def verify_commit_files_exist(repo_path, commit_filepaths):
    """
-   Verifies if all the metrics are already calculated by opening the commit hashes file and checking if every commit hash in the file is a folder in the repository folder.
+   Verifies that each commit in the list of commit filepaths has its corresponding folder and CK metrics files.
 
-   :param repository_name: Name of the repository to be analyzed.
-   :return: True if all the metrics are already calculated, False otherwise.
+   :param repo_path: The base path of the repository's CK metrics folder.
+   :param commit_filepaths: List of commit filepaths.
+   :return: True if all files exist, False otherwise.
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if all commit files exist in the {BackgroundColors.CYAN}{repo_path}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
 
-   repo_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # Join the full ck metrics directory path with the repository
-   commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The name of the commit hashes file
-   commit_file_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, commit_file) # Join the full ck metrics directory path with the commit hashes file
-
-   repository_ck_metrics_filepaths = get_commit_filepaths(commit_file_path) # Get the commit filepaths
-
-   if not repository_ck_metrics_filepaths: # If the filepaths list is empty
-      return False # Return False if the filepaths list is empty
-
-   for ck_metrics_filepath in repository_ck_metrics_filepaths: # Loop through the commit hashes
-      folder_path = os.path.join(repo_path, ck_metrics_filepath) # Join the repository path with the commit hash folder
+   for ck_metrics_filepath in commit_filepaths: # Loop through the commit filepaths
+      folder_path = os.path.join(repo_path, ck_metrics_filepath) # Full path to the commit's metrics folder
 
       if verify_filepath_exists(folder_path): # Verify if the folder exists
-         if not verify_ck_metrics_files(folder_path, CK_METRICS_FILES): # Verify if all the CK metrics files exist
-            return False # If any CK metrics file does not exist, return False
+         if not verify_ck_metrics_files(folder_path, CK_METRICS_FILES): # Verify if all CK metrics files exist
+            return False  # If any CK metrics file does not exist, return False
       else: # If the folder does not exist
-         return False # Return False if the folder does not exist
+         return False # If the folder does not exist, return False
+   return True # All folders and files are valid
 
-   return True # Return True if all the metrics are already calculated
+def verify_ck_metrics_folder(repository_name, number_of_commits):
+   """
+   Verifies if all the metrics are already calculated and if the repository is up to date
+   by comparing the number of commits and processed commits.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :param number_of_commits: Number of commits to be analyzed.
+   :return: True if all metrics are calculated and up to date, False otherwise.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated and up to date...{Style.RESET_ALL}")
+
+   repo_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # Full path to the repository's metrics directory
+   commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The commit hashes file name
+   commit_file_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, commit_file) # Full path to the commit hashes file
+
+   repository_ck_metrics_filepaths = get_commit_filepaths(commit_file_path) # Get the list of commit filepaths from the commit hashes file
+
+   if not repository_ck_metrics_filepaths: # If the list of commit filepaths is empty
+      return False # Return False if the list of commit filepaths is empty
+
+   if not verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths): # Verify if all commit files exist
+      return False # If any commit metrics folder/files are missing, return False
+
+   return True # All metrics are calculated and the repository is up to date
 
 def read_progress_file(file_path):
    """
