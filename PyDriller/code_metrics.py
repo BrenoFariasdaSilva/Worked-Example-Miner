@@ -342,10 +342,10 @@ def write_progress_file(file_path, commits_tuple_list):
    """
 
    with open(file_path, "w") as file: # Open the progress file to write
-      writer = csv.writer(file) # Create a CSV writer
+      writer = csv.writer(file, quotechar=None) # Create a CSV writer
       writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count", "Commit URL"]) # Write the header
-      for commit_tuple in commits_tuple_list: # Loop through the commit information tuples
-         file.write(commit_tuple) # Write the commit information to the file
+      for commit_tuple in commits_tuple_list: # Loop through the commits tuple list
+         writer.writerow(commit_tuple) # Write the current commit tuple to the CSV file
 
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
@@ -667,10 +667,10 @@ def write_commits_information_to_csv(repository_name, commits_tuple_list):
    
    file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the CSV file
    with open(file_path, "w") as file: # Open the progress file to write
-      writer = csv.writer(file) # Create a CSV writer
+      writer = csv.writer(file, quotechar=None) # Create a CSV writer
       writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count", "Commit URL"]) # Write the header
-      for commit_tuple in commits_tuple_list: # Loop through the commit information tuples
-         file.write(commit_tuple) # Write the commit information to the file
+      for commit_tuple in commits_tuple_list: # Loop through the commits tuple list
+         writer.writerow(commit_tuple) # Write the current commit tuple to the CSV file
 
 def write_repositories_attributes_to_csv(repository_attributes):
    """
