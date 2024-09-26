@@ -19,6 +19,7 @@ from repositories_picker import create_directory, get_adjusted_number_of_threads
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
+UNPROCESSED_COMMITS_THRESHOLD = 100 # The threshold of unprocessed commits to consider a repository outdated
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
@@ -259,7 +260,7 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
    
    total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
    unprocessed_commits = is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name) # Verify if the repository is outdated
-   if unprocessed_commits <= 50: # Verify if the repository is outdated
+   if unprocessed_commits > UNPROCESSED_COMMITS_THRESHOLD: # Verify if unprocessed commits exceed the threshold
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
       return False # If outdated, return False and the CK metrics generation will be triggered
 
