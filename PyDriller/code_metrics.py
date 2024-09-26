@@ -683,26 +683,52 @@ def write_commits_information_to_csv(repository_name):
    except Exception as e: # Handle exceptions
       print(f"{BackgroundColors.RED}An error occurred while moving the commit information to the {BackgroundColors.CYAN}{repository_name}-commits_list{CSV_FILE_EXTENSION}{BackgroundColors.RED} file: {e}{Style.RESET_ALL}")
 
+def update_repository_attributes(repository_attributes):
+   """
+   Updates or adds repository attributes in the CSV file.
+
+   :param repository_attributes: Dictionary containing the repositories attributes.
+   :return: List of updated rows and a boolean indicating if the repository was found.
+   """
+   
+   file_exists = verify_filepath_exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) # Verify if the file exists
+
+   updated_rows = [] # List to store the updated rows
+   repository_found = False # Boolean to indicate if the repository was found
+
+   if file_exists: # Read existing data if the file exists
+      with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "r", newline="") as csv_file: # Open the CSV file to read
+         reader = csv.reader(csv_file) # Create a CSV reader
+         for row in reader: # Loop through the rows of the CSV file
+            if row and row[0] == repository_attributes["repository_name"]: # If the repository was found
+               updated_row = [repository_attributes["repository_name"], int(row[1]) + repository_attributes["classes"], int(row[2]) + repository_attributes["lines_of_code"], int(row[3]) + repository_attributes["commits"], int(row[4]) + repository_attributes["execution_time_in_minutes"], float(row[5]) + repository_attributes["size_in_gb"]] # Update existing row with new attributes
+               updated_rows.append(updated_row) # Append the updated row
+               repository_found = True # Mark as found
+            else: # If the repository was not found
+               updated_rows.append(row) # Keep existing row
+
+   if not repository_found: # If repository was not found, prepare a new row
+      updated_rows.append([repository_attributes["repository_name"], repository_attributes["classes"], repository_attributes["lines_of_code"], repository_attributes["commits"], repository_attributes["execution_time_in_minutes"], repository_attributes["size_in_gb"]]) # Append the new row
+
+   return updated_rows, repository_found # Return the updated rows and the boolean indicating if the repository was found
+
 def write_repositories_attributes_to_csv(repository_attributes):
    """
-   Writes the repositories attributes to a CSV file.
+   Writes the repository attributes to a CSV file.
 
    :param repository_attributes: Dictionary containing the repositories attributes.
    :return: None
    """
+   
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the {repository_attributes['repository_name']} attributes to the {FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH} file...{Style.RESET_ALL}")
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the {repository_attributes["repository_name"]} attributes to the {FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH} file...{Style.RESET_ALL}")
-   
-   file_exists = verify_filepath_exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) # Verify if the file already exists
-   
-   # Open the file in append mode if it exists, else in write mode
-   with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "a" if file_exists else "w", newline="") as csv_file:
-      writer = csv.writer(csv_file) # Create a CSV writer
-      
-      if not file_exists: # If the file does not exist, write the header
-         writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
-      
-      writer.writerow([repository_attributes["repository_name"], repository_attributes["classes"], repository_attributes["lines_of_code"], repository_attributes["commits"], repository_attributes["execution_time_in_minutes"], repository_attributes["size_in_gb"]]) # Write the repository attributes
+   updated_rows, repository_found = update_repository_attributes(repository_attributes) # Update or add repository attributes and get updated rows
+
+   with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "w", newline="") as csv_file: # Open the CSV file to write
+      writer = csv.writer(csv_file) # Write all rows back to the file
+      if not verify_filepath_exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) or not repository_found: # Write header if file did not exist before or if repository was not found
+         writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"])  # Write the header
+      writer.writerows(updated_rows) # Write updated rows
 
 def process_repository(repository_name, repository_url):
    """
