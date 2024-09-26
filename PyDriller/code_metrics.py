@@ -546,7 +546,9 @@ def get_directories_size_in_gb(repository_name, directories=OUTPUT_DIRECTORIES):
 
    output_dirs_size = 0 # Total size of the output directories in GB
    for output_dir in directories: # Loop through the output directories
-      output_dirs_size += get_directory_size_in_gb(os.path.join(output_dir, repository_name)) # Get the size of each output directory in GB
+      repository_output_dir = os.path.join(output_dir, repository_name) # Update the output directory with the repository name
+      if verify_filepath_exists(os.path.join(output_dir, repository_name)): # Verify if the directory exists
+         output_dirs_size += get_directory_size_in_gb(repository_output_dir) # Get the size of each output directory in GB
    
    return output_dirs_size # Return the total size of the output directories in GB
 
