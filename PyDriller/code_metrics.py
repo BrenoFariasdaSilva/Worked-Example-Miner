@@ -250,7 +250,7 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
    repository_ck_metrics_filepaths = get_commit_filepaths(commit_file_path) # Get the list of commit filepaths from the commit hashes file
 
    if not repository_ck_metrics_filepaths: # If the list of commit filepaths is empty
-      print(f"{BackgroundColors.RED}The list of commit filepaths is empty for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED}. Please verify the repository.{Style.RESET_ALL}")
+      print(f"{BackgroundColors.RED}The list of commit for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} is empty in the {BackgroundColors.CYAN}{commit_file}{BackgroundColors.RED} file.{Style.RESET_ALL}")
       return False # Return False if the list of commit filepaths is empty
 
    total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
