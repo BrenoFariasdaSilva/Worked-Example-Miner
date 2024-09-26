@@ -24,6 +24,7 @@ UNPROCESSED_COMMITS_THRESHOLD = 0 # The threshold of unprocessed commits to cons
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
    "generate_diffs": True, # Generate the diffs for the commits
+   "verify_ck_metrics_directory": True, # Verify if the CK metrics directory is up to date
    "write_commits_information_to_csv": True, # Write the commit information to a CSV file
    "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
 }
@@ -230,7 +231,7 @@ def verify_commit_files_exist(repo_path, commit_filepaths):
             missing_files_count += 1 # Increment the count of invalid folders
       else: # If the folder does not exist
          missing_files_count += 1 # Increment the count of non-existing folders
-   
+
    return missing_files_count # Return the count of non-existing folders or files
 
 def verify_ck_metrics_directory(repository_name, repository_url, number_of_commits):
@@ -771,14 +772,15 @@ def process_repository(repository_name, repository_url):
 
    number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
 
-   ck_metrics_files_exist, unprocessed_commits = verify_ck_metrics_directory(repository_name, repository_url, number_of_commits) # Verify if the CK metrics directory exists and if there are unprocessed commits
+   if RUN_FUNCTIONS["verify_ck_metrics_directory"]: # If the function to verify the CK metrics directory is enabled
+      ck_metrics_files_exist, unprocessed_commits = verify_ck_metrics_directory(repository_name, repository_url, number_of_commits) # Verify if the CK metrics directory exists and if there are unprocessed commits
 
-   if ck_metrics_files_exist: # If the CK metrics directory is up to date 
-      if unprocessed_commits <= 0: # If there are no unprocessed commits
-         print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository is up to date with {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits.{Style.RESET_ALL}")
-         return # Return if the metrics were already calculated
-      else: # If there are unprocessed commits
-         print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.GREEN} unprocessed commits...{Style.RESET_ALL}")
+      if ck_metrics_files_exist: # If the CK metrics directory is up to date 
+         if unprocessed_commits <= 0: # If there are no unprocessed commits
+            print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository is up to date with {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits.{Style.RESET_ALL}")
+            return # Return if the metrics were already calculated
+         else: # If there are unprocessed commits
+            print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.GREEN} unprocessed commits...{Style.RESET_ALL}")
 
    create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH) # Create the ck metrics directory
    create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH) # Create the progress directory
