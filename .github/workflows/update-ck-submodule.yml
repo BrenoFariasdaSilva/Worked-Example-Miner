@@ -27,14 +27,19 @@ jobs:
           git config --global user.email "breno.vicio78@gmail.com"
           git config --global user.name "Breno Farias da Silva"
 
-      - name: Forcefully update CK submodule to latest version
+      - name: Forcefully update CK submodule to latest FEAT-ClassMetric branch
         run: |
           cd ck
-          git fetch origin master
-          git reset --hard origin/master
+          git fetch origin FEAT-ClassMetric
+          git checkout FEAT-ClassMetric
+          git reset --hard origin/FEAT-ClassMetric
 
-      - name: Commit and push if changes are detected
+      - name: Return to main repository and check for changes
         run: |
+          cd ..
           git add ck
-          git diff --cached --quiet || git commit -m "UPDATE: Automatically Updating the CK SubModule to Latest Version."
-          git push || echo "No changes to push."
+          git diff --cached --quiet || git commit -m "UPDATE: Automatically updated CK submodule to the latest version on FEAT-ClassMetric branch."
+
+      - name: Push changes if any
+        run: |
+          git push origin main || echo "No changes to push."
