@@ -27,14 +27,19 @@ jobs:
           git config --global user.email "breno.vicio78@gmail.com"
           git config --global user.name "Breno Farias da Silva"
 
-      - name: Forcefully update AutoMetric submodule to latest version
+      - name: Forcefully update AutoMetric submodule to the latest version
         run: |
           cd AutoMetric
           git fetch origin main
+          git checkout main
           git reset --hard origin/main
 
-      - name: Commit and push if changes are detected
+      - name: Return to main repository and check for changes
         run: |
+          cd ..
           git add AutoMetric
-          git diff --cached --quiet || git commit -m "UPDATE: Automatically Updating the AutoMetric SubModule to Latest Version."
-          git push || echo "No changes to push."
+          git diff --cached --quiet || git commit -m "UPDATE: Automatically updated AutoMetric submodule to the latest version."
+
+      - name: Push changes if any
+        run: |
+          git push origin main || echo "No changes to push."
