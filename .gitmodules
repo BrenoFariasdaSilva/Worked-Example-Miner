@@ -1,5 +1,5 @@
-[submodule "ck"]
-	path = ck
+[submodule "CK"]
+	path = CK
 	url = https://github.com/BrenoFariasdaSilva/ck/
 [submodule "AutoMetric"]
 	path = AutoMetric
