@@ -23,7 +23,7 @@ UNPROCESSED_COMMITS_THRESHOLD = 100 # The threshold of unprocessed commits to co
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
-   "generate_diffs": True, # Generate the diffs for the commits
+   "generate_diffs": False, # Generate the diffs for the commits
    "verify_ck_metrics_directory": False, # Verify if the CK metrics directory is up to date
    "write_commits_information_to_csv": True, # Write the commit information to a CSV file
    "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
