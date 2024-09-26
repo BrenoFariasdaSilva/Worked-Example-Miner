@@ -534,9 +534,9 @@ def get_directory_size_in_gb(directory_path):
 
    return sum_directory_files_size(directory_path) / (1024 ** 3) # Size in GB
 
-def get_output_directories_size_in_gb(repository_name, output_directories=OUTPUT_DIRECTORIES):
+def get_directories_size_in_gb(repository_name, directories=OUTPUT_DIRECTORIES):
    """
-   Get the size of the output directories in GB.
+   Get the size of the directories in GB.
 
    :param repository_name: Name of the repository.
    :return: Total size of the output directories in GB
@@ -545,7 +545,7 @@ def get_output_directories_size_in_gb(repository_name, output_directories=OUTPUT
    verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the size of the output directories in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    output_dirs_size = 0 # Total size of the output directories in GB
-   for output_dir in output_directories: # Loop through the output directories
+   for output_dir in directories: # Loop through the output directories
       output_dirs_size += get_directory_size_in_gb(os.path.join(output_dir, repository_name)) # Get the size of each output directory in GB
    
    return output_dirs_size # Return the total size of the output directories in GB
@@ -586,7 +586,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    total_classes, total_lines_of_code = get_classes_count_and_loc_metrics(last_directory_path) # Get the total number of classes and lines of code
 
    # Get the size of the output directories in GB and the progress file size in GB
-   output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size_in_gb(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name))
+   output_dirs_size = get_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size_in_gb(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name))
 
    return { # Return the repository attributes dictionary
       "repository_name": repository_name, # Name of the repository
