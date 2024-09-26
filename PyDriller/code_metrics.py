@@ -43,7 +43,7 @@ RELATIVE_DIFFS_DIRECTORY_PATH = "/diffs" # The relative path of the directory th
 RELATIVE_PROGRESS_DIRECTORY_PATH = "/progress" # The relative path of the progress file
 RELATIVE_REFACTORINGS_DIRECTORY_PATH = "/refactorings" # The relative path of the directory that contains the refactorings
 RELATIVE_REPOSITORIES_ATTRIBUTES_FILE_PATH = f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/repositories_attributes{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repositories attributes
-RELATIVE_REPOSITORY_PROGRESS_FILE_PATH = f"{RELATIVE_PROGRESS_DIRECTORY_PATH}/repository_name-progress{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repository progress
+RELATIVE_REPOSITORY_PROGRESS_FILE_PATH = f"{RELATIVE_PROGRESS_DIRECTORY_PATH}/REPOSITORY_NAME-progress{CSV_FILE_EXTENSION}" # The relative path of the file that contains the repository progress
 
 # Full paths (Start Path + Relative Paths):
 FULL_CK_JAR_PATH = START_PATH.replace("PyDriller", "") + RELATIVE_CK_JAR_PATH.replace("../", "") # The full path of the CK JAR file
@@ -613,7 +613,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
    commit_number = 1 # The current commit number
-   saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name) # The path to the saved progress file
+   saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
 
    commits_info, last_commit_number = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits) # Get the last execution progress of the repository
 
@@ -629,7 +629,6 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          code_churn = lines_added - lines_removed # Code churn
          modified_files_count = len(commit.modified_files) # Number of modified files
          code_churn_avg_per_file = code_churn / modified_files_count if modified_files_count > 0 else 0 # Code churn average per file
-
          current_tuple = (commit_number, commit.hash, f'"{commit.msg.split("\n")[0].strip().replace("\"", "")}"', commit.committer_date, lines_added, lines_removed, code_churn, round(code_churn_avg_per_file, 2), modified_files_count, f'"{repository_url}/commit/{commit.hash}"') # Create a tuple with the commit information
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
@@ -652,7 +651,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
          with open(saved_progress_file, "a") as progress_file: # Open the progress file to append
-            progress_file.write(f",".join(map(str, current_tuple)) + "\n") # Write the current tuple to the progress file
+            progress_file.write(f",".join(map(str, current_tuple)) + "\n") # Write the current tuple to the progress file 
          commit_number += 1 # Increment the commit number
          pbar.update(1) # Update the progress bar
 
@@ -671,7 +670,7 @@ def write_commits_information_to_csv(repository_name):
    
    verbose_output(true_string=f"{BackgroundColors.GREEN}Moving the commit information to a new csv file...{Style.RESET_ALL}")
    
-   saved_progress_filepath = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name) # Original path to the saved progress file
+   saved_progress_filepath = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # Original path to the saved progress file
    commits_list_filepath = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the CSV file
 
    try: # Try to move the file the saved progress file (generated bin the traverse_repository function) to the new path with a new name
