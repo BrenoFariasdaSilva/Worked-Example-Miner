@@ -19,12 +19,11 @@ from repositories_picker import create_directory, get_adjusted_number_of_threads
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
-UNPROCESSED_COMMITS_THRESHOLD = 100 # The threshold of unprocessed commits to consider a repository outdated
+UNPROCESSED_COMMITS_THRESHOLD = 0 # The threshold of unprocessed commits to consider a repository outdated
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
    "generate_diffs": False, # Generate the diffs for the commits
-   "verify_ck_metrics_directory": False, # Verify if the CK metrics directory is up to date
    "write_commits_information_to_csv": True, # Write the commit information to a CSV file
    "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
 }
@@ -221,27 +220,30 @@ def verify_commit_files_exist(repo_path, commit_filepaths):
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if all commit files exist in the {BackgroundColors.CYAN}{repo_path}{BackgroundColors.GREEN} directory...{Style.RESET_ALL}")
 
+   missing_files_count = 0 # Initialize the count of non-existing folders or files
+
    for ck_metrics_filepath in commit_filepaths: # Loop through the commit filepaths
       folder_path = os.path.join(repo_path, ck_metrics_filepath) # Full path to the commit's metrics folder
 
       if verify_filepath_exists(folder_path): # Verify if the folder exists
          if not verify_ck_metrics_files(folder_path, CK_METRICS_FILES): # Verify if all CK metrics files exist
-            return False  # If any CK metrics file does not exist, return False
+            missing_files_count += 1 # Increment the count of invalid folders
       else: # If the folder does not exist
-         return False # If the folder does not exist, return False
-   return True # All folders and files are valid
+         missing_files_count += 1 # Increment the count of non-existing folders
+   
+   return missing_files_count # Return the count of non-existing folders or files
 
 def verify_ck_metrics_directory(repository_name, repository_url, number_of_commits):
    """
-   Verifies if all the metrics are already calculated and if the ck metrics repository directory is up to date by comparing the number of commits and processed commits.
+   Verifies if all the metrics are already calculated and if the CK metrics repository directory is up to date by comparing the number of commits and processed commits.
 
    :param repository_name: Name of the repository to be analyzed.
    :param repository_url: URL of the repository to be analyzed.
-   :param number_of_commits: Number of commits to be analyzed.
-   :return: True if all metrics are calculated and up to date, False otherwise.
+   :param number_of_commits: Number of commits to be analyzed. If 0, the total will be calculated from the repository.
+   :return: Tuple (bool, int) indicating if metrics are up to date and the number of unprocessed commits.
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated and up to date...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} are calculated and up to date...{Style.RESET_ALL}")
 
    number_of_commits = len(list(Repository(repository_url).traverse_commits())) if number_of_commits == 0 else number_of_commits # Get the total number of commits if not provided
 
@@ -252,20 +254,21 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
    repository_ck_metrics_filepaths = get_commit_filepaths(commit_file_path) # Get the list of commit filepaths from the commit hashes file
 
    if not repository_ck_metrics_filepaths: # If the list of commit filepaths is empty
-      print(f"{BackgroundColors.RED}The list of commit for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} is empty in the {BackgroundColors.CYAN}{commit_file}{BackgroundColors.RED} file.{Style.RESET_ALL}")
-      return False # Return False if the list of commit filepaths is empty
+      print(f"{BackgroundColors.RED}The list of commits for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} is empty in the {BackgroundColors.CYAN}{commit_file}{BackgroundColors.RED} file.{Style.RESET_ALL}")
+      return False, number_of_commits # Return False if the list is empty
 
-   if not verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths): # Verify if all commit files exist
-      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is missing commit files.{Style.RESET_ALL}")
-      return False # If any commit metrics folder/files are missing, return False
+   missing_files_count = verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths) # Verify if all commit files exist
+   if missing_files_count: # If there are missing commit files
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is missing {BackgroundColors.CYAN}{missing_files_count}{BackgroundColors.RED} commit files.{Style.RESET_ALL}")
+      return False, missing_files_count # Return False if any commit metrics folder/files are missing
    
    total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
    unprocessed_commits = is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name) # Verify if the repository is outdated
-   if unprocessed_commits > UNPROCESSED_COMMITS_THRESHOLD: # Verify if unprocessed commits exceed the threshold
+   if unprocessed_commits > UNPROCESSED_COMMITS_THRESHOLD:  # Check if unprocessed commits exceed the threshold
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
-      return False # If outdated, return False and the CK metrics generation will be triggered
+      return False, unprocessed_commits # Return False and the number of unprocessed commits
 
-   return True # All metrics are calculated and the repository is up to date
+   return True, unprocessed_commits # All metrics are calculated and the repository is up to date
 
 def read_progress_file(file_path):
    """
@@ -768,8 +771,14 @@ def process_repository(repository_name, repository_url):
 
    number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
 
-   if RUN_FUNCTIONS["verify_ck_metrics_directory"] and verify_ck_metrics_directory(repository_name, repository_url, number_of_commits): # Verify if the metrics were already calculated
-      return # Return if the metrics were already calculated
+   ck_metrics_files_exist, unprocessed_commits = verify_ck_metrics_directory(repository_name, repository_url, number_of_commits) # Verify if the CK metrics directory exists and if there are unprocessed commits
+
+   if ck_metrics_files_exist: # If the CK metrics directory is up to date 
+      if unprocessed_commits <= 0: # If there are no unprocessed commits
+         print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository is up to date with {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits.{Style.RESET_ALL}")
+         return # Return if the metrics were already calculated
+      else: # If there are unprocessed commits
+         print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.GREEN} unprocessed commits...{Style.RESET_ALL}")
 
    create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH) # Create the ck metrics directory
    create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH) # Create the progress directory
