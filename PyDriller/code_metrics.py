@@ -204,8 +204,9 @@ def is_local_repository_metrics_outdated(number_of_commits, total_commits_proces
    unprocessed_commits = number_of_commits - total_commits_processed # Calculate the number of unprocessed commits
    if unprocessed_commits > 100: # If more than 100 commits are unprocessed
       RUN_FUNCTIONS["generate_ck_metrics"] = True if not RUN_FUNCTIONS["generate_ck_metrics"] else RUN_FUNCTIONS["generate_ck_metrics"] # Set CK metrics generation to True globally
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
       return True # Return True if the repository is outdated
-   return False # Return False if the repository is up to date
+   return False # Return False if the repository is not outdated
 
 def verify_commit_files_exist(repo_path, commit_filepaths):
    """
@@ -249,6 +250,7 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
    repository_ck_metrics_filepaths = get_commit_filepaths(commit_file_path) # Get the list of commit filepaths from the commit hashes file
 
    if not repository_ck_metrics_filepaths: # If the list of commit filepaths is empty
+      print(f"{BackgroundColors.RED}The list of commit filepaths is empty for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED}. Please verify the repository.{Style.RESET_ALL}")
       return False # Return False if the list of commit filepaths is empty
 
    total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
@@ -256,6 +258,7 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
       return False # If outdated, return False and the CK metrics generation will be triggered
 
    if not verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths): # Verify if all commit files exist
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is missing commit files.{Style.RESET_ALL}")
       return False # If any commit metrics folder/files are missing, return False
 
    return True # All metrics are calculated and the repository is up to date
