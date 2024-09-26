@@ -1,7 +1,6 @@
 import atexit # For playing a sound when the program finishes
 import concurrent.futures # For running tasks in parallel
 import csv # CSV (Comma Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database
-import json # JSON (JavaScript Object Notation) is a lightweight data-interchange format
 import os # OS module in Python provides functions for interacting with the operating system
 import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
@@ -770,8 +769,7 @@ def process_repositories_in_parallel():
       ]
       concurrent.futures.wait(futures) # Wait for all tasks to complete
 
-# Register the function to play a sound when the program finishes
-atexit.register(play_sound)
+atexit.register(play_sound) # Register the function to play a sound when the program finishes
 
 def main():
    """
