@@ -22,7 +22,7 @@ from repositories_picker import create_directory, output_time, path_contains_whi
 
 # Imports from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
-from code_metrics import get_output_directories_size_in_gb, verify_ck_metrics_folder # Importing Functions from the code_metrics.py file
+from code_metrics import get_output_directories_size_in_gb, verify_ck_metrics_directory # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
@@ -1088,17 +1088,19 @@ def update_repository_attributes(repository_name, elapsed_time):
 
 	return repositories_attributes # Return the updated repositories attributes
 
-def process_repository(repository_name):
+def process_repository(repository_name, repository_url):
 	"""
 	Processes the specified repository.
 
 	:param repository_name: The name of the repository to be analyzed
+	:param repository_url: The URL of the repository to be analyzed
 	:return: None
 	"""
 
 	start_time = time.time() # Start the timer
 
-	if not verify_ck_metrics_folder(repository_name): # Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
+	number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits for the specified repository
+	if not verify_ck_metrics_directory(repository_name, repository_url, number_of_commits): # Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
 		print(f"{BackgroundColors.RED}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} were not calculated. Please run the {BackgroundColors.CYAN}code_metrics.py{BackgroundColors.RED} file first{Style.RESET_ALL}")
 		return # Return if the ck metrics were not calculated
 
@@ -1135,10 +1137,10 @@ def process_all_repositories():
 	:return: None
 	"""
 
-	for repository_name in DEFAULT_REPOSITORIES_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
+	for repository_name, repository_url in DEFAULT_REPOSITORIES_NAMES: # Loop through the DEFAULT_REPOSITORY_NAME list
 		print(f"") # Print an empty line
 		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}metrics evolution history, metrics statistics, linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-		process_repository(repository_name) # Process the current repository
+		process_repository(repository_name, repository_url) # Process the current repository
 		print(f"\n------------------------------------------------------------") # Print a separator
 
 atexit.register(play_sound) # Register the function to play a sound when the program finishes
