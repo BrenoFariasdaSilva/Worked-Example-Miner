@@ -22,7 +22,7 @@ from repositories_picker import create_directory, output_time, path_contains_whi
 
 # Imports from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
-from code_metrics import get_output_directories_size_in_gb, verify_ck_metrics_directory # Importing Functions from the code_metrics.py file
+from code_metrics import get_directories_size_in_gb, verify_ck_metrics_directory # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
@@ -1065,7 +1065,7 @@ def update_repository_attributes(repository_name, elapsed_time):
 
 	if repository_name in repositories_attributes: # Update the attributes for the specified repository
 		repositories_attributes[repository_name]["execution_time_in_minutes"] = round(repositories_attributes[repository_name]["execution_time_in_minutes"] + elapsed_time / 60, 2) # Update the execution time in minutes
-		repositories_attributes[repository_name]["size_in_gb"] += get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) # Update the size in GB
+		repositories_attributes[repository_name]["size_in_gb"] += get_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) # Update the size in GB
 	else: # If the repository was not found in the repositories attributes file
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not found in the {BackgroundColors.CYAN}repositories attributes{BackgroundColors.RED} file.{Style.RESET_ALL}")
 		return # Return if the repository was not found in the repositories attributes file
