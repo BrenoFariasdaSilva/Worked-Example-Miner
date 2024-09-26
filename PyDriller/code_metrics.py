@@ -195,7 +195,7 @@ def is_local_repository_metrics_outdated(number_of_commits, total_commits_proces
    :param number_of_commits: The total number of commits in the repository.
    :param total_commits_processed: The number of commits that have already been processed.
    :param repository_name: The name of the repository being checked.
-   :return: True if outdated, False otherwise.
+   :return: The number of unprocessed commits.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Checking if the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository is outdated...{Style.RESET_ALL}")
@@ -203,11 +203,10 @@ def is_local_repository_metrics_outdated(number_of_commits, total_commits_proces
    global RUN_FUNCTIONS # Access the global RUN_FUNCTIONS
 
    unprocessed_commits = number_of_commits - total_commits_processed # Calculate the number of unprocessed commits
-   if unprocessed_commits > 100: # If more than 100 commits are unprocessed
+   if unprocessed_commits > 0: # If more than 100 commits are unprocessed
       RUN_FUNCTIONS["generate_ck_metrics"] = True if not RUN_FUNCTIONS["generate_ck_metrics"] else RUN_FUNCTIONS["generate_ck_metrics"] # Set CK metrics generation to True globally
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
-      return True # Return True if the repository is outdated
-   return False # Return False if the repository is not outdated
+   return unprocessed_commits # Return the number of unprocessed commits
 
 def verify_commit_files_exist(repo_path, commit_filepaths):
    """
@@ -255,7 +254,9 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
       return False # Return False if the list of commit filepaths is empty
 
    total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
-   if is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name): # Verify if the repository is outdated
+   unprocessed_commits = is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name) # Verify if the repository is outdated
+   if unprocessed_commits: # Verify if the repository is outdated
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
       return False # If outdated, return False and the CK metrics generation will be triggered
 
    if not verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths): # Verify if all commit files exist
@@ -724,7 +725,6 @@ def process_repository(repository_name, repository_url):
    number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
 
    if RUN_FUNCTIONS["generate_ck_metrics"] and verify_ck_metrics_directory(repository_name, repository_url, number_of_commits): # Verify if the metrics were already calculated
-      print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated!{Style.RESET_ALL}")
       return # Return if the metrics were already calculated
 
    create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH) # Create the ck metrics directory
