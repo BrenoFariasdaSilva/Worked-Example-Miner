@@ -3,6 +3,7 @@ import concurrent.futures # For running tasks in parallel
 import csv # CSV (Comma Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database
 import os # OS module in Python provides functions for interacting with the operating system
 import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
+import shutil # Import the shutil module to perform file operations
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import time # This module provides various time-related functions
 from colorama import Style # For coloring the terminal
@@ -649,30 +650,29 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          commit_number += 1 # Increment the commit number
          pbar.update(1) # Update the progress bar
 
-   os.remove(saved_progress_file) # Remove the saved progress file when processing is complete
-
    elapsed_time = time.time() - start_time # Calculate elapsed time
    show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name) # Show the execution time of the CK metrics generator
 
    return commits_info, get_repository_attributes(repository_name, number_of_commits, elapsed_time) # Return the commits info and repository attributes
 
-def write_commits_information_to_csv(repository_name, commits_tuple_list):
+def write_commits_information_to_csv(repository_name):
    """
-   Writes the commit information to a csv file.
+   Moves the saved progress file to a new path with a new name.
 
    :param repository_name: Name of the repository to be analyzed.
-   :param commits_tuple_list: List of commit information tuples
    :return: None
    """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the commit information to a csv file...{Style.RESET_ALL}")
    
-   file_path = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the CSV file
-   with open(file_path, "w") as file: # Open the progress file to write
-      writer = csv.writer(file, quotechar=None) # Create a CSV writer
-      writer.writerow(["Commit Number", "Commit Hash", "Commit Message", "Commit Date", "Lines Added", "Lines Removed", "Commit Code Churn", "Code Churn Avg Per File", "Modified Files Count", "Commit URL"]) # Write the header
-      for commit_tuple in commits_tuple_list: # Loop through the commits tuple list
-         writer.writerow(commit_tuple) # Write the current commit tuple to the CSV file
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Moving the commit information to a new csv file...{Style.RESET_ALL}")
+   
+   saved_progress_filepath = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name) # Original path to the saved progress file
+   commits_list_filepath = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the CSV file
+
+   try: # Try to move the file the saved progress file (generated bin the traverse_repository function) to the new path with a new name
+      shutil.move(saved_progress_filepath, commits_list_filepath) # Move the file
+      verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}-commits_list{CSV_FILE_EXTENSION}{BackgroundColors.GREEN} file was successfully moved from {BackgroundColors.CYAN}{saved_progress_filepath}{BackgroundColors.GREEN} to {BackgroundColors.CYAN}{commits_list_filepath}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+   except Exception as e: # Handle exceptions
+      print(f"{BackgroundColors.RED}An error occurred while moving the commit information to the {BackgroundColors.CYAN}{repository_name}-commits_list{CSV_FILE_EXTENSION}{BackgroundColors.RED} file: {e}{Style.RESET_ALL}")
 
 def write_repositories_attributes_to_csv(repository_attributes):
    """
@@ -735,7 +735,7 @@ def process_repository(repository_name, repository_url):
 
    commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits) # Traverse the repository to run CK for every commit hash in the repository
 
-   write_commits_information_to_csv(repository_name, commits_info) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None # Write the commits information to a CSV file
+   write_commits_information_to_csv(repository_name) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None # Write the commits information to a CSV file
 
    write_repositories_attributes_to_csv(repository_attributes) if RUN_FUNCTIONS["write_repositories_attributes_to_csv"] else None # Save repository attributes to a CSV file
 
