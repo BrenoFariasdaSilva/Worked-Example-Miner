@@ -253,15 +253,15 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
       print(f"{BackgroundColors.RED}The list of commit for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} is empty in the {BackgroundColors.CYAN}{commit_file}{BackgroundColors.RED} file.{Style.RESET_ALL}")
       return False # Return False if the list of commit filepaths is empty
 
+   if not verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths): # Verify if all commit files exist
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is missing commit files.{Style.RESET_ALL}")
+      return False # If any commit metrics folder/files are missing, return False
+   
    total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
    unprocessed_commits = is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name) # Verify if the repository is outdated
    if unprocessed_commits <= 50: # Verify if the repository is outdated
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
       return False # If outdated, return False and the CK metrics generation will be triggered
-
-   if not verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths): # Verify if all commit files exist
-      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is missing commit files.{Style.RESET_ALL}")
-      return False # If any commit metrics folder/files are missing, return False
 
    return True # All metrics are calculated and the repository is up to date
 
