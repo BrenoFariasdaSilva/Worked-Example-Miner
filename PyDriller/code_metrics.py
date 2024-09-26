@@ -626,7 +626,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             continue # Jump to the next iteration
 
          lines_added, lines_removed = sum(file.added_lines for file in commit.modified_files), sum(file.deleted_lines for file in commit.modified_files) # Lines added and removed
-         code_churn = lines_added - lines_removed # Code churn
+         code_churn = lines_added + lines_removed # Code Churn as the sum of lines added and removed, due to avoid the 0 values when the number of lines added and removed are equal
          modified_files_count = len(commit.modified_files) # Number of modified files
          code_churn_avg_per_file = code_churn / modified_files_count if modified_files_count > 0 else 0 # Code churn average per file
          current_tuple = (commit_number, commit.hash, f'"{commit.msg.split("\n")[0].strip().replace("\"", "")}"', commit.committer_date, lines_added, lines_removed, code_churn, round(code_churn_avg_per_file, 2), modified_files_count, f'"{repository_url}/commit/{commit.hash}"') # Create a tuple with the commit information
@@ -651,7 +651,8 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
 
          with open(saved_progress_file, "a") as progress_file: # Open the progress file to append
-            progress_file.write(f",".join(map(str, current_tuple)) + "\n") # Write the current tuple to the progress file 
+            progress_file.write(f",".join(map(str, current_tuple)) + "\n") # Write the current tuple to the progress file
+         
          commit_number += 1 # Increment the commit number
          pbar.update(1) # Update the progress bar
 
