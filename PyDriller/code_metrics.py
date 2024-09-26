@@ -24,6 +24,7 @@ UNPROCESSED_COMMITS_THRESHOLD = 100 # The threshold of unprocessed commits to co
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
    "generate_diffs": True, # Generate the diffs for the commits
+   "verify_ck_metrics_directory": False, # Verify if the CK metrics directory is up to date
    "write_commits_information_to_csv": True, # Write the commit information to a CSV file
    "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
 }
@@ -743,7 +744,7 @@ def process_repository(repository_name, repository_url):
 
    number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
 
-   if RUN_FUNCTIONS["generate_ck_metrics"] and verify_ck_metrics_directory(repository_name, repository_url, number_of_commits): # Verify if the metrics were already calculated
+   if RUN_FUNCTIONS["verify_ck_metrics_directory"] and verify_ck_metrics_directory(repository_name, repository_url, number_of_commits): # Verify if the metrics were already calculated
       return # Return if the metrics were already calculated
 
    create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH) # Create the ck metrics directory
