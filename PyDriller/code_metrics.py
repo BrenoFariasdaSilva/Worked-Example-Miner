@@ -445,7 +445,7 @@ def run_ck_metrics_generator(cmd):
    thread = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Run the CK metrics generator command
    stdout, stderr = thread.communicate() # Get the stdout and stderr of the thread
 
-def get_class_and_loc_metrics(output_directory):
+def get_classes_count_and_loc_metrics(output_directory):
    """
    Extracts the number of classes and lines of code from the CK output files.
 
@@ -456,7 +456,12 @@ def get_class_and_loc_metrics(output_directory):
    class_count = 0 # Total number of classes
    loc_count = 0 # Total number of lines of code
 
-   with open(f"{output_directory}/class.csv", "r") as file: # Open the CK metrics CSV file to extract the metrics
+   file_path = f"{output_directory}/class.csv" # Path to the CK metrics CSV file
+   if not verify_filepath_exists(file_path): # Verify if the directory exists
+      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}class.csv{BackgroundColors.RED} file does not exist in the {BackgroundColors.CYAN}{output_directory}{BackgroundColors.RED} directory.{Style.RESET_ALL}")
+      return class_count, loc_count # Return the class count and lines of code count
+   
+   with open(file_path, "r") as file: # Open the CK metrics CSV file to extract the metrics
       reader = csv.DictReader(file) # Read the CSV file
       for row in reader: # Loop through the rows of the CSV file
          class_count += 1 # Increment the class count
@@ -578,7 +583,7 @@ def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    last_directory = get_last_directory(sorted_dirs) # Get the last directory
    last_directory_path = os.path.join(output_directory, last_directory) # Update the output directory with the last directory
 
-   total_classes, total_lines_of_code = get_class_and_loc_metrics(last_directory_path) # Get the total number of classes and lines of code
+   total_classes, total_lines_of_code = get_classes_count_and_loc_metrics(last_directory_path) # Get the total number of classes and lines of code
 
    # Get the size of the output directories in GB and the progress file size in GB
    output_dirs_size = get_output_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size_in_gb(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("repository_name", repository_name))
