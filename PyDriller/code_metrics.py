@@ -173,7 +173,7 @@ def get_commit_filepaths(commit_file_path):
    
    return filepaths # Return the list of file paths
 
-def verify_ck_metrics_files(folder_path, ck_metrics_files):
+def verify_ck_metrics_files(folder_path, ck_metrics_files=CK_METRICS_FILES):
    """
    Verify if all the CK metrics files exist inside the specified folder.
 
@@ -638,18 +638,19 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
          generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["generate_diffs"] else None # Save the diff of the modified files of the current commit
 
-         workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
-         os.chdir(workdir) # Change working directory to the repository directory
+         if not verify_ck_metrics_files(f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit.hash}", CK_METRICS_FILES): # Verify if the CK metrics files do not exist
+            workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
+            os.chdir(workdir) # Change working directory to the repository directory
 
-         checkout_branch(commit.hash) # Checkout the current commit hash branch to run ck
+            checkout_branch(commit.hash) # Checkout the current commit hash branch to run ck
 
-         output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit_number, commit.hash) # Generate the output directory paths
-         create_directory(output_directory, relative_output_directory) # Create the ck_metrics directory
+            output_directory, relative_output_directory = generate_output_directory_paths(repository_name, commit_number, commit.hash) # Generate the output directory paths
+            create_directory(output_directory, relative_output_directory) # Create the ck_metrics directory
 
-         os.chdir(output_directory) # Change working directory to the repository directory
+            os.chdir(output_directory) # Change working directory to the repository directory
 
-         cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory} true" # The command to run the CK metrics generator
-         run_ck_metrics_generator(cmd) if RUN_FUNCTIONS["generate_ck_metrics"] else None # Run the CK metrics generator
+            cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory} true" # The command to run the CK metrics generator
+            run_ck_metrics_generator(cmd) if RUN_FUNCTIONS["generate_ck_metrics"] else None # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
