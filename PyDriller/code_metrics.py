@@ -229,17 +229,19 @@ def verify_commit_files_exist(repo_path, commit_filepaths):
          return False # If the folder does not exist, return False
    return True # All folders and files are valid
 
-def verify_ck_metrics_folder(repository_name, number_of_commits):
+def verify_ck_metrics_directory(repository_name, repository_url, number_of_commits):
    """
-   Verifies if all the metrics are already calculated and if the repository is up to date
-   by comparing the number of commits and processed commits.
+   Verifies if all the metrics are already calculated and if the ck metrics repository directory is up to date by comparing the number of commits and processed commits.
 
    :param repository_name: Name of the repository to be analyzed.
+   :param repository_url: URL of the repository to be analyzed.
    :param number_of_commits: Number of commits to be analyzed.
    :return: True if all metrics are calculated and up to date, False otherwise.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated and up to date...{Style.RESET_ALL}")
+
+   number_of_commits = len(list(Repository(repository_url).traverse_commits())) if number_of_commits == 0 else number_of_commits # Get the total number of commits if not provided
 
    repo_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # Full path to the repository's metrics directory
    commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The commit hashes file name
@@ -719,7 +721,7 @@ def process_repository(repository_name, repository_url):
 
    number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
 
-   if RUN_FUNCTIONS["generate_ck_metrics"] and verify_ck_metrics_folder(repository_name, number_of_commits): # Verify if the metrics were already calculated
+   if RUN_FUNCTIONS["generate_ck_metrics"] and verify_ck_metrics_directory(repository_name, repository_url, number_of_commits): # Verify if the metrics were already calculated
       print(f"{BackgroundColors.GREEN}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} were already calculated!{Style.RESET_ALL}")
       return # Return if the metrics were already calculated
 
