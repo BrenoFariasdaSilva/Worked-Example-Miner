@@ -714,6 +714,26 @@ def update_repository_attributes(repository_attributes):
 
    return updated_rows, file_exists # Return the updated rows and if the file exists
 
+def verify_csv_header_exists(filepath, header):
+   """
+   Verifies if the CSV file exists and if the header is present.
+
+   :param filepath: Path to the CSV file.
+   :return: True if the header exists, otherwise False.
+   """
+   
+   header_presence = False # Boolean to indicate if the header is present
+
+   try:
+      with open(filepath, "r") as file: # Open the CSV file to read, if it exists
+         first_line = file.readline().strip() # Read the first line of the file
+         if first_line == ",".join(header): # If the header is present
+            header_presence = True # Mark as present 
+   except FileNotFoundError:
+      pass # File does not exist
+
+   return header_presence # Return if the header is present
+
 def write_repositories_attributes_to_csv(repository_attributes):
    """
    Writes the repository attributes to a CSV file.
@@ -726,10 +746,13 @@ def write_repositories_attributes_to_csv(repository_attributes):
 
    updated_rows, file_exists = update_repository_attributes(repository_attributes) # Update or add repository attributes and get updated rows
 
+   header = ["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"] # Header of the CSV file
+   header_exists = verify_csv_header_exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, header) # Verify if the header exists
+
    with open(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, "w", newline="") as csv_file: # Open the CSV file to write
-      writer = csv.writer(csv_file) # Write all rows back to the file
-      if not file_exists: # Write header if file did not exist before
-         writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
+      writer = csv.writer(csv_file) # Create a CSV writer
+      if not file_exists or not header_exists: # If the file does not exist or the header is missing
+         writer.writerow(header) # Write the header
       writer.writerows(updated_rows) # Write updated rows
 
 def process_repository(repository_name, repository_url):
