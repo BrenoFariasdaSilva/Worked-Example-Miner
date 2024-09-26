@@ -31,7 +31,7 @@ NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
-SUBSTANTIAL_CHANGE_METRIC = "CBO" # The desired metric to search for substantial changes
+SUBSTANTIAL_CHANGE_METRICS = ["CBO"] # The desired metrics to search for substantial changes
 METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
@@ -59,7 +59,7 @@ CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # 
 CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of the csv generated file from ck.
 UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
 SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
-SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # The relative path to the directory containing the interesting changes
+SUBSTANTIAL_CHANGES_FILENAME = f"substantial_METRIC_NAME_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # The relative path to the directory containing the interesting changes
 
 # Relative Paths:
 RELATIVE_METRICS_DATA_DIRECTORY_PATH = "/metrics_data" # The relative path to the directory containing the metrics evolution
@@ -120,7 +120,7 @@ def update_global_variables_for_processing(process_classes):
 	CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # Update the CLASSES_OR_METHODS constant
 	UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # Update the UNSORTED_CHANGED_METHODS_CSV_FILENAME constant
 	SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # Update the SORTED_CHANGED_METHODS_CSV_FILENAME constant
-	SUBSTANTIAL_CHANGES_FILENAME = f"substantial_{SUBSTANTIAL_CHANGE_METRIC}_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # Update the SUBSTANTIAL_CHANGES_FILENAME constant
+	SUBSTANTIAL_CHANGES_FILENAME = f"substantial_METRIC_NAME_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # Update the SUBSTANTIAL_CHANGES_FILENAME constant
 
 def process_classes_and_methods():
 	"""
@@ -695,7 +695,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
 
-	:param metrics_values: A list containing the metrics values for linear regression
+	:param metrics_values: A list containing the metrics values for the specified class_name and metric_name
 	:param class_name: The class name of the current linear regression
 	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 	:param commit_hashes: The commit hashes list for the specified class_name
@@ -718,7 +718,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		return # If any of the variable/attribute ignore keywords is found in the variable attribute, return
 	
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/" # The folder path
-	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME}" # The csv file name
+	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME.replace("METRIC_NAME", metric_name)}" # The csv file name
 
 	global FIRST_SUBSTANTIAL_CHANGE_VERIFICATION # Declare that we're using the global variable
 	
@@ -792,10 +792,9 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		if not commit_number.any(): # If the commit number is empty
 			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
 		metric_values = metrics_array[:, metric_position] # Extract the metrics values from the metrics array in the specified position (column)
-
-		if metric_name == SUBSTANTIAL_CHANGE_METRIC: # For the CBO metric, verify if there occurred any substantial decrease in the metric
+		if metric_name in SUBSTANTIAL_CHANGE_METRICS: # For the CBO metric, verify if there occurred any substantial decrease in the metric
 			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if there occurred any substantial decrease in the metric
-			
+
 		if len(commit_number) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
 			return # Return if there are not enough data points for regression
 		
@@ -988,7 +987,7 @@ def sort_csv_by_changes(repository_name):
 
 def sort_csv_by_percentual_variation(repository_name):
 	"""
-	Sorts the csv file according to the percentual variation of the metric.
+	Sorts the csv files according to the percentual variation of the metric.
 
 	:param repository_name: The name of the repository
 	:return: None
@@ -996,9 +995,10 @@ def sort_csv_by_percentual_variation(repository_name):
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-	data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}") # Read the csv file
-	data = data.sort_values(by=["Percentual Variation"], ascending=False) # Sort the csv file by the percentual variation of the metric
-	data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME}", index=False) # Write the sorted csv file to a new csv file
+	for metric_name in SUBSTANTIAL_CHANGE_METRICS:
+		data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace("METRIC_NAME", metric_name)}") # Read the csv file
+		data = data.sort_values(by=["Percentual Variation"], ascending=False) # Sort the csv file by the percentual variation of the metric
+		data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace("METRIC_NAME", metric_name)}", index=False) # Write the sorted csv file to a new csv file
 
 def read_csv_as_dict(file_path):
 	"""
