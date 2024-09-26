@@ -23,7 +23,7 @@ UNPROCESSED_COMMITS_THRESHOLD = 0 # The threshold of unprocessed commits to cons
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
-   "generate_diffs": False, # Generate the diffs for the commits
+   "generate_diffs": True, # Generate the diffs for the commits
    "write_commits_information_to_csv": True, # Write the commit information to a CSV file
    "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
 }
@@ -403,9 +403,9 @@ def generate_diffs(repository_name, commit, commit_number):
       if not verify_filepath_exists(diff_file_directory): # Verify if the directory does not exist
          os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
 
-      # Open the diff file to write the diff
-      with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file:
-         diff_file.write(file_diff) # Write the diff to the file
+      if not verify_filepath_exists(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}"): # Verify if the diff file does not exist
+         with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file: # Open the diff file to write the diff
+            diff_file.write(file_diff) # Write the diff to the file
 
 def checkout_branch(branch_name):
    """
