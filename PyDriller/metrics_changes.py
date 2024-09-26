@@ -39,7 +39,7 @@ WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all 
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
 	"generate_metrics_track_record_statistics": True, # Generate the metrics track record statistics
-	"linear_regression_graphics": False, # Run the linear regression graphics
+	"linear_regression_graphics": True, # Run the linear regression graphics
 	"sort_csv_by_percentual_variation": True, # Sort the csv file by the percentual variation
 	"verify_substantial_metric_decrease": True, # Verify the substantial metric decrease
 	"write_metrics_evolution_to_csv": True, # Write the metrics evolution to a csv file
