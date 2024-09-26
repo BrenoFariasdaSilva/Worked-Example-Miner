@@ -562,17 +562,18 @@ def verify_refactoring_file(refactoring_file_path):
 
 	if not os.path.isfile(refactoring_file_path): # Verify if the file exists
 		return False, "File does not exist." # Return False if the file does not exist
-
-	if os.path.getsize(refactoring_file_path) == 0: # Verify if the file is not empty
-		return False, "File is empty." # Return False if the file is empty
-
+	
 	try: # Try to load the JSON content of the file
 		with open(refactoring_file_path, "r") as file: # Open the refactoring file
 			data = json.load(file) # Load the JSON data
 			if not data: # Verify if the data is empty
-				return True, "File is valid." # Return True if the file is valid
+				return False, "File is empty." # Return False if the file is empty
 	except json.JSONDecodeError: # Catch the JSONDecodeError exception
 		return False, "File contains invalid JSON." # Return False if the file contains invalid JSON
+	except Exception as e: # Catch any other exceptions
+		return False, f"An unexpected error occurred: {str(e)}" # Handle any other unexpected errors
+	
+	return True, "File is valid." # Return True if the file is valid
 
 def generate_refactoring_file(repository_name, commit_hash, refactoring_file_path):
 	"""
