@@ -691,7 +691,7 @@ def write_repositories_attributes_to_csv(repository_attributes):
    :return: None
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the repositories attributes to a csv file...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the {repository_attributes["repository_name"]} attributes to the {FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH} file...{Style.RESET_ALL}")
    
    file_exists = verify_filepath_exists(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH) # Verify if the file already exists
    
@@ -701,23 +701,8 @@ def write_repositories_attributes_to_csv(repository_attributes):
       
       if not file_exists: # If the file does not exist, write the header
          writer.writerow(["Repository Name", "Number of Classes", "Lines of Code (LOC)", "Number of Commits", "Execution Time (Minutes)", "Size (GB)"]) # Write the header
-      else: # If the file exists, verify if the last line is empty
-            csv_file.seek(-1, os.SEEK_END) # Move to the end of the file
-            while csv_file.read(1) != "\n" and csv_file.tell() > 1: # Go back until the start of the last line
-               csv_file.seek(-2, os.SEEK_CUR) # Move back two bytes
-            last_line_content = csv_file.readline().strip() # Read the last line and strip whitespace
-            
-            if last_line_content: # If the last line is not empty
-               csv_file.write("\n") # Add a line break
       
-      writer.writerow([ # Write the repository attributes
-         repository_attributes["repository_name"], # Name of the repository
-         repository_attributes["classes"], # Number of classes in the repository
-         repository_attributes["lines_of_code"], # Number of lines of code in the repository
-         repository_attributes["commits"], # Number of commits in the repository
-         repository_attributes["execution_time_in_minutes"], # Execution time in minutes
-         repository_attributes["size_in_gb"] # Size of the repository in GB
-      ])
+      writer.writerow([repository_attributes["repository_name"], repository_attributes["classes"], repository_attributes["lines_of_code"], repository_attributes["commits"], repository_attributes["execution_time_in_minutes"], repository_attributes["size_in_gb"]]) # Write the repository attributes
 
 def process_repository(repository_name, repository_url):
    """
