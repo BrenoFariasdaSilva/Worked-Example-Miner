@@ -792,8 +792,6 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, commit_h
 		if not commit_number.any(): # If the commit number is empty
 			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
 		metric_values = metrics_array[:, metric_position] # Extract the metrics values from the metrics array in the specified position (column)
-		if metric_name in SUBSTANTIAL_CHANGE_METRICS: # For the CBO metric, verify if there occurred any substantial decrease in the metric
-			verify_substantial_metric_decrease(metric_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if there occurred any substantial decrease in the metric
 
 		if len(commit_number) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
 			return # Return if there are not enough data points for regression
@@ -858,6 +856,11 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 						writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]]) # Write the unique identifier, the commit hash, code churn, lines added, lines deleted, and the metrics to the csv file
 					
 					previous_metrics = current_metrics # Update previous metrics
+
+			metrics_array = np.array(metrics, dtype=float) # Convert to NumPy array for flexibility in handling
+			for metric_name, metric_position in METRICS_POSITION.items(): # Loop through the metrics_position dictionary
+				if metric_name in SUBSTANTIAL_CHANGE_METRICS: # If the metric name is in the SUBSTANTIAL_CHANGE_METRICS list
+					verify_substantial_metric_decrease(metrics_array[:, metric_position], class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record.get("occurrences", 0), metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if the class or method has had a substantial decrease in the current metric
 
 			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], record["method_invoked"], identifier.split(" ")[1], repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
