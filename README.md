@@ -9,7 +9,7 @@
 
 Welcome to my Worked-Example-Miner Repository!
 
-The [Worked-Example-Miner](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) is a comprehensive tool for Java repository analysis. This tool integrates [CK](https://github.com/mauricioaniche/ck), [Google Gemini API](https://ai.google.dev/), [PyDriller](https://github.com/ishepard/pydriller), and [RefactoringMiner](https://github.com/tsantalis/RefactoringMiner) to analyze Java repositories and generate data and metadata on the software's design evolution and quality. The tool is designed to identify trends in how repositories evolve over time and select prime candidates for creating worked examples.
+The [Worked-Example-Miner](https://github.com/BrenoFariasdaSilva/Worked-Example-Miner) is a comprehensive tool for Java repository analysis. This tool integrates [AutoMetric](https://github.com/BrenoFariasdaSilva/AutoMetric), [CK](https://github.com/mauricioaniche/ck), [Google Gemini API](https://ai.google.dev/), [PyDriller](https://github.com/ishepard/pydriller), and [RefactoringMiner](https://github.com/tsantalis/RefactoringMiner) to analyze Java repositories and generate data and metadata on the software's design evolution and quality. The tool is designed to identify trends in how repositories evolve over time and select prime candidates for creating worked examples.
 
 This project is massive and complex, containing multiple integrated tools and exploring different goals and research questions. With that in mind, each of the directories in this repository has its own `README.md` file explaining it's purpose and how it contributes to the overall project. 
 
@@ -20,7 +20,8 @@ This project is massive and complex, containing multiple integrated tools and ex
 <div align="center">
 
 ![GitHub Build/WorkFlow](https://img.shields.io/github/actions/workflow/status/BrenoFariasDaSilva/Scientific-Research/update-worked-example-miner-submodule.yml)
-![GitHub Build/WorkFlow](https://img.shields.io/github/actions/workflow/status/BrenoFariasdaSilva/Worked-Example-Miner/update-ck-submodule.yml?label=CK%20SubModule)
+![AutoMetric SubModule](https://img.shields.io/github/actions/workflow/status/BrenoFariasdaSilva/Worked-Example-Miner/update-autometric-submodule.yml?label=AutoMetric%20SubModule)
+![CK SubModule](https://img.shields.io/github/actions/workflow/status/BrenoFariasdaSilva/Worked-Example-Miner/update-ck-submodule.yml?label=CK%20SubModule)
 ![GitHub Code Size in Bytes](https://img.shields.io/github/languages/code-size/BrenoFariasdaSilva/Worked-Example-Miner)
 ![GitHub Commits](https://img.shields.io/github/commit-activity/t/BrenoFariasDaSilva/Worked-Example-Miner/main)
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/BrenoFariasdaSilva/Worked-Example-Miner)
