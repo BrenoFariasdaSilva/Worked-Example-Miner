@@ -437,47 +437,19 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 
 	with open(file_path, "r") as csvfile: # Open the csv file
 		reader = csv.DictReader(csvfile) # Read the csv file
-		for row in reader: # Iterate through each row, that is, for each method in the csv file
-			identifier, ck_metrics, method_invoked = get_identifier(row), get_ck_metrics_tuple(row), get_method_invoked(row) # Get the identifier, metrics and method_invoked of the class or method
-			if identifier not in metrics_track_record.keys(): # If the identifier is not in the dictionary, then add it
-				metrics_track_record[identifier] = { # Add the identifier to the metrics_track_record dictionary
-					"metrics": [], # The metrics list (CBO, WMC, RFC)
-					"commit_hashes": [], # The commit hashes list
-					"changed": 0, # The number of times the metrics changed
-					"code_churns": [], # The code churns values list
-					"lines_added": [], # The lines added list
-					"lines_deleted": [], # The lines deleted list
-					"modified_files_count": [], # The modified files count list
-					"method_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
-				}
+		for row in reader: # For each row in the csv file
+			identifier = get_identifier(row) # Get the identifier of the class or method
+			ck_metrics = get_ck_metrics_tuple(row) # Get the metrics of the class or method
+			method_invoked = get_method_invoked(row) # Get the method invoked of the class or method
+			
+			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number from the file path
+			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
 
-			metrics_changes = metrics_track_record[identifier]["metrics"] # Get the metrics_changes list for the method
-			commit_hashes = metrics_track_record[identifier]["commit_hashes"] # Get the commit hashes list for the method
-			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number of the current row (i-commit_hash)
-			commit_hash = commit_number.split("-")[1] # Get the commit hash of the current row
-
-			# Verify if the file in the current row of the file path was actually modified
-			if (commit_number not in commit_hashes or (ck_metrics not in metrics_changes)) and (was_file_modified(commit_modified_files_dict, commit_hash, row)):
-				metrics_changes.append(ck_metrics) # Append the metrics to the list
-				metrics_track_record[identifier]["changed"] += 1 # Increment the number of changes
-				commit_hashes.append(commit_number) # Append the commit hash to the list
-
+			if was_file_modified(commit_modified_files_dict, commit_hash, row): # If the file was modified
+				update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, method_invoked) # Update the metrics track record
 				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
 				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
-
-				churn_attributes = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
-				lines_added, lines_deleted = churn_attributes # Unpack the churn attributes
-
-				code_churn_value = get_code_churn(churn_attributes) # Calculate the code churn value
-
-				metrics_track_record[identifier]["code_churns"].append(code_churn_value) # Append the code churn value to the list
-				metrics_track_record[identifier]["lines_added"].append(lines_added) # Append the lines added to the list
-				metrics_track_record[identifier]["lines_deleted"].append(lines_deleted) # Append the lines deleted to the list
-
-				modified_files_count = len(commit_modified_files_dict[commit_hash]) # Get the modified files count for the current commit
-				metrics_track_record[identifier]["modified_files_count"].append(modified_files_count) # Append the modified files count to the list
-
-				metrics_track_record[identifier]["metrics"] = metrics_changes # Update the metrics_track_record dictionary
+				update_code_churn_and_file_info(metrics_track_record, identifier, diff_file_path, class_name, commit_modified_files_dict, commit_hash) # Update the code churn and file info
 
 def traverse_directory(repository_name, repository_ck_metrics_path):
 	"""
