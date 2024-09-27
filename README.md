@@ -42,9 +42,9 @@ This project is massive and complex, containing multiple integrated tools and ex
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Setup](#setup)
-  - [Clone without Submodule](#clone-without-submodule)
-  - [Clone with Submodule](#clone-with-submodule)
-  - [Clone Submodule](#clone-submodule)
+  - [Clone with Submodules](#clone-with-submodules)
+  - [Clone without Submodules (Not Recommended)](#clone-without-submodules-not-recommended)
+  - [Clone Submodules](#clone-submodules)
 - [Paper Submissions](#paper-submissions)
   - [EduComp 2024 - Ideas Laboratory](#educomp-2024---ideas-laboratory)
 - [Goals](#goals)
@@ -75,25 +75,25 @@ Within this repository, you'll find a wealth of resources, from detailed code an
 
 ## Setup
 
-### Clone without Submodule
+### Clone with Submodules
 
-In order to clone this repository without the submodule (CK), you can use the following command:
-
-```bash
-git clone https://github.com/BrenoFariasdaSilva/Worked-Example-Miner
-```
-
-### Clone with Submodule
-
-In order to clone this repository with the submodule (CK), you can use the following command:
+In order to clone this repository with the submodules (AutoMetric and CK), you can use the following command:
 
 ```bash
 git clone --recurse-submodules https://github.com/BrenoFariasdaSilva/Worked-Example-Miner.git
 ```
 
-### Clone Submodule
+### Clone without Submodules (Not Recommended)
 
-In case you have already cloned the repository and forgot to clone the submodule (CK), you can use the following command to clone the submodule:
+In order to clone this repository without the submodules (AutoMetric and CK), you can use the following command:
+
+```bash
+git clone https://github.com/BrenoFariasdaSilva/Worked-Example-Miner
+```
+
+### Clone Submodules
+
+In case you have already cloned the repository and forgot to clone the submodules (AutoMetric and CK), you can use the following command to clone the submodule:
 
 ```bash
 git submodule init
