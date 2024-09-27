@@ -233,24 +233,6 @@ def get_class_package_name(file_name):
 
 	return package_name # Return the package name
 
-def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
-	"""
-	Converts the CK file path to the diff file path.
-
-	:param ck_file_path: The CK file path
-	:param repository_file_path: The repository file path
-	:return: The diff file path
-	"""
-
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Converting the CK file path to the diff file path...{Style.RESET_ALL}")
-	
-	diff_file_path = ck_file_path.replace("ck_metrics", "diffs") # Replace the ck_metrics with diffs in the file path
-	diff_file_path = diff_file_path[:diff_file_path.rfind("/")] # Get the substring path before the last slash (excluding the last slash)
-	class_file_path = repository_file_path[repository_file_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
-	diff_file_path = f"{diff_file_path}/{class_file_path}.diff" # Merge the diff_file_path with the file name and the .diff extension
-
-	return diff_file_path # Return the diff file path
-
 def get_identifier(row):
 	"""
 	Gets the identifier of the class or method.
@@ -361,6 +343,24 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 		metrics_track_record[identifier]["changed"] += 1 # Increment the change count
 		commit_hashes.append(commit_number) # Append the commit number to the commit hashes list
 
+def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
+	"""
+	Converts the CK file path to the diff file path.
+
+	:param ck_file_path: The CK file path
+	:param repository_file_path: The repository file path
+	:return: The diff file path
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Converting the CK file path to the diff file path...{Style.RESET_ALL}")
+	
+	diff_file_path = ck_file_path.replace("ck_metrics", "diffs") # Replace the ck_metrics with diffs in the file path
+	diff_file_path = diff_file_path[:diff_file_path.rfind("/")] # Get the substring path before the last slash (excluding the last slash)
+	class_file_path = repository_file_path[repository_file_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
+	diff_file_path = f"{diff_file_path}/{class_file_path}.diff" # Merge the diff_file_path with the file name and the .diff extension
+
+	return diff_file_path # Return the diff file path
+
 def convert_ck_classname_to_filename_format(ck_classname):
 	"""
 	Convert CK classname format (e.g., com.houarizegai.calculator.Calculator$Anonymous14)
@@ -380,31 +380,6 @@ def convert_ck_classname_to_filename_format(ck_classname):
 	filename_format = f"{package_path}/{class_part}.java" # Construct the full path
 	
 	return filename_format # Return the converted classname in filename format
-
-def update_code_churn_and_file_info(metrics_track_record, identifier, diff_file_path, class_name, commit_modified_files_dict, commit_hash):
-	"""
-	Updates the code churn and file modification information in the metrics track record.
-
-	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
-	:param identifier: The identifier (method or class name) to be updated
-	:param diff_file_path: The file path for the diff information
-	:param class_name: The class name for the churn calculation
-	:param commit_modified_files_dict: A dictionary with commit hashes as keys and modified files as values
-	:param commit_hash: The current commit hash being processed
-	:return: None
-	"""
-
-	churn_attributes = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes (lines added and deleted)
-	lines_added, lines_deleted = churn_attributes # Unpack the churn attributes
-
-	code_churn_value = get_code_churn(churn_attributes) # Get the code churn value
-
-	metrics_track_record[identifier]["code_churns"].append(code_churn_value) # Append the code churn value to the code churns list
-	metrics_track_record[identifier]["lines_added"].append(lines_added) # Append the lines added to the lines added list
-	metrics_track_record[identifier]["lines_deleted"].append(lines_deleted) # Append the lines deleted to the lines deleted list
-
-	modified_files_count = len(commit_modified_files_dict[commit_hash]) # Get the number of modified files for the current commit hash
-	metrics_track_record[identifier]["modified_files_count"].append(modified_files_count) # Append the modified files count to the modified files count list
 
 def extract_method_name(class_name):
 	"""
@@ -476,8 +451,33 @@ def get_code_churn(churn_attributes):
 	"""
 
 	lines_added, lines_deleted = churn_attributes # Unpack the tuple into lines added and deleted.
-	code_churn_value = lines_added - lines_deleted # Calculate the code churn value.
+	code_churn_value = lines_added + lines_deleted # Calculate the code churn value.
 	return code_churn_value # Return the code churn value.
+
+def update_code_churn_and_file_info(metrics_track_record, identifier, diff_file_path, class_name, commit_modified_files_dict, commit_hash):
+	"""
+	Updates the code churn and file modification information in the metrics track record.
+
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
+	:param identifier: The identifier (method or class name) to be updated
+	:param diff_file_path: The file path for the diff information
+	:param class_name: The class name for the churn calculation
+	:param commit_modified_files_dict: A dictionary with commit hashes as keys and modified files as values
+	:param commit_hash: The current commit hash being processed
+	:return: None
+	"""
+
+	churn_attributes = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes (lines added and deleted)
+	lines_added, lines_deleted = churn_attributes # Unpack the churn attributes
+
+	code_churn_value = get_code_churn(churn_attributes) # Get the code churn value
+
+	metrics_track_record[identifier]["code_churns"].append(code_churn_value) # Append the code churn value to the code churns list
+	metrics_track_record[identifier]["lines_added"].append(lines_added) # Append the lines added to the lines added list
+	metrics_track_record[identifier]["lines_deleted"].append(lines_deleted) # Append the lines deleted to the lines deleted list
+
+	modified_files_count = len(commit_modified_files_dict[commit_hash]) # Get the number of modified files for the current commit hash
+	metrics_track_record[identifier]["modified_files_count"].append(modified_files_count) # Append the modified files count to the modified files count list
 
 def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record):
 	"""
