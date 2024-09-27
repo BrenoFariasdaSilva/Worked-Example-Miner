@@ -330,6 +330,37 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 			return True # The file was modified
 	return False # The file was not modified
 
+def update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, method_invoked):
+	"""
+	Updates the metrics track record with new metrics information.
+
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
+	:param identifier: The identifier (method or class name) to be added or updated
+	:param commit_number: The commit number of the current row
+	:param ck_metrics: A tuple containing the CK metrics (CBO, WMC, RFC)
+	:param method_invoked: The method invoked str or methodsInvokedQty int
+	:return: None
+	"""
+
+	if identifier not in metrics_track_record: # If the identifier is not in the dictionary, add it
+		metrics_track_record[identifier] = { # Add the identifier to the metrics_track_record dictionary
+			"metrics": [], # The metrics list (CBO, WMC, RFC)
+			"commit_hashes": [], # The commit hashes list
+			"changed": 0, # The number of times the metrics changed
+			"code_churns": [], # The code churns values list
+			"lines_added": [], # The lines added list
+			"lines_deleted": [], # The lines deleted list
+			"modified_files_count": [], # The modified files count list
+			"method_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
+		}
+	metrics_changes = metrics_track_record[identifier]["metrics"] # Get the metrics list
+	commit_hashes = metrics_track_record[identifier]["commit_hashes"] # Get the commit hashes list
+
+	if commit_number not in commit_hashes or ck_metrics not in metrics_changes: # Only append the metrics if not already added in the track record
+		metrics_changes.append(ck_metrics) # Append the metrics to the metrics list
+		metrics_track_record[identifier]["changed"] += 1 # Increment the change count
+		commit_hashes.append(commit_number) # Append the commit number to the commit hashes list
+
 def convert_ck_classname_to_filename_format(ck_classname):
 	"""
 	Convert CK classname format (e.g., com.houarizegai.calculator.Calculator$Anonymous14)
