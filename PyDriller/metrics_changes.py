@@ -863,24 +863,6 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
 
-def merge_code_churn_fields(code_churn_metrics):
-	"""
-	Merges the code churn fields into a single string separated by spaces.
-
-	:param code_churn_metrics: A dictionary containing the code churn metrics
-	:return: A string containing the merged code churn fields
-	"""
-
-	churn_info = [] # Initialize the churn information list
-
-	for i in range(len(code_churn_metrics["code_churns"])): # For each code churn in the code churns list
-		churn_entry = f"{code_churn_metrics['code_churns'][i]} ({code_churn_metrics['lines_added'][i]} - {code_churn_metrics['lines_deleted'][i]})"
-		churn_info.append(churn_entry) # Append the code churn entry to the churn information list
-	
-	churn_merged = ", ".join(churn_info) # Join the churn information list with a comma and a space
-
-	return churn_merged # Return the merged code churn fields
-
 def calculate_metric_statistics(metric_values):
 	"""
 	Calculates the min, max, avg, and Q3 for a given list of metric values.
