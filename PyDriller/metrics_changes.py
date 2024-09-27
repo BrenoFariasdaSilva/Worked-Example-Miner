@@ -757,6 +757,24 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			writer = csv.writer(csvfile) # Create the csv writer
 			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], biggest_change[3]]) # Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
 
+def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name):
+	"""
+	Verifies if there has been a substantial decrease in the metrics for a given class or method.
+
+	:param metrics: A list of metric tuples (CBO, WMC, RFC)
+	:param class_name: The name of the class being analyzed
+	:param variable_attribute: The method or attribute of the class being analyzed
+	:param record: A dictionary containing commit information and metric history
+	:param repository_name: The name of the repository being analyzed
+	:return: None
+	"""
+
+	for metric_name, metric_position in METRICS_POSITION.items(): # Loop through the metrics_position dictionary
+		if metric_name in SUBSTANTIAL_CHANGE_METRICS: # If the metric name is in the SUBSTANTIAL_CHANGE_METRICS list
+			if metrics: # If the metrics list is not empty
+				metrics_values = [metric[metric_position] for metric in metrics] # Extract the values for the current metric based on its position in the tuple
+				verify_substantial_metric_decrease(metrics_values, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name) # Verify if the class or method has had a substantial decrease in the current metric
+
 def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Perform linear regression on the given metrics and save the plot to a PNG file.
@@ -848,18 +866,11 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 
 				for i in range(metrics_len): # For each metric in the metrics list
 					current_metrics = (metrics[i][0], metrics[i][1], metrics[i][2]) # Tuple of current metrics (CBO, WMC, RFC)
-
 					if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics): # Verify if the metrics tuple is different from the previous metrics tuple
 						writer.writerow([unique_identifier, record["commit_hashes"][i], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]]) # Write the unique identifier, the commit hash, code churn, lines added, lines deleted, and the metrics to the csv file
-					
 					previous_metrics = current_metrics # Update previous metrics
 
-			for metric_name, metric_position in METRICS_POSITION.items(): # Loop through the metrics_position dictionary
-				if metric_name in SUBSTANTIAL_CHANGE_METRICS: # If the metric name is in the SUBSTANTIAL_CHANGE_METRICS list
-					if metrics: # If the metrics list is not empty
-						metrics_values = [metric[metric_position] for metric in metrics] # Extract the values for the current metric based on its position in the tuple
-						verify_substantial_metric_decrease(metrics_values, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if the class or method has had a substantial decrease in the current metric
-
+			run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if the class or method has had a substantial decrease in the metrics
 			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
 
