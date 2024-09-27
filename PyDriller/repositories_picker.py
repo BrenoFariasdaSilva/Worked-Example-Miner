@@ -271,6 +271,21 @@ def verify_git():
       return False # Return False if Git is not installed
    return True # Return True if Git is installed
 
+def setup_submodule(repo_path):
+   """
+   Sets up the submodule for a given repository.
+
+   :param repo_path: str
+   :return: True if the submodule was set up successfully, False otherwise.
+   """
+
+   if not os.path.exists(repo_path): # Verify if the repository path exists
+      verbose_output(true_string=f"{BackgroundColors.GREEN}The repository path does not exist. Cloning the submodule repository...{Style.RESET_ALL}")
+      return init_submodule(repo_path) # Initialize the submodule
+   else: # The repository path exists
+      verbose_output(true_string=f"{BackgroundColors.GREEN}The repository path exists. Updating the submodule repository...{Style.RESET_ALL}")
+      return update_submodule(repo_path) # Update the submodule
+
 def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
    """
    Verify if the .env file exists and if the desired key is present.
@@ -1310,6 +1325,9 @@ def main():
 
    if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
+
+   if not setup_submodule(f"{START_PATH[:START_PATH.rfind('/')]}/"): # Setup the submodule
+      return # Return if the submodule setup fails
 
    token = verify_env_file() # Verify the .env file and get the token
 
