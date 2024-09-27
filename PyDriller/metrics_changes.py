@@ -251,12 +251,12 @@ def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
 
 	return diff_file_path # Return the diff file path
 
-def get_identifier_and_metrics(row):
+def get_identifier(row):
 	"""
-	Gets the identifier and metrics of the class or method.
+	Gets the identifier of the class or method.
 
 	:param row: The row of the csv file
-	:return: The identifier, metrics and method_invoked of the class or method
+	:return: The identifier of the class or method
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the identifier and metrics of the class or method...{Style.RESET_ALL}")
@@ -268,16 +268,35 @@ def get_identifier_and_metrics(row):
 		variable_attribute = row["type"] # Get the type of the class
 	else: # If the PROCESS_CLASSES constant is set to False
 		variable_attribute = row["method"] # Get the method name from the row
-
-	cbo = float(row["cbo"]) # Get the cbo metric from the row as a float
-	wmc = float(row["wmc"]) # Get the wmc metric from the row as a float
-	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
-	method_invoked = row["methodInvocations"] if PROCESS_CLASSES else int(row["methodsInvokedQty"]) # Get the methodInvocations (str) or methodsInvokedQty (int) from the row
-
-	metrics = (cbo, wmc, rfc) # Create a tuple containing the metrics
 	identifier = f"{class_name} {variable_attribute}" # The identifier of the class or method
 
-	return identifier, metrics, method_invoked # Return the identifier, metrics and method_invoked of the class or method
+	return identifier # Return the identifier of the class or method
+
+def get_ck_metrics_tuple(row):
+	"""
+	Gets the metrics of the class or method.
+
+	:param row: The row of the csv file
+	:return: The metrics of the class or method
+	"""
+
+	cbo = float(row["cbo"]) # Get the cbo metric from the row as a float
+	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
+	wmc = float(row["wmc"]) # Get the wmc metric from the row as a float
+
+	return (cbo, wmc, rfc) # Return the metrics of the class or method
+
+def get_method_invoked(row):
+	"""
+	Gets the method invoked of the class or method.
+
+	:param row: The row of the csv file
+	:return: The method invoked of the class or method
+	"""
+
+	method_invoked = row["methodInvocations"] if PROCESS_CLASSES else int(row["methodsInvokedQty"]) # Get the methodInvocations (str) or methodsInvokedQty (int) from the row
+	
+	return method_invoked # Return the method_invoked of the class or method
 
 def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	"""
@@ -419,7 +438,7 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 	with open(file_path, "r") as csvfile: # Open the csv file
 		reader = csv.DictReader(csvfile) # Read the csv file
 		for row in reader: # Iterate through each row, that is, for each method in the csv file
-			identifier, ck_metrics, method_invoked = get_identifier_and_metrics(row) # Get the identifier, metrics and method_invoked of the class or method
+			identifier, ck_metrics, method_invoked = get_identifier(row), get_ck_metrics_tuple(row), get_method_invoked(row) # Get the identifier, metrics and method_invoked of the class or method
 			if identifier not in metrics_track_record.keys(): # If the identifier is not in the dictionary, then add it
 				metrics_track_record[identifier] = { # Add the identifier to the metrics_track_record dictionary
 					"metrics": [], # The metrics list (CBO, WMC, RFC)
