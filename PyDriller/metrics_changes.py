@@ -712,6 +712,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the class or method has had a substantial decrease in the {BackgroundColors.CYAN}{metric_name}{BackgroundColors.GREEN} metric...{Style.RESET_ALL}")
 
+	if not metrics_values: # If the metrics values list is empty, return
+		return # If the metrics values list is empty, return
+
 	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS): # If any of the class name ignore keywords is found in the class name, return
 		return # If any of the class name ignore keywords is found in the class name, return
 
@@ -851,10 +854,11 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 					
 					previous_metrics = current_metrics # Update previous metrics
 
-			metrics_array = np.array(metrics, dtype=float) # Convert to NumPy array for flexibility in handling
 			for metric_name, metric_position in METRICS_POSITION.items(): # Loop through the metrics_position dictionary
 				if metric_name in SUBSTANTIAL_CHANGE_METRICS: # If the metric name is in the SUBSTANTIAL_CHANGE_METRICS list
-					verify_substantial_metric_decrease(metrics_array[:, metric_position], class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record.get("occurrences", 0), metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if the class or method has had a substantial decrease in the current metric
+					if metrics: # If the metrics list is not empty
+						metrics_values = [metric[metric_position] for metric in metrics] # Extract the values for the current metric based on its position in the tuple
+						verify_substantial_metric_decrease(metrics_values, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if the class or method has had a substantial decrease in the current metric
 
 			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
