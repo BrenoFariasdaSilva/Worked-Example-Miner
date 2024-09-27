@@ -1108,7 +1108,7 @@ def process_repository(repository_name, repository_url):
 
 	sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["sort_csv_by_percentual_variation"] else None# Sort the interesting changes csv file by the percentual variation of the metric
 
-	repositories_attributes = update_repository_attributes(repository_name, elapsed_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
+	repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
 
 	elapsed_time = time.time() - start_time # Calculate the elapsed time
@@ -1145,7 +1145,7 @@ def main():
 	
 	global SOUND_FILE_PATH # Declare the SOUND_FILE_PATH as a global variable
 	SOUND_FILE_PATH = update_sound_file_path() # Update the sound file path
-	
+
 	if not verify_filepath_exists(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH): # Verify if the refactoring miner tool exists in the specified path
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
 		return # Exit the program
