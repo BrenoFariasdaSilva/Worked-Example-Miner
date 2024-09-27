@@ -354,6 +354,9 @@ def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Converting the CK file path to the diff file path...{Style.RESET_ALL}")
 
+	print(f"{BackgroundColors.YELLOW}ck_file_path: {BackgroundColors.CYAN}{ck_file_path}{Style.RESET_ALL}")
+	print(f"{BackgroundColors.YELLOW}repository_file_path: {BackgroundColors.CYAN}{repository_file_path}{Style.RESET_ALL}\n")
+	
 	diff_file_path = ck_file_path.replace("ck_metrics", "diffs") # Replace the ck_metrics with diffs in the file path
 	diff_file_path = diff_file_path[:diff_file_path.rfind("/")] # Get the substring path before the last slash (excluding the last slash)
 	class_file_path = repository_file_path[repository_file_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
@@ -378,6 +381,9 @@ def convert_ck_classname_to_filename_format(ck_classname):
 		class_part = class_part.replace("Anonymous", "") # Remove the "Anonymous" part
 
 	filename_format = f"{package_path}/{class_part}.java" # Construct the full path
+
+	print(f"{BackgroundColors.YELLOW}ck_classname: {BackgroundColors.CYAN}{ck_classname}{Style.RESET_ALL}")
+	print(f"{BackgroundColors.YELLOW}filename_format: {BackgroundColors.CYAN}{filename_format}{Style.RESET_ALL}\n")
 	
 	return filename_format # Return the converted classname in filename format
 
@@ -502,7 +508,7 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
 				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
-				update_code_churn_and_file_info(metrics_track_record, identifier, lines_added, lines_deleted, commit_modified_files_dict, commit_hash) # Update the code churn and file info
+				update_code_churn_and_file_info(metrics_track_record, identifier, lines_added, lines_deleted, get_code_churn(lines_added, lines_deleted), commit_modified_files_dict, commit_hash) # Update the code churn and file info
 
 def traverse_directory(repository_name, repository_ck_metrics_path):
 	"""
