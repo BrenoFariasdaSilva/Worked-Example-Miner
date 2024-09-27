@@ -271,6 +271,22 @@ def verify_git():
       return False # Return False if Git is not installed
    return True # Return True if Git is installed
 
+def init_submodule(repo_path):
+   """
+   Initializes the submodule for a given repository.
+
+   :param repo_path: str
+   :return: True if the submodule was initialized successfully, False otherwise.
+   """
+
+   try: # Try to run the git submodule update --init --recursive command
+      subprocess.run(["git", "-C", repo_path, "submodule", "update", "--init", "--recursive"], check=True) # Run the git submodule update --init --recursive command
+      verbose_output(true_string=f"{BackgroundColors.GREEN}Submodule initialized successfully.{Style.RESET_ALL}")
+      return True # Return True if the submodule was initialized successfully
+   except subprocess.CalledProcessError as e: # Handle the exception if the command fails
+      print(f"{BackgroundColors.RED}Error while initializing the submodule: {e}{Style.RESET_ALL}")
+      return False # Return False if the submodule was not initialized successfully
+
 def setup_submodule(repo_path):
    """
    Sets up the submodule for a given repository.
