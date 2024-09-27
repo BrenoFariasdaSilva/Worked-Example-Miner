@@ -754,20 +754,13 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			writer = csv.writer(csvfile) # Create the csv writer
 			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], biggest_change[3]]) # Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
 
-def linear_regression_graphics(metrics, class_name, variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, raw_variable_attribute, repository_name):
+def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Perform linear regression on the given metrics and save the plot to a PNG file.
 
 	:param metrics: A list containing the metrics values for linear regression
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
-	:param commit_hashes: A list of the commit_hashes for the specified class_name/identifier.
-	:param code_churns: A list of the code churn values for each commit
-	:param lines_added: A list of the lines added for each commit
-	:param lines_deleted: A list of the lines deleted for each commit
-	:param modified_files: A list of the modified files count for each commit
-	:param occurrences: The number of occurrences of the class or method
-	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
 	:param repository_name: The name of the repository
 	:return: None
 	"""
@@ -863,7 +856,7 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				if metric_name in SUBSTANTIAL_CHANGE_METRICS: # If the metric name is in the SUBSTANTIAL_CHANGE_METRICS list
 					verify_substantial_metric_decrease(metrics_array[:, metric_position], class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record.get("occurrences", 0), metric_name, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if the class or method has had a substantial decrease in the current metric
 
-			linear_regression_graphics(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], record["method_invoked"], identifier.split(" ")[1], repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
+			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
 
 def merge_code_churn_fields(code_churn_metrics):
