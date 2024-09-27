@@ -36,7 +36,6 @@ jobs:
 
       - name: Return to main repository and check for changes
         run: |
-          cd ..
           git add AutoMetric
           git diff --cached --quiet || git commit -m "UPDATE: Automatically updated AutoMetric submodule to the latest version."
 

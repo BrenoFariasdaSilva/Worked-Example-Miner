@@ -36,7 +36,6 @@ jobs:
 
       - name: Return to main repository and check for changes
         run: |
-          cd ..
           git add CK
           git diff --cached --quiet || git commit -m "UPDATE: Automatically updated CK submodule to the latest version on FEAT-ClassMetric branch."
 
