@@ -719,7 +719,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		return # If any of the variable/attribute ignore keywords is found in the variable attribute, return
 	
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/" # The folder path
-	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME.replace("METRIC_NAME", metric_name)}" # The csv file name
+	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
 
 	global FIRST_SUBSTANTIAL_CHANGE_VERIFICATION # Declare that we're using the global variable
 	
@@ -1000,9 +1000,9 @@ def sort_csv_by_percentual_variation(repository_name):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 	for metric_name in SUBSTANTIAL_CHANGE_METRICS:
-		data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace("METRIC_NAME", metric_name)}") # Read the csv file
+		data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}") # Read the csv file
 		data = data.sort_values(by=["Percentual Variation"], ascending=False) # Sort the csv file by the percentual variation of the metric
-		data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace("METRIC_NAME", metric_name)}", index=False) # Write the sorted csv file to a new csv file
+		data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}", index=False) # Write the sorted csv file to a new csv file
 
 def read_csv_as_dict(file_path):
 	"""
