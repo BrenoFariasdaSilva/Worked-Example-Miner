@@ -11,6 +11,7 @@ import requests # For making HTTP requests
 import seaborn as sns # For creating plots with a high-level interface
 import subprocess # The subprocess module allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 import sys # For exiting the program
+import time # For sleeping the program
 from collections import defaultdict # For counting the number of occurrences of each item
 from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
@@ -47,8 +48,11 @@ RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective bo
 	"save_to_pdf": True, # Save the repositories to a PDF file
 }
 
+# Default paths:
+START_PATH = os.getcwd() # Get the current working directory
+
 # .Env Constants:
-ENV_PATH = "../.env" # The path to the .env file
+ENV_PATH = START_PATH.replace("PyDriller", ".env") # The path to the .env file
 ENV_VARIABLE = "GITHUB_TOKEN" # The environment variable to load
 
 # File Extensions Constants:
@@ -59,9 +63,6 @@ JSON_FILE_EXTENSION = ".json" # The JSON file extension
 
 # Time units:
 TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, seconds in a day
-
-# Default paths:
-START_PATH = os.getcwd() # Get the current working directory
 
 # Relative File Path Constants:
 RELATIVE_REPOSITORIES_DIRECTORY_PATH = "/repositories" # The relative path of the directory that contains the repositories
@@ -675,18 +676,45 @@ def execute_subprocess(cmd):
 
    return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-def get_output_file(repo_url, autometric_dir):
+def get_repo_owner_and_name(repo_url):
+   """
+   Gets the repository owner and name from the repository URL.
+
+   :param repo_url: str - The URL of the repository.
+   :return: tuple - The repository owner and name.
+   """
+
+   return repo_url.split("/")[-2:] # Get the repository owner and name
+
+def get_output_file(repo_owner, repo_name, autometric_dir):
    """
    Gets the output file path based on the repository URL.
 
-   :param repo_url: str - The URL of the repository.
+   :param repo_owner: str - The owner of the repository.
+   :param repo_name: str - The name of the repository.
    :param autometric_dir: str - The path to the AutoMetric directory.
    :return: str - The output file path.
    """
 
-   repo_owner, repo_name = repo_url.split("/")[-2:] # Get the repository owner and name
-   output_file = os.path.join(autometric_dir, f"outputs/{repo_owner}-{repo_name}.json") # Get the output file path
+   output_file = os.path.join(autometric_dir, f"output/{repo_owner}-{repo_name}.json") # Get the output file path
    return output_file # Return the output file path
+
+def wait_until_file_is_created(file_path, timeout=60):
+   """
+   Waits until the file is created or until a timeout occurs.
+
+   :param file_path: str - The path to the file.
+   :param timeout: int - Maximum time to wait for the file to be created (in seconds).
+   :return: bool - True if the file was created, False otherwise.
+   """
+
+   start_time = time.time() # Record the start time
+   while not verify_filepath_exists(file_path): # While the file does not exist
+      if time.time() - start_time > timeout: # If the timeout is reached
+         print(f"{BackgroundColors.RED}Timeout: The file {file_path} was not created in time.{Style.RESET_ALL}")
+         return False # Return False if the file was not created in time
+      time.sleep(1) # Wait for 1 second
+   return True # Return True if the file was created
 
 def load_metrics(output_file):
    """
@@ -697,8 +725,8 @@ def load_metrics(output_file):
    """
 
    try: # Try to load the metrics from the JSON file
-      with open(output_file, "r") as f: # Open the JSON file
-         metrics = json.load(f) # Load the metrics from the JSON file
+      with open(output_file, "r") as file: # Open the JSON file
+         metrics = json.load(file) # Load the metrics from the JSON file
       return metrics[0] if metrics else {} # Return the metrics if they exist
    except (FileNotFoundError, json.JSONDecodeError) as e: # Handle the exception if the file is not found or there's an error decoding the JSON file
       print(f"{BackgroundColors.RED}Error loading metrics from {output_file}: {e}{Style.RESET_ALL}")
@@ -713,16 +741,18 @@ def get_autometric_metrics(repo_url):
    """
 
    github_token = get_env_token() # Get the GitHub token from the .env file
-   cmd = build_command(repo_url, github_token) # Build the command
+   autometric_dir = get_autometric_dir() # Get the path to the AutoMetric directory
+   cmd = build_command(repo_url, autometric_dir, github_token) # Build the command
 
    result = execute_subprocess(cmd) # Run the command in a subprocess
    
    repo_metrics = {} # Initialize the AutoMetric metrics dictionary for the repository
 
    if result.returncode == 0: # If the script ran successfully
-      output_file = get_output_file(repo_url) # Get the output file path
-      repo_metrics = load_metrics(output_file) # Read and return metrics
-   else:  # If the script did not run successfully
+      repo_owner, repo_name = get_repo_owner_and_name(repo_url) # Get the repository owner and name
+      output_file = get_output_file(repo_owner, repo_name, autometric_dir) # Get the output file path      
+      repo_metrics = load_metrics(output_file) if wait_until_file_is_created(output_file) else {} # Load the metrics from the output file
+   else: # If the script did not run successfully
       print(f"{BackgroundColors.RED}Error while running AutoMetric script: {result.stderr}{Style.RESET_ALL}")
 
    return repo_metrics # Return the AutoMetric metrics for the repository
