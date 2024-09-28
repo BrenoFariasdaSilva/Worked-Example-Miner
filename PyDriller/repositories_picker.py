@@ -657,11 +657,27 @@ def run_autometric(repo_url):
 
    cmd = ["make", "-C", autometric_dir, f"args=--repo_urls {repo_url} --github_token {githubToken}"] # Build the command
 
+   # Execute AutoMetric script and get metrics
    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) # Run the command
 
+   # get the repo owner and name
+   repo_owner, repo_name = repo_url.split("/")[-2:]
+
    # Check the command's output
-   if result.returncode != 0: # If the script ran successfully
+   if result.returncode == 0: # If the script ran successfully
+      output_file = os.path.join(autometric_dir, f"outputs/{repo_owner}-{repo_name}.json")
+      
+      # Read and load metrics from the output JSON file
+      try:
+         with open(output_file, "r") as f:
+            metrics = json.load(f) # Load the metrics from the JSON file
+         return metrics[0] if metrics else {} # Return the metrics if they exist
+      except (FileNotFoundError, json.JSONDecodeError) as e:
+         print(f"{BackgroundColors.RED}Error loading metrics from output.json: {e}{Style.RESET_ALL}")
+         return {}
+   else: # If the script did not run successfully
       print(f"{BackgroundColors.RED}Error while running AutoMetric script: {result.stderr}{Style.RESET_ALL}")
+      return {} # Return an empty dictionary
 
 def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count):
    """
