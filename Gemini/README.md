@@ -191,7 +191,7 @@ make gemini_script
    - The script first verifies if there are any whitespaces in the project path. If there are, it will not proceed.
 
 2. **Verify .env File:**
-   - Calls `verify_env_file()` to ensure that the `.env` file exists and contains the `GEMINI_API_KEY`.
+   - Calls `get_env_token()` to ensure that the `.env` file exists and contains the `GEMINI_API_KEY`.
    - If the `.env` file or the key is missing, the script exits.
 
 3. **Configure the Generative AI Model:**

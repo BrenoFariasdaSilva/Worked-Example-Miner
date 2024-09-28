@@ -78,7 +78,7 @@ def verbose_output(true_string="", false_string=""):
    elif false_string != "":
       print(false_string) # Output the false statement string
 
-def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
+def get_env_token(env_path=ENV_PATH, key=ENV_VARIABLE):
 	"""
 	Verify if the .env file exists and if the desired key is present.
 	:param env_path: Path to the .env file.
@@ -407,7 +407,7 @@ def main():
 	print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Google Gemini API Integration{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the Welcome message
 
 	# Verify .env file and load API key
-	api_key = verify_env_file(ENV_PATH, ENV_VARIABLE)
+	api_key = get_env_token(ENV_PATH, ENV_VARIABLE)
 
 	create_directory(os.path.abspath(OUTPUT_DIRECTORY), OUTPUT_DIRECTORY.replace(".", "")) # Create the output directory
 
