@@ -271,6 +271,16 @@ def verify_git():
       return False # Return False if Git is not installed
    return True # Return True if Git is installed
 
+def get_directory_file_list(dir_path):
+   """
+   Get the list of files in a directory.
+
+   :param dir_path: str - The path to the directory.
+   :return: list - The list of files in the directory.
+   """
+
+   return [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))] # Return the list of files in the directory
+
 def init_submodule(repo_path):
    """
    Initializes the submodule for a given repository.
