@@ -333,10 +333,10 @@ def setup_submodule(repo_path):
    :return: True if the submodule was set up successfully, False otherwise.
    """
 
-   if not os.path.exists(repo_path): # Verify if the repository path exists
+   if not verify_filepath_exists(repo_path) or is_directory_empty(repo_path): # Verify if the repository path exists or is empty
       verbose_output(true_string=f"{BackgroundColors.GREEN}The repository path does not exist. Cloning the submodule repository...{Style.RESET_ALL}")
       return init_submodule(repo_path) # Initialize the submodule
-   else: # The repository path exists
+   else: # The repository path exists, update the submodule
       verbose_output(true_string=f"{BackgroundColors.GREEN}The repository path exists. Updating the submodule repository...{Style.RESET_ALL}")
       return update_submodule(repo_path) # Update the submodule
 
