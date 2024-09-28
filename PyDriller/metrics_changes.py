@@ -805,7 +805,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	if biggest_change[2] > DESIRED_DECREASE and biggest_change[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
-			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", occurrences, code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], biggest_change[3]]) # Write the class name, the variable attribute, the biggest change values, the commit data and the refactorings information to the csv file
+			writer.writerow([class_name, raw_variable_attribute, biggest_change[0], biggest_change[1], round(biggest_change[2] * 100, 2), f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}", code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], occurrences, biggest_change[3]]) # Write the row to the csv file
 
 def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name):
 	"""
