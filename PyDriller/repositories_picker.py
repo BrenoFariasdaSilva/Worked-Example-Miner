@@ -652,15 +652,16 @@ def run_autometric(repo_url):
    :return: dict - The metrics gathered by the AutoMetric script.
    """
 
-   # Execute AutoMetric script and get metrics
-   result = subprocess.run(["make", "-C", "../AutoMetric", "auto_metric_script", repo_url], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+   autometric_dir = START_PATH.replace("PyDriller", "AutoMetric") # The path to the AutoMetric directory
+   githubToken = verify_env_file() # Get the GitHub token from the .env file
 
-   if result.returncode == 0: # If the script ran successfully
-      metrics = json.loads(result.stdout) # Load the metrics from the output
-      return metrics[0] if metrics else {} # Return the metrics if they exist
-   else: # If the script did not run successfully
+   cmd = ["make", "-C", autometric_dir, f"args=--repo_urls {repo_url} --github_token {githubToken}"] # Build the command
+
+   result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) # Run the command
+
+   # Check the command's output
+   if result.returncode != 0: # If the script ran successfully
       print(f"{BackgroundColors.RED}Error while running AutoMetric script: {result.stderr}{Style.RESET_ALL}")
-      return {} # Return an empty dictionary
 
 def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count):
    """
