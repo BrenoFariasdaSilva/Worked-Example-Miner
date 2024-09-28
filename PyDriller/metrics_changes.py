@@ -354,9 +354,6 @@ def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Converting the CK file path to the diff file path...{Style.RESET_ALL}")
 
-	print(f"{BackgroundColors.YELLOW}ck_file_path: {BackgroundColors.CYAN}{ck_file_path}{Style.RESET_ALL}")
-	print(f"{BackgroundColors.YELLOW}repository_file_path: {BackgroundColors.CYAN}{repository_file_path}{Style.RESET_ALL}\n")
-	
 	diff_file_path = ck_file_path.replace("ck_metrics", "diffs") # Replace the ck_metrics with diffs in the file path
 	diff_file_path = diff_file_path[:diff_file_path.rfind("/")] # Get the substring path before the last slash (excluding the last slash)
 	class_file_path = repository_file_path[repository_file_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
@@ -382,9 +379,6 @@ def convert_ck_classname_to_filename_format(ck_classname):
 
 	filename_format = f"{package_path}/{class_part}.java" # Construct the full path
 
-	print(f"{BackgroundColors.YELLOW}ck_classname: {BackgroundColors.CYAN}{ck_classname}{Style.RESET_ALL}")
-	print(f"{BackgroundColors.YELLOW}filename_format: {BackgroundColors.CYAN}{filename_format}{Style.RESET_ALL}\n")
-	
 	return filename_format # Return the converted classname in filename format
 
 def extract_method_name(class_name):
