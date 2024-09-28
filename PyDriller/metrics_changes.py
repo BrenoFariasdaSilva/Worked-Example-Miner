@@ -27,12 +27,12 @@ from code_metrics import get_directories_size_in_gb, verify_ck_metrics_directory
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
 MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
-NUMBER_OF_METRICS = 3 # The number of metrics
 DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
 SUBSTANTIAL_CHANGE_METRICS = ["CBO"] # The desired metrics to search for substantial changes
 METRICS_INDEXES = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
+NUMBER_OF_METRICS = len(METRICS_INDEXES.keys()) # The number of metrics
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
 WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
@@ -259,14 +259,13 @@ def get_ck_metrics_tuple(row):
 	Gets the metrics of the class or method.
 
 	:param row: The row of the csv file
-	:return: The metrics of the class or method
+	:return: The metrics of the class or method as a tuple
 	"""
-
-	cbo = float(row["cbo"]) # Get the cbo metric from the row as a float
-	rfc = float(row["rfc"]) # Get the rfc metric from the row as a float
-	wmc = float(row["wmc"]) # Get the wmc metric from the row as a float
-
-	return (cbo, wmc, rfc) # Return the metrics of the class or method
+	
+	# Use a list comprehension to extract metrics based on the indexes
+	metrics = tuple(float(row[metric.lower()]) for metric in METRICS_INDEXES.keys())
+	
+	return metrics # Return the metrics of the class or method as a tuple
 
 def get_method_invoked(row):
 	"""
@@ -900,11 +899,11 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 				writer = csv.writer(csvfile) # Create the csv writer
 				if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
 					unique_identifier = class_name # The unique identifier is the class name
-					writer.writerow(["Class", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "CBO", "WMC", "RFC", "Method Invocations"]) # Write the header to the csv file
+					writer.writerow(["Class", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", *[metric for metric in METRICS_INDEXES.keys()], "Methods Invoked Qty"]) # Write the header to the csv file
 				else: # If the PROCESS_CLASSES constant is set to False
 					unique_identifier = variable_attribute # The unique identifier is the method name
-					writer.writerow(["Method", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "CBO", "WMC", "RFC", "Methods Invoked Qty"]) # Write the header to the csv file
-				
+					writer.writerow(["Method", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", *[metric for metric in METRICS_INDEXES.keys()], "Methods Invoked Qty"]) # Write the header to the csv file
+
 				previous_metrics = None # Initialize to None for the first iteration
 				metrics_len = len(metrics) # Get the len of the metrics list
 
@@ -912,12 +911,21 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 					current_metrics = (metrics[i][0], metrics[i][1], metrics[i][2]) # Tuple of current metrics (CBO, WMC, RFC)
 					if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics): # Verify if the metrics tuple is different from the previous metrics tuple
 						commit_number, commit_hash = record["commit_hashes"][i].split("-") # Split the commit hash to get the commit number and commit hash
-						writer.writerow([unique_identifier, commit_number, commit_hash, record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], metrics[i][0], metrics[i][1], metrics[i][2], record["method_invoked"]]) # Write the unique identifier, the commit hash, code churn, lines added, lines deleted, and the metrics to the csv file
+						writer.writerow([unique_identifier, commit_number, commit_hash, record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], *tuple(metrics[i][index] for index in range(len(METRICS_INDEXES))), record["method_invoked"]]) # Write the unique identifier, the commit hash, code churn, lines added, lines deleted, and the metrics to the csv file
 					previous_metrics = current_metrics # Update previous metrics
 
 			run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if the class or method has had a substantial decrease in the metrics
 			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Perform linear regression and generate graphics for the metrics
 			progress_bar.update(1) # Update the progress bar
+
+def generate_metric_headers():
+	"""
+	Generates the headers for the metrics statistics.
+
+	:return: A list containing the headers for the metrics statistics
+	"""
+
+	return [f"{metric} {stat}" for metric in METRICS_INDEXES for stat in ["Min", "Max", "Avg", "Q3"]]
 
 def calculate_metric_statistics(metric_values):
 	"""
@@ -953,14 +961,13 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating statistics for method {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 
-	cbo_stats = calculate_metric_statistics(metrics_values[0]) # Calculate statistics for CBO
-	wmc_stats = calculate_metric_statistics(metrics_values[1]) # Calculate statistics for WMC
-	rfc_stats = calculate_metric_statistics(metrics_values[2]) # Calculate statistics for RFC
+	ck_metrics_stats_tuples = [calculate_metric_statistics(metrics_values[METRICS_INDEXES[metric]]) for metric in METRICS_INDEXES] # Calculate statistics for all defined metrics
+	flat_ck_metrics_stats = [stat for ck_metrics_stat in ck_metrics_stats_tuples for stat in ck_metrics_stat] # Flatten the list of tuples
 
 	churn_stats = calculate_metric_statistics(metrics["code_churns"]) # Calculate statistics for code churn
 	modified_files_stats = calculate_metric_statistics(metrics["modified_files_count"]) # Calculate statistics for modified files
 
-	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *cbo_stats, *wmc_stats, *rfc_stats, first_commit_hash, last_commit_hash, metrics["method_invoked"]]) # Write the metrics statistics to the CSV file
+	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *flat_ck_metrics_stats, first_commit_hash, last_commit_hash, metrics["method_invoked"]]) # Write the metrics statistics to the csv file
 
 def generate_metrics_track_record_statistics(repository_name, metrics_track_record):
 	"""
@@ -977,9 +984,9 @@ def generate_metrics_track_record_statistics(repository_name, metrics_track_reco
 	with open(unsorted_metrics_filename, "w") as csvfile: # Open the csv file in write mode
 		writer = csv.writer(csvfile) # Create the csv writer
 		if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-			writer.writerow(["Class", "Type", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Method Invocations"]) # Write the header to the csv file but using the "Type" in the second column
+			writer.writerow(["Class", "Type", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3"] + generate_metric_headers() + ["First Commit Hash", "Last Commit Hash", "Method Invocations"]) # Write the header to the csv file
 		else: # If the PROCESS_CLASSES constant is set to False
-			writer.writerow(["Class", "Method", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3", "CBO Min", "CBO Max", "CBO Avg", "CBO Q3", "WMC Min", "WMC Max", "WMC Avg", "WMC Q3", "RFC Min", "RFC Max", "RFC Avg", "RFC Q3", "First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"]) # Write the header to the csv file but using the "Method" in the second column
+			writer.writerow(["Class", "Method", "Changed", "Churn Min", "Churn Max", "Churn Avg", "Churn Q3", "Modified Files Min", "Modified Files Max", "Modified Files Avg", "Modified Files Q3"] + generate_metric_headers() + ["First Commit Hash", "Last Commit Hash", "Methods Invoked Qty"]) # Write the header to the csv file
 
 		with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Metrics Statistics{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
 			for identifier, metrics in metrics_track_record.items(): # For each identifier and metrics in the metrics_track_record dictionary
