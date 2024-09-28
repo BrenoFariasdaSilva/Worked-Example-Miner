@@ -644,7 +644,67 @@ def calculate_average_metrics(repo_path, total_commits, lines=None):
 
    return avg_code_churn, avg_files_modified # Return the average code churn and files modified
 
-def run_autometric(repo_url):
+def get_autometric_dir():
+   """
+   Returns the path to the AutoMetric directory.
+
+   :return: str - The path to the AutoMetric directory.
+   """
+
+   return START_PATH.replace("PyDriller", "AutoMetric")
+
+def build_command(repo_url, autometric_dir, github_token):
+   """
+   Builds the command to execute the AutoMetric script.
+
+   :param repo_url: str - The URL of the repository.
+   :param autometric_dir: str - The path to the AutoMetric directory.
+   :param github_token: str - The GitHub token.
+   :return: list - The command to execute.
+   """
+
+   return ["make", "-C", autometric_dir, f"args=--repo_urls {repo_url} --github_token {github_token}"]
+
+def execute_subprocess(cmd):
+   """
+   Executes the given command and returns the result.
+
+   :param cmd: list - The command to execute.
+   :return: CompletedProcess - The result of the command execution.
+   """
+
+   return subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+def get_output_file(repo_url, autometric_dir):
+   """
+   Gets the output file path based on the repository URL.
+
+   :param repo_url: str - The URL of the repository.
+   :param autometric_dir: str - The path to the AutoMetric directory.
+   :return: str - The output file path.
+   """
+
+   repo_owner, repo_name = repo_url.split("/")[-2:] # Get the repository owner and name
+   output_file = os.path.join(autometric_dir, f"outputs/{repo_owner}-{repo_name}.json") # Get the output file path
+   return output_file # Return the output file path
+
+def load_metrics(output_file):
+   """
+   Loads metrics from the output JSON file.
+
+   :param output_file: str - The path to the output JSON file.
+   :return: dict - The metrics loaded from the file.
+   """
+
+   try: # Try to load the metrics from the JSON file
+      with open(output_file, "r") as f: # Open the JSON file
+         metrics = json.load(f) # Load the metrics from the JSON file
+      return metrics[0] if metrics else {} # Return the metrics if they exist
+   except (FileNotFoundError, json.JSONDecodeError) as e: # Handle the exception if the file is not found or there's an error decoding the JSON file
+      print(f"{BackgroundColors.RED}Error loading metrics from {output_file}: {e}{Style.RESET_ALL}")
+      return {} # Return an empty dictionary
+
+def get_autometric_metrics(repo_url):
    """
    Executes the AutoMetric script to gather metrics for a given repository URL.
 
@@ -652,32 +712,20 @@ def run_autometric(repo_url):
    :return: dict - The metrics gathered by the AutoMetric script.
    """
 
-   autometric_dir = START_PATH.replace("PyDriller", "AutoMetric") # The path to the AutoMetric directory
-   githubToken = get_env_token() # Get the GitHub token from the .env file
+   github_token = get_env_token() # Get the GitHub token from the .env file
+   cmd = build_command(repo_url, github_token) # Build the command
 
-   cmd = ["make", "-C", autometric_dir, f"args=--repo_urls {repo_url} --github_token {githubToken}"] # Build the command
+   result = execute_subprocess(cmd) # Run the command in a subprocess
+   
+   repo_metrics = {} # Initialize the AutoMetric metrics dictionary for the repository
 
-   # Execute AutoMetric script and get metrics
-   result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) # Run the command
-
-   # get the repo owner and name
-   repo_owner, repo_name = repo_url.split("/")[-2:]
-
-   # Check the command's output
    if result.returncode == 0: # If the script ran successfully
-      output_file = os.path.join(autometric_dir, f"outputs/{repo_owner}-{repo_name}.json")
-      
-      # Read and load metrics from the output JSON file
-      try:
-         with open(output_file, "r") as f:
-            metrics = json.load(f) # Load the metrics from the JSON file
-         return metrics[0] if metrics else {} # Return the metrics if they exist
-      except (FileNotFoundError, json.JSONDecodeError) as e:
-         print(f"{BackgroundColors.RED}Error loading metrics from output.json: {e}{Style.RESET_ALL}")
-         return {}
-   else: # If the script did not run successfully
+      output_file = get_output_file(repo_url) # Get the output file path
+      repo_metrics = load_metrics(output_file) # Read and return metrics
+   else:  # If the script did not run successfully
       print(f"{BackgroundColors.RED}Error while running AutoMetric script: {result.stderr}{Style.RESET_ALL}")
-      return {} # Return an empty dictionary
+
+   return repo_metrics # Return the AutoMetric metrics for the repository
 
 def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count):
    """
@@ -734,7 +782,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
       if commits_count > MINIMUM_COMMITS: # If the number of commits is greater than the minimum
          avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
          if avg_code_churn < MAXIMUM_AVG_CODE_CHURN and avg_files_modified < MAXIMUM_AVG_FILES_MODIFIED: # If the average code churn and files modified are within the limits
-            autometric_metrics = run_autometric(repo["html_url"]) # Get metrics from AutoMetric and integrate into repo_dict
+            autometric_metrics = get_autometric_metrics(repo["html_url"]) # Get metrics from AutoMetric and integrate into repo_dict
             filled_repo_dict = fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
             return filled_repo_dict # Return the filled repository dictionary
 
