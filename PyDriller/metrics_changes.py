@@ -32,7 +32,7 @@ DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
 SUBSTANTIAL_CHANGE_METRICS = ["CBO"] # The desired metrics to search for substantial changes
-METRICS_POSITION = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
+METRICS_INDEXES = {"CBO": 0, "WMC": 1, "RFC": 2} # The position of the metrics in the metrics list
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
 WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
@@ -819,7 +819,7 @@ def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribu
 	:return: None
 	"""
 
-	for metric_name, metric_position in METRICS_POSITION.items(): # Loop through the metrics_position dictionary
+	for metric_name, metric_position in METRICS_INDEXES.items(): # Loop through the METRICS_INDEXES dictionary
 		if metric_name in SUBSTANTIAL_CHANGE_METRICS: # If the metric name is in the SUBSTANTIAL_CHANGE_METRICS list
 			if metrics: # If the metrics list is not empty
 				metrics_values = [metric[metric_position] for metric in metrics] # Extract the values for the current metric based on its position in the tuple
@@ -848,11 +848,11 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		verbose_output(true_string=f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
 		return
 
-	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_POSITION): # Verify for invalid values in the metrics
+	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_INDEXES): # Verify for invalid values in the metrics
 		verbose_output(true_string=f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
 		return # Return if the metrics structure is not as expected
 	
-	for metric_name, metric_position in METRICS_POSITION.items(): # Loop through the metrics_position dictionary
+	for metric_name, metric_position in METRICS_INDEXES.items(): # Loop through the METRICS_INDEXES dictionary
 		commit_number = np.arange(metrics_array.shape[0]) # Create the commit number array
 		if not commit_number.any(): # If the commit number is empty
 			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
