@@ -227,7 +227,7 @@ To run this script with the desired settings, you need to modify the following c
 ##### Workflow
 
 1. As for every file in this project, the first thing it will do is verify if you don't have whitespaces in the path of the project; if you have, it will not work.  
-2. Now, the main function will call the `verify_env_file()` function, which will verify if the `.env` file exists in the path defined in the `ENV_PATH` constant, as well as if the environment variable defined in the `ENV_VARIABLE` constant is set. If it isn't, it will stop the code execution.
+2. Now, the main function will call the `get_env_token()` function, which will verify if the `.env` file exists in the path defined in the `ENV_PATH` constant, as well as if the environment variable defined in the `ENV_VARIABLE` constant is set. If it isn't, it will stop the code execution.
 3. Next, the main function calls the `fetch_repositories(token)` function, which will fetch the repositories from the GitHub API. This function will return a list of repositories that have the minimum number of stars defined in the `MINIMUM_STARS` constant and don't have any of the keywords defined in the `EXCLUDE_REPOSITORIES_KEYWORDS` constant in the repository name. This function calls the following functions:
    1. `build_headers(token)`: This function builds the headers for the GitHub API request, including the token for authentication.
    2. `build_url(query)`: This function builds the URL for the GitHub API request, including the query parameters.

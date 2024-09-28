@@ -340,7 +340,7 @@ def setup_submodule(repo_path):
       verbose_output(true_string=f"{BackgroundColors.GREEN}The repository path exists. Updating the submodule repository...{Style.RESET_ALL}")
       return update_submodule(repo_path) # Update the submodule
 
-def verify_env_file(env_path=ENV_PATH, key=ENV_VARIABLE):
+def get_env_token(env_path=ENV_PATH, key=ENV_VARIABLE):
    """
    Verify if the .env file exists and if the desired key is present.
 
@@ -653,7 +653,7 @@ def run_autometric(repo_url):
    """
 
    autometric_dir = START_PATH.replace("PyDriller", "AutoMetric") # The path to the AutoMetric directory
-   githubToken = verify_env_file() # Get the GitHub token from the .env file
+   githubToken = get_env_token() # Get the GitHub token from the .env file
 
    cmd = ["make", "-C", autometric_dir, f"args=--repo_urls {repo_url} --github_token {githubToken}"] # Build the command
 
@@ -1400,7 +1400,7 @@ def main():
    if not setup_submodule(f"{START_PATH[:START_PATH.rfind('/')]}/"): # Setup the submodule
       return # Return if the submodule setup fails
 
-   token = verify_env_file() # Verify the .env file and get the token
+   token = get_env_token() # Verify the .env file and get the token
 
    repositories = fetch_repositories(token) # Fetch the repositories
    total_repo_count = len(repositories) # Get the total number of repositories
