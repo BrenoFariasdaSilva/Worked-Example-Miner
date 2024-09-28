@@ -280,7 +280,7 @@ def init_submodule(repo_path):
    """
 
    try: # Try to run the git submodule update --init --recursive command
-      subprocess.run(["git", "-C", repo_path, "submodule", "update", "--init", "--recursive"], check=True) # Run the git submodule update --init --recursive command
+      subprocess.run(["git", "-C", repo_path, "submodule", "update", "--init", "--recursive"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True) # Run the git submodule update --init --recursive command
       verbose_output(true_string=f"{BackgroundColors.GREEN}Submodule initialized successfully.{Style.RESET_ALL}")
       return True # Return True if the submodule was initialized successfully
    except subprocess.CalledProcessError as e: # Handle the exception if the command fails
@@ -296,7 +296,7 @@ def update_submodule(repo_path):
    """
 
    try: # Try to run the git submodule update --recursive command
-      subprocess.run(["git", "-C", repo_path, "submodule", "update", "--recursive"], check=True) # Run the git submodule update --recursive command
+      subprocess.run(["git", "-C", repo_path, "submodule", "update", "--recursive"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True) # Run the git submodule update --recursive command
       verbose_output(true_string=f"{BackgroundColors.GREEN}Submodule updated successfully.{Style.RESET_ALL}")
       return True # Return True if the submodule was updated successfully
    except subprocess.CalledProcessError as e: # Handle the exception if the command fails
