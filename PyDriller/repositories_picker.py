@@ -281,6 +281,18 @@ def get_directory_file_list(dir_path):
 
    return [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))] # Return the list of files in the directory
 
+def is_directory_empty(path):
+   """
+   Checks if a directory is empty.
+
+   :param path: str - The path to the directory.
+   :return: bool - True if the directory is empty, False otherwise.
+   """
+
+   dir_files = get_directory_file_list(path) # Get the list of files in the directory
+
+   return not dir_files # Return True if the directory is empty, False otherwise
+
 def init_submodule(repo_path):
    """
    Initializes the submodule for a given repository.
