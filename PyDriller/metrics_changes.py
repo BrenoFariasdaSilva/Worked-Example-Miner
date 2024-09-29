@@ -681,6 +681,17 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 
 	return csv_filename # Return the path to the substantial decrease file
 
+def extract_commit_data(commit_hashes, index):
+	"""
+	Extracts commit data from commit hashes.
+
+	:param commit_hashes: The list of commit hashes
+	:param index: The current index in the commit hashes list
+	:return: The extracted commit data (index, previous commit number, previous commit hash, current commit number, current commit hash)
+	"""
+
+	return [index, commit_hashes[index - 1].split("-")[0], commit_hashes[index - 1].split("-")[1], commit_hashes[index].split("-")[0], commit_hashes[index].split("-")[1]]
+
 def verify_refactoring_file(refactoring_file_path):
 	"""
 	Validates if the refactoring file was created successfully.
@@ -832,7 +843,7 @@ def find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository
 		current_percentual_variation = round((metric_values[i - 1] - metric_values[i]) / metric_values[i - 1], 3) # Calculate the current percentual variation
 
 		if current_percentual_variation > DESIRED_DECREASE and current_percentual_variation > biggest_change_data[2]: # If the current percentual variation is greater than the desired decrease and the biggest change
-			commit_data = [i, commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1], commit_hashes[i].split("-")[0], commit_hashes[i].split("-")[1]]
+			commit_data = extract_commit_data(commit_hashes, i) # Extract the commit data
 			refactorings_info = get_refactoring_info(repository_name, commit_data[1].split("-")[0], commit_data[1].split("-")[1], class_name) # Get the refactoring info
 
 			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list): # Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
