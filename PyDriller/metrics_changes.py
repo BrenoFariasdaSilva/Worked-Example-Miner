@@ -392,6 +392,26 @@ def extract_method_name(class_name):
 		return class_name[class_name.find("$") + 1:class_name.find(".", class_name.find("$"))] # Extract the method name.
 	return None # Return None if no method is found.
 
+def count_lines_within_method_block(line, lines_added, lines_deleted):
+	"""
+	Count the lines added and deleted based on the diff line content.
+
+	:param line: The current line from the diff file.
+	:param lines_added: The current count of lines added.
+	:param lines_deleted: The current count of lines deleted.
+	:return: Updated counts of lines added and deleted.
+	"""
+
+	# Count added lines (starting with "+", excluding diff file headers)
+	if line.startswith("+") and not line.startswith("+++"):
+		lines_added += 1 # Increment the lines added
+
+	# Count deleted lines (starting with "-", excluding diff file headers)
+	elif line.startswith("-") and not line.startswith("---"):
+		lines_deleted += 1 # Increment the lines deleted
+
+	return lines_added, lines_deleted # Return updated counts
+
 def get_code_churn_attributes(diff_file_path, class_name):
 	"""
 	Get the code churn attributes (lines added and deleted) from the diff file path.
@@ -426,12 +446,8 @@ def get_code_churn_attributes(diff_file_path, class_name):
 
 				if method_name and not in_method_block: # Only count changes inside the method block if method_name is specified
 					continue # Skip lines outside the method
-
-				if line.startswith("+") and not line.startswith("+++"): # Count added lines (starting with "+", excluding diff file headers).
-					lines_added += 1 # Increment the lines added.
-
-				elif line.startswith("-") and not line.startswith("---"): # Count deleted lines (starting with "-", excluding diff file headers).
-					lines_deleted += 1 # Increment the lines deleted.
+				
+				lines_added, lines_deleted = count_lines_within_method_block(line, lines_added, lines_deleted) # Count lines within the method block
 
 		return lines_added, lines_deleted # Return the tuple containing lines added and lines deleted.
 
