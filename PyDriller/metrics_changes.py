@@ -848,7 +848,7 @@ def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribu
 		if metric_name not in METRICS_INDEXES.keys(): # If the metric name is not in the keys of the METRICS_INDEXES dictionary
 			print(f"{BackgroundColors.RED}The metric {BackgroundColors.CYAN}{metric_name}{BackgroundColors.RED} is not in the METRICS_INDEXES dictionary!{Style.RESET_ALL}") # Print an error message
 			continue # Jump to the next iteration of the loop
-		else: # If the metric name is in the METRICS_INDEXES dictionary
+		if metrics: # If the metrics list is not empty
 			verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name, iteration) # Verify if there has been a substantial decrease in the metrics
 
 def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
