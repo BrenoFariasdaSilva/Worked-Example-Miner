@@ -656,7 +656,7 @@ def found_ignore_keywords(source, keywords, entity_type):
 		return True # Return True if the source contains any of the ignore keywords
 	return False # Return False if the source does not contain any of the ignore keywords
 
-def add_csv_header(csv_filename, metric_name):
+def add_substantial_decrease_csv_header (csv_filename, metric_name):
 	""""
 	Adds the header to the csv file, if it does not exist.
 
@@ -690,7 +690,7 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 	csv_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
 
 	if verify_filepath_exists(csv_filename) and iteration == 1: # Verify if the CSV file exists and if it's the first iteration
-		add_csv_header(csv_filename, metric_name) # Add the header to the CSV file
+		add_substantial_decrease_csv_header (csv_filename, metric_name) # Add the header to the CSV file
 
 	return csv_filename # Return the path to the substantial decrease file
 
