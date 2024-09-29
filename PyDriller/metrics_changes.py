@@ -928,9 +928,9 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
 		add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attribute, biggest_change_data, metrics_values, commit_data, code_churns, lines_added, lines_deleted, modified_files, occurrences) # Write the substantial decrease to the CSV file
 
-def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration):
+def verify_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration):
 	"""
-	Verifies if there has been a substantial decrease in the metrics for a given class or method.
+	Verifies if there has been a substantial decrease in the metrics for each metric.
 
 	:param metrics: A list of metric tuples (CBO, WMC, RFC)
 	:param class_name: The name of the class being analyzed
@@ -948,9 +948,9 @@ def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribu
 		if metrics: # If the metrics list is not empty
 			verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name, iteration) # Verify if there has been a substantial decrease in the metrics
 
-def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
+def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
 	"""
-	Perform linear regression on the given metrics and save the plot to a PNG file.
+	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
 
 	:param metrics: A list containing the metrics values for linear regression
 	:param class_name: The class name of the current linear regression
@@ -1024,8 +1024,8 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 
 			if metrics: # If the metrics list is not empty
 				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Setup the writing of the metrics evolution to a CSV file
-				run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
-				linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
+				verify_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
+				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
 			
 			progress_bar.update(1) # Update the progress bar
 
