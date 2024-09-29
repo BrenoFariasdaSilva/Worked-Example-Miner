@@ -591,6 +591,53 @@ def get_clean_id(id):
 	else: # If the id does not contain slashes, simply return the id
 		return id # Return the id
 
+def write_metrics_track_record_to_txt(filename, repository_name, identifier, metrics):
+	"""
+	Writes the metrics_track_record to a txt file.
+
+	:param repository_name: The name of the repository
+	:param identifier: The identifier of the class or method
+	:param metrics: A dictionary containing the metrics of the identifier
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
+
+	with open(filename, "a") as file: # Open the txt file and write the metrics_track_record to it
+		file.write(f"{identifier}: \n") # Write the key
+		file.write(f"\tMetrics: {metrics['metrics']}\n") # Write the metrics
+		file.write(f"\tCommit Hashes: {metrics['commit_hashes']}\n") # Write the commit hashes
+		file.write(f"\tChanged: {metrics['changed']}\n") # Write the changed value
+		file.write(f"\tCode Churns: {metrics['code_churns']}\n") # Write the code churns value
+		file.write(f"\tLines Added: {metrics['lines_added']}\n") # Write the lines added
+		file.write(f"\tLines Deleted: {metrics['lines_deleted']}\n") # Write the lines deleted
+		file.write(f"\tModified Files Count: {metrics['modified_files_count']}\n") # Write the modified files count
+		file.write(f"\t{'Method Invocations' if PROCESS_CLASSES else 'Methods Invoked Qty'}: {metrics['method_invoked']}\n") # Write the 'Method Invocations' if PROCESS_CLASS, else 'Methods Invoked Qty' value
+		file.write(f"\n") # Write a new line
+
+def setup_write_metrics_track_record_to_txt(repository_name, identifier, metrics, iteration):
+	"""
+	Sets up the writing of the metrics track record to a txt file.
+
+	:param repository_name: The name of the repository
+	:param identifier: The identifier of the class or method
+	:param metrics: A list containing the metrics values for linear regression
+	:param iteration: The current iteration of the analysis
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the writing of the metrics track record to a txt file for {identifier.split(' ')[0]} {identifier.split(' ')[1]} in the {repository_name} repository...{Style.RESET_ALL}")
+
+	relative_metrics_data_directory_path = f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{identifier.split(' ')[0]}/{identifier.split(' ')[1]}"
+	full_metrics_data_directory_path = f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{identifier.split(' ')[0]}/{identifier.split(' ')[1]}"
+
+	create_directory(full_metrics_data_directory_path, relative_metrics_data_directory_path) # Create the directory where the metrics track record will be stored
+
+	filename = f"{full_metrics_data_directory_path}/{CLASSES_OR_METHODS}_track_record.txt" # The filename of the metrics track record
+	os.remove(filename) if (verify_filepath_exists(filename) and iteration == 1) else None # Remove the file if it exists
+
+	write_metrics_track_record_to_txt(filename, repository_name, identifier, metrics) # Write the metrics track record to a txt file
+
 def write_metrics_to_csv(repository_name, filename, unique_identifier, metrics, record):
 	"""
 	Writes the metrics for a specific class or method to a CSV file.
@@ -1105,6 +1152,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 
 			if metrics: # If the metrics list is not empty
+				setup_write_metrics_track_record_to_txt(repository_name, identifier, metrics, record, iteration) if RUN_FUNCTIONS["write_metrics_track_record_to_txt"] else None # Setup the writing of the metrics track record to a txt file
 				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Setup the writing of the metrics evolution to a CSV file
 				setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
 				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
@@ -1357,7 +1405,6 @@ def process_repository(repository_name, repository_url):
 	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record) # Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
 
 	process_metrics_track_record(repository_name, sorted_metrics_track_record) # Process the metrics track record to generate outputs such as linear regression graphics, metrics evolution data, and verification of substantial metric decreases
-	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["write_metrics_track_record_to_txt"] else None # Write the metrics_track_record to a txt file
 	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["generate_metrics_track_record_statistics"] else None # Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 
 	sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
