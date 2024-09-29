@@ -38,12 +38,12 @@ DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Pu
 WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
-	"add_metrics_track_record_statistics": True, # Generate the metrics track record statistics
-	"linear_regression_graphics": True, # Run the linear regression graphics
-	"sort_csv_by_percentual_variation": True, # Sort the csv file by the percentual variation
-	"verify_substantial_metric_decrease": True, # Verify the substantial metric decrease
-	"write_metrics_evolution_to_csv": True, # Write the metrics evolution to a csv file
-	"write_metrics_track_record_to_txt": True, # Write the metrics track record to a txt file
+	"Linear Regression": True, # Run the linear regression graphics
+	"Metrics Decrease": True, # Verify the substantial metric decrease
+	"Metrics Evolution": True, # Write the metrics evolution to a csv file
+	"Metrics Statistics": True, # Generate the metrics track record statistics
+	"Metrics Track Record": True, # Write the metrics track record to a txt file
+	"Sort by Percentual Variation": True, # Sort the csv file by the percentual variation
 }
 
 # Constants:
@@ -1264,11 +1264,11 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 
 			if metrics: # If the metrics list is not empty
-				setup_write_metrics_track_record_to_txt(repository_name, identifier, metrics, record, iteration) if RUN_FUNCTIONS["write_metrics_track_record_to_txt"] else None # Setup the writing of the metrics track record to a txt file
-				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Setup the writing of the metrics evolution to a CSV file
-				setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
-				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
-				setup_write_metrics_statistics_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_statistics_to_csv"] else None # Setup the writing of the metrics statistics to a CSV file
+				setup_write_metrics_track_record_to_txt(repository_name, identifier, metrics, record, iteration) if RUN_FUNCTIONS["Metrics Track Record"] else None # Setup the writing of the metrics track record to a txt file
+				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Evolution"] else None # Setup the writing of the metrics evolution to a CSV file
+				setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["Metrics Decrease"] else None # Verify if substantial decrease
+				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["Linear Regression"] else None # Generate linear regression graphics
+				setup_write_metrics_statistics_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Statistics"] else None # Setup the writing of the metrics statistics to a CSV file
 			
 			progress_bar.update(1) # Update the progress bar
 
@@ -1415,7 +1415,7 @@ def process_repository(repository_name, repository_url):
 	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The old csv file path
 	os.remove(old_csv_file_path) # Remove the old csv file
 
-	sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["sort_csv_by_percentual_variation"] else None# Sort the interesting changes csv file by the percentual variation of the metric
+	sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["Sort by Percentual Variation"] else None # Sort the interesting changes csv file by the percentual variation of the metric
 
 	repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
