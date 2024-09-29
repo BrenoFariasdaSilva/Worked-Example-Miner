@@ -862,6 +862,9 @@ def find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository
 			commit_data = extract_commit_data(commit_hashes, i) # Extract the commit data
 			refactorings_info = get_refactoring_info(repository_name, commit_data[1].split("-")[0], commit_data[1].split("-")[1], class_name) # Get the refactoring info
 
+			if not refactorings_info: # If the refactorings info is empty
+				continue # Skip the current iteration
+
 			if (DESIRED_REFACTORINGS_ONLY and is_desired_refactoring(refactorings_info)) or not DESIRED_REFACTORINGS_ONLY: # If the refactoring is a desired refactoring
 				refactorings_summary = convert_refactorings_dictionary_to_string(refactorings_info) # Convert the refactorings dictionary to a string
 				biggest_change_data = [metric_values[i - 1], metric_values[i], current_percentual_variation, refactorings_summary.replace("'", "")] # Update the biggest change
