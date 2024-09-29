@@ -964,6 +964,20 @@ def convert_metrics_to_array(metrics, class_name, variable_attribute):
 		verbose_output(true_string=f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
 		return None # Return None if an exception occurs
 
+def validate_metrics_structure(metrics_array, class_name, variable_attribute):
+	"""
+	Validate if the metrics array has the correct structure.
+	
+	:param metrics_array: A NumPy array containing the metrics values
+	:param class_name: The class name of the current linear regression
+	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
+	"""
+
+	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_INDEXES): # If the metrics array dimensions are not 2 (commit metrics and metrics) or the number of columns is less than the number of metrics
+		verbose_output(true_string=f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
+		return False # Return False if the metrics structure is not as expected
+	return True # Return True if the metrics structure is as expected
+
 def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
@@ -979,9 +993,8 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 	
 	metrics_array = convert_metrics_to_array(metrics, class_name, variable_attribute) # Convert the metrics list to a NumPy array
 
-	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_INDEXES): # Verify for invalid values in the metrics
-		verbose_output(true_string=f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
-		return # Return if the metrics structure is not as expected
+	if metrics_array is None or not validate_metrics_structure(metrics_array, class_name, variable_attribute): # If the metrics array is None or the metrics structure is not valid,
+		return # Return if the metrics array is None or the metrics structure is not valid
 	
 	for metric_name, metric_position in METRICS_INDEXES.items(): # Loop through the METRICS_INDEXES dictionary
 		commit_number = np.arange(metrics_array.shape[0]) # Create the commit number array
