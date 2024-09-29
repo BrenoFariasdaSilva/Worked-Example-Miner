@@ -1002,6 +1002,19 @@ def has_sufficient_data(commit_number, metric_values):
 		return False # Return False if there are less than 2 data points for linear regression
 	return True # Return True if there are enough data points for linear regression
 
+def perform_linear_regression(commit_number, metric_values):
+	"""
+	Perform linear regression and return the predicted linear fit.
+
+	:param commit_number: A NumPy array containing the commit numbers
+	:param metric_values: A NumPy array containing the metric values
+	:return: A NumPy array containing the predicted linear fit
+	"""
+
+	model = LinearRegression() # Create a Linear Regression model
+	model.fit(commit_number.reshape(-1, 1), metric_values) # Fit the model to the data
+	return model.predict(commit_number.reshape(-1, 1)) # Return the predicted linear fit
+
 def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
@@ -1027,10 +1040,7 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 		if not commit_numbers.any() or not has_sufficient_data(commit_numbers, metric_values): # If the commit number array is empty or there are not enough data points for linear regression
 			continue # Jump to the next iteration of the loop
 
-		# Perform linear regression using Scikit-Learn
-		model = LinearRegression() # Create the linear regression model
-		model.fit(commit_numbers.reshape(-1, 1), metric_values) # Fit the model to the data
-		linear_fit = model.predict(commit_numbers.reshape(-1, 1)) # Perform the linear fit
+		linear_fit = perform_linear_regression(commit_numbers, metric_values) # Perform linear regression and get the predicted linear fit
 
 		# Create the plot
 		plt.figure(figsize=(10, 6)) # Set the figure size
