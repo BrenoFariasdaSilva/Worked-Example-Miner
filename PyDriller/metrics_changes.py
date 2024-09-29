@@ -989,6 +989,19 @@ def extract_column_values_from_array(array, column_position):
 
 	return array[:, column_position] # Return the values of the specified column
 
+def has_sufficient_data(commit_number, metric_values):
+	"""
+	Verify if there are enough data points for linear regression.
+
+	:param commit_number: A NumPy array containing the commit numbers
+	:param metric_values: A NumPy array containing the metric values
+	:return: True if there are enough data points for linear regression, False otherwise
+	"""
+
+	if len(commit_number) < 2 or len(metric_values) < 2: # If there are less than 2 data points for linear regression
+		return False # Return False if there are less than 2 data points for linear regression
+	return True # Return True if there are enough data points for linear regression
+
 def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
@@ -1011,12 +1024,9 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 		commit_numbers = np.arange(metrics_array.shape[0]) # Create the commit numbers array
 		metric_values = extract_column_values_from_array(metrics_array, metric_position) # Extract the metric values from the array for the given metric position
 
-		if not commit_numbers.any(): # If the commit number is empty
-			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
+		if not commit_numbers.any() or not has_sufficient_data(commit_numbers, metric_values): # If the commit number array is empty or there are not enough data points for linear regression
+			continue # Jump to the next iteration of the loop
 
-		if len(commit_numbers) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
-			return # Return if there are not enough data points for regression
-		
 		# Perform linear regression using Scikit-Learn
 		model = LinearRegression() # Create the linear regression model
 		model.fit(commit_numbers.reshape(-1, 1), metric_values) # Fit the model to the data
