@@ -334,6 +334,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 			"modified_files_count": [], # The modified files count list
 			"method_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
 		}
+	
 	metrics_changes = metrics_track_record[identifier]["metrics"] # Get the metrics list
 	commit_hashes = metrics_track_record[identifier]["commit_hashes"] # Get the commit hashes list
 
@@ -512,7 +513,7 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number from the file path
 			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
 
-			if was_file_modified(commit_modified_files_dict, commit_hash, row): # If the file was modified
+			if was_file_modified(commit_modified_files_dict, commit_hash, row): # If the file was modified, then update the metrics track record
 				update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, method_invoked) # Update the metrics track record
 				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
 				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
@@ -543,18 +544,9 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 			for dir in subdirs: # For each subdirectory in the directories
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 					if file == CK_CSV_FILE: # If the file is the desired csv file
-						relative_file_path = os.path.join(dir, file) # Get the relative path to the csv file
-						file_path = os.path.join(root, relative_file_path) # Get the path to the csv file
-						process_csv_file(commit_modified_files_dict, file_path, metrics_track_record) # Process the csv file
+						process_csv_file(commit_modified_files_dict, os.path.join(root, os.path.join(dir, file)), metrics_track_record) # Process the csv file
 						file_count += 1 # Increment the file count
-
-						if progress_bar is None: # If the progress bar is not initialized
-							progress_bar = tqdm(total=file_count) # Initialize the progress bar
-						else:
-							progress_bar.update(1) # Update the progress bar
-
-	if progress_bar is not None: # If the progress bar is not None, then close it
-		progress_bar.close() # Close the progress bar
+						progress_bar = tqdm(total=file_count) if progress_bar is None else progress_bar.update(1) # Update the progress bar
 
 	return metrics_track_record # Return the method metrics, which is a dictionary containing the metrics of each method
 
