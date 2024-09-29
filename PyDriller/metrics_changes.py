@@ -48,7 +48,6 @@ RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective bo
 
 # Constants:
 PROCESS_CLASSES = True # If True, then the classes will be processed, otherwise the methods will be processed
-FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = True # If True, then it is the first run of the program
 
 # Extensions:
 PNG_FILE_EXTENSION = ".png" # The extension of the PNG files
@@ -804,14 +803,8 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/" # The folder path
 	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
 
-	global FIRST_SUBSTANTIAL_CHANGE_VERIFICATION # Declare that we're using the global variable
-	
-	if FIRST_SUBSTANTIAL_CHANGE_VERIFICATION and verify_filepath_exists(csv_filename): # Verify if it's the first run and if the CSV file already exists
-		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False # Update the flag after handling the first run
-		os.remove(csv_filename) # Remove the CSV file if it exists
-
-	if verify_filepath_exists(csv_filename) and iteration == 1: # Erase the CSV file if it exists and it's the first iteration
-		add_csv_header(csv_filename, metric_name) # Add the header to the csv file
+	if verify_filepath_exists(csv_filename) and iteration == 1: # Verify if the CSV file exists and if it's the first iteration
+		add_csv_header(csv_filename, metric_name) # Add the header to the CSV file
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = ["", "", "", ""] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
