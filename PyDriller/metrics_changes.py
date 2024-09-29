@@ -868,6 +868,29 @@ def find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository
 
 	return biggest_change_data, commit_data # Return the biggest change and the corresponding commit data
 
+def add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attribute, biggest_change_data, metrics_values, commit_data, code_churns, lines_added, lines_deleted, modified_files, occurrences):
+	"""
+	Writes the substantial decrease to the CSV file.
+
+	:param csv_filename: The name of the csv file
+	:param class_name: The class name
+	:param raw_variable_attribute: The raw variable attribute (class type or method name)
+	:param biggest_change_data: The information of the biggest change in the metrics 
+	:param metrics_values: A list of metrics values
+	:param commit_data: The commit data
+	:param code_churns: The list of code churn values
+	:param lines_added: The list of lines added
+	:param lines_deleted: The list of lines deleted
+	:param modified_files: The list of modified files
+	:param occurrences: The occurrences counter
+	:return: None
+	"""
+
+	with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
+		writer = csv.writer(csvfile) # Create the csv writer
+		index = commit_data[0] # Get the metric position
+		writer.writerow([class_name, raw_variable_attribute] + biggest_change_data[:2] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}"] + [metrics_values[index][metric] for metric in METRICS_INDEXES.keys()] + [code_churns[index], lines_added[index], lines_deleted[index], modified_files[index], occurrences, biggest_change_data[3]]) # Write the row to the csv file
+
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name, iteration):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
@@ -900,10 +923,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	biggest_change_data, commit_data = find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository_name, class_name) # Find the biggest decrease in metrics values and corresponding commit data
 
 	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
-		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
-			writer = csv.writer(csvfile) # Create the csv writer
-			index = commit_data[0] # Get the index of the biggest change
-			writer.writerow([class_name, raw_variable_attribute] + biggest_change_data[:2] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}"] + [metrics_values[index][metric] for metric in METRICS_INDEXES.keys()] + [code_churns[index], lines_added[index], lines_deleted[index], modified_files[index], occurrences, biggest_change_data[3]]) # Write the row to the csv file
+		add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attribute, biggest_change_data, metrics_values, commit_data, code_churns, lines_added, lines_deleted, modified_files, occurrences) # Write the substantial decrease to the CSV file
 
 def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration):
 	"""
