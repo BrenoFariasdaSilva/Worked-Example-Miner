@@ -701,6 +701,30 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 		print(f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
 		return None # Return None
 
+def process_refactorings(commit, class_name, refactorings_by_filepath):
+	"""
+	Process the refactorings from a commit and update the refactoring types by file path.
+
+	:param commit: The commit data containing refactorings.
+	:param class_name: The class name to search for in file paths.
+	:param refactorings_by_filepath: The dictionary holding file paths and their corresponding refactoring types.
+	:return: Updated refactorings_by_filepath dictionary.
+	"""
+
+	for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
+		for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Combine and loop through both left and right side locations
+			simplified_class_name = class_name.split("$")[0].replace(".", "/") # Simplify the class name and adapt it to the path format
+			if simplified_class_name in location["filePath"]: # If the class name is in the file path
+				if location["filePath"] not in refactorings_by_filepath: # If the file path is already in the dictionary, append the refactoring type to its list
+					refactorings_by_filepath[location["filePath"]] = {} # Initialize the dictionary for the file path
+				refactoring_type = refactoring["type"] # Get the refactoring type
+				if refactoring_type not in refactorings_by_filepath[location["filePath"]]: # If the refactoring type is not in the dictionary, add it
+					refactorings_by_filepath[location["filePath"]][refactoring_type] = 0 # Initialize the refactoring type counter
+				refactorings_by_filepath[location["filePath"]][refactoring_type] += 1 # Increment the refactoring type counter
+				verbose_output(true_string=f"Refactoring: {json.dumps(refactoring, indent=4)}") # Print the refactoring data
+
+	return refactorings_by_filepath # Return the updated dictionary
+
 def get_refactoring_info(repository_name, commit_number, commit_hash, class_name):
 	"""
 	Gets specific information about the refactorings of the commit hash and class name from RefactoringMiner.
@@ -725,17 +749,7 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 		data = json.load(file) # Load the JSON data
 		for commit in data["commits"]: # Loop through the refactorings in the data
 			if commit["sha1"] == commit_hash: # Verify if the commit hash matches the specified one
-				for refactoring in commit["refactorings"]: # Loop through the refactorings in the commit
-					for location in refactoring["leftSideLocations"] + refactoring["rightSideLocations"]: # Combine and loop through both left and right side locations
-						simplified_class_name = class_name.split("$")[0].replace(".", "/") # Simplify the class name and adapt it to the path format
-						if simplified_class_name in location["filePath"]: # If the class name is in the file path
-							if location["filePath"] not in refactorings_by_filepath: # If the file path is already in the dictionary, append the refactoring type to its list
-								refactorings_by_filepath[location["filePath"]] = {} # Initialize the dictionary for the file path
-							refactoring_type = refactoring["type"] # Get the refactoring type
-							if refactoring_type not in refactorings_by_filepath[location["filePath"]]: # If the refactoring type is not in the dictionary, add it
-								refactorings_by_filepath[location["filePath"]][refactoring_type] = 0 # Initialize the refactoring type counter
-							refactorings_by_filepath[location["filePath"]][refactoring_type] += 1 # Increment the refactoring type counter
-							verbose_output(true_string=f"Refactoring: {json.dumps(refactoring, indent=4)}") # Print the refactoring data
+				process_refactorings(commit, class_name, refactorings_by_filepath) # Process the refactorings for the commit
 
 	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types and occurrences
 
