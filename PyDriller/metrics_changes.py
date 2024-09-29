@@ -1022,9 +1022,10 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 
-			setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Setup the writing of the metrics evolution to a CSV file
-			run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
-			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
+			if metrics: # If the metrics list is not empty
+				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Setup the writing of the metrics evolution to a CSV file
+				run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
+				linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
 			
 			progress_bar.update(1) # Update the progress bar
 
