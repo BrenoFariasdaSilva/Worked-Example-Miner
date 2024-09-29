@@ -626,6 +626,23 @@ def setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_a
 
 	write_metrics_to_csv(repository_name, metrics_filename, class_name if PROCESS_CLASSES else variable_attribute, metrics, record) # Call the new auxiliary function
 
+def found_ignore_keywords(source, keywords, entity_type):
+	"""
+	Verifies if the source of the specified entity type contains any of the ignore keywords.
+
+	:param source: The source of the entity
+	:param keywords: The ignore keywords
+	:param entity_type: The type of the entity
+	:return: True if the source contains any of the ignore keywords, False otherwise
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the class name or variable attribute contains any of the ignore keywords...{Style.RESET_ALL}")
+
+	if any(keyword.lower() in source.lower() for keyword in keywords): # If any of the ignore keywords is in the source
+		verbose_output(true_string=f"{BackgroundColors.YELLOW}Ignoring {entity_type} {source} as the name contains one of the ignore keywords: {keywords}{Style.RESET_ALL}")
+		return True # Return True if the source contains any of the ignore keywords
+	return False # Return False if the source does not contain any of the ignore keywords
+
 def add_csv_header(csv_filename, metric_name):
 	""""
 	Adds the header to the csv file, if it does not exist.
@@ -794,11 +811,8 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	if not metrics_values: # If the metrics values list is empty, return
 		return # If the metrics values list is empty, return
 
-	if any(keyword.lower() in class_name.lower() for keyword in IGNORE_CLASS_NAME_KEYWORDS): # If any of the class name ignore keywords is found in the class name, return
-		return # If any of the class name ignore keywords is found in the class name, return
-
-	if any(keyword.lower() in raw_variable_attribute.lower() for keyword in IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS): # If any of the variable/attribute ignore keywords is found in the variable attribute,
-		return # If any of the variable/attribute ignore keywords is found in the variable attribute, return
+	if found_ignore_keywords(class_name, IGNORE_CLASS_NAME_KEYWORDS, "class") or found_ignore_keywords(raw_variable_attribute, IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS, "variable attribute"): # If the class name or variable attribute contains ignore keywords,
+		return # If the class name or variable attribute contains ignore keywords, return
 	
 	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/" # The folder path
 	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
