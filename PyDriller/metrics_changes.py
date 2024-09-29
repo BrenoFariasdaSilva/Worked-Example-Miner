@@ -806,6 +806,41 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 
 	return refactorings_summary # Return the formatted string containing the refactorings information
 
+def find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository_name, class_name):
+	"""
+	Finds the biggest change in metrics values and corresponding commit data.
+
+	:param metrics_values: A list of metrics values
+	:param metric_name: The name of the metric
+	:param commit_hashes: The list of commit hashes
+	:param repository_name: The name of the repository
+	:param class_name: The class name
+	:return: The biggest change and the corresponding commit data
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Finding the biggest decrease in metrics values for the {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} class...{Style.RESET_ALL}")
+
+	biggest_change_data = [0, 0, 0.00, ""] # [From, To, Percentual Variation, Refactorings Detected]
+	commit_data = ["", "", "", "", ""] # [Biggest Change Position (i), From Commit Number, From Commit Hash, To Commit Number, To Commit Hash]
+
+	metric_values = [metric[metric_name] for metric in metrics_values] # Get the metric values for the specified metric name
+
+	for i in range(1, len(metric_values)): # For each metric value in the metric values list
+		if metric_values[i] >= metric_values[i - 1] or metric_values[i - 1] == 0: # If the current metric value is greater than or equal to the previous metric value or the previous metric value is 0
+			continue # Skip the current iteration
+
+		current_percentual_variation = round((metric_values[i - 1] - metric_values[i]) / metric_values[i - 1], 3) # Calculate the current percentual variation
+
+		if current_percentual_variation > DESIRED_DECREASE and current_percentual_variation > biggest_change_data[2]: # If the current percentual variation is greater than the desired decrease and the biggest change
+			commit_data = [i, commit_hashes[i - 1].split("-")[0], commit_hashes[i - 1].split("-")[1], commit_hashes[i].split("-")[0], commit_hashes[i].split("-")[1]]
+			refactorings_info = get_refactoring_info(repository_name, commit_data[1].split("-")[0], commit_data[1].split("-")[1], class_name) # Get the refactoring info
+
+			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list): # Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
+				refactorings_summary = convert_refactorings_dictionary_to_string(refactorings_info) # Convert the refactorings dictionary into a string
+				biggest_change_data = [metric_values[i - 1], metric_values[i], current_percentual_variation, refactorings_summary.replace("'", "")] # Update the biggest change
+
+	return biggest_change_data, commit_data # Return the biggest change and the corresponding commit data
+
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name, iteration):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
@@ -835,30 +870,12 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	
 	csv_filename = setup_substantial_decrease_file(repository_name, metric_name, iteration) # Setup the substantial decrease file for the specified repository and metric name
 
-	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
-	commit_data = ["", "", "", ""] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
+	biggest_change_data, commit_data = find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository_name, class_name) # Find the biggest decrease in metrics values and corresponding commit data
 
-	metric_values = metrics_values = [metric[metric_name] for metric in metrics_values] # Extract the values for the analyzed metric (metric_name) from the metrics_values list
-	for i in range(1, len(metric_values)): # Loop through the metrics values
-		if metric_values[i] >= metric_values[i - 1] or metric_values[i - 1] == 0: # Verify if the current metric is bigger than the previous metric or the previous metric is zero
-			continue # If the current metric is bigger than the previous metric or the previous metric is zero, then continue
-
-		current_percentual_variation = round((metric_values[i - 1] - metric_values[i]) / metric_values[i - 1], 3) # Calculate the current percentual variation
-
-		if current_percentual_variation > DESIRED_DECREASE and current_percentual_variation > biggest_change[2]: # If the current percentual variation is bigger than the desired decrease, then update the biggest_change list
-			temp_commit_data = [commit_hashes[i - 1], commit_hashes[i]] # The commit data [from_commit_hash, to_commit_hash]
-			refactorings_info = get_refactoring_info(repository_name, temp_commit_data[1].split("-")[0], temp_commit_data[1].split("-")[1], class_name) # Get the refactoring information
-
-			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list): # Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
-				refactorings_summary = convert_refactorings_dictionary_to_string(refactorings_info) # Convert the refactorings dictionary into a string
-
-				biggest_change = [metric_values[i - 1], metric_values[i], current_percentual_variation, refactorings_summary.replace("'", "")] # Update the biggest_change list and commit data only if the conditions above are met.
-				commit_data = [temp_commit_data[0].split("-")[0], temp_commit_data[0].split("-")[1], temp_commit_data[1].split("-")[0], temp_commit_data[1].split("-")[1]] # Splitting commit hash to get commit number and hash
-
-	if biggest_change[2] > DESIRED_DECREASE and biggest_change[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
+	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
 		with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 			writer = csv.writer(csvfile) # Create the csv writer
-			writer.writerow([class_name, raw_variable_attribute] + biggest_change[:2] + [round(biggest_change[2] * 100, 2)] + [f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}"] + [metrics_values[i][metric] for metric in METRICS_INDEXES.keys()] + [code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], occurrences, biggest_change[3]]) # Write the row to the csv file
+			writer.writerow([class_name, raw_variable_attribute] + biggest_change_data[:2] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}"] + [metrics_values[i][metric] for metric in METRICS_INDEXES.keys()] + [code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], occurrences, biggest_change_data[3]]) # Write the row to the csv file
 
 def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration):
 	"""
