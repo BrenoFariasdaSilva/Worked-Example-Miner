@@ -656,7 +656,7 @@ def found_ignore_keywords(source, keywords, entity_type):
 		return True # Return True if the source contains any of the ignore keywords
 	return False # Return False if the source does not contain any of the ignore keywords
 
-def add_substantial_decrease_csv_header (csv_filename, metric_name):
+def add_substantial_decrease_csv_header(csv_filename, metric_name):
 	""""
 	Adds the header to the csv file, if it does not exist.
 
@@ -690,7 +690,7 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 	csv_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
 
 	if verify_filepath_exists(csv_filename) and iteration == 1: # Verify if the CSV file exists and if it's the first iteration
-		add_substantial_decrease_csv_header (csv_filename, metric_name) # Add the header to the CSV file
+		add_substantial_decrease_csv_header(csv_filename, metric_name) # Add the header to the CSV file
 
 	return csv_filename # Return the path to the substantial decrease file
 
@@ -941,7 +941,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
 		add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attribute, biggest_change_data, metrics_values, commit_data, code_churns, lines_added, lines_deleted, modified_files, occurrences) # Write the substantial decrease to the CSV file
 
-def verify_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration):
+def setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration):
 	"""
 	Verifies if there has been a substantial decrease in the metrics for each metric.
 
@@ -1106,7 +1106,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 
 			if metrics: # If the metrics list is not empty
 				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Setup the writing of the metrics evolution to a CSV file
-				verify_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
+				setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
 				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
 			
 			progress_bar.update(1) # Update the progress bar
