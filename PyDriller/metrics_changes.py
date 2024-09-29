@@ -721,19 +721,15 @@ def add_csv_header(csv_filename, metric_name):
 	else: # If the PROCESS_CLASSES constant is set to False
 		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}"] + list(METRICS_INDEXES.keys()) + ["Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Methods Invoked Qty", "Refactoring Patterns"]
 	
-	if verify_filepath_exists(csv_filename): # If the file exists
-		with open(csv_filename, "r") as file: # Open the file
-			first_line = file.readline().strip() # Read the first line
-			if first_line != ",".join(expected_header): # If the first line is not equal to the expected header
-				existing_lines = file.readlines() # Read the existing lines
-				with open(csv_filename, "w") as csvfile: # Open the file in write mode
-					writer = csv.writer(csvfile) # Create the csv writer
-					writer.writerow(expected_header) # Write the expected header
-					csvfile.writelines(existing_lines) # Write the existing lines
-	else: # If the file does not exist
-		with open(csv_filename, "w") as csvfile: # Open the file in write mode
-			writer = csv.writer(csvfile) # Create the csv writer
-			writer.writerow(expected_header) # Write the expected header
+	if verify_filepath_exists(csv_filename): # Verify if the csv file exists
+		with open(csv_filename, "r") as file: # Open the csv file in read mode to verify the header and it's content
+			first_line = file.readline().strip() # Read the first line of the csv file
+			existing_lines = file.readlines() if first_line != ",".join(expected_header) else [] # Read the existing lines if the header is different from the expected header
+
+	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
+		writer = csv.writer(csvfile) # Create the csv writer
+		writer.writerow(expected_header) # Write the expected header
+		csvfile.writelines(existing_lines) # Write existing lines if applicable
 
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name):
 	"""
