@@ -563,6 +563,19 @@ def sort_commit_hashes_by_commit_number(metrics_track_record):
 
 	return metrics_track_record # Return the sorted metrics_track_record
 
+def generate_progress_bar_description():
+	"""
+	Generates the description for the progress bar.
+
+	:return: A string containing the description for the progress bar
+	"""
+
+	processes = [key.replace('_', ' ').capitalize() for key, value in RUN_FUNCTIONS.items() if value] # Get the processes that are set to True
+	metrics_description = ", ".join(processes) # Join the processes with a comma
+	progress_description = f"Generating {metrics_description}.." if processes else "Processing Metrics.." # Generate the description for the progress bar
+
+	return progress_description # Return the description for the progress bar
+
 def get_clean_id(id):
 	"""
 	Receives an id and verifies if it contains slashes, if so, it returns the id without the slashes.
@@ -1084,7 +1097,8 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Processing Metrics{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
+	progress_description = generate_progress_bar_description() # Generate the description for the progress bar
+	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}{progress_description}{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
 		for iteration, (identifier, record) in enumerate(metrics_track_record.items(), start=1): # For each identifier and record in the metrics_track_record dictionary
 			metrics = record["metrics"] # Get the metrics list
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
