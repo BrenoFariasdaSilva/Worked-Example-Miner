@@ -570,7 +570,7 @@ def generate_progress_bar_description():
 	:return: A string containing the description for the progress bar
 	"""
 
-	processes = [key.replace('_', ' ').capitalize() for key, value in RUN_FUNCTIONS.items() if value] # Get the processes that are set to True
+	processes = [key.capitalize() for key, value in sorted(RUN_FUNCTIONS.items()) if value and key != "Sort by Percentual Variation"] # Get the processes that are set to True
 	metrics_description = ", ".join(processes) # Join the processes with a comma
 	progress_description = f"Generating {metrics_description}.." if processes else "Processing Metrics.." # Generate the description for the progress bar
 
