@@ -1015,10 +1015,40 @@ def perform_linear_regression(commit_number, metric_values):
 	model.fit(commit_number.reshape(-1, 1), metric_values) # Fit the model to the data
 	return model.predict(commit_number.reshape(-1, 1)) # Return the predicted linear fit
 
+def plot_and_save_graph(commit_number, metric_values, linear_fit, metric_name, class_name, variable_attribute, repository_name):
+	"""
+	Create the linear regression plot and save it as a PNG file.
+
+	:param commit_number: A NumPy array containing the commit numbers
+	:param metric_values: A NumPy array containing the metric values
+	:param linear_fit: A NumPy array containing the predicted linear fit
+	:param metric_name: The name of the metric
+	:param class_name: The class name of the current linear regression
+	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
+	:param repository_name: The name of the repository
+	:return: None
+	"""
+
+	plt.figure(figsize=(10, 6)) # Set the figure size
+	plt.plot(commit_number, metric_values, "o", label=f"{metric_name}") # Plot the metric values
+	plt.plot(commit_number, linear_fit, "-", label="Linear Regression Fit") # Plot the linear regression fit
+	plt.xlabel("Commit Number") # Set the x-axis label
+	plt.ylabel(f"{metric_name} Value") # Set the y-axis label
+	plt.title(f"Linear Regression for {metric_name} metric of {class_name} {variable_attribute}") # Set the title
+	plt.legend() # Add the legend
+
+	relative_metrics_prediction_directory_path = f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}"
+	full_metrics_prediction_directory_path = f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}"
+
+	create_directory(full_metrics_prediction_directory_path, relative_metrics_prediction_directory_path) # Create the directory where the plot will be stored
+
+	plt.savefig(f"{full_metrics_prediction_directory_path}/{metric_name}{PNG_FILE_EXTENSION}")
+	plt.close() # Close the plot
+
 def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
-
+	
 	:param metrics: A list containing the metrics values for linear regression
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
@@ -1032,7 +1062,7 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 
 	if metrics_array is None or not validate_metrics_structure(metrics_array, class_name, variable_attribute): # If the metrics array is None or the metrics structure is not valid,
 		return # Return if the metrics array is None or the metrics structure is not valid
-	
+
 	for metric_name, metric_position in METRICS_INDEXES.items(): # For each metric name and position in the METRICS_INDEXES dictionary
 		commit_numbers = np.arange(metrics_array.shape[0]) # Create the commit numbers array
 		metric_values = extract_column_values_from_array(metrics_array, metric_position) # Extract the metric values from the array for the given metric position
@@ -1041,22 +1071,7 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 			continue # Jump to the next iteration of the loop
 
 		linear_fit = perform_linear_regression(commit_numbers, metric_values) # Perform linear regression and get the predicted linear fit
-
-		# Create the plot
-		plt.figure(figsize=(10, 6)) # Set the figure size
-		plt.plot(commit_numbers, metric_values, "o", label=f"{metric_name}") # Plot the metrics values
-		plt.plot(commit_numbers, linear_fit, "-", label="Linear Regression Fit") # Plot the linear fit
-		plt.xlabel("Commit Number") # Set the x-axis label
-		plt.ylabel(f"{metric_name} Value") # Set the y-axis label
-		plt.title(f"Linear Regression for {metric_name} metric of {class_name} {variable_attribute}") # Set the title
-		plt.legend() # Show the legend
-
-		relative_metrics_prediction_directory_path = f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}" # The relative path to the directory where the plot will be stored
-		full_metrics_prediction_directory_path = f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}" # The full path to the directory where the plot will be stored
-		create_directory(full_metrics_prediction_directory_path, relative_metrics_prediction_directory_path) # Create the directory where the plot will be stored
-
-		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{metric_name}{PNG_FILE_EXTENSION}") # Save the plot to a PNG file
-		plt.close() # Close the plot
+		plot_and_save_graph(commit_numbers, metric_values, linear_fit, metric_name, class_name, variable_attribute, repository_name) # Create the linear regression plot and save it as a PNG file
 
 def process_metrics_track_record(repository_name, metrics_track_record):
 	"""
