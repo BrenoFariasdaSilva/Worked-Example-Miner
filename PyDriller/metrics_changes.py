@@ -556,29 +556,20 @@ def sort_commit_hashes_by_commit_number(metrics_track_record):
 
 	return metrics_track_record # Return the sorted metrics_track_record
 
-def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
+def get_clean_id(id):
 	"""
-	Writes the metrics_track_record to a txt file.
+	Receives an id and verifies if it contains slashes, if so, it returns the id without the slashes.
 
-	:param repository_name: The name of the repository
-	:param metrics_track_record: A dictionary containing the metrics of each class or method
-	:return: None
+	:param id: ID of the class or method to be analyzed
+	:return: ID of the class or method to be analyzed without the slashes
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
-
-	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file: # Open the txt file and write the metrics_track_record to it
-		for key, value in metrics_track_record.items(): # For each key, value in the metrics_track_record dictionary
-			file.write(f"{key}: \n") # Write the key
-			file.write(f"\tMetrics: {value['metrics']}\n") # Write the metrics
-			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n") # Write the commit hashes
-			file.write(f"\tChanged: {value['changed']}\n") # Write the changed value
-			file.write(f"\tCode Churns: {value['code_churns']}\n") # Write the code churns value
-			file.write(f"\tLines Added: {value['lines_added']}\n") # Write the lines added
-			file.write(f"\tLines Deleted: {value['lines_deleted']}\n") # Write the lines deleted
-			file.write(f"\tModified Files Count: {value['modified_files_count']}\n") # Write the modified files count
-			file.write(f"\t{'Method Invocations' if PROCESS_CLASSES else 'Methods Invoked Qty'}: {value['method_invoked']}\n") # Write the 'Method Invocations' if PROCESS_CLASS, else 'Methods Invoked Qty' value
-			file.write(f"\n") # Write a new line
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the clean id for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+	
+	if "/" in id: # If the id contains slashes, remove them
+		return str(id.split("/")[0:-1])[2:-2] # Return the id without the slashes
+	else: # If the id does not contain slashes, simply return the id
+		return id # Return the id
 
 def write_metrics_to_csv(repository_name, filename, unique_identifier, metrics, record):
 	"""
@@ -628,20 +619,30 @@ def setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_a
 
 	write_metrics_to_csv(repository_name, metrics_filename, class_name if PROCESS_CLASSES else variable_attribute, metrics, record) # Call the new auxiliary function
 
-def get_clean_id(id):
-	"""
-	Receives an id and verifies if it contains slashes, if so, it returns the id without the slashes.
+def add_csv_header(csv_filename, metric_name):
+	""""
+	Adds the header to the csv file, if it does not exist.
 
-	:param id: ID of the class or method to be analyzed
-	:return: ID of the class or method to be analyzed without the slashes
+	:param csv_filename: The name of the csv file
+	:param metric_name: The name of the metric
+	:return: None
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the clean id for {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+	expected_header = [] # The expected header list
+	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
+		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}"] + list(METRICS_INDEXES.keys()) + ["Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Method Invocations", "Refactoring Patterns"]
+	else: # If the PROCESS_CLASSES constant is set to False
+		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}"] + list(METRICS_INDEXES.keys()) + ["Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Methods Invoked Qty", "Refactoring Patterns"]
 	
-	if "/" in id: # If the id contains slashes, remove them
-		return str(id.split("/")[0:-1])[2:-2] # Return the id without the slashes
-	else: # If the id does not contain slashes, simply return the id
-		return id # Return the id
+	if verify_filepath_exists(csv_filename): # Verify if the csv file exists
+		with open(csv_filename, "r") as file: # Open the csv file in read mode to verify the header and it's content
+			first_line = file.readline().strip() # Read the first line of the csv file
+			existing_lines = file.readlines() if first_line != ",".join(expected_header) else [] # Read the existing lines if the header is different from the expected header
+
+	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
+		writer = csv.writer(csvfile) # Create the csv writer
+		writer.writerow(expected_header) # Write the expected header
+		csvfile.writelines(existing_lines) # Write existing lines if applicable
 
 def verify_refactoring_file(refactoring_file_path):
 	"""
@@ -753,31 +754,6 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
     )
 
 	return refactorings_summary # Return the formatted string containing the refactorings information
-
-def add_csv_header(csv_filename, metric_name):
-	""""
-	Adds the header to the csv file, if it does not exist.
-
-	:param csv_filename: The name of the csv file
-	:param metric_name: The name of the metric
-	:return: None
-	"""
-
-	expected_header = [] # The expected header list
-	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}"] + list(METRICS_INDEXES.keys()) + ["Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Method Invocations", "Refactoring Patterns"]
-	else: # If the PROCESS_CLASSES constant is set to False
-		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}"] + list(METRICS_INDEXES.keys()) + ["Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Methods Invoked Qty", "Refactoring Patterns"]
-	
-	if verify_filepath_exists(csv_filename): # Verify if the csv file exists
-		with open(csv_filename, "r") as file: # Open the csv file in read mode to verify the header and it's content
-			first_line = file.readline().strip() # Read the first line of the csv file
-			existing_lines = file.readlines() if first_line != ",".join(expected_header) else [] # Read the existing lines if the header is different from the expected header
-
-	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
-		writer = csv.writer(csvfile) # Create the csv writer
-		writer.writerow(expected_header) # Write the expected header
-		csvfile.writelines(existing_lines) # Write existing lines if applicable
 
 def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name):
 	"""
@@ -943,6 +919,30 @@ def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
 			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
 			
 			progress_bar.update(1) # Update the progress bar
+
+def write_metrics_track_record_to_txt(repository_name, metrics_track_record):
+	"""
+	Writes the metrics_track_record to a txt file.
+
+	:param repository_name: The name of the repository
+	:param metrics_track_record: A dictionary containing the metrics of each class or method
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
+
+	with open(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}_track_record.txt", "w") as file: # Open the txt file and write the metrics_track_record to it
+		for key, value in metrics_track_record.items(): # For each key, value in the metrics_track_record dictionary
+			file.write(f"{key}: \n") # Write the key
+			file.write(f"\tMetrics: {value['metrics']}\n") # Write the metrics
+			file.write(f"\tCommit Hashes: {value['commit_hashes']}\n") # Write the commit hashes
+			file.write(f"\tChanged: {value['changed']}\n") # Write the changed value
+			file.write(f"\tCode Churns: {value['code_churns']}\n") # Write the code churns value
+			file.write(f"\tLines Added: {value['lines_added']}\n") # Write the lines added
+			file.write(f"\tLines Deleted: {value['lines_deleted']}\n") # Write the lines deleted
+			file.write(f"\tModified Files Count: {value['modified_files_count']}\n") # Write the modified files count
+			file.write(f"\t{'Method Invocations' if PROCESS_CLASSES else 'Methods Invoked Qty'}: {value['method_invoked']}\n") # Write the 'Method Invocations' if PROCESS_CLASS, else 'Methods Invoked Qty' value
+			file.write(f"\n") # Write a new line
 
 def generate_metric_headers():
 	"""
@@ -1165,8 +1165,8 @@ def process_repository(repository_name, repository_url):
 
 	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record) # Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
 
+	process_metrics_track_record(repository_name, sorted_metrics_track_record) # Process the metrics track record to generate outputs such as linear regression graphics, metrics evolution data, and verification of substantial metric decreases
 	write_metrics_track_record_to_txt(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["write_metrics_track_record_to_txt"] else None # Write the metrics_track_record to a txt file
-	write_metrics_evolution_to_csv(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Write, for each identifier, the metrics evolution values to a csv file
 	generate_metrics_track_record_statistics(repository_name, sorted_metrics_track_record) if RUN_FUNCTIONS["generate_metrics_track_record_statistics"] else None # Generate the method metrics to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file
 
 	sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
