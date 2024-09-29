@@ -948,6 +948,22 @@ def verify_substantial_metric_decrease_for_each_metric(metrics, class_name, vari
 		if metrics: # If the metrics list is not empty
 			verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name, iteration) # Verify if there has been a substantial decrease in the metrics
 
+def convert_metrics_to_array(metrics, class_name, variable_attribute):
+	"""
+	Convert the metrics list to a NumPy array.
+
+	:param metrics: A list containing the metrics values for linear regression
+	:param class_name: The class name of the current linear regression
+	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
+	:return: A NumPy array containing the metrics values
+	"""
+
+	try: # Try to convert the metrics list to a NumPy array
+		return np.array(metrics, dtype=float) # Convert the metrics list to a NumPy array
+	except Exception: # Catch any exceptions
+		verbose_output(true_string=f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
+		return None # Return None if an exception occurs
+
 def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
@@ -961,15 +977,7 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Performing linear regression on the given metrics and saving the plot to a PNG file for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	if not metrics and VERBOSE: # Verify for empty metrics list
-		print(f"{BackgroundColors.RED}Metrics list for {class_name} {variable_attribute} is empty!{Style.RESET_ALL}")
-		return # Return if the metrics list is empty
-	
-	try: # Try to convert the metrics list to a NumPy array
-		metrics_array = np.array(metrics, dtype=float) # Safely convert to NumPy array for flexibility in handling
-	except: # Catch any exceptions
-		verbose_output(true_string=f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
-		return
+	metrics_array = convert_metrics_to_array(metrics, class_name, variable_attribute) # Convert the metrics list to a NumPy array
 
 	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_INDEXES): # Verify for invalid values in the metrics
 		verbose_output(true_string=f"{BackgroundColors.RED}Metrics structure for {class_name} {variable_attribute} is not as expected!{Style.RESET_ALL}")
