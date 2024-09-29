@@ -897,18 +897,18 @@ def linear_regression_graphics(metrics, class_name, variable_attribute, reposito
 		plt.savefig(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}/{metric_name}{PNG_FILE_EXTENSION}") # Save the plot to a PNG file
 		plt.close() # Close the plot
 
-def write_metrics_evolution_to_csv(repository_name, metrics_track_record):
+def process_metrics_track_record(repository_name, metrics_track_record):
 	"""
-	Writes the metrics evolution to a csv file.
+	Processes the metrics track record to generate outputs such as linear regression graphics, metrics evolution data, and verification of substantial metric decreases.
 
 	:param repository_name: The name of the repository
 	:param metrics_track_record: A dictionary containing the metrics of each class or method
 	:return: None
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the metrics evolution for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a csv file...{Style.RESET_ALL}")
-	
-	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Creating Linear Regression and Metrics Evolution{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, store each metrics values tuple in a row of the csv file
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Processing Metrics{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
 		for identifier, record in metrics_track_record.items(): # For each identifier and record in the metrics_track_record dictionary
 			metrics = record["metrics"] # Get the metrics list
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
