@@ -810,7 +810,7 @@ def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribu
 	"""
 
 	for metric_name in SUBSTANTIAL_CHANGE_METRICS: # Loop through the SUBSTANTIAL_CHANGE_METRICS list
-		if metric_name not in METRICS_INDEXES: # If the metric name is not in the METRICS_INDEXES dictionary
+		if metric_name not in METRICS_INDEXES.keys(): # If the metric name is not in the keys of the METRICS_INDEXES dictionary
 			print(f"{BackgroundColors.RED}The metric {BackgroundColors.CYAN}{metric_name}{BackgroundColors.RED} is not in the METRICS_INDEXES dictionary!{Style.RESET_ALL}") # Print an error message
 			continue # Jump to the next iteration of the loop
 		else: # If the metric name is in the METRICS_INDEXES dictionary
