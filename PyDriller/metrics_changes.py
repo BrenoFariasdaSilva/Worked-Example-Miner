@@ -749,7 +749,7 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 
 	return refactorings_summary # Return the formatted string containing the refactorings information
 
-def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name):
+def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_attribute, commit_hashes, code_churns, lines_added, lines_deleted, modified_files, occurrences, metric_name, repository_name, iteration):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
 
@@ -764,6 +764,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	:param occurrences: The occurrences counter of the class_name
 	:param metric_name: The name of the metric
 	:param repository_name: The name of the repository
+	:param iteration: A integer representing the current iteration number. If its the first iteration, it will be 1, otherwise it will be greater.
 	:return: None
 	"""
 
@@ -787,7 +788,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 		FIRST_SUBSTANTIAL_CHANGE_VERIFICATION = False # Update the flag after handling the first run
 		os.remove(csv_filename) # Remove the CSV file if it exists
 
-	if not verify_filepath_exists(csv_filename): # Add the header if the file is newly created
+	if verify_filepath_exists(csv_filename) and iteration == 1: # Erase the CSV file if it exists and it's the first iteration
 		add_csv_header(csv_filename, metric_name) # Add the header to the csv file
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
@@ -815,7 +816,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 			writer = csv.writer(csvfile) # Create the csv writer
 			writer.writerow([class_name, raw_variable_attribute] + biggest_change[:2] + [round(biggest_change[2] * 100, 2)] + [f"{commit_data[0]} -> {commit_data[2]}", f"{commit_data[1]} -> {commit_data[3]}"] + [metrics_values[i][metric] for metric in METRICS_INDEXES.keys()] + [code_churns[i], lines_added[i], lines_deleted[i], modified_files[i], occurrences, biggest_change[3]]) # Write the row to the csv file
 
-def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name):
+def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration):
 	"""
 	Verifies if there has been a substantial decrease in the metrics for a given class or method.
 
@@ -824,6 +825,7 @@ def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribu
 	:param variable_attribute: The method or attribute of the class being analyzed
 	:param record: A dictionary containing commit information and metric history
 	:param repository_name: The name of the repository being analyzed
+	:param iteration: The current iteration of the analysis
 	:return: None
 	"""
 
@@ -832,7 +834,7 @@ def run_verify_substantial_metric_decrease(metrics, class_name, variable_attribu
 			print(f"{BackgroundColors.RED}The metric {BackgroundColors.CYAN}{metric_name}{BackgroundColors.RED} is not in the METRICS_INDEXES dictionary!{Style.RESET_ALL}") # Print an error message
 			continue # Jump to the next iteration of the loop
 		else: # If the metric name is in the METRICS_INDEXES dictionary
-			verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name)
+			verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name, iteration) # Verify if there has been a substantial decrease in the metrics
 
 def linear_regression_graphics(metrics, class_name, variable_attribute, repository_name):
 	"""
@@ -903,13 +905,13 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
 	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}Processing Metrics{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
-		for identifier, record in metrics_track_record.items(): # For each identifier and record in the metrics_track_record dictionary
+		for iteration, (identifier, record) in enumerate(metrics_track_record.items(), start=1): # For each identifier and record in the metrics_track_record dictionary
 			metrics = record["metrics"] # Get the metrics list
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 
 			setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["write_metrics_evolution_to_csv"] else None # Setup the writing of the metrics evolution to a CSV file
-			run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
+			run_verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["verify_substantial_metric_decrease"] else None # Verify if substantial decrease
 			linear_regression_graphics(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["linear_regression_graphics"] else None # Generate linear regression graphics
 			
 			progress_bar.update(1) # Update the progress bar
