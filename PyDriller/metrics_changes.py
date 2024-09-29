@@ -799,6 +799,22 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 
 	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types and occurrences
 
+def is_desired_refactoring(refactorings_info):
+	"""
+	Verifies if the refactoring is a desired refactoring.
+
+	:param refactorings_info: A dictionary containing the file paths and their corresponding refactoring types and occurrences
+	:return: True if the refactoring is a desired refactoring, False otherwise
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the refactoring is a desired refactoring...{Style.RESET_ALL}")
+
+	for types in refactorings_info.values(): # For each refactoring type in the refactorings info
+		if any(refactoring_type in types for refactoring_type in DESIRED_REFACTORINGS): # If any of the desired refactoring types are in the refactoring types
+			return True # Return True if the refactoring is a desired refactoring
+
+	return False # Return False if the refactoring is not a desired refactoring
+
 def convert_refactorings_dictionary_to_string(refactorings_info):
 	"""
 	Converts the refactorings dictionary into a string.
@@ -846,8 +862,8 @@ def find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository
 			commit_data = extract_commit_data(commit_hashes, i) # Extract the commit data
 			refactorings_info = get_refactoring_info(repository_name, commit_data[1].split("-")[0], commit_data[1].split("-")[1], class_name) # Get the refactoring info
 
-			if not DESIRED_REFACTORINGS_ONLY or any(refactoring in DESIRED_REFACTORINGS for refactoring_list in refactorings_info.values() for refactoring in refactoring_list): # Verify if we're not filtering by desired refactorings or if the current refactoring type is a desired refactoring.
-				refactorings_summary = convert_refactorings_dictionary_to_string(refactorings_info) # Convert the refactorings dictionary into a string
+			if (DESIRED_REFACTORINGS_ONLY and is_desired_refactoring(refactorings_info)) or not DESIRED_REFACTORINGS_ONLY: # If the refactoring is a desired refactoring
+				refactorings_summary = convert_refactorings_dictionary_to_string(refactorings_info) # Convert the refactorings dictionary to a string
 				biggest_change_data = [metric_values[i - 1], metric_values[i], current_percentual_variation, refactorings_summary.replace("'", "")] # Update the biggest change
 
 	return biggest_change_data, commit_data # Return the biggest change and the corresponding commit data
