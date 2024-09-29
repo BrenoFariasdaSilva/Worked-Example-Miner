@@ -978,6 +978,17 @@ def validate_metrics_structure(metrics_array, class_name, variable_attribute):
 		return False # Return False if the metrics structure is not as expected
 	return True # Return True if the metrics structure is as expected
 
+def extract_column_values_from_array(array, column_position):
+	"""
+	Extract the 
+
+	:param array: A NumPy array containing the metrics values
+	:param column_position: The position of the column to extract the metric values
+	:return: A list containing the values of the specified column
+	"""
+
+	return array[:, column_position] # Return the values of the specified column
+
 def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
 	"""
 	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
@@ -996,11 +1007,12 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 	if metrics_array is None or not validate_metrics_structure(metrics_array, class_name, variable_attribute): # If the metrics array is None or the metrics structure is not valid,
 		return # Return if the metrics array is None or the metrics structure is not valid
 	
-	for metric_name, metric_position in METRICS_INDEXES.items(): # Loop through the METRICS_INDEXES dictionary
-		commit_numbers = np.arange(metrics_array.shape[0]) # Create the commit number array
+	for metric_name, metric_position in METRICS_INDEXES.items(): # For each metric name and position in the METRICS_INDEXES dictionary
+		commit_numbers = np.arange(metrics_array.shape[0]) # Create the commit numbers array
+		metric_values = extract_column_values_from_array(metrics_array, metric_position) # Extract the metric values from the array for the given metric position
+
 		if not commit_numbers.any(): # If the commit number is empty
 			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
-		metric_values = metrics_array[:, metric_position] # Extract the metrics values from the metrics array in the specified position (column)
 
 		if len(commit_numbers) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
 			return # Return if there are not enough data points for regression
