@@ -997,23 +997,23 @@ def setup_linear_regression_plots(metrics, class_name, variable_attribute, repos
 		return # Return if the metrics array is None or the metrics structure is not valid
 	
 	for metric_name, metric_position in METRICS_INDEXES.items(): # Loop through the METRICS_INDEXES dictionary
-		commit_number = np.arange(metrics_array.shape[0]) # Create the commit number array
-		if not commit_number.any(): # If the commit number is empty
+		commit_numbers = np.arange(metrics_array.shape[0]) # Create the commit number array
+		if not commit_numbers.any(): # If the commit number is empty
 			continue # Ignore the current iteration, since there are no commit numbers, thus no linear regression can be performed
 		metric_values = metrics_array[:, metric_position] # Extract the metrics values from the metrics array in the specified position (column)
 
-		if len(commit_number) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
+		if len(commit_numbers) < 2 or len(metric_values) < 2: # Verify for sufficient data points for regression
 			return # Return if there are not enough data points for regression
 		
 		# Perform linear regression using Scikit-Learn
 		model = LinearRegression() # Create the linear regression model
-		model.fit(commit_number.reshape(-1, 1), metric_values) # Fit the model to the data
-		linear_fit = model.predict(commit_number.reshape(-1, 1)) # Perform the linear fit
+		model.fit(commit_numbers.reshape(-1, 1), metric_values) # Fit the model to the data
+		linear_fit = model.predict(commit_numbers.reshape(-1, 1)) # Perform the linear fit
 
 		# Create the plot
 		plt.figure(figsize=(10, 6)) # Set the figure size
-		plt.plot(commit_number, metric_values, "o", label=f"{metric_name}") # Plot the metrics values
-		plt.plot(commit_number, linear_fit, "-", label="Linear Regression Fit") # Plot the linear fit
+		plt.plot(commit_numbers, metric_values, "o", label=f"{metric_name}") # Plot the metrics values
+		plt.plot(commit_numbers, linear_fit, "-", label="Linear Regression Fit") # Plot the linear fit
 		plt.xlabel("Commit Number") # Set the x-axis label
 		plt.ylabel(f"{metric_name} Value") # Set the y-axis label
 		plt.title(f"Linear Regression for {metric_name} metric of {class_name} {variable_attribute}") # Set the title
