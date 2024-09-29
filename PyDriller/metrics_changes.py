@@ -662,6 +662,25 @@ def add_csv_header(csv_filename, metric_name):
 		writer = csv.writer(csvfile) # Create the csv writer
 		writer.writerow(expected_header) # Write the expected header
 
+def setup_substantial_decrease_file(repository_name, metric_name, iteration):
+	"""
+	Sets up the substantial decrease file for the specified repository and metric name.
+
+	:param repository_name: The name of the repository
+	:param metric_name: The name of the metric
+	:param iteration: The current iteration
+	:return: The path to the substantial decrease file
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the substantial decrease file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+	csv_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
+
+	if verify_filepath_exists(csv_filename) and iteration == 1: # Verify if the CSV file exists and if it's the first iteration
+		add_csv_header(csv_filename, metric_name) # Add the header to the CSV file
+
+	return csv_filename # Return the path to the substantial decrease file
+
 def verify_refactoring_file(refactoring_file_path):
 	"""
 	Validates if the refactoring file was created successfully.
@@ -814,11 +833,7 @@ def verify_substantial_metric_decrease(metrics_values, class_name, raw_variable_
 	if found_ignore_keywords(class_name, IGNORE_CLASS_NAME_KEYWORDS, "class") or found_ignore_keywords(raw_variable_attribute, IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS, "variable attribute"): # If the class name or variable attribute contains ignore keywords,
 		return # If the class name or variable attribute contains ignore keywords, return
 	
-	folder_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/" # The folder path
-	csv_filename = f"{folder_path}{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
-
-	if verify_filepath_exists(csv_filename) and iteration == 1: # Verify if the CSV file exists and if it's the first iteration
-		add_csv_header(csv_filename, metric_name) # Add the header to the CSV file
+	csv_filename = setup_substantial_decrease_file(repository_name, metric_name, iteration) # Setup the substantial decrease file for the specified repository and metric name
 
 	biggest_change = [0, 0, 0.00] # The biggest change values in the metric [from, to, percentual_variation]
 	commit_data = ["", "", "", ""] # The commit data [from_commit_number, from_commit_hash, to_commit_number, to_commit_hash]
