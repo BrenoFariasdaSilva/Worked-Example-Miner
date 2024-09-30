@@ -773,14 +773,17 @@ def process_repository(repository_name, repository_url):
    number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits in the repository
 
    if RUN_FUNCTIONS["verify_ck_metrics_directory"]: # If the function to verify the CK metrics directory is enabled
-      ck_metrics_files_exist, unprocessed_commits = verify_ck_metrics_directory(repository_name, repository_url, number_of_commits) # Verify if the CK metrics directory exists and if there are unprocessed commits
+      ck_metrics_files_exist, unprocessed_commits = verify_ck_metrics_directory(repository_name, repository_url, number_of_commits)
 
-      if ck_metrics_files_exist: # If the CK metrics directory is up to date 
-         if unprocessed_commits <= 0: # If there are no unprocessed commits
-            print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository is up to date with {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits.{Style.RESET_ALL}")
-            return # Return if the metrics were already calculated
-         else: # If there are unprocessed commits
+      if ck_metrics_files_exist: # If metrics directory exists and is either up to date or has unprocessed commits
+         if unprocessed_commits <= 0: # No unprocessed commits, all metrics are up to date
+            print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository is fully up to date with {BackgroundColors.CYAN}{number_of_commits}{BackgroundColors.GREEN} commits processed.{Style.RESET_ALL}")
+            return # Return if everything is already calculated
+         else: # There are unprocessed commits, continue processing
             print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.GREEN} unprocessed commits...{Style.RESET_ALL}")
+      else:
+         print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} metrics directory is incomplete or missing files.{Style.RESET_ALL}")
+         # Handle the case when the directory is not up to date or files are missing
 
    create_directory(FULL_CK_METRICS_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH) # Create the ck metrics directory
    create_directory(FULL_PROGRESS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH) # Create the progress directory
