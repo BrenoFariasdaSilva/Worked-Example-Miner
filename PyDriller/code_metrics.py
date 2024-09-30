@@ -19,7 +19,6 @@ from repositories_picker import create_directory, get_adjusted_number_of_threads
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
-UNPROCESSED_COMMITS_THRESHOLD = 0 # The threshold of unprocessed commits to consider a repository outdated
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
@@ -206,7 +205,7 @@ def is_local_repository_metrics_outdated(number_of_commits, total_commits_proces
 
    unprocessed_commits = number_of_commits - total_commits_processed # Calculate the number of unprocessed commits
    if unprocessed_commits > 0: # If more than 100 commits are unprocessed
-      RUN_FUNCTIONS["generate_ck_metrics"] = True if not RUN_FUNCTIONS["generate_ck_metrics"] else RUN_FUNCTIONS["generate_ck_metrics"] # Set CK metrics generation to True globally
+      RUN_FUNCTIONS["generate_ck_metrics"] = True # Set CK metrics generation to True globally
    return unprocessed_commits # Return the number of unprocessed commits
 
 def verify_commit_files_exist(repo_path, commit_filepaths):
@@ -235,12 +234,12 @@ def verify_commit_files_exist(repo_path, commit_filepaths):
 
 def verify_ck_metrics_directory(repository_name, repository_url, number_of_commits):
    """
-   Verifies if all the metrics are already calculated and if the CK metrics repository directory is up to date by comparing the number of commits and processed commits.
+   Verifies if all the metrics are already calculated and if the CK metrics repository directory is up to date by comparing the number of commits and processed commits. If metrics are up to date or there are unprocessed commits, the function returns True to allow further processing.
 
    :param repository_name: Name of the repository to be analyzed.
    :param repository_url: URL of the repository to be analyzed.
    :param number_of_commits: Number of commits to be analyzed. If 0, the total will be calculated from the repository.
-   :return: Tuple (bool, int) indicating if metrics are up to date and the number of unprocessed commits.
+   :return: Tuple (bool, int) indicating if metrics are up to date or need further processing, and the number of unprocessed commits.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} are calculated and up to date...{Style.RESET_ALL}")
@@ -258,17 +257,19 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
       return False, number_of_commits # Return False if the list is empty
 
    missing_files_count = verify_commit_files_exist(repo_path, repository_ck_metrics_filepaths) # Verify if all commit files exist
-   if missing_files_count: # If there are missing commit files
+   if missing_files_count > 0: # If there are missing commit files
       print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is missing {BackgroundColors.CYAN}{missing_files_count}{BackgroundColors.RED} commit files.{Style.RESET_ALL}")
       return False, missing_files_count # Return False if any commit metrics folder/files are missing
    
    total_commits_processed = len(repository_ck_metrics_filepaths) # Get the total number of commits processed
    unprocessed_commits = is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name) # Verify if the repository is outdated
-   if unprocessed_commits > UNPROCESSED_COMMITS_THRESHOLD:  # Check if unprocessed commits exceed the threshold
-      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
-      return False, unprocessed_commits # Return False and the number of unprocessed commits
 
-   return True, unprocessed_commits # All metrics are calculated and the repository is up to date
+   if unprocessed_commits > 0: # Verify if there are unprocessed commits, even if it's below the threshold
+      print(f"{BackgroundColors.YELLOW}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.YELLOW} repository has {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.YELLOW} unprocessed commits. Further processing is required.{Style.RESET_ALL}")
+      return True, unprocessed_commits # Allow processing to continue for unprocessed commits
+   
+   print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository metrics are up to date.{Style.RESET_ALL}")
+   return True, 0 # All metrics are calculated, no unprocessed commits
 
 def read_progress_file(file_path):
    """
