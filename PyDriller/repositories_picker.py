@@ -652,15 +652,16 @@ def load_metrics(output_file):
       print(f"{BackgroundColors.RED}Error loading metrics from {output_file}: {e}{Style.RESET_ALL}")
       return {} # Return an empty dictionary
 
-def get_autometric_metrics(repo_url):
+def get_autometric_metrics(repo_url, github_token=None):
    """
    Executes the AutoMetric script to gather metrics for a given repository URL.
 
    :param repo_url: str - The URL of the repository.
+   :param github_token: str - The GitHub token.
    :return: dict - The metrics gathered by the AutoMetric script.
    """
 
-   github_token = get_env_token() # Get the GitHub token from the .env file
+   github_token = get_env_token() if not github_token else github_token # Get the GitHub token
    autometric_dir = get_autometric_dir() # Get the path to the AutoMetric directory
    cmd = build_command(repo_url, autometric_dir, github_token) # Build the command
 
@@ -711,11 +712,12 @@ def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_fi
       "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
    }
 
-def process_repository(repo, date_filter=None, ignore_keywords=None):
+def process_repository(repo, token, date_filter=None, ignore_keywords=None):
    """
    Processes a single repository, filtering by date, keywords, and ensuring a unique name.
 
    :param repo: dict
+   :param token: str
    :param date_filter: datetime to filter the repositories
    :param ignore_keywords: list
    :return: dict or None
@@ -732,7 +734,7 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
       if is_within_limit(commits_count, MINIMUM_COMMITS, False): # If the number of commits is greater than the minimum
          avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
          if is_within_limit(avg_code_churn, MAXIMUM_AVG_CODE_CHURN, True) and is_within_limit(avg_files_modified, MAXIMUM_AVG_FILES_MODIFIED, True): # If the average code churn and files modified are within the limits
-            autometric_metrics = get_autometric_metrics(repo["html_url"]) # Get metrics from AutoMetric and integrate into repo_dict
+            autometric_metrics = get_autometric_metrics(repo["html_url"], token) # Get metrics from AutoMetric and integrate into repo_dict
             filled_repo_dict = fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
             return filled_repo_dict # Return the filled repository dictionary
 
@@ -844,25 +846,27 @@ def count_commits(repo_path):
       print(f"Error while counting commits: {e}")
       return 0 # Return 0 or handle the error as needed
 
-def process_repository_task(repo, datetime_filter, ignore_keywords):
+def process_repository_task(repo, token, datetime_filter, ignore_keywords):
    """
    Processes and filters a single repository.
 
    :param repo: dict
+   :param token: str
    :param datetime_filter: datetime to filter the repositories
    :param ignore_keywords: list
    :return: dict or None
    """
 
-   filtered_repo = process_repository(repo, datetime_filter, ignore_keywords) # Process the repository
+   filtered_repo = process_repository(repo, token, datetime_filter, ignore_keywords) # Process the repository
    return filtered_repo if filtered_repo else None # Return the repository if it is valid, otherwise return None
 
-def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
+def filter_repositories(repositories, token, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWORDS):
    """
    Filters the list of repositories based on the update date, ignore keywords, and ensures unique names.
    This function uses concurrent processing to speed up the filtering process based on the number of available CPU cores.
 
    :param repositories: list
+   :param token: str
    :param ignore_keywords: list
    :return: list
    """
@@ -878,7 +882,7 @@ def filter_repositories(repositories, ignore_keywords=EXCLUDE_REPOSITORIES_KEYWO
    filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
 
    with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor: # Create a ThreadPoolExecutor with the number of threads to use
-      futures = [executor.submit(process_repository_task, repo, datetime_filter, ignore_keywords) for repo in repositories] # Submit the process_repository_task function to the executor for each repository
+      futures = [executor.submit(process_repository_task, repo, token, datetime_filter, ignore_keywords) for repo in repositories] # Submit the process_repository_task function to the executor for each repository
 
       for future in concurrent.futures.as_completed(futures): # Iterate over the futures as they are completed
          try: # Try to get the result of the future
@@ -1400,7 +1404,7 @@ def main():
 
    repositories = fetch_repositories(token) # Fetch the repositories
    total_repo_count = len(repositories) # Get the total number of repositories
-   filtered_repositories = filter_repositories(repositories) # Filter the repositories
+   filtered_repositories = filter_repositories(repositories, token) # Filter the repositories
 
    if filtered_repositories: # If there are repositories after filtering and sorting
       for repository_attribute in REPOSITORIES_SORTING_ATTRIBUTES: # Iterate over the REPOSITORIES_SORTING_ATTRIBUTES
