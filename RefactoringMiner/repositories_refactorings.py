@@ -249,7 +249,7 @@ def process_repositories_concurrently(repositories):
       # Loop through the repositories
       for repository_name, repository_url in repositories.items():
          estimated_time_string = f"{BackgroundColors.GREEN}Estimated time for {BackgroundColors.CYAN}generating the refactoring{BackgroundColors.GREEN} for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
-         commits_number = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits
+         commits_number = sum(1 for _ in Repository(repository_url).traverse_commits()) # Get the number of commits
          output_time(estimated_time_string, commits_number / 2) # Output the estimated time for running all of the iterations for the repository
 
          # Schedule the execution of the process_repository function
