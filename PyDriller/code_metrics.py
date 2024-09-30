@@ -31,11 +31,11 @@ DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format
 }
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
-   "generate_ck_metrics": True, # Generate the CK metrics for the commits
-   "generate_diffs": True, # Generate the diffs for the commits
-   "verify_ck_metrics_directory": True, # Verify if the CK metrics directory is up to date
-   "write_commits_information_to_csv": True, # Write the commit information to a CSV file
-   "write_repositories_attributes_to_csv": True, # Write the repositories attributes to a CSV file
+   "CK Metrics": True, # Generate the CK metrics for the commits
+   "Commits Information": True, # Write the commit information to a CSV file
+   "Diffs": True, # Generate the diffs for the commits
+   "Repositories Attributes": True, # Write the repositories attributes to a CSV file
+   "Verify CK Metrics Directory": True, # Verify if the CK metrics directory is up to date
 }
 
 # File Extensions Constants:
@@ -300,7 +300,7 @@ def is_local_repository_metrics_outdated(number_of_commits, total_commits_proces
 
    unprocessed_commits = number_of_commits - total_commits_processed # Calculate the number of unprocessed commits
    if unprocessed_commits > 0: # If more than 100 commits are unprocessed
-      RUN_FUNCTIONS["generate_ck_metrics"] = True # Set CK metrics generation to True globally
+      RUN_FUNCTIONS["CK Metrics"] = True # Set CK metrics generation to True globally
    return unprocessed_commits # Return the number of unprocessed commits
 
 def verify_commit_files_exist(repo_path, commit_filepaths):
@@ -726,7 +726,6 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             commit_number += 1 # Increment the commit number
             pbar.update(1) # Update the progress bar
             continue # Jump to the next iteration
-
          lines_added, lines_removed = sum(file.added_lines for file in commit.modified_files), sum(file.deleted_lines for file in commit.modified_files) # Lines added and removed
          code_churn = lines_added + lines_removed # Code Churn as the sum of lines added and removed, due to avoid the 0 values when the number of lines added and removed are equal
          modified_files_count = len(commit.modified_files) # Number of modified files
@@ -734,7 +733,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          current_tuple = (commit_number, commit.hash, f'"{commit.msg.split("\n")[0].strip().replace("\"", "")}"', commit.committer_date, lines_added, lines_removed, code_churn, round(code_churn_avg_per_file, 2), modified_files_count, f'"{repository_url}/commit/{commit.hash}"') # Create a tuple with the commit information
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
-         generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["generate_diffs"] else None # Save the diff of the modified files of the current commit
+         generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["Diffs"] else None # Save the diff of the modified files of the current commit
 
          if not verify_ck_metrics_files(f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit.hash}", CK_METRICS_FILES): # Verify if the CK metrics files do not exist
             workdir = f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}" # The path to the repository directory
@@ -748,7 +747,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
             os.chdir(output_directory) # Change working directory to the repository directory
 
             cmd = f"java -jar {FULL_CK_JAR_PATH} {workdir} false 0 false {output_directory} true" # The command to run the CK metrics generator
-            run_ck_metrics_generator(cmd) if RUN_FUNCTIONS["generate_ck_metrics"] else None # Run the CK metrics generator
+            run_ck_metrics_generator(cmd) if RUN_FUNCTIONS["CK Metrics"] else None # Run the CK metrics generator
 
          if commit_number == 1: # If it is the first iteration
             first_iteration_duration = time.time() - start_time # Calculate the duration of the first iteration
@@ -873,9 +872,9 @@ def process_repository(repository_name, repository_url, number_of_commits):
 
    commits_info, repository_attributes = traverse_repository(repository_name, repository_url, number_of_commits) # Traverse the repository to run CK for every commit hash in the repository
 
-   write_commits_information_to_csv(repository_name) if RUN_FUNCTIONS["write_commits_information_to_csv"] else None # Write the commits information to a CSV file
+   write_commits_information_to_csv(repository_name) if RUN_FUNCTIONS["Commits Information"] else None # Write the commits information to a CSV file
 
-   write_repositories_attributes_to_csv(repository_attributes) if RUN_FUNCTIONS["write_repositories_attributes_to_csv"] else None # Save repository attributes to a CSV file
+   write_repositories_attributes_to_csv(repository_attributes) if RUN_FUNCTIONS["Repositories Attributes"] else None # Save repository attributes to a CSV file
 
    checkout_branch("main") # Checkout the main branch
 
@@ -891,7 +890,7 @@ def setup_process_repository(repository_name, repository_url, number_of_commits=
    global RUN_FUNCTIONS # Declare the RUN_FUNCTIONS as a global variable
    number_of_commits = sum(1 for _ in Repository(repository_url).traverse_commits()) if number_of_commits == None else number_of_commits
 
-   if RUN_FUNCTIONS["verify_ck_metrics_directory"]: # If the function to verify the CK metrics directory is enabled
+   if RUN_FUNCTIONS["Verify CK Metrics Directory"]: # If the function to verify the CK metrics directory is enabled
       ck_metrics_files_exist, unprocessed_commits = verify_ck_metrics_directory(repository_name, repository_url, number_of_commits)
 
       if ck_metrics_files_exist: # If metrics directory exists and is either up to date or has unprocessed commits
@@ -959,7 +958,7 @@ def main():
    if not verify_git(): # Verify if Git is installed
       return # Return if Git is not installed
    
-   if RUN_FUNCTIONS["generate_ck_metrics"] and not ensure_ck_jar_file_exists(): # Verify and ensure that the CK JAR file exists
+   if RUN_FUNCTIONS["CK Metrics"] and not ensure_ck_jar_file_exists(): # Verify and ensure that the CK JAR file exists
       return # Return if the CK JAR file does not exist
 
    verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
