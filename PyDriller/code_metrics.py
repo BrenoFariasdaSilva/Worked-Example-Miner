@@ -1,6 +1,7 @@
 import atexit # For playing a sound when the program finishes
 import concurrent.futures # For running tasks in parallel
 import csv # CSV (Comma Separated Values) is a simple file format used to store tabular data, such as a spreadsheet or database
+import json # For creating JSON output
 import os # OS module in Python provides functions for interacting with the operating system
 import pandas as pd # Pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool
 import shutil # Import the shutil module to perform file operations
@@ -14,11 +15,20 @@ from tqdm import tqdm # For Generating the Progress Bars
 
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
-from repositories_picker import DEFAULT_REPOSITORIES, FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
-from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists, verify_git, verify_repositories_execution_constants # Importing Functions from the repositories_picker.py file
+from repositories_picker import FULL_REPOSITORIES_DIRECTORY_PATH, FULL_REPOSITORIES_LIST_JSON_FILEPATH, RELATIVE_REPOSITORIES_DIRECTORY_PATH, REPOSITORIES_SORTING_ATTRIBUTES, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
+from repositories_picker import create_directory, get_adjusted_number_of_threads, get_threads, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists, verify_git # Importing Functions from the repositories_picker.py file
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
+PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
+
+DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
+   "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
+   "kafka": "https://github.com/apache/kafka",
+   "moleculer-java": "https://github.com/moleculer-java/moleculer-java",
+   "scalecube-services": "https://github.com/scalecube/scalecube-services",
+   "zookeeper": "https://github.com/apache/zookeeper",
+}
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "generate_ck_metrics": True, # Generate the CK metrics for the commits
@@ -155,6 +165,91 @@ def ensure_ck_jar_file_exists():
 
    print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CK JAR{BackgroundColors.RED} file was not found in the target directory.{Style.RESET_ALL}")
    return False # Return False if the JAR file was not found in the target directory
+
+def verify_json_file(file_path):
+   """
+   Verify if the JSON file exists and is not empty.
+
+   :param file_path: The path to the JSON file.
+   :return: True if the JSON file exists and is not empty, False otherwise.
+   """
+
+   if not verify_filepath_exists(file_path): # Verify if the JSON file exists
+      print(f"{BackgroundColors.RED}The repositories JSON file does not exist.{Style.RESET_ALL}")
+      return False # Return False if the JSON file does not exist
+   if os.path.getsize(file_path) == 0: # Verify if the JSON file is empty
+      print(f"{BackgroundColors.RED}The repositories JSON file is empty.{Style.RESET_ALL}")
+      return False # Return False if the JSON file is empty
+   return True # Return True if the JSON file exists and is not empty
+
+def load_repositories_from_json(file_path):
+   """
+   Load repositories from a JSON file.
+
+   :param file_path: The path to the JSON file.
+   :return: A dictionary containing the repositories if the JSON file is valid, None otherwise.   
+   """
+
+   try: # Try to load the JSON file
+      with open(file_path, "r", encoding="utf-8") as json_file: # Open the JSON file
+         repositories_list = json.load(json_file) # Load the JSON file
+
+      if isinstance(repositories_list, list) and repositories_list: # Verify if the JSON file is a list and is not empty
+         return {repo["name"]: repo["url"] for repo in repositories_list} # Return the dictionary containing the repositories
+      else:
+         print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
+         return None # Return None if the JSON file is not in the correct format
+   except (json.JSONDecodeError, KeyError) as e: # Handle the exception if there is an error parsing the JSON file
+      verbose_output(true_string=f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
+      return None # Return None if there is an error parsing the JSON file
+
+def update_repositories_dictionary():
+   """
+   Update the repositories list in the DEFAULT_REPOSITORIES dictionary.
+   
+   :return: True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file, False otherwise.
+   """
+   
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the repositories list file with the DEFAULT_REPOSITORIES dictionary...{Style.RESET_ALL}")
+
+   global DEFAULT_REPOSITORIES # Use the global DEFAULT_REPOSITORIES variable
+
+   for sorting_attribute in REPOSITORIES_SORTING_ATTRIBUTES: # Iterate through all REPOSITORIES_SORTING_ATTRIBUTES to find a valid file
+      filename = FULL_REPOSITORIES_LIST_JSON_FILEPATH.replace("SORTING_ATTRIBUTE", sorting_attribute) # Get the filename for the current attribute
+      
+      if not verify_filepath_exists(filename): # If file doesn't exist, skip to the next attribute
+         verbose_output(true_string=f"{BackgroundColors.YELLOW}File {filename} not found, checking next...{Style.RESET_ALL}")
+         continue # Skip to the next attribute
+      
+      if not verify_json_file(filename): # If the JSON file is not valid, skip to the next
+         verbose_output(true_string=f"{BackgroundColors.RED}Invalid JSON file: {filename}, checking next...{Style.RESET_ALL}")
+         continue # Skip to the next attribute
+      
+      json_repositories = load_repositories_from_json(filename) # Verify if the JSON file exists
+      if not json_repositories: # If loading the JSON file fails, skip to the next
+         verbose_output(true_string=f"{BackgroundColors.RED}Failed to load JSON data from {filename}, checking next...{Style.RESET_ALL}")
+         continue # Skip to the next attribute
+
+      DEFAULT_REPOSITORIES = json_repositories # Update DEFAULT_REPOSITORIES and return True if successful
+      verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated from {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+      return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
+   
+   # If no valid files were found
+   print(f"{BackgroundColors.RED}No valid JSON files found for any of the sorting attributes.{Style.RESET_ALL}")
+   return False # Return False if no valid JSON files were found
+
+def verify_repositories_execution_constants():
+   """
+   Verify the constants used in the execution of the repositories.
+   It will process the JSON repositories, if the PROCESS_JSON_REPOSITORIES constant is set to True or if the DEFAULT_REPOSITORIES dictionary is empty.
+   
+   :return: None
+   """
+
+   if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES: # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
+      if not update_repositories_dictionary(): # Update the repositories list
+         print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script with the {BackgroundColors.CYAN}PROCESS_JSON_REPOSITORIES{BackgroundColors.RED} set to {BackgroundColors.CYAN}False{BackgroundColors.RED} or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
+         exit() # Exit the program if the repositories list could not be updated
 
 def get_commit_filepaths(commit_file_path):
    """
