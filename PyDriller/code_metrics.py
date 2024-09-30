@@ -458,14 +458,13 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    :param repository_name: Name of the repository to be analyzed.
    :param saved_progress_file: Name of the file that contains the saved progress.
    :param number_of_commits: Number of commits to be analyzed.
-   :return: The commits_info and last_commit_number.
+   :return: The commits_info, last_commit_number, and last_commit_hash.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    lines = read_progress_file(saved_progress_file) # Read the progress file
-   commits_info = [] # Initialize the commits_info list
-   last_commit_number = 0 # Initialize the last_commit_number variable
+   commits_info = [], last_commit_number = 0, last_commit_hash = None # Initialize the variables
 
    if lines: # If there are lines in the progress file
       commits_info, last_commit_number, last_commit_hash = parse_commit_info(lines) # Parse the commit information
@@ -476,7 +475,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    else:
       write_progress_file(saved_progress_file, commits_info) # Create the file if no progress exists
 
-   return commits_info, last_commit_number # Return the commits_info and last_commit_number
+   return commits_info, last_commit_number, last_commit_hash # Return the commits_info and last_commit_number
 
 def generate_diffs(repository_name, commit, commit_number):
    """
@@ -717,7 +716,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    commit_number = 1 # The current commit number
    saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
 
-   commits_info, last_commit_number = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits) # Get the last execution progress of the repository
+   commits_info, last_commit_number, last_commit_hash = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits) # Get the last execution progress of the repository
 
    # Create a progress bar with the total number of commits
    with tqdm(total=number_of_commits - last_commit_number, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
