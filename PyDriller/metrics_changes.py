@@ -22,7 +22,7 @@ from repositories_picker import create_directory, output_time, path_contains_whi
 
 # Imports from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
-from code_metrics import get_directories_size_in_gb, verify_ck_metrics_directory # Importing Functions from the code_metrics.py file
+from code_metrics import get_directories_size_in_gb, setup_process_repository # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
@@ -38,11 +38,11 @@ DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Pu
 WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
-	"Linear Regression": True, # Run the linear regression graphics
+	"Linear Regression": False, # Run the linear regression graphics
 	"Metrics Decrease": True, # Verify the substantial metric decrease
-	"Metrics Evolution": True, # Write the metrics evolution to a csv file
+	"Metrics Evolution": False, # Write the metrics evolution to a csv file
 	"Metrics Statistics": True, # Generate the metrics track record statistics
-	"Metrics Track Record": True, # Write the metrics track record to a txt file
+	"Metrics Track Record": False, # Write the metrics track record to a txt file
 	"Sort by Percentual Variation": True, # Sort the csv file by the percentual variation
 }
 
@@ -1395,11 +1395,9 @@ def process_repository(repository_name, repository_url):
 
 	start_time = time.time() # Start the timer
 
-	number_of_commits = len(list(Repository(repository_url).traverse_commits())) # Get the number of commits for the specified repository
-	if not verify_ck_metrics_directory(repository_name, repository_url, number_of_commits): # Verify if the ck metrics were already calculated, which are the source of the data processed by traverse_directory(repository_ck_metrics).
-		print(f"{BackgroundColors.RED}The metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} were not calculated. Please run the {BackgroundColors.CYAN}code_metrics.py{BackgroundColors.RED} file first{Style.RESET_ALL}")
-		return # Return if the ck metrics were not calculated
-
+	number_of_commits = sum(1 for _ in Repository(repository_url).traverse_commits()) # Get the number of commits for the specified repository
+	setup_process_repository(repository_name, repository_url, number_of_commits) # Setup to process the repository to caculate missing data (CK Metris)
+	
 	repository_ck_metrics_path = get_directory_path(repository_name) # Get the directory path for the specified repository name
 	
 	create_directories(repository_name) # Create the desired directory if it does not exist
@@ -1433,7 +1431,7 @@ def process_all_repositories():
 
 	for repository_name, repository_url in DEFAULT_REPOSITORIES.items(): # Loop through the DEFAULT_REPOSITORIES dictionary
 		print(f"") # Print an empty line
-		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}metrics evolution history, metrics statistics, linear regression, substantial changes and refactorings{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{', '.join([key.capitalize() for key in sorted(RUN_FUNCTIONS.keys())])}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name, repository_url) # Process the current repository
 		print(f"\n------------------------------------------------------------") # Print a separator
 
