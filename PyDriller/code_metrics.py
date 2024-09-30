@@ -207,7 +207,6 @@ def is_local_repository_metrics_outdated(number_of_commits, total_commits_proces
    unprocessed_commits = number_of_commits - total_commits_processed # Calculate the number of unprocessed commits
    if unprocessed_commits > 0: # If more than 100 commits are unprocessed
       RUN_FUNCTIONS["generate_ck_metrics"] = True if not RUN_FUNCTIONS["generate_ck_metrics"] else RUN_FUNCTIONS["generate_ck_metrics"] # Set CK metrics generation to True globally
-      print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is outdated with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.RED} unprocessed commits.{Style.RESET_ALL}")
    return unprocessed_commits # Return the number of unprocessed commits
 
 def verify_commit_files_exist(repo_path, commit_filepaths):
