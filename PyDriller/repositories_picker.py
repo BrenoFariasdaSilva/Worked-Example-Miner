@@ -26,8 +26,8 @@ CANDIDATES = 3 # The number of repositories to select
 EXCLUDE_REPOSITORIES_KEYWORDS = [] # Keywords to ignore in repository names
 MINIMUM_COMMITS = 0 # The minimum number of commits a repository must have
 MINIMUM_STARS = 50 # The minimum number of stars a repository must have
-MAXIMUM_AVG_CODE_CHURN = 500 # The maximum average code churn allowed
-MAXIMUM_AVG_FILES_MODIFIED = 50 # The maximum average files modified allowed
+MAXIMUM_AVG_CODE_CHURN = None # The maximum average code churn allowed
+MAXIMUM_AVG_FILES_MODIFIED = None # The maximum average files modified allowed
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
 REPOSITORIES_SORTING_ATTRIBUTES = ["commits", "stars"] # The attribute to sort the repositories by
 
@@ -589,6 +589,20 @@ def run_git_log_numstat(repo_path):
       print(f"{BackgroundColors.RED}Error while running git log --numstat: {e}{Style.RESET_ALL}")
       return [] # Return an empty list in case of an error
 
+def is_within_limit(value, limit, check_upper=True):
+   """
+   Generic function to check if the value is within the limit.
+
+   :param value: The value to check.
+   :param limit: The limit (can be upper or lower limit).
+   :param check_upper: If True, checks for upper limit; if False, checks for lower limit.
+   :return: True if value is within the limit or if the limit is None, False otherwise.
+   """
+
+   if limit is None: # If the limit is None
+      return True # Return True
+   return value < limit if check_upper else value > limit # Return True if the value is within the limit (upper or lower)
+
 def process_numstat_metrics(lines):
    """
    Processes git numstat lines to calculate total added, removed, code churn, and files modified.
@@ -809,9 +823,9 @@ def process_repository(repo, date_filter=None, ignore_keywords=None):
       commits_count = count_commits(repo_path) # Count the number of commits in the repository
       numstat_lines = run_git_log_numstat(repo_path) # Get numstat output
 
-      if commits_count > MINIMUM_COMMITS: # If the number of commits is greater than the minimum
+      if is_within_limit(commits_count, MINIMUM_COMMITS, False): # If the number of commits is greater than the minimum
          avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
-         if avg_code_churn < MAXIMUM_AVG_CODE_CHURN and avg_files_modified < MAXIMUM_AVG_FILES_MODIFIED: # If the average code churn and files modified are within the limits
+         if is_within_limit(avg_code_churn, MAXIMUM_AVG_CODE_CHURN, True) and is_within_limit(avg_files_modified, MAXIMUM_AVG_FILES_MODIFIED, True): # If the average code churn and files modified are within the limits
             autometric_metrics = get_autometric_metrics(repo["html_url"]) # Get metrics from AutoMetric and integrate into repo_dict
             filled_repo_dict = fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
             return filled_repo_dict # Return the filled repository dictionary
