@@ -244,7 +244,7 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the metrics for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} are calculated and up to date...{Style.RESET_ALL}")
 
-   number_of_commits = len(list(Repository(repository_url).traverse_commits())) if number_of_commits == 0 else number_of_commits # Get the total number of commits if not provided
+   number_of_commits = sum(1 for _ in Repository(repository_url).traverse_commits()) if number_of_commits == 0 else number_of_commits # Get the total number of commits if not provided
 
    repo_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # Full path to the repository's metrics directory
    commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The commit hashes file name
