@@ -265,7 +265,6 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
    unprocessed_commits = is_local_repository_metrics_outdated(number_of_commits, total_commits_processed, repository_name) # Verify if the repository is outdated
 
    if unprocessed_commits > 0: # Verify if there are unprocessed commits, even if it's below the threshold
-      print(f"{BackgroundColors.YELLOW}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.YELLOW} repository has {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.YELLOW} unprocessed commits. Further processing is required.{Style.RESET_ALL}")
       return True, unprocessed_commits # Allow processing to continue for unprocessed commits
    
    print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository metrics are up to date.{Style.RESET_ALL}")
