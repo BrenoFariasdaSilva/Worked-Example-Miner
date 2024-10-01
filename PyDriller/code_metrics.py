@@ -469,7 +469,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    if lines: # If there are lines in the progress file
       commits_info, last_execution_progress[0], last_execution_progress[1] = parse_commit_info(lines) # Parse the commit information
       percentage_progress = calculate_percentage_progress(last_execution_progress[0], number_of_commits) # Calculate the percentage progress
-      print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing at {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_execution_progress[0]}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_execution_progress[0]}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.Title()}{BackgroundColors.GREEN} stopped executing at {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_execution_progress[0]}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_execution_progress[0]}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
       execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
       output_time(execution_time, number_of_commits - last_execution_progress[0]) # Output estimated time for remaining iterations
    else:
@@ -973,7 +973,7 @@ def main():
    
    # Print the Welcome Messages
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
-   print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{', '.join(repo.capitalize() for repo in DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
+   print(f"{BackgroundColors.GREEN}This script will process the repositories: {BackgroundColors.CYAN}{', '.join(repo.title() for repo in DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} in parallel using threads.{Style.RESET_ALL}")
    print(f"{BackgroundColors.GREEN}The files that this script will generate are the {BackgroundColors.CYAN}ck metrics files, the commit hashes list file and the diffs of each commit{BackgroundColors.GREEN}, in which are used by the {BackgroundColors.CYAN}Metrics Changes{BackgroundColors.GREEN} Python script.{Style.RESET_ALL}", end="\n\n")   
 
    process_repositories_in_parallel() # Process each of the repositories in parallel
@@ -982,7 +982,7 @@ def main():
    output_time(f"\n{BackgroundColors.GREEN}Total execution time: ", (end_time - start_time).total_seconds()) # Output the total execution time
 
    # Print the message that the CK metrics generator has finished processing the repositories
-   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN} has finished processing the {BackgroundColors.CYAN}{', '.join(repo.capitalize() for repo in DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
+   print(f"\n{BackgroundColors.GREEN}The {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN} has finished processing the {BackgroundColors.CYAN}{', '.join(repo.title() for repo in DEFAULT_REPOSITORIES.keys())}{BackgroundColors.GREEN} repositories.{Style.RESET_ALL}", end="\n\n")
 		
 if __name__ == "__main__":
    """
