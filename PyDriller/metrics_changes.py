@@ -524,7 +524,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	total_files = sum(len(files) for _, _, files in os.walk(repository_ck_metrics_path)) # Get the total number of files in the directory
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
-	with tqdm(total=total_files, unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
+	with tqdm(total=total_files, unit=f"{BackgroundColors.GREEN}Processing all of the {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} CSV Files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path): # Walk through the directory
 			subdirs.sort(key=lambda x: int(x.split("-")[0])) # Sort the subdirectories in ascending order by the substring that comes before the "-"
 			for dir in subdirs: # For each subdirectory
