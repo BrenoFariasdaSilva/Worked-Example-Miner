@@ -253,7 +253,7 @@ def get_ck_metrics_tuple(row):
 	
 	return metrics # Return the metrics of the class or method as a tuple
 
-def get_method_invoked(row):
+def get_methods_invoked(row):
 	"""
 	Gets the method invoked of the class or method.
 
@@ -261,9 +261,9 @@ def get_method_invoked(row):
 	:return: The method invoked of the class or method
 	"""
 
-	method_invoked = row["methodInvocations"] if PROCESS_CLASSES else int(row["methodsInvokedQty"]) # Get the methodInvocations (str) or methodsInvokedQty (int) from the row
+	methods_invoked = row["methodInvocations"] if PROCESS_CLASSES else int(row["methodsInvokedQty"]) # Get the methodInvocations (str) or methodsInvokedQty (int) from the row
 	
-	return method_invoked # Return the method_invoked of the class or method
+	return methods_invoked # Return the methods_invoked of the class or method
 
 def was_file_modified(commit_modified_files_dict, commit_hash, row):
 	"""
@@ -297,7 +297,7 @@ def was_file_modified(commit_modified_files_dict, commit_hash, row):
 			return True # The file was modified
 	return False # The file was not modified
 
-def update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, method_invoked):
+def update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked):
 	"""
 	Updates the metrics track record with new metrics information.
 
@@ -305,7 +305,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 	:param identifier: The identifier (method or class name) to be added or updated
 	:param commit_number: The commit number of the current row
 	:param ck_metrics: A tuple containing the CK metrics (CBO, WMC, RFC)
-	:param method_invoked: The method invoked str or methodsInvokedQty int
+	:param methods_invoked: The method invoked str or methodsInvokedQty int
 	:return: None
 	"""
 
@@ -318,7 +318,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 			"lines_added": [], # The lines added list
 			"lines_deleted": [], # The lines deleted list
 			"modified_files_count": [], # The modified files count list
-			"methods_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
+			"methods_invoked": methods_invoked, # The methods_invoked str or methodsInvokedQty int
 		}
 	
 	metrics_changes = metrics_track_record[identifier]["metrics"] # Get the metrics list
@@ -494,13 +494,13 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 		for row in reader: # For each row in the csv file
 			identifier = get_identifier(row) # Get the identifier of the class or method
 			ck_metrics = get_ck_metrics_tuple(row) # Get the metrics of the class or method
-			method_invoked = get_method_invoked(row) # Get the method invoked of the class or method
+			methods_invoked = get_methods_invoked(row) # Get the method invoked of the class or method
 			
 			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number from the file path
 			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
 
 			if was_file_modified(commit_modified_files_dict, commit_hash, row): # If the file was modified, then update the metrics track record
-				update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, method_invoked) # Update the metrics track record
+				update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked) # Update the metrics track record
 				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
 				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
@@ -599,7 +599,7 @@ def write_metrics_track_record_to_txt(filename, repository_name, identifier, met
 		file.write(f"\tLines Added: {metrics['lines_added']}\n") # Write the lines added
 		file.write(f"\tLines Deleted: {metrics['lines_deleted']}\n") # Write the lines deleted
 		file.write(f"\tModified Files Count: {metrics['modified_files_count']}\n") # Write the modified files count
-		file.write(f"\t{'Method Invocations' if PROCESS_CLASSES else 'Methods Invoked Qty'}: {metrics['method_invoked']}\n") # Write the 'Method Invocations' if PROCESS_CLASS, else 'Methods Invoked Qty' value
+		file.write(f"\t{'Method Invocations' if PROCESS_CLASSES else 'Methods Invoked Qty'}: {metrics['methods_invoked']}\n") # Write the 'Method Invocations' if PROCESS_CLASS, else 'Methods Invoked Qty' value
 		file.write(f"\n") # Write a new line
 
 def setup_write_metrics_track_record_to_txt(repository_name, identifier, metrics, iteration):
