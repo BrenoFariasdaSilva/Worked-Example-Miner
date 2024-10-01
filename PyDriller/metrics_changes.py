@@ -521,7 +521,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	file_count = 0 # Initialize the file count
 
 	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name) # Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
-	total_files = sum(len(files) for _, _, files in os.walk(repository_ck_metrics_path)) # Get the total number of files in the directory
+	total_files = sum(file == CK_CSV_FILE for _, _, files in os.walk(repository_ck_metrics_path) for file in files) # Get the total number of files in the directory
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
 	with tqdm(total=total_files, unit=f"{BackgroundColors.GREEN}Processing all of the {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} CSV Files{Style.RESET_ALL}") as progress_bar:
