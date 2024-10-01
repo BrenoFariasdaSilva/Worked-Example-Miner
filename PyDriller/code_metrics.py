@@ -362,7 +362,6 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
    if unprocessed_commits > 0: # Verify if there are unprocessed commits, even if it's below the threshold
       return True, unprocessed_commits # Allow processing to continue for unprocessed commits
    
-   print(f"{BackgroundColors.GREEN}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository metrics are up to date.{Style.RESET_ALL}")
    return True, 0 # All metrics are calculated, no unprocessed commits
 
 def read_progress_file(file_path):
@@ -911,7 +910,7 @@ def setup_process_repository(repository_name, repository_url, number_of_commits=
             print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.GREEN} unprocessed commits...{Style.RESET_ALL}")
             {key: True for key in RUN_FUNCTIONS} # Set all functions to True
       else:
-         print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} metrics directory is incomplete or missing files.{Style.RESET_ALL}")
+         print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} metrics directory is incomplete with {BackgroundColors.CYAN}{unprocessed_commits}{BackgroundColors.GREEN} missing files.{Style.RESET_ALL}")
 
    process_repository(repository_name, repository_url, number_of_commits)
 
