@@ -978,13 +978,13 @@ def setup_substantial_metric_decrease_for_each_metric(repository_name, class_nam
 		for metric_name, metric_position in METRICS_INDEXES.items(): # If the metric name is not in the keys of the METRICS_INDEXES dictionary
 			verify_substantial_metric_decrease(repository_name, class_name, variable_attribute, record, metric_name, metric_position, iteration) # Verify if there has been a substantial decrease in the metrics
 
-def convert_metrics_to_array(metrics, class_name, variable_attribute):
+def convert_metrics_to_array(class_name, variable_attribute, metrics):
 	"""
 	Convert the metrics list to a NumPy array.
 
-	:param metrics: A list containing the metrics values for linear regression
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
+	:param metrics: A list containing the metrics values for linear regression
 	:return: A NumPy array containing the metrics values
 	"""
 
@@ -994,13 +994,14 @@ def convert_metrics_to_array(metrics, class_name, variable_attribute):
 		verbose_output(true_string=f"{BackgroundColors.RED}Error converting the {BackgroundColors.CYAN}metrics{BackgroundColors.GREEN} to {BackgroundColors.CYAN}NumPy array{BackgroundColors.GREEN} for {class_name} {variable_attribute}.{Style.RESET_ALL}")
 		return None # Return None if an exception occurs
 
-def validate_metrics_structure(metrics_array, class_name, variable_attribute):
+def validate_metrics_structure(class_name, variable_attribute, metrics_array):
 	"""
 	Validate if the metrics array has the correct structure.
 	
-	:param metrics_array: A NumPy array containing the metrics values
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
+	:param metrics_array: A NumPy array containing the metrics values
+	:return: True if the metrics structure is as expected, False otherwise
 	"""
 
 	if metrics_array.ndim != 2 or metrics_array.shape[1] < len(METRICS_INDEXES): # If the metrics array dimensions are not 2 (commit metrics and metrics) or the number of columns is less than the number of metrics
@@ -1045,17 +1046,17 @@ def perform_linear_regression(commit_number, metric_values):
 	model.fit(commit_number.reshape(-1, 1), metric_values) # Fit the model to the data
 	return model.predict(commit_number.reshape(-1, 1)) # Return the predicted linear fit
 
-def plot_and_save_graph(commit_number, metric_values, linear_fit, metric_name, class_name, variable_attribute, repository_name):
+def plot_and_save_graph(repository_name, class_name, variable_attribute, commit_number, metric_values, metric_name, linear_fit):
 	"""
 	Create the linear regression plot and save it as a PNG file.
 
-	:param commit_number: A NumPy array containing the commit numbers
-	:param metric_values: A NumPy array containing the metric values
-	:param linear_fit: A NumPy array containing the predicted linear fit
-	:param metric_name: The name of the metric
+	:param repository_name: The name of the repository
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
-	:param repository_name: The name of the repository
+	:param commit_number: A NumPy array containing the commit numbers
+	:param metric_values: A NumPy array containing the metric values
+	:param metric_name: The name of the metric
+	:param linear_fit: A NumPy array containing the predicted linear fit
 	:return: None
 	"""
 
@@ -1075,33 +1076,33 @@ def plot_and_save_graph(commit_number, metric_values, linear_fit, metric_name, c
 	plt.savefig(f"{full_metrics_prediction_directory_path}/{metric_name}{PNG_FILE_EXTENSION}")
 	plt.close() # Close the plot
 
-def setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name):
+def setup_linear_regression_plots(repository_name, class_name, variable_attribute, record):
 	"""
 	Setup and, if with valid metrics, perform linear regression on the given metrics and save the plot to a PNG file.
 	
-	:param metrics: A list containing the metrics values for linear regression
+	:param repository_name: The name of the repository
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
-	:param repository_name: The name of the repository
+	:param record: A dictionary containing commit information and metric history
 	:return: None
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Performing linear regression on the given metrics and saving the plot to a PNG file for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	metrics_array = convert_metrics_to_array(metrics, class_name, variable_attribute) # Convert the metrics list to a NumPy array
+	metrics_array = convert_metrics_to_array(class_name, variable_attribute, record["metrics"]) # Convert the metrics list to a NumPy array
 
-	if metrics_array is None or not validate_metrics_structure(metrics_array, class_name, variable_attribute): # If the metrics array is None or the metrics structure is not valid,
+	if metrics_array is None or not validate_metrics_structure(class_name, variable_attribute, metrics_array): # If the metrics array is None or the metrics structure is not valid,
 		return # Return if the metrics array is None or the metrics structure is not valid
 
 	for metric_name, metric_position in METRICS_INDEXES.items(): # For each metric name and position in the METRICS_INDEXES dictionary
-		commit_numbers = np.arange(metrics_array.shape[0]) # Create the commit numbers array
+		commit_numbers = np.arange(1, len(record["commit_hashes"]) + 1) # Generate an array of commit numbers
 		metric_values = extract_column_values_from_array(metrics_array, metric_position) # Extract the metric values from the array for the given metric position
 
 		if not commit_numbers.any() or not has_sufficient_data(commit_numbers, metric_values): # If the commit number array is empty or there are not enough data points for linear regression
 			continue # Jump to the next iteration of the loop
 
 		linear_fit = perform_linear_regression(commit_numbers, metric_values) # Perform linear regression and get the predicted linear fit
-		plot_and_save_graph(commit_numbers, metric_values, linear_fit, metric_name, class_name, variable_attribute, repository_name) # Create the linear regression plot and save it as a PNG file
+		plot_and_save_graph(repository_name, class_name, variable_attribute, commit_numbers, metric_values, metric_name, linear_fit) # Create the linear regression plot and save it as a PNG file
 
 def add_metrics_statistics_csv_header(csv_filename):
 	"""
@@ -1241,9 +1242,9 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 				setup_write_metrics_track_record_to_txt(repository_name, identifier, record, iteration) if RUN_FUNCTIONS["Metrics Track Record"] else None # Setup the writing of the metrics track record to a txt file
 				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, record) if RUN_FUNCTIONS["Metrics Evolution"] else None # Setup the writing of the metrics evolution to a CSV file
 				setup_substantial_metric_decrease_for_each_metric(repository_name, class_name, variable_attribute, record, iteration) if RUN_FUNCTIONS["Metrics Decrease"] else None # Verify if substantial decrease
-				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["Linear Regression"] else None # Generate linear regression graphics
+				setup_linear_regression_plots(repository_name, class_name, variable_attribute, record) if RUN_FUNCTIONS["Linear Regression"] else None # Generate linear regression graphics
 				setup_write_metrics_statistics_to_csv(repository_name, identifier, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Statistics"] else None # Setup the writing of the metrics statistics to a CSV file
-			
+
 			progress_bar.update(1) # Update the progress bar
 
 def sort_csv_by_changes(repository_name):
