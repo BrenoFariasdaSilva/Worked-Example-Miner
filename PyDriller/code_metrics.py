@@ -477,6 +477,50 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
 
    return commits_info, last_execution_progress # Return the commits_info and last_commit_number
 
+def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
+   """
+   Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
+
+   :param repository_name: Name of the repository.
+   :param number_of_commits: Number of commits to be analyzed.
+   :param elapsed_time: Elapsed time of the execution.
+   :return: A dictionary with repository attributes.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Retrieving the repository attributes...{Style.RESET_ALL}")
+
+   output_directory = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # The path to the CK metrics directory
+   sorted_dirs = get_filtered_sorted_directories(output_directory) # Get and sort directories
+
+   last_directory = get_last_directory(sorted_dirs) # Get the last directory
+   last_directory_path = os.path.join(output_directory, last_directory) # Update the output directory with the last directory
+
+   total_classes, total_lines_of_code = get_classes_count_and_loc_metrics(last_directory_path) # Get the total number of classes and lines of code
+
+   # Get the size of the output directories in GB and the progress file size in GB
+   output_dirs_size = get_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size_in_gb(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name))
+
+   return { # Return the repository attributes dictionary
+      "repository_name": repository_name, # Name of the repository
+      "classes": total_classes, # Total number of classes
+      "lines_of_code": total_lines_of_code, # Total number of lines of code
+      "commits": number_of_commits, # Total number of commits
+      "execution_time_in_minutes": round(elapsed_time / 60, 2), # Execution time in minutes
+      "size_in_gb": round(output_dirs_size, 2) # Size of the output directories in GB
+   }
+
+def calculate_code_churn(commit):
+   """"
+   Calculate the code churn for a commit.
+   
+   :param commit: The commit object to be analyzed.
+   :return: Tuple containing the lines added, lines removed, and total code churn.
+   """
+
+   lines_added = sum(file.added_lines for file in commit.modified_files) # Calculate the total number of lines added
+   lines_removed = sum(file.deleted_lines for file in commit.modified_files) # Calculate the total number of lines removed
+   return lines_added, lines_removed, lines_added + lines_removed # Return the lines added, lines removed, and total code churn
+
 def generate_diffs(repository_name, commit, commit_number):
    """
    Generates the diffs for the commits of a repository.
@@ -666,38 +710,6 @@ def get_file_size_in_gb(filepath):
       file_size = 0 # File does not exist, size is 0 GB
    return file_size # Return the size of the progress file in GB
 
-def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
-   """
-   Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
-
-   :param repository_name: Name of the repository.
-   :param number_of_commits: Number of commits to be analyzed.
-   :param elapsed_time: Elapsed time of the execution.
-   :return: A dictionary with repository attributes.
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Retrieving the repository attributes...{Style.RESET_ALL}")
-
-   output_directory = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, repository_name) # The path to the CK metrics directory
-   sorted_dirs = get_filtered_sorted_directories(output_directory) # Get and sort directories
-
-   last_directory = get_last_directory(sorted_dirs) # Get the last directory
-   last_directory_path = os.path.join(output_directory, last_directory) # Update the output directory with the last directory
-
-   total_classes, total_lines_of_code = get_classes_count_and_loc_metrics(last_directory_path) # Get the total number of classes and lines of code
-
-   # Get the size of the output directories in GB and the progress file size in GB
-   output_dirs_size = get_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) + get_file_size_in_gb(FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name))
-
-   return { # Return the repository attributes dictionary
-      "repository_name": repository_name, # Name of the repository
-      "classes": total_classes, # Total number of classes
-      "lines_of_code": total_lines_of_code, # Total number of lines of code
-      "commits": number_of_commits, # Total number of commits
-      "execution_time_in_minutes": round(elapsed_time / 60, 2), # Execution time in minutes
-      "size_in_gb": round(output_dirs_size, 2) # Size of the output directories in GB
-   }
-
 def traverse_repository(repository_name, repository_url, number_of_commits):
    """
    Traverses the repository to run CK for every commit hash in the repository.
@@ -724,8 +736,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
    # Create a progress bar with the total number of commits
    with tqdm(total=number_of_commits - last_execution_progress[0], unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url, from_commit=last_execution_progress[1]).traverse_commits(): # Loop through the commits of the repository
-         lines_added, lines_removed = sum(file.added_lines for file in commit.modified_files), sum(file.deleted_lines for file in commit.modified_files) # Lines added and removed
-         code_churn = lines_added + lines_removed # Code Churn as the sum of lines added and removed, due to avoid the 0 values when the number of lines added and removed are equal
+         lines_added, lines_removed, code_churn = calculate_code_churn(commit) # Calculate the code churn for the commit
          modified_files_count = len(commit.modified_files) # Number of modified files
          code_churn_avg_per_file = code_churn / modified_files_count if modified_files_count > 0 else 0 # Code churn average per file
          current_tuple = (commit_number, commit.hash, f'"{commit.msg.split("\n")[0].strip().replace("\"", "")}"', commit.committer_date, lines_added, lines_removed, code_churn, round(code_churn_avg_per_file, 2), modified_files_count, f'"{repository_url}/commit/{commit.hash}"') # Create a tuple with the commit information
