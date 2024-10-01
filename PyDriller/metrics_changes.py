@@ -1189,12 +1189,14 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 
 	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *flat_ck_metrics_stats, first_commit_hash, last_commit_hash, metrics["method_invoked"]]) # Write the metrics statistics to the csv file
 
-def add_metrics_track_record_statistics(repository_name, identifier, metrics, filename):
+def add_metrics_track_record_statistics(repository_name, identifier, class_name, variable_attribute, metrics, filename):
 	"""
 	Processes the metrics in metrics_track_record to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
 
 	:param repository_name: The name of the repository
 	:param identifier: The identifier of the method
+	:param class_name: The class name of the current linear regression
+	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
 	:param metrics: A dictionary containing the metrics of each class or method
 	:param filename: The name of the csv file
 	:return: None
@@ -1209,14 +1211,16 @@ def add_metrics_track_record_statistics(repository_name, identifier, metrics, fi
 		for i in range(0, NUMBER_OF_METRICS): # For each metric in the metrics list
 			metrics_values.append([sublist[i] for sublist in metrics["metrics"]]) # This get the metrics values of each metric occurrence in the method to get the min, max, avg, and third quartile of each metric
 
-		write_method_metrics_statistics(writer, identifier.split(" ")[0], identifier.split(" ")[1], metrics, metrics_values, metrics[identifier]["commit_hashes"][0], metrics[identifier]["commit_hashes"][-1]) # Write the metrics statistics to the csv file
+		write_method_metrics_statistics(writer, class_name, variable_attribute, metrics, metrics_values, metrics[identifier]["commit_hashes"][0], metrics[identifier]["commit_hashes"][-1]) # Write the metrics statistics to the csv file
 
-def setup_write_metrics_statistics_to_csv(repository_name, identifier, metrics, iteration):
+def setup_write_metrics_statistics_to_csv(repository_name, identifier, class_name, variable_attribute, metrics, iteration):
 	"""
 	Setup the writing of the metrics statistics to a CSV file.
 
 	:param repository_name: The name of the repository
-	:param identifier: The identifier of the class/method
+	:param identifier: The identifier of the method
+	:param class_name: The class name of the current linear regression
+	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
 	:param metrics: A list containing the metrics values for linear regression
 	:param record: A dictionary containing commit information and metric history
 	:return: None
@@ -1230,7 +1234,7 @@ def setup_write_metrics_statistics_to_csv(repository_name, identifier, metrics, 
 		add_metrics_statistics_csv_header(unsorted_metrics_filename) # Add the metrics statistics csv header
 
 	if metrics["changed"] >= MINIMUM_CHANGES: # If the number of changes is greater than or equal to the minimum changes
-		add_metrics_track_record_statistics(repository_name, f"{identifier.split(" ")[0]} {identifier.split(" ")[1]}", metrics, unsorted_metrics_filename) # Generate the metrics track record statistics
+		add_metrics_track_record_statistics(repository_name, identifier, class_name, variable_attribute, metrics, unsorted_metrics_filename) # Generate the metrics track record statistics
 
 def process_metrics_track_record(repository_name, metrics_track_record):
 	"""
@@ -1255,7 +1259,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Evolution"] else None # Setup the writing of the metrics evolution to a CSV file
 				setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["Metrics Decrease"] else None # Verify if substantial decrease
 				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["Linear Regression"] else None # Generate linear regression graphics
-				setup_write_metrics_statistics_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Statistics"] else None # Setup the writing of the metrics statistics to a CSV file
+				setup_write_metrics_statistics_to_csv(repository_name, identifier, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Statistics"] else None # Setup the writing of the metrics statistics to a CSV file
 			
 			progress_bar.update(1) # Update the progress bar
 
