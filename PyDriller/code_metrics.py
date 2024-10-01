@@ -900,7 +900,6 @@ def setup_process_repository(repository_name, repository_url, number_of_commits=
             {key: True for key in RUN_FUNCTIONS} # Set all functions to True
       else:
          print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} metrics directory is incomplete or missing files.{Style.RESET_ALL}")
-         # Handle the case when the directory is not up to date or files are missing
 
    process_repository(repository_name, repository_url, number_of_commits)
 
