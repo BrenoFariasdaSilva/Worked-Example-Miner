@@ -464,7 +464,8 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    lines = read_progress_file(saved_progress_file) # Read the progress file
-   commits_info = [], last_execution_progress = [0, None] # Initialize the variables
+   commits_info = [] # Initialize the list of commit information
+   last_execution_progress = [0, None] # Initialize the last execution progress
 
    if lines: # If there are lines in the progress file
       commits_info, last_execution_progress[0], last_execution_progress[1] = parse_commit_info(lines) # Parse the commit information
