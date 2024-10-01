@@ -318,7 +318,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 			"lines_added": [], # The lines added list
 			"lines_deleted": [], # The lines deleted list
 			"modified_files_count": [], # The modified files count list
-			"method_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
+			"methods_invoked": method_invoked, # The method_invoked str or methodsInvokedQty int
 		}
 	
 	metrics_changes = metrics_track_record[identifier]["metrics"] # Get the metrics list
@@ -652,7 +652,7 @@ def write_metrics_to_csv(repository_name, filename, unique_identifier, metrics, 
 			current_metrics = tuple(metrics[i][index] for index in METRICS_INDEXES.values()) # Tuple of current metrics based on METRICS_INDEXES
 			if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics): # Verify if the metrics tuple is different from the previous metrics tuple
 				commit_number, commit_hash = record["commit_hashes"][i].split("-") # Split the commit hash to get the commit number and commit hash
-				writer.writerow([unique_identifier, commit_number, commit_hash, record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], *tuple(metrics[i][index] for index in range(len(METRICS_INDEXES))), record["method_invoked"]]) # Write the unique identifier and metrics to the csv file
+				writer.writerow([unique_identifier, commit_number, commit_hash, record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], *tuple(metrics[i][index] for index in range(len(METRICS_INDEXES))), record["methods_invoked"]]) # Write the unique identifier and metrics to the csv file
 			previous_metrics = current_metrics # Update previous metrics
 
 def setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record):
@@ -993,7 +993,7 @@ def setup_substantial_metric_decrease_for_each_metric(metrics, class_name, varia
 			print(f"{BackgroundColors.RED}The metric {BackgroundColors.CYAN}{metric_name}{BackgroundColors.RED} is not in the METRICS_INDEXES dictionary!{Style.RESET_ALL}") # Print an error message
 			continue # Jump to the next iteration of the loop
 		if metrics: # If the metrics list is not empty
-			verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["method_invoked"], metric_name, repository_name, iteration) # Verify if there has been a substantial decrease in the metrics
+			verify_substantial_metric_decrease(metrics, class_name, variable_attribute, record["commit_hashes"], record["code_churns"], record["lines_added"], record["lines_deleted"], record["modified_files_count"], record["methods_invoked"], metric_name, repository_name, iteration) # Verify if there has been a substantial decrease in the metrics
 
 def convert_metrics_to_array(metrics, class_name, variable_attribute):
 	"""
@@ -1187,7 +1187,7 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	churn_stats = calculate_metric_statistics(metrics["code_churns"]) # Calculate statistics for code churn
 	modified_files_stats = calculate_metric_statistics(metrics["modified_files_count"]) # Calculate statistics for modified files
 
-	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *flat_ck_metrics_stats, first_commit_hash, last_commit_hash, metrics["method_invoked"]]) # Write the metrics statistics to the csv file
+	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *flat_ck_metrics_stats, first_commit_hash, last_commit_hash, metrics["methods_invoked"]]) # Write the metrics statistics to the csv file
 
 def add_metrics_track_record_statistics(repository_name, identifier, class_name, variable_attribute, metrics, filename):
 	"""
