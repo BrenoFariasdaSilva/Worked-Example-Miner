@@ -519,20 +519,20 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	
 	metrics_track_record = {} # Dictionary containing the track record of the metrics of each method nor class. The key is the identifier and the value is a dictionary containing the metrics, commit hashes and the number of times the metrics changed.
 	file_count = 0 # Initialize the file count
-	progress_bar = None # Initialize the progress bar
 
 	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name) # Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
+	total_files = sum(len(files) for _, _, files in os.walk(repository_ck_metrics_path)) # Get the total number of files in the directory
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
-	with tqdm(total=len(os.listdir(repository_ck_metrics_path)), unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
+	with tqdm(total=total_files, unit=f" {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path): # Walk through the directory
 			subdirs.sort(key=lambda x: int(x.split("-")[0])) # Sort the subdirectories in ascending order by the substring that comes before the "-"
-			for dir in subdirs: # For each subdirectory in the directories
+			for dir in subdirs: # For each subdirectory
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 					if file == CK_CSV_FILE: # If the file is the desired csv file
 						process_csv_file(commit_modified_files_dict, os.path.join(root, os.path.join(dir, file)), metrics_track_record) # Process the csv file
 						file_count += 1 # Increment the file count
-						progress_bar = tqdm(total=file_count) if progress_bar is None else progress_bar.update(1) # Update the progress bar
+						progress_bar.update(1) # Update the progress bar
 
 	return metrics_track_record # Return the method metrics, which is a dictionary containing the metrics of each method
 
