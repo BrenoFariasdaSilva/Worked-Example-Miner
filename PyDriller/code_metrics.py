@@ -734,7 +734,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
       return commits_info, get_repository_attributes(repository_name, number_of_commits, first_iteration_duration) # Return the commits info and repository attributes
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits - last_execution_progress[0], unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
+   with tqdm(total=number_of_commits - last_execution_progress[0], unit=f" {BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
       for commit in Repository(repository_url, from_commit=last_execution_progress[1]).traverse_commits(): # Loop through the commits of the repository
          lines_added, lines_removed, code_churn = calculate_code_churn(commit) # Calculate the code churn for the commit
          modified_files_count = len(commit.modified_files) # Number of modified files

@@ -112,12 +112,12 @@ def generate_refactorings_concurrently(repository_name):
 
    threads = [] # List of threads
    # For each class or method to be analyzed, wrap the iteration with tqdm for a progress bar
-   for classname, variable_attribute in tqdm(FILES_TO_ANALYZE.items(), desc="Processing Refactorings", unit="file"):
+   for classname, variable_attribute in tqdm(FILES_TO_ANALYZE.items(), desc="Processing Refactorings", unit=" file"):
       thread = threading.Thread(target=generate_commit_refactorings_for_class_or_methods, args=(repository_name, classname, variable_attribute,)) # Create a thread
       threads.append(thread) # Append the thread to the list of threads
       thread.start() # Start the thread
    
-   for thread in tqdm(threads, desc="Joining Threads", unit="thread"): # For each thread, also show progress for joining
+   for thread in tqdm(threads, desc="Joining Threads", unit=" thread"): # For each thread, also show progress for joining
       thread.join() # Wait for the thread to finish
 
 def process_repository(repository_name, repository_url):

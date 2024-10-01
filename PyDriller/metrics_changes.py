@@ -523,7 +523,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	total_files = sum(file == CK_CSV_FILE for _, _, files in os.walk(repository_ck_metrics_path) for file in files) # Get the total number of files in the directory
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
-	with tqdm(total=total_files, unit=f"{BackgroundColors.GREEN}Processing all of the {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} CSV Files{Style.RESET_ALL}") as progress_bar:
+	with tqdm(total=total_files, unit=f" {BackgroundColors.GREEN}Processing all of the {BackgroundColors.CYAN}{repository_ck_metrics_path.split('/')[-1]} CSV Files{Style.RESET_ALL}") as progress_bar:
 		for root, subdirs, files in os.walk(repository_ck_metrics_path): # Walk through the directory
 			subdirs.sort(key=lambda x: int(x.split("-")[0])) # Sort the subdirectories in ascending order by the substring that comes before the "-"
 			for dir in subdirs: # For each subdirectory
@@ -1223,7 +1223,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the Metrics Track Record Dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
 	progress_description = generate_progress_bar_description() # Generate the description for the progress bar
-	with tqdm(total=len(metrics_track_record), unit=f"{progress_description}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
+	with tqdm(total=len(metrics_track_record), unit=f" {progress_description}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
 		for iteration, (identifier, record) in enumerate(metrics_track_record.items(), start=1): # For each identifier and record in the metrics_track_record dictionary
 			metrics = record["metrics"] # Get the metrics list
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
