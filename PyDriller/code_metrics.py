@@ -757,7 +757,7 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          pbar.update(1) # Update the progress bar
 
    elapsed_time = time.time() - start_time # Calculate elapsed time
-   show_execution_time(first_iteration_duration, elapsed_time, number_of_commits, repository_name) # Show the execution time of the CK metrics generator
+   show_execution_time(first_iteration_duration, elapsed_time, number_of_commits - last_execution_progress[0], repository_name) # Show the execution time of the CK metrics generator
 
    return commits_info, get_repository_attributes(repository_name, number_of_commits, elapsed_time) # Return the commits info and repository attributes
 
