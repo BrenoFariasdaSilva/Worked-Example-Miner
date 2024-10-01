@@ -30,7 +30,6 @@ MINIMUM_CHANGES = 1 # The minimum number of changes a class/method should have t
 DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
-SUBSTANTIAL_CHANGE_METRICS = ["CBO"] # The desired metrics to search for substantial changes
 METRICS_INDEXES = {"CBO": 0, "DIT": 1, "LCOM": 2, "LOC": 3, "NOC": 4, "RFC": 5, "WMC": 6} # The position of the metrics in the metrics list
 NUMBER_OF_METRICS = len(METRICS_INDEXES.keys()) # The number of metrics
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
@@ -1277,7 +1276,7 @@ def sort_csv_by_percentual_variation(repository_name):
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-	for metric_name in SUBSTANTIAL_CHANGE_METRICS: # For each metric name in the METRICS_INDEXES dictionary
+	for metric_name in METRICS_INDEXES.keys(): # For each metric name in the METRICS_INDEXES dictionary
 		data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}") # Read the csv file
 		data = data.sort_values(by=["Percentual Variation"], ascending=False) # Sort the csv file by the percentual variation of the metric
 		data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}", index=False) # Write the sorted csv file to a new csv file
