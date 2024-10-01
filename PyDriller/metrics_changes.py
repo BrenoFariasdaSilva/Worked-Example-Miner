@@ -26,7 +26,7 @@ from code_metrics import get_directories_size_in_gb, setup_process_repository, v
 
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
-MINIMUM_CHANGES = 1 # The minimum number of changes a method should have to be considered
+MINIMUM_CHANGES = 1 # The minimum number of changes a class/method should have to be considered
 DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
@@ -186,7 +186,7 @@ def generate_commit_modified_files_dict(repository_name):
 	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits(): # Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
 		commit_modified_files_dict[commit.hash] = [] # Initialize the commit hash list
 		for modified_file in commit.modified_files: # For each modified file in the commit
-			commit_modified_files_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff d
+			commit_modified_files_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff
 
 	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths for each commit
 
@@ -301,8 +301,8 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 	"""
 	Updates the metrics track record with new metrics information.
 
-	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
-	:param identifier: The identifier (method or class name) to be added or updated
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
+	:param identifier: The identifier (class or method name) to be added or updated
 	:param commit_number: The commit number of the current row
 	:param ck_metrics: A tuple containing the CK metrics (CBO, WMC, RFC)
 	:param methods_invoked: The method invoked str or methodsInvokedQty int
@@ -460,8 +460,8 @@ def update_code_churn_and_file_info(metrics_track_record, identifier, lines_adde
 	"""
 	Updates the code churn and file modification information in the metrics track record.
 
-	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
-	:param identifier: The identifier (method or class name) to be updated
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
+	:param identifier: The identifier (class or method name) to be updated
 	:param lines_added: The number of lines added
 	:param lines_deleted: The number of lines deleted
 	:param code_churn_value: The code churn value
@@ -479,15 +479,15 @@ def update_code_churn_and_file_info(metrics_track_record, identifier, lines_adde
 
 def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record):
 	"""
-	Processes a csv file containing the metrics of a method or class.
+	Processes a csv file containing the metrics of a class or method.
 
 	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files list as values
 	:param file_path: The path to the csv file
-	:param metrics_track_record: A dictionary containing the track record of the metrics of each method or class
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
 	:return: None
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the csv file containing the metrics of a method or class...{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the csv file containing the metrics of a class or method...{Style.RESET_ALL}")
 
 	with open(file_path, "r") as csvfile: # Open the csv file
 		reader = csv.DictReader(csvfile) # Read the csv file
@@ -1170,12 +1170,12 @@ def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values
 	Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
 
 	:param csv_writer: The csv writer object
-	:param id: The id of the method
-	:param key: The key of the method
-	:param metrics: The list of metrics
-	:param metrics_values: The list of metrics values
-	:param first_commit_hash: The first commit hash of the method
-	:param last_commit_hash: The last commit hash of the method
+	:param id: The id of the class/method
+	:param key: The key of the class/method
+	:param metrics: The list of metrics for the class/method
+	:param metrics_values: The list of metrics values for the class/method
+	:param first_commit_hash: The first commit hash of the class/method
+	:param last_commit_hash: The last commit hash of the class/method
 	:return: None
 	"""
 
@@ -1301,7 +1301,7 @@ def sort_csv_by_percentual_variation(repository_name):
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
-	for metric_name in SUBSTANTIAL_CHANGE_METRICS:
+	for metric_name in SUBSTANTIAL_CHANGE_METRICS: # For each metric name in the METRICS_INDEXES dictionary
 		data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}") # Read the csv file
 		data = data.sort_values(by=["Percentual Variation"], ascending=False) # Sort the csv file by the percentual variation of the metric
 		data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}", index=False) # Write the sorted csv file to a new csv file
@@ -1393,7 +1393,7 @@ def process_repository(repository_name, repository_url):
 	
 	create_directories(repository_name) # Create the desired directory if it does not exist
 
-	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path) # Traverse the directory and get the method metrics
+	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path) # Traverse the directory and get the classes/methods metrics
 
 	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record) # Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
 
@@ -1410,7 +1410,7 @@ def process_repository(repository_name, repository_url):
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
 
 	elapsed_time = time.time() - start_time # Calculate the elapsed time
-	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
+	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS.capitalize()}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
 	output_time(elapsed_time_string, round(elapsed_time, 2)) # Output the elapsed time
 
 def process_all_repositories():
@@ -1422,7 +1422,7 @@ def process_all_repositories():
 
 	for repository_name, repository_url in DEFAULT_REPOSITORIES.items(): # Loop through the DEFAULT_REPOSITORIES dictionary
 		print(f"") # Print an empty line
-		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{', '.join([key.title() for key in sorted(RUN_FUNCTIONS.keys())])}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{', '.join([key.title() for key in sorted(RUN_FUNCTIONS.keys())])}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS.capitalize()}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name, repository_url) # Process the current repository
 		print(f"\n------------------------------------------------------------") # Print a separator
 
