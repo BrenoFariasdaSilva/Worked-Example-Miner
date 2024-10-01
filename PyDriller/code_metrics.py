@@ -464,18 +464,18 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the last execution progress of the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    lines = read_progress_file(saved_progress_file) # Read the progress file
-   commits_info = [], last_commit_number = 0, last_commit_hash = None # Initialize the variables
+   commits_info = [], last_execution_progress = [0, None] # Initialize the variables
 
    if lines: # If there are lines in the progress file
-      commits_info, last_commit_number, last_commit_hash = parse_commit_info(lines) # Parse the commit information
-      percentage_progress = calculate_percentage_progress(last_commit_number, number_of_commits) # Calculate the percentage progress
+      commits_info, last_execution_progress[0], last_execution_progress[1] = parse_commit_info(lines) # Parse the commit information
+      percentage_progress = calculate_percentage_progress(last_execution_progress[0], number_of_commits) # Calculate the percentage progress
       print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing at {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
       execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
-      output_time(execution_time, number_of_commits - last_commit_number) # Output estimated time for remaining iterations
+      output_time(execution_time, number_of_commits - last_execution_progress[0]) # Output estimated time for remaining iterations
    else:
       write_progress_file(saved_progress_file, commits_info) # Create the file if no progress exists
 
-   return commits_info, last_commit_number, last_commit_hash # Return the commits_info and last_commit_number
+   return commits_info, last_execution_progress # Return the commits_info and last_commit_number
 
 def generate_diffs(repository_name, commit, commit_number):
    """
@@ -713,18 +713,17 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
-   commit_number = 1 # The current commit number
    saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
 
-   commits_info, last_commit_number, last_commit_hash = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits) # Get the last execution progress of the repository
+   commits_info, last_execution_progress = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits) # Get the last execution progress of the repository
+   commit_number = 1 if last_execution_progress[0] == 0 else last_execution_progress[0] + 1 # Set the commit number to 1 if the last commit number is 0, otherwise increment the last commit number
+
+   if last_execution_progress[0] == number_of_commits: # Return if the last commit number is equal to the total number of commits
+      return commits_info, get_repository_attributes(repository_name, number_of_commits, first_iteration_duration) # Return the commits info and repository attributes
 
    # Create a progress bar with the total number of commits
-   with tqdm(total=number_of_commits - last_commit_number, unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
-      for commit in Repository(repository_url).traverse_commits(): # Loop through the commits of the repository
-         if commit_number < last_commit_number: # If the current commit number is less than the last commit number
-            commit_number += 1 # Increment the commit number
-            pbar.update(1) # Update the progress bar
-            continue # Jump to the next iteration
+   with tqdm(total=number_of_commits - last_execution_progress[0], unit=f"{BackgroundColors.GREEN}Traversing the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} commit tree{Style.RESET_ALL}", unit_scale=True) as pbar:
+      for commit in Repository(repository_url, from_commit=last_execution_progress[1]).traverse_commits(): # Loop through the commits of the repository
          lines_added, lines_removed = sum(file.added_lines for file in commit.modified_files), sum(file.deleted_lines for file in commit.modified_files) # Lines added and removed
          code_churn = lines_added + lines_removed # Code Churn as the sum of lines added and removed, due to avoid the 0 values when the number of lines added and removed are equal
          modified_files_count = len(commit.modified_files) # Number of modified files
