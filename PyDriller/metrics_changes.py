@@ -1255,7 +1255,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 			variable_attribute = get_clean_id(identifier.split(" ")[1]) # Get the variable attribute which could be the type of the class or the method name
 
 			if metrics: # If the metrics list is not empty
-				setup_write_metrics_track_record_to_txt(repository_name, identifier, metrics, record, iteration) if RUN_FUNCTIONS["Metrics Track Record"] else None # Setup the writing of the metrics track record to a txt file
+				setup_write_metrics_track_record_to_txt(repository_name, identifier, metrics, iteration) if RUN_FUNCTIONS["Metrics Track Record"] else None # Setup the writing of the metrics track record to a txt file
 				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Evolution"] else None # Setup the writing of the metrics evolution to a CSV file
 				setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["Metrics Decrease"] else None # Verify if substantial decrease
 				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["Linear Regression"] else None # Generate linear regression graphics
