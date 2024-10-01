@@ -1149,39 +1149,37 @@ def calculate_metric_statistics(metric_values):
 
 	return metric_min, metric_max, metric_avg, metric_q3 # Return the metric statistics
 
-def write_method_metrics_statistics(csv_writer, id, key, metrics, metrics_values, first_commit_hash, last_commit_hash):
+def write_method_metrics_statistics(csv_writer, id, key, record, first_commit_hash, last_commit_hash):
 	"""
 	Calculates the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
 
 	:param csv_writer: The csv writer object
 	:param id: The id of the class/method
 	:param key: The key of the class/method
-	:param metrics: The list of metrics for the class/method
-	:param metrics_values: The list of metrics values for the class/method
+	:param record: A dictionary containing commit information and metric history
 	:param first_commit_hash: The first commit hash of the class/method
 	:param last_commit_hash: The last commit hash of the class/method
 	:return: None
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating statistics for method {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating statistics for class/method {BackgroundColors.CYAN}{id}{BackgroundColors.GREEN}...{Style.RESET_ALL}")
 
-	ck_metrics_stats_tuples = [calculate_metric_statistics(metrics_values[METRICS_INDEXES[metric]]) for metric in METRICS_INDEXES] # Calculate statistics for all defined metrics
+	ck_metrics_stats_tuples = [calculate_metric_statistics([record["metrics"][i][metric_position] for i in range(len(record["metrics"]))]) for metric_position in METRICS_INDEXES.values()] # Calculate statistics for all defined metrics
 	flat_ck_metrics_stats = [stat for ck_metrics_stat in ck_metrics_stats_tuples for stat in ck_metrics_stat] # Flatten the list of tuples
 
-	churn_stats = calculate_metric_statistics(metrics["code_churns"]) # Calculate statistics for code churn
-	modified_files_stats = calculate_metric_statistics(metrics["modified_files_count"]) # Calculate statistics for modified files
+	churn_stats = calculate_metric_statistics(record["code_churns"]) # Calculate statistics for code churn
+	modified_files_stats = calculate_metric_statistics(record["modified_files_count"]) # Calculate statistics for modified files
 
-	csv_writer.writerow([id, key, metrics["changed"], *churn_stats, *modified_files_stats, *flat_ck_metrics_stats, first_commit_hash, last_commit_hash, metrics["methods_invoked"]]) # Write the metrics statistics to the csv file
+	csv_writer.writerow([id, key, record["changed"], *churn_stats, *modified_files_stats, *flat_ck_metrics_stats, first_commit_hash, last_commit_hash, record["methods_invoked"]]) # Write the metrics statistics to the csv file
 
-def add_metrics_track_record_statistics(repository_name, identifier, class_name, variable_attribute, metrics, filename):
+def add_metrics_track_record_statistics(repository_name, class_name, variable_attribute, record, filename):
 	"""
 	Processes the metrics in metrics_track_record to calculate the minimum, maximum, average, and third quartile of each metric and writes it to a csv file.
 
 	:param repository_name: The name of the repository
-	:param identifier: The identifier of the method
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
-	:param metrics: A dictionary containing the metrics of each class or method
+	:param record: A dictionary containing commit information and metric history
 	:param filename: The name of the csv file
 	:return: None
 	"""
@@ -1190,35 +1188,29 @@ def add_metrics_track_record_statistics(repository_name, identifier, class_name,
 	
 	with open(filename, "a") as csvfile: # Open the csv file in write mode
 		writer = csv.writer(csvfile) # Create the csv writer
+		write_method_metrics_statistics(writer, class_name, variable_attribute, record, record["commit_hashes"][0], record["commit_hashes"][-1]) # Write the metrics statistics to the csv file
 
-		metrics_values = [] # This stores the metrics values in a list of lists of each metric
-		for i in range(0, NUMBER_OF_METRICS): # For each metric in the metrics list
-			metrics_values.append([sublist[i] for sublist in metrics["metrics"]]) # This get the metrics values of each metric occurrence in the method to get the min, max, avg, and third quartile of each metric
-
-		write_method_metrics_statistics(writer, class_name, variable_attribute, metrics, metrics_values, metrics[identifier]["commit_hashes"][0], metrics[identifier]["commit_hashes"][-1]) # Write the metrics statistics to the csv file
-
-def setup_write_metrics_statistics_to_csv(repository_name, identifier, class_name, variable_attribute, metrics, iteration):
+def setup_write_metrics_statistics_to_csv(repository_name, class_name, variable_attribute, record, iteration):
 	"""
 	Setup the writing of the metrics statistics to a CSV file.
 
 	:param repository_name: The name of the repository
-	:param identifier: The identifier of the method
 	:param class_name: The class name of the current linear regression
 	:param variable_attribute: The variable attribute (class type or method name) of the current linear regression
-	:param metrics: A list containing the metrics values for linear regression
 	:param record: A dictionary containing commit information and metric history
+	:param iteration: The current iteration of the analysis
 	:return: None
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the writing of the metrics statistics to a CSV file for {BackgroundColors.CYAN}{identifier.split(" ")[0]}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the writing of the metrics statistics to a CSV file for {BackgroundColors.CYAN}{class_name}{BackgroundColors.GREEN} in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
 	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted metrics filename
 
 	if verify_filepath_exists(unsorted_metrics_filename) and iteration == 1: # If the unsorted metrics filename exists and it is the first iteration
 		add_metrics_statistics_csv_header(unsorted_metrics_filename) # Add the metrics statistics csv header
 
-	if metrics["changed"] >= MINIMUM_CHANGES: # If the number of changes is greater than or equal to the minimum changes
-		add_metrics_track_record_statistics(repository_name, identifier, class_name, variable_attribute, metrics, unsorted_metrics_filename) # Generate the metrics track record statistics
+	if record["changed"] >= MINIMUM_CHANGES: # If the number of changes is greater than or equal to the minimum changes
+		add_metrics_track_record_statistics(repository_name, class_name, variable_attribute, record, unsorted_metrics_filename) # Generate the metrics track record statistics
 
 def process_metrics_track_record(repository_name, metrics_track_record):
 	"""
@@ -1243,8 +1235,8 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, record) if RUN_FUNCTIONS["Metrics Evolution"] else None # Setup the writing of the metrics evolution to a CSV file
 				setup_substantial_metric_decrease_for_each_metric(repository_name, class_name, variable_attribute, record, iteration) if RUN_FUNCTIONS["Metrics Decrease"] else None # Verify if substantial decrease
 				setup_linear_regression_plots(repository_name, class_name, variable_attribute, record) if RUN_FUNCTIONS["Linear Regression"] else None # Generate linear regression graphics
-				setup_write_metrics_statistics_to_csv(repository_name, identifier, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Statistics"] else None # Setup the writing of the metrics statistics to a CSV file
-
+				setup_write_metrics_statistics_to_csv(repository_name, class_name, variable_attribute, record, iteration) if RUN_FUNCTIONS["Metrics Statistics"] else None # Setup the writing of the metrics statistics to a CSV file
+			
 			progress_bar.update(1) # Update the progress bar
 
 def sort_csv_by_changes(repository_name):
