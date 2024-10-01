@@ -19,7 +19,7 @@ from dotenv import load_dotenv # For loading environment variables from .env fil
 from fpdf import FPDF # For creating PDFs
 
 # Default values that can be changed:
-VERBOSE = True # Verbose mode. If set to True, it will output messages at the start/call of each function
+VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
 DATETIME_FILTER = None # The datetime filter for the repositories
 HISTOGRAM_REPOSITORY_FIELDS = ["avg_code_churn", "avg_modified_files", "commits", "stars"] # The repository fields to create histograms
 CANDIDATES = 3 # The number of repositories to select
