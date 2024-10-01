@@ -897,7 +897,7 @@ def find_biggest_decrease(metrics_values, metric_name, commit_hashes, repository
 	biggest_change_data = [0, 0, 0.00, ""] # [From, To, Percentual Variation, Refactorings Detected]
 	commit_data = ["", "", "", "", ""] # [Biggest Change Position (i), From Commit Number, From Commit Hash, To Commit Number, To Commit Hash]
 
-	metric_values = [metric[metric_name] for metric in metrics_values] # Get the metric values for the specified metric name
+	metric_values = [metric[METRICS_INDEXES[metric_name]] for metric in metrics_values] # Get the metric values for the specified metric name
 
 	for i in range(1, len(metric_values)): # For each metric value in the metric values list
 		if metric_values[i] >= metric_values[i - 1] or metric_values[i - 1] == 0: # If the current metric value is greater than or equal to the previous metric value or the previous metric value is 0
