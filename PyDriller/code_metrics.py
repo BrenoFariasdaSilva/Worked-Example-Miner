@@ -469,7 +469,7 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
    if lines: # If there are lines in the progress file
       commits_info, last_execution_progress[0], last_execution_progress[1] = parse_commit_info(lines) # Parse the commit information
       percentage_progress = calculate_percentage_progress(last_execution_progress[0], number_of_commits) # Calculate the percentage progress
-      print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing at {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_commit_number}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_commit_hash}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
+      print(f"{BackgroundColors.GREEN}{BackgroundColors.CYAN}{repository_name.capitalize()}{BackgroundColors.GREEN} stopped executing at {BackgroundColors.CYAN}{percentage_progress}%{BackgroundColors.GREEN} of its progress in the {BackgroundColors.CYAN}{last_execution_progress[0]}º{BackgroundColors.GREEN} commit: {BackgroundColors.CYAN}{last_execution_progress[0]}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
       execution_time = f"{BackgroundColors.GREEN}Estimated time for running the remaining iterations in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: {Style.RESET_ALL}"
       output_time(execution_time, number_of_commits - last_execution_progress[0]) # Output estimated time for remaining iterations
    else:
