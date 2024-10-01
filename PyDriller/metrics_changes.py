@@ -625,14 +625,14 @@ def setup_write_metrics_track_record_to_txt(repository_name, identifier, record,
 
 	write_metrics_track_record_to_txt(filename, repository_name, identifier, record) # Write the metrics track record to a txt file
 
-def write_metrics_to_csv(repository_name, filename, unique_identifier, metrics, record):
+def write_metrics_evolution_to_csv(repository_name, filename, class_name, variable_attribute, record):
 	"""
 	Writes the metrics for a specific class or method to a CSV file.
 
 	:param repository_name: The name of the repository
 	:param filename: The path of the CSV file to write to
-	:param unique_identifier: The unique identifier (class or method name)
-	:param metrics: The metrics list for the identifier
+	:param class_name: The name of the class
+	:param variable_attribute: The variable attribute (class or method name)
 	:param record: The record containing additional information for writing
 	:return: None
 	"""
@@ -642,27 +642,27 @@ def write_metrics_to_csv(repository_name, filename, unique_identifier, metrics, 
 	with open(filename, "w") as csvfile: # Open the csv file and write the metrics to it
 		writer = csv.writer(csvfile) # Create the csv writer
 		if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-			writer.writerow(["Class", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", *[metric for metric in METRICS_INDEXES.keys()], "Methods Invoked Qty"]) # Write the header to the csv file
+			writer.writerow(["Class", "Type", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", *[metric for metric in METRICS_INDEXES.keys()], "Methods Invoked Qty"]) # Write the header to the csv file
 		else: # If the PROCESS_CLASSES constant is set to False
-			writer.writerow(["Method", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", *[metric for metric in METRICS_INDEXES.keys()], "Methods Invoked Qty"]) # Write the header to the csv file
+			writer.writerow(["Class", "Method", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", *[metric for metric in METRICS_INDEXES.keys()], "Methods Invoked Qty"]) # Write the header to the csv file
 
 		previous_metrics = None # Initialize to None for the first iteration
+		metrics = record["metrics"] # Get the metrics from the record
 
 		for i in range(len(metrics)): # For each metric in the metrics list
-			current_metrics = tuple(metrics[i][index] for index in METRICS_INDEXES.values()) # Tuple of current metrics based on METRICS_INDEXES
+			current_metrics = list(metrics[i]) # Tuple of current metrics based on METRICS_INDEXES
 			if WRITE_FULL_HISTORY or (previous_metrics is None or current_metrics != previous_metrics): # Verify if the metrics tuple is different from the previous metrics tuple
 				commit_number, commit_hash = record["commit_hashes"][i].split("-") # Split the commit hash to get the commit number and commit hash
-				writer.writerow([unique_identifier, commit_number, commit_hash, record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], *tuple(metrics[i][index] for index in range(len(METRICS_INDEXES))), record["methods_invoked"]]) # Write the unique identifier and metrics to the csv file
+				writer.writerow([class_name, variable_attribute, commit_number, commit_hash, record["code_churns"][i], record["lines_added"][i], record["lines_deleted"][i], record["modified_files_count"][i], *current_metrics, record["methods_invoked"]]) # Write the unique identifier and metrics to the csv file
 			previous_metrics = current_metrics # Update previous metrics
 
-def setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record):
+def setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, record):
 	"""
 	Sets up the writing of the metrics evolution to a CSV file.
 
 	:param repository_name: The name of the repository
 	:param class_name: The name of the class
 	:param variable_attribute: The variable attribute (class or method name)
-	:param metrics: The metrics list for the identifier
 	:param record: The record containing additional information for writing
 	:return: None
 	"""
@@ -671,7 +671,7 @@ def setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_a
 	create_directory(full_metrics_evolution_directory_path, f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}") # Create the directory where the csv file will be stored
 	metrics_filename = f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{class_name}/{variable_attribute}{CSV_FILE_EXTENSION}" # The path to the csv file
 
-	write_metrics_to_csv(repository_name, metrics_filename, class_name if PROCESS_CLASSES else variable_attribute, metrics, record) # Call the new auxiliary function
+	write_metrics_evolution_to_csv(repository_name, metrics_filename, class_name, variable_attribute, record) # Call the new auxiliary function
 
 def found_ignore_keywords(source, keywords, entity_type):
 	"""
@@ -1256,7 +1256,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 
 			if metrics: # If the metrics list is not empty
 				setup_write_metrics_track_record_to_txt(repository_name, identifier, record, iteration) if RUN_FUNCTIONS["Metrics Track Record"] else None # Setup the writing of the metrics track record to a txt file
-				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Evolution"] else None # Setup the writing of the metrics evolution to a CSV file
+				setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_attribute, record) if RUN_FUNCTIONS["Metrics Evolution"] else None # Setup the writing of the metrics evolution to a CSV file
 				setup_substantial_metric_decrease_for_each_metric(metrics, class_name, variable_attribute, record, repository_name, iteration) if RUN_FUNCTIONS["Metrics Decrease"] else None # Verify if substantial decrease
 				setup_linear_regression_plots(metrics, class_name, variable_attribute, repository_name) if RUN_FUNCTIONS["Linear Regression"] else None # Generate linear regression graphics
 				setup_write_metrics_statistics_to_csv(repository_name, identifier, class_name, variable_attribute, metrics, record) if RUN_FUNCTIONS["Metrics Statistics"] else None # Setup the writing of the metrics statistics to a CSV file
