@@ -559,7 +559,7 @@ def generate_progress_bar_description():
 
 	processes = [key.capitalize() for key, value in sorted(RUN_FUNCTIONS.items()) if value and key != "Sort by Percentual Variation"] # Get the processes that are set to True
 	metrics_description = ", ".join(processes) # Join the processes with a comma
-	progress_description = f"Generating {metrics_description}.." if processes else "Processing Metrics.." # Generate the description for the progress bar
+	progress_description = f"{BackgroundColors.GREEN}Generating {BackgroundColors.CYAN}{metrics_description}{BackgroundColors.GREEN}...{Style.RESET_ALL}" if processes else f"{BackgroundColors.GREEN}Processing Metrics..{Style.RESET_ALL}" # Generate the description for the progress bar
 
 	return progress_description # Return the description for the progress bar
 
@@ -1244,7 +1244,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
 	progress_description = generate_progress_bar_description() # Generate the description for the progress bar
-	with tqdm(total=len(metrics_track_record), unit=f" {BackgroundColors.CYAN}{progress_description}{Style.RESET_ALL}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
+	with tqdm(total=len(metrics_track_record), unit=f"{progress_description}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
 		for iteration, (identifier, record) in enumerate(metrics_track_record.items(), start=1): # For each identifier and record in the metrics_track_record dictionary
 			metrics = record["metrics"] # Get the metrics list
 			class_name = identifier.split(" ")[0] # Get the identifier which is currently the class name
