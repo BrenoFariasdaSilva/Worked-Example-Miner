@@ -605,21 +605,21 @@ def setup_write_metrics_track_record_to_txt(repository_name, identifier, record,
 	"""
 	Sets up the writing of the metrics track record to a txt file.
 
-	:param repository_name: The name of the repository
-	:param identifier: The identifier of the class or method
-	:param record: A dictionary containing the metrics of the identifier
-	:param iteration: The current iteration of the analysis
+	:param repository_name: The name of the repository.
+	:param identifier: The identifier of the class or method.
+	:param record: A dictionary containing the metrics of the identifier.
+	:param iteration: The current iteration of the analysis.
 	:return: None
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the writing of the metrics track record to a txt file for {identifier.split(' ')[0]} {identifier.split(' ')[1]} in the {repository_name} repository...{Style.RESET_ALL}")
 
-	relative_metrics_data_directory_path = f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{identifier.split(' ')[0]}/{identifier.split(' ')[1]}"
-	full_metrics_data_directory_path = f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}/{identifier.split(' ')[0]}/{identifier.split(' ')[1]}"
+	relative_metrics_data_directory_path = f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}"
+	full_metrics_data_directory_path = f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}"
 
 	create_directory(full_metrics_data_directory_path, relative_metrics_data_directory_path) # Create the directory where the metrics track record will be stored
 
-	filename = f"{full_metrics_data_directory_path}/{CLASSES_OR_METHODS}_track_record.txt" # The filename of the metrics track record
+	filename = f"{full_metrics_data_directory_path}/{CLASSES_OR_METHODS}_metrics_track_record.txt" # The filename of the metrics track record
 	os.remove(filename) if (verify_filepath_exists(filename) and iteration == 1) else None # Remove the file if it exists
 
 	write_metrics_track_record_to_txt(filename, repository_name, identifier, record) # Write the metrics track record to a txt file
