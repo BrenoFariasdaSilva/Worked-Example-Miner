@@ -700,9 +700,9 @@ def add_substantial_decrease_csv_header(csv_filename, metric_name):
 
 	expected_header = [] # The expected header list
 	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}"] + list(METRICS_INDEXES.keys()) + ["Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Method Invocations", "Refactoring Patterns"]
+		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}" + "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Method Invocations", "Refactoring Patterns"]
 	else: # If the PROCESS_CLASSES constant is set to False
-		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}"] + list(METRICS_INDEXES.keys()) + ["Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files", "Methods Invoked Qty", "Refactoring Patterns"]
+		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}" + "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Methods Invoked Qty", "Refactoring Patterns"]
 	
 	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
 		writer = csv.writer(csvfile) # Create the csv writer
@@ -930,7 +930,7 @@ def add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attri
 	with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 		writer = csv.writer(csvfile) # Create the csv writer
 		index = commit_data[0] # Get the metric position
-		writer.writerow([class_name, raw_variable_attribute] + [biggest_change_data[2]] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}"] + list(record["metrics"][index]) + [record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index], record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
+		writer.writerow([class_name, raw_variable_attribute] + [biggest_change_data[2]] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}", record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index]] + list(record["metrics"][index]) + [record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
 
 def verify_substantial_metric_decrease(repository_name, class_name, raw_variable_attribute, record, metric_name, metric_position, iteration):
 	"""
