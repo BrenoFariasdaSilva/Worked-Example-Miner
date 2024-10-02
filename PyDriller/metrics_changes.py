@@ -185,7 +185,7 @@ def generate_commit_modified_files_dict(repository_name):
 	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits(): # Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
 		commit_modified_files_dict[commit.hash] = [] # Initialize the commit hash list
 		for modified_file in commit.modified_files: # For each modified file in the commit
-			commit_modified_files_dict[commit.hash].append(modified_file.new_path) # Append the modified file path to the commit diff
+			commit_modified_files_dict[commit.hash].extend([path for path in (modified_file.old_path, modified_file.new_path) if path is not None]) # Append the modified file path to the commit diff
 
 	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths for each commit
 
@@ -1278,7 +1278,7 @@ def sort_csv_by_percentual_variation(repository_name):
 
 	for metric_name in METRICS_INDEXES.keys(): # For each metric name in the METRICS_INDEXES dictionary
 		data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}") # Read the csv file
-		data = data.sort_values(by=["Percentual Variation"], ascending=False) # Sort the csv file by the percentual variation of the metric
+		data = data.sort_values(by=[f"Percentual Variation {metric_name}"], ascending=False) # Sort the csv file by the percentual variation of the metric
 		data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}", index=False) # Write the sorted csv file to a new csv file
 
 def read_csv_as_dict(file_path):
