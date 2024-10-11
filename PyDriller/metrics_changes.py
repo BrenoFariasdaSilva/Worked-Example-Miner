@@ -355,12 +355,7 @@ def extract_inner_class_name(class_name):
 	:return: The extracted inner class name if it exists, otherwise None.
 	"""
 
-	inner_class_name = None # Initialize the inner class name to None
-
-	if "$" in class_name: # Verify if class_name contains "$", indicating a method.
-		inner_class_name = class_name[class_name.find("$") + 1:] # Extract the inner class name if it exists.
-	
-	return inner_class_name # Return the inner class name if it exists, otherwise None.
+	return class_name.split("$")[1] if "$" in class_name else None # Return inner class name if it exists
 
 def count_lines_within_method_block(line, lines_added, lines_deleted):
 	"""
