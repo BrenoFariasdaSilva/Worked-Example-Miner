@@ -315,7 +315,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 	metrics_track_record[identifier]["commit_hashes"].append(commit_number) # Append the commit number to the commit hashes list
 	metrics_track_record[identifier]["changed"] += 1 # Increment the change count
 
-def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
+def get_diff_filepath(ck_file_path, file_in_repository_path):
 	"""
 	Converts the CK file path to the diff file path.
 
@@ -328,7 +328,7 @@ def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
 
 	diff_file_path = ck_file_path.replace("ck_metrics", "diffs") # Replace the ck_metrics with diffs in the file path
 	diff_file_path = diff_file_path[:diff_file_path.rfind("/")] # Get the substring path before the last slash (excluding the last slash)
-	class_file_path = repository_file_path[repository_file_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
+	class_file_path = file_in_repository_path[file_in_repository_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
 	diff_file_path = f"{diff_file_path}/{class_file_path}.diff" # Merge the diff_file_path with the file name and the .diff extension
 
 	return diff_file_path # Return the diff file path
@@ -489,7 +489,7 @@ def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record
 			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
 
 			if was_file_modified(ck_metrics, identifier, commit_number, metrics_track_record) and commit_modified_files_dict[commit_hash]: # If the file was modified, then update the metrics track record
-				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
+				diff_file_path = get_diff_filepath(file_path, row["file"]) # Get the diff file path
 				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
 				update_code_churn_and_file_info(metrics_track_record, identifier, lines_added, lines_deleted, get_code_churn(lines_added, lines_deleted), commit_modified_files_dict, commit_hash) # Update the code churn and file info
