@@ -228,14 +228,10 @@ def get_identifier(row):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the identifier and metrics of the class or method...{Style.RESET_ALL}")
 	
-	class_name = row["class"] # Get the class name from the row
-	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-		if not valid_class_name(class_name): # If the class name is not valid (it is not a package name)
-			class_name = get_class_package_name(row["file"]) # Get the package name of the class
-		variable_attribute = row["type"] # Get the type of the class
-	else: # If the PROCESS_CLASSES constant is set to False
-		variable_attribute = row["method"] # Get the method name from the row
-	identifier = f"{class_name} {variable_attribute}" # The identifier of the class or method
+	if not valid_class_name(row["class"]): # If the class name is not valid (it is not a package name)
+		return None # Return None if the class name is not valid
+
+	identifier = f"{row["class"]} {row["type"] if PROCESS_CLASSES else row["method"]}" # The identifier of the class or method
 
 	return identifier # Return the identifier of the class or method
 
