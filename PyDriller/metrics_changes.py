@@ -357,6 +357,18 @@ def extract_inner_class_name(class_name):
 
 	return class_name.split("$")[1] if "$" in class_name else None # Return inner class name if it exists
 
+def prepare_class_base_name(class_name):
+	"""
+	Prepare the base class name and extract the last capitalized word.
+
+	:param class_name: The full class name, possibly with inner classes.
+	:return: A tuple of the base class name and the last capitalized word.
+	"""
+
+	class_base_name = class_name.split("$")[0] # Extract the base class name (without inner class)
+	last_capitalized_word = next((class_base_name[i:] for i in range(len(class_base_name) - 1, -1, -1) if class_base_name[i].isupper()), None) # Find the last capitalized word
+	return class_base_name, last_capitalized_word # Return the base class name and last capitalized word
+
 def count_lines_within_code_block(line, lines_added, lines_deleted):
 	"""
 	Count the lines added and deleted based on the diff line content inside a code block.
@@ -375,6 +387,97 @@ def count_lines_within_code_block(line, lines_added, lines_deleted):
 
 	return lines_added, lines_deleted # Return updated counts
 
+def remove_last_capitalized_word(class_base_name):
+	"""
+	Remove the last capitalized word from the class base name.
+
+	:param class_base_name: The base class name.
+	:return: The class base name without the last capitalized word.
+	"""
+
+	last_capitalized_word_position = next((i for i in range(len(class_base_name) - 1, -1, -1) if class_base_name[i].isupper()), None) # Find the position of the last capitalized word
+	return class_base_name[:last_capitalized_word_position] if last_capitalized_word_position is not None else "" # Return updated base name
+
+def find_diff_file_path(diff_file_path, class_base_name, max_levels=2):
+	"""
+	Traverse up to max_levels to find the diff file path.
+
+	:param diff_file_path: The original diff file path.
+	:param class_base_name: The base class name to search for the diff file.
+	:param max_levels: Maximum number of directory levels to go up while searching.
+	:return: The correct diff file path if found, otherwise None.
+	"""
+
+	current_class_path = f"{class_base_name}.java.diff" # Start with the full class name for the diff file
+	levels_up = 0 # Counter to track levels we have gone up
+
+	while levels_up < max_levels: # While we have not reached the maximum levels up
+		candidate_diff_file_path = os.path.join(os.path.dirname(diff_file_path), current_class_path) # Get candidate diff file path
+		if os.path.exists(candidate_diff_file_path): # If the file exists, return the path
+			return candidate_diff_file_path # Return the candidate diff file path
+
+		class_base_name = remove_last_capitalized_word(class_base_name) # Update class base name
+		current_class_path = f"{class_base_name}.java.diff" # Update current class path for the next level up
+		levels_up += 1 # Increment the levels up counter
+
+	return None # Return None if the diff file is not found within the max levels
+
+def process_diff_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted):
+	"""
+	Iterate over the lines in the diff file and count lines added or deleted.
+
+	:param java_file: The opened diff file.
+	:param last_capitalized_word: The last capitalized word of the class.
+	:param inner_class_name: The inner class name (if any).
+	:param lines_added: Current count of lines added.
+	:param lines_deleted: Current count of lines deleted.
+	:return: A tuple of the updated lines added and deleted.
+	"""
+
+	in_class_block = False # Track if we are inside the last capitalized word class block
+	open_braces_count = 0 # Track braces to determine the start and end of a class
+
+	for line in java_file: # Iterate through the lines of the Java file
+		if last_capitalized_word and f"class {last_capitalized_word}" in line and "{" in line: # If the class is found
+			in_class_block = True # Enter the class block
+			open_braces_count = 1 # Start counting braces
+
+		elif in_class_block: # If inside the class block
+			open_braces_count += line.count("{") # Increment for opening braces
+			open_braces_count -= line.count("}") # Decrement for closing braces
+
+			if open_braces_count == 0: # If braces balance out, exit the class block
+				in_class_block = False # Exit the class block
+
+		if inner_class_name and not in_class_block: # If an inner class is specified, skip lines outside the class block
+			continue # Skip the line if an inner class is specified and we are not in the class block
+
+		lines_added, lines_deleted = count_lines_within_code_block(line, lines_added, lines_deleted) # Count the lines added and deleted
+
+	return lines_added, lines_deleted # Return the updated lines added and deleted
+
+def process_diff_file(diff_file_path, last_capitalized_word, inner_class_name, lines_added, lines_deleted):
+	"""
+	Process the diff file and count lines added and deleted.
+
+	:param diff_file_path: The path to the diff file.
+	:param last_capitalized_word: The last capitalized word of the class.
+	:param inner_class_name: The inner class name (if any).
+	:param lines_added: Current count of lines added.
+	:param lines_deleted: Current count of lines deleted.
+	:return: A tuple of the updated lines added and deleted.
+	"""
+
+	try: # Try to open the diff file
+		with open(diff_file_path, "r") as java_file: # Open the diff file
+			return process_diff_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted) # Process the lines in the diff file
+
+	except FileNotFoundError: # Catch the FileNotFoundError exception
+		raise FileNotFoundError(f"{BackgroundColors.RED}Error: Diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED} not found{Style.RESET_ALL}") # Raise an error if the file is not found
+
+	except Exception as e: # Catch any other exceptions
+		raise Exception(f"{BackgroundColors.RED}Error: An error occurred while reading the diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED}: {e}{Style.RESET_ALL}") # Raise an error if an exception occurs
+
 def get_code_churn_attributes(diff_file_path, class_name):
 	"""
 	Get the code churn attributes (lines added and deleted) from the diff file path, handling inner classes if necessary.
@@ -384,69 +487,15 @@ def get_code_churn_attributes(diff_file_path, class_name):
 	:return: A tuple containing lines added and lines deleted.
 	"""
 
-	lines_added = 0 # Initialize the lines added
-	lines_deleted = 0 # Initialize the lines deleted
+	lines_added, lines_deleted = 0, 0 # Initialize the lines added and deleted
 	inner_class_name = extract_inner_class_name(class_name) # Extract the inner class name if it exists
-	class_base_name = class_name.split("$")[0] # Get the base class name
-	current_class_path = f"{class_base_name}.java.diff" # Start with the full class name
-	max_levels = 2 # Set a maximum number of levels to go up
-	levels_up = 0 # Counter to track levels we have gone up
-	last_capitalized_word = None # Position of the last capitalized word in the class base name
+	class_base_name, last_capitalized_word = prepare_class_base_name(class_name) # Get base class name and last capitalized word
+	diff_file_path = find_diff_file_path(diff_file_path, class_base_name) # Find the diff file path for the class
 
-	while levels_up < max_levels: # While we have not reached the maximum levels up
-		candidate_diff_file_path = os.path.join(os.path.dirname(diff_file_path), current_class_path) # Get the candidate diff file path
-		
-		if os.path.exists(candidate_diff_file_path): # If the file exists
-			diff_file_path = candidate_diff_file_path # Update the diff file path
-			break # Exit the loop if the file is found
-		
-		last_capitalized_word_position = 0 # Initialize the last capitalized word position to 0
-		for i in range(len(class_base_name) - 1, -1, -1): # Iterate through the class base name in reverse
-			if class_base_name[i].isupper(): # If the character is uppercase
-				last_capitalized_word_position = i # Update the last capitalized word position
-				break # Exit the loop if an uppercase character is found
-		
-		last_capitalized_word = class_base_name[last_capitalized_word_position:] # Extract the last capitalized word
-		class_base_name = class_base_name[:last_capitalized_word_position] # Update the class base name
+	if diff_file_path is None: # If no diff file is found, return 0 for added and deleted lines
+		return lines_added, lines_deleted # Return 0 for added and deleted lines
 
-		current_class_path = f"{class_base_name}.java.diff" # Update the current class path
-		levels_up += 1 # Increment the levels up counter
-
-	else: # If the maximum levels up is reached
-		return lines_added, lines_deleted # Return 0 for both if no file found
-
-	try: # Try to open the diff file
-		with open(diff_file_path, "r") as java_file: # Open the diff file
-			in_class_block = False # Track if we are inside the last capitalized word class block
-			open_braces_count = 0 # Track braces to determine the start and end of a class
-
-			for line in java_file: # Iterate through the lines of the Java file
-				if last_capitalized_word and f"class {last_capitalized_word}" in line and "{" in line: # If the class is found
-					in_class_block = True # Enter the class block
-					open_braces_count = 1 # Start counting braces
-
-				elif in_class_block: # If inside the class block
-					open_braces_count += line.count("{") # Increment for opening braces.
-					open_braces_count -= line.count("}") # Decrement for closing braces.
-
-					if open_braces_count == 0: # If braces balance out, exit the class block
-						in_class_block = False # Exit the class block
-
-				if inner_class_name and not in_class_block: # If an inner class is specified, skip lines outside the class block
-					continue # Skip the line if an inner class is specified and we are not in the class block
-
-				lines_added, lines_deleted = count_lines_within_code_block(line, lines_added, lines_deleted) # Count the lines added and deleted
-
-		if last_capitalized_word is None: # If the last capitalized word is None
-			return lines_added, lines_deleted # Return the entire file counts
-
-		return lines_added, lines_deleted # Return the tuple containing lines added and lines deleted.
-
-	except FileNotFoundError: # Catch the FileNotFoundError exception.
-		raise FileNotFoundError(f"{BackgroundColors.RED}Error: Diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED} not found{Style.RESET_ALL}") # Raise an error if the file is not found.
-
-	except Exception as e: # Catch any other exceptions.
-		raise Exception(f"{BackgroundColors.RED}Error: An error occurred while reading the diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED}: {e}{Style.RESET_ALL}") # Raise an error if an exception occurs.
+	return process_diff_file(diff_file_path, last_capitalized_word, inner_class_name, lines_added, lines_deleted) # Process the diff file
 
 def get_code_churn(lines_added, lines_deleted):
 	"""
