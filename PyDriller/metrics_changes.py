@@ -317,21 +317,21 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 
 def get_diff_filepath(ck_file_path, file_in_repository_path):
 	"""
-	Converts the CK file path to the diff file path.
+	Get the diff file path from the CK file path and the repository file path.
 
 	:param ck_file_path: The CK file path
-	:param repository_file_path: The repository file path
+	:param file_in_repository_path: The path of the file in the repository
 	:return: The diff file path
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Converting the CK file path to the diff file path...{Style.RESET_ALL}")
 
-	diff_file_path = ck_file_path.replace("ck_metrics", "diffs") # Replace the ck_metrics with diffs in the file path
-	diff_file_path = diff_file_path[:diff_file_path.rfind("/")] # Get the substring path before the last slash (excluding the last slash)
-	class_file_path = file_in_repository_path[file_in_repository_path.rfind("/") + 1:] # Merge the diff_file_path with the file name
-	diff_file_path = f"{diff_file_path}/{class_file_path}.diff" # Merge the diff_file_path with the file name and the .diff extension
+	filename = file_in_repository_path.split("/")[-1]
+	diff_dir = ck_file_path.replace("ck_metrics", "diffs") # Get the diff directory
+	diff_dir = diff_dir[:diff_dir.rfind("/")] # Remove everything after the last slash (including the slash)
+	diff_filepath = f"{diff_dir}/{filename}" # Get the diff filename
 
-	return diff_file_path # Return the diff file path
+	return diff_filepath # Return the diff file path
 
 def convert_ck_classname_to_filename_format(ck_classname):
 	"""
