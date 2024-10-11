@@ -367,12 +367,10 @@ def count_lines_within_code_block(line, lines_added, lines_deleted):
 	:return: Updated counts of lines added and deleted.
 	"""
 
-	# Count added lines (starting with "+", excluding diff file headers)
-	if line.startswith("+") and not line.startswith("+++"):
+	if line.startswith("+") and not line.startswith("+++"): # Count added lines (starting with "+", excluding diff file headers)
 		lines_added += 1 # Increment the lines added
 
-	# Count deleted lines (starting with "-", excluding diff file headers)
-	elif line.startswith("-") and not line.startswith("---"):
+	elif line.startswith("-") and not line.startswith("---"): # Count deleted lines (starting with "-", excluding diff file headers)
 		lines_deleted += 1 # Increment the lines deleted
 
 	return lines_added, lines_deleted # Return updated counts
