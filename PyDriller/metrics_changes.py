@@ -472,12 +472,12 @@ def update_code_churn_and_file_info(metrics_track_record, identifier, lines_adde
 	modified_files_count = len(commit_modified_files_dict[commit_hash]) # Get the number of modified files for the current commit hash
 	metrics_track_record[identifier]["modified_files_count"].append(modified_files_count) # Append the modified files count to the modified files count list
 
-def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record):
+def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record):
 	"""
 	Processes a csv file containing the metrics of a class or method.
 
-	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files list as values
 	:param file_path: The path to the csv file
+	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files list as values
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
 	:return: None
 	"""
@@ -495,7 +495,6 @@ def process_csv_file(commit_modified_files_dict, file_path, metrics_track_record
 			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
 
 			if was_file_modified(commit_modified_files_dict, commit_hash, row): # If the file was modified, then update the metrics track record
-				update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked) # Update the metrics track record
 				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
 				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
@@ -525,7 +524,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 			for dir in subdirs: # For each subdirectory
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 					if file == CK_CSV_FILE: # If the file is the desired csv file
-						process_csv_file(commit_modified_files_dict, os.path.join(root, os.path.join(dir, file)), metrics_track_record) # Process the csv file
+						process_csv_file(os.path.join(root, os.path.join(dir, file)), commit_modified_files_dict, metrics_track_record) # Process the csv file
 						file_count += 1 # Increment the file count
 						progress_bar.update(1) # Update the progress bar
 
