@@ -364,15 +364,18 @@ def convert_ck_classname_to_filename_format(ck_classname):
 
 def extract_inner_class_name(class_name):
 	"""
-	Extracts the method name from the class name if the class name contains a "$" symbol.
+	Extracts the inner class name from the class name, which starts with a "$".
 
 	:param class_name: The class name which may contain a method name.
-	:return: The extracted method name, or None if no method name is found.
+	:return: The extracted inner class name if it exists, otherwise None.
 	"""
 
+	inner_class_name = None # Initialize the inner class name to None
+
 	if "$" in class_name: # Verify if class_name contains "$", indicating a method.
-		return class_name[class_name.find("$") + 1:class_name.find(".", class_name.find("$"))] # Extract the method name.
-	return None # Return None if no method is found.
+		inner_class_name = class_name[class_name.find("$") + 1:] # Extract the inner class name if it exists.
+	
+	return inner_class_name # Return the inner class name if it exists, otherwise None.
 
 def count_lines_within_method_block(line, lines_added, lines_deleted):
 	"""
