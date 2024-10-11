@@ -264,37 +264,28 @@ def get_methods_invoked(row):
 	
 	return methods_invoked # Return the methods_invoked of the class or method
 
-def was_file_modified(commit_modified_files_dict, commit_hash, row):
+def was_file_modified(ck_metrics, identifier, commit_number, metrics_track_record):
 	"""
 	Verifies if the file was modified.
 
-	:param commit_modified_files_dict: A dictionary containing the commit hashes as keys and the modified files paths list as values
-	:param commit_hash: The commit hash of the current row
-	:param row: The row of the csv file
+	:param ck_metrics: A tuple containing the CK metrics
+	param identifier: The identifier (class or method name) to be added or updated
+	:param commit_number: The commit number of the current row
+	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
 	:return: True if the file was modified, False otherwise
 	"""
 
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the file was modified...{Style.RESET_ALL}")
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the CK Metrics was modified since the last commit...{Style.RESET_ALL}")
 
-	modified_files_paths = commit_modified_files_dict[commit_hash] # Get the modified files list for the specified commit hash
-
-	if not modified_files_paths: # If the modified files paths list is empty
-		return False # Return False
+	if identifier not in metrics_track_record.keys(): # If the identifier is not a key in the metrics_track_record dictionary
+		return True # Return True if the identifier is not in the dictionary
 	
-	file_path = row["file"] # Get the file path from the row
-
-	path_index = file_path.find(RELATIVE_REPOSITORIES_DIRECTORY_PATH) # Calculate the file path starting after the specified directory
-
-	if path_index != -1: # If the path index is not -1
-		file_path = file_path[path_index + len(RELATIVE_REPOSITORIES_DIRECTORY_PATH) + 1:] # Get the file path starting after the specified directory
+	if commit_number not in metrics_track_record[identifier]["commit_hashes"]: # If the commit number is not in the commit hashes list
+		return True # Return True if the commit number is not in the commit hashes list
 	
-	repository_name = file_path.split("/")[0] # Get the repository name
-	file_path = file_path[len(repository_name) + 1:] # Get the file path starting after the repository name
+	ck_metrics_history = metrics_track_record[identifier]["metrics"] # Get the metrics history of the class or method
 
-	for modified_file_path in modified_files_paths: # Iterate through the modified files paths
-		if modified_file_path == file_path: # If the modified file path is equal to the file path, then the file was modified
-			return True # The file was modified
-	return False # The file was not modified
+	return True if ck_metrics != ck_metrics_history[-1] else False # Return True if the CK Metrics was modified since the last commit, otherwise return False
 
 def update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked):
 	"""
