@@ -284,8 +284,12 @@ def was_file_modified(ck_metrics, identifier, commit_number, metrics_track_recor
 		return True # Return True if the commit number is not in the commit hashes list
 	
 	ck_metrics_history = metrics_track_record[identifier]["metrics"] # Get the metrics history of the class or method
+	commit_numbers_history = metrics_track_record[identifier]["commit_hashes"] # Get the commit numbers history of the class or method
+	
+	if ck_metrics != ck_metrics_history[-1] and commit_number != commit_numbers_history[-1]: # If the CK Metrics was modified since the last commit
+		return True # Return True if the CK Metrics was modified since the last commit, otherwise return False
 
-	return True if ck_metrics != ck_metrics_history[-1] else False # Return True if the CK Metrics was modified since the last commit, otherwise return False
+	return False # Return False if the CK Metrics was not modified since the last commit
 
 def update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked):
 	"""
