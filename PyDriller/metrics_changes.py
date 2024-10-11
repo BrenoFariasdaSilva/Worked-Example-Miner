@@ -1310,7 +1310,7 @@ def sort_csv_by_changes(repository_name):
 		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is empty after the header.{Style.RESET_ALL}")
 		return # Return if the file is empty after the header
 	
-	data = data.sort_values(by=["changed"], ascending=False) # Sort the csv file by the number of changes
+	data = data.sort_values(by=["Changed"], ascending=False) # Sort the csv file by the number of changes
 	
 	sorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}" # The sorted csv file path
 	
