@@ -494,7 +494,7 @@ def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record
 			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number from the file path
 			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
 
-			if was_file_modified(commit_modified_files_dict, commit_hash, row): # If the file was modified, then update the metrics track record
+			if was_file_modified(ck_metrics, identifier, commit_number, metrics_track_record) and commit_modified_files_dict[commit_hash]: # If the file was modified, then update the metrics track record
 				diff_file_path = convert_ck_filepath_to_diff_filepath(file_path, row["file"]) # Convert the CK file path to the diff file path
 				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
