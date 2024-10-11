@@ -362,7 +362,7 @@ def convert_ck_classname_to_filename_format(ck_classname):
 
 	return filename_format # Return the converted classname in filename format
 
-def extract_method_name(class_name):
+def extract_inner_class_name(class_name):
 	"""
 	Extracts the method name from the class name if the class name contains a "$" symbol.
 
@@ -405,7 +405,7 @@ def get_code_churn_attributes(diff_file_path, class_name):
 
 	lines_added = 0 # Initialize the lines added
 	lines_deleted = 0 # Initialize the lines deleted
-	method_name = extract_method_name(class_name) # Extract the method name from the class name
+	method_name = extract_inner_class_name(class_name) # Extract the method name from the class name
 
 	# Variables to track whether we're inside the relevant method block (if applicable)
 	in_method_block = False # Track if we are inside the method block
