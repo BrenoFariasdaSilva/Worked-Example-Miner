@@ -614,9 +614,8 @@ def setup_write_metrics_track_record_to_txt(repository_name, identifier, record,
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the writing of the metrics track record to a txt file for {identifier.split(' ')[0]} {identifier.split(' ')[1]} in the {repository_name} repository...{Style.RESET_ALL}")
 
-	initial_file_path = f"{repository_name}/{CLASSES_OR_METHODS}_metrics_track_record.txt" # The initial file path
-	create_directory(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{initial_file_path}", f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{initial_file_path}") # Create the directory where the metrics track record will be stored
-	filename = f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{initial_file_path}" # The filename of the metrics track record
+	initial_file_path = f"{CLASSES_OR_METHODS}_metrics_track_record.txt" # The initial file path
+	filename = f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}/{initial_file_path}" # The filename of the metrics track record
 	os.remove(filename) if (verify_filepath_exists(filename) and iteration == 1) else None # Remove the file if it exists
 
 	write_metrics_track_record_to_txt(filename, repository_name, identifier, record) # Write the metrics track record to a txt file
