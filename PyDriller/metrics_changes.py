@@ -170,24 +170,28 @@ def create_directories(repository_name):
 	create_directory(FULL_METRICS_PREDICTION_DIRECTORY_PATH, RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
 
-def generate_repository_commits_modified_files_dict(repository_name):
+def generate_repository_commits_modified_files_dict(repository_name, commit_hash=None):
 	"""
-	Generates a dictionary of the modified files path list for each commit.
+	Generates a dictionary of the modified files path list for each commit, or for a specific commit if a commit hash is given.
 
 	:param repository_name: The name of the repository
-	:return: A dictionary containing the modified files paths list for each commit
+	:param commit_hash: The hash of a specific commit (optional). If provided, only that commit's modified files will be listed.
+	:return: A dictionary containing the modified files paths list for each commit (or for the specified commit)
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the commit dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-	commit_modified_files_dict = {} # A dictionary containing the commit hashes as keys and the modified files path list as values
+	commit_modified_files_dict = {} # A dictionary containing commit hashes as keys and the modified files path list as values
+	repo_url = DEFAULT_REPOSITORIES[repository_name] # Access the repository URL
 
-	for commit in Repository(DEFAULT_REPOSITORIES[repository_name]).traverse_commits(): # Traverse the repository and get the modified files for each commit and store it in the commit_modified_files_dict
-		commit_modified_files_dict[commit.hash] = [] # Initialize the commit hash list
-		for modified_file in commit.modified_files: # For each modified file in the commit
-			commit_modified_files_dict[commit.hash].extend([path for path in (modified_file.old_path, modified_file.new_path) if path is not None]) # Append the modified file path to the commit diff
+	if commit_hash: # Process only the given commit hash if it is provided
+		commit = next(Repository(repo_url, single=commit_hash).traverse_commits()) # Get the specific commit
+		commit_modified_files_dict[commit.hash] = [path for modified_file in commit.modified_files for path in (modified_file.old_path, modified_file.new_path) if path] # Get the modified files paths for the specific commit
+	else: # Process all commits if no specific commit hash is given
+		for commit in Repository(repo_url).traverse_commits(): # Traverse through all commits
+			commit_modified_files_dict[commit.hash] = [path for modified_file in commit.modified_files for path in (modified_file.old_path, modified_file.new_path) if path] # Get the modified files paths for each commit
 
-	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths for each commit
+	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths
 
 def valid_class_name(class_name):
 	"""
