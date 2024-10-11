@@ -384,40 +384,68 @@ def count_lines_within_method_block(line, lines_added, lines_deleted):
 
 def get_code_churn_attributes(diff_file_path, class_name):
 	"""
-	Get the code churn attributes (lines added and deleted) from the diff file path.
+	Get the code churn attributes (lines added and deleted) from the diff file path, handling inner classes if necessary.
 
 	:param diff_file_path: The diff file path.
-	:param class_name: The class name.
+	:param class_name: The class name, possibly with an inner class.
 	:return: A tuple containing lines added and lines deleted.
 	"""
 
 	lines_added = 0 # Initialize the lines added
 	lines_deleted = 0 # Initialize the lines deleted
-	method_name = extract_inner_class_name(class_name) # Extract the method name from the class name
+	inner_class_name = extract_inner_class_name(class_name) # Extract the inner class name if it exists
+	class_base_name = class_name.split("$")[0] # Get the base class name
+	current_class_path = f"{class_base_name}.java.diff" # Start with the full class name
+	max_levels = 2 # Set a maximum number of levels to go up
+	levels_up = 0 # Counter to track levels we have gone up
+	last_capitalized_word = None # Position of the last capitalized word in the class base name
 
-	# Variables to track whether we're inside the relevant method block (if applicable)
-	in_method_block = False # Track if we are inside the method block
-	open_braces_count = 0 # Track braces to determine the start and end of a method
+	while levels_up < max_levels: # While we have not reached the maximum levels up
+		candidate_diff_file_path = os.path.join(os.path.dirname(diff_file_path), current_class_path) # Get the candidate diff file path
+		
+		if os.path.exists(candidate_diff_file_path): # If the file exists
+			diff_file_path = candidate_diff_file_path # Update the diff file path
+			break # Exit the loop if the file is found
+		
+		last_capitalized_word_position = 0 # Initialize the last capitalized word position to 0
+		for i in range(len(class_base_name) - 1, -1, -1): # Iterate through the class base name in reverse
+			if class_base_name[i].isupper(): # If the character is uppercase
+				last_capitalized_word_position = i # Update the last capitalized word position
+				break # Exit the loop if an uppercase character is found
+		
+		last_capitalized_word = class_base_name[last_capitalized_word_position:] # Extract the last capitalized word
+		class_base_name = class_base_name[:last_capitalized_word_position] # Update the class base name
 
-	try: # Try to read the diff file
-		with open(diff_file_path, "r") as diff_file: # Open the diff file for reading.
-			for line in diff_file: # Loop through each line in the diff file.
-				if method_name: # If a method name is specified, search for the method block.
-					if (f" {method_name}(" in line or line.strip().endswith(f"{method_name}(")) and "{" in line: # Detect if the method signature is found in the diff (Java method pattern).
-						in_method_block = True # Enter the method block.
-						open_braces_count = 1 # Start counting braces.
+		current_class_path = f"{class_base_name}.java.diff" # Update the current class path
+		levels_up += 1 # Increment the levels up counter
 
-					elif in_method_block: # If we are inside the method block.
-						open_braces_count += line.count("{") # Increment for opening braces.
-						open_braces_count -= line.count("}") # Decrement for closing braces.
+	else: # If the maximum levels up is reached
+		return lines_added, lines_deleted # Return 0 for both if no file found
 
-						if open_braces_count == 0: # If braces balance out, exit the method block.
-							in_method_block = False
+	try: # Try to open the diff file
+		with open(diff_file_path, "r") as java_file: # Open the diff file
+			in_class_block = False # Track if we are inside the last capitalized word class block
+			open_braces_count = 0 # Track braces to determine the start and end of a class
 
-				if method_name and not in_method_block: # Only count changes inside the method block if method_name is specified
-					continue # Skip lines outside the method
-				
-				lines_added, lines_deleted = count_lines_within_method_block(line, lines_added, lines_deleted) # Count lines within the method block
+			for line in java_file: # Iterate through the lines of the Java file
+				if last_capitalized_word and f"class {last_capitalized_word}" in line and "{" in line: # If the class is found
+					in_class_block = True # Enter the class block
+					open_braces_count = 1 # Start counting braces
+
+				elif in_class_block: # If inside the class block
+					open_braces_count += line.count("{") # Increment for opening braces.
+					open_braces_count -= line.count("}") # Decrement for closing braces.
+
+					if open_braces_count == 0: # If braces balance out, exit the class block
+						in_class_block = False # Exit the class block
+
+				if inner_class_name and not in_class_block: # If an inner class is specified, skip lines outside the class block
+					continue # Skip the line if an inner class is specified and we are not in the class block
+
+				lines_added, lines_deleted = count_lines_within_method_block(line, lines_added, lines_deleted) # Count the lines added and deleted
+
+		if last_capitalized_word is None: # If the last capitalized word is None
+			return lines_added, lines_deleted # Return the entire file counts
 
 		return lines_added, lines_deleted # Return the tuple containing lines added and lines deleted.
 
