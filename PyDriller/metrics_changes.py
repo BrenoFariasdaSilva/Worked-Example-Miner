@@ -303,14 +303,14 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
 	:param identifier: The identifier (class or method name) to be added or updated
 	:param commit_number: The commit number of the current row
-	:param ck_metrics: A tuple containing the CK metrics (CBO, WMC, RFC)
+	:param ck_metrics: A tuple containing the CK metrics
 	:param methods_invoked: The method invoked str or methodsInvokedQty int
 	:return: None
 	"""
 
 	if identifier not in metrics_track_record: # If the identifier is not in the dictionary, add it
 		metrics_track_record[identifier] = { # Add the identifier to the metrics_track_record dictionary
-			"metrics": [], # The metrics list (CBO, WMC, RFC)
+			"metrics": [], # The metrics list
 			"commit_hashes": [], # The commit hashes list
 			"changed": 0, # The number of times the metrics changed
 			"code_churns": [], # The code churns values list
@@ -319,14 +319,10 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 			"modified_files_count": [], # The modified files count list
 			"methods_invoked": methods_invoked, # The methods_invoked str or methodsInvokedQty int
 		}
-	
-	metrics_changes = metrics_track_record[identifier]["metrics"] # Get the metrics list
-	commit_hashes = metrics_track_record[identifier]["commit_hashes"] # Get the commit hashes list
 
-	if commit_number not in commit_hashes or ck_metrics not in metrics_changes: # Only append the metrics if not already added in the track record
-		metrics_changes.append(ck_metrics) # Append the metrics to the metrics list
-		metrics_track_record[identifier]["changed"] += 1 # Increment the change count
-		commit_hashes.append(commit_number) # Append the commit number to the commit hashes list
+	metrics_track_record[identifier]["metrics"].append(ck_metrics) # Append the metrics to the metrics list
+	metrics_track_record[identifier]["commit_hashes"].append(commit_number) # Append the commit number to the commit hashes list
+	metrics_track_record[identifier]["changed"] += 1 # Increment the change count
 
 def convert_ck_filepath_to_diff_filepath(ck_file_path, repository_file_path):
 	"""
