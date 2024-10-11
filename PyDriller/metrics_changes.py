@@ -333,25 +333,19 @@ def get_diff_filepath(ck_file_path, file_in_repository_path):
 
 	return diff_filepath # Return the diff file path
 
-def convert_ck_classname_to_filename_format(ck_classname):
+def convert_ck_classname_to_filename_format(diff_filepath, ck_classname):
 	"""
-	Convert CK classname format (e.g., com.houarizegai.calculator.Calculator$Anonymous14)
-	to the filename format used by code churn (e.g., com/houarizegai/calculator/Calculator$14).
+	Convert CK classname format to the filename format used by code churn
 	
-	:param ck_classname: The classname from the CK tool (e.g., com.houarizegai.calculator.Calculator$Anonymous14).
-	:return: The converted classname in filename format (e.g., com/houarizegai/calculator/Calculator$14).
+	:param diff_filepath: The path to the diff file.
+	:param ck_classname: The classname from the CK tool
+	:return: The converted classname in filename format
 	"""
 	
-	package_path = ck_classname.rsplit(".", 1)[0].replace(".", "/") # Replace dots with slashes except for the class and anonymous part
-	
-	class_part = ck_classname.rsplit(".", 1)[-1] # Get the class and anonymous part (e.g., Calculator$Anonymous14)
-	
-	if "Anonymous" in class_part: # If it's an anonymous class (e.g., Calculator$Anonymous14), convert it to Calculator$14
-		class_part = class_part.replace("Anonymous", "") # Remove the "Anonymous" part
-
-	filename_format = f"{package_path}/{class_part}.java" # Construct the full path
-
-	return filename_format # Return the converted classname in filename format
+	filename = diff_filepath.split("/")[-1] # Get the filename from the diff file path
+	filename = filename[:filename.find(".")] # Remove the extension from the filename
+	classname = ck_classname[ck_classname.find(filename):] # Get the classname from the CK classname
+	return classname.replace("/", ".") # Replace the dots with slashes
 
 def extract_inner_class_name(class_name):
 	"""
@@ -490,7 +484,7 @@ def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record
 
 			if was_file_modified(ck_metrics, identifier, commit_number, metrics_track_record) and commit_modified_files_dict[commit_hash]: # If the file was modified, then update the metrics track record
 				diff_file_path = get_diff_filepath(file_path, row["file"]) # Get the diff file path
-				class_name = convert_ck_classname_to_filename_format(row["class"]) # Convert the CK class name to the filename format
+				class_name = convert_ck_classname_to_filename_format(diff_file_path, row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_file_path, class_name) # Get the code churn attributes
 				update_code_churn_and_file_info(metrics_track_record, identifier, lines_added, lines_deleted, get_code_churn(lines_added, lines_deleted), commit_modified_files_dict, commit_hash) # Update the code churn and file info
 
