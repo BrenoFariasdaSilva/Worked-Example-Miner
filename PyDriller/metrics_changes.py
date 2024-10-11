@@ -357,9 +357,9 @@ def extract_inner_class_name(class_name):
 
 	return class_name.split("$")[1] if "$" in class_name else None # Return inner class name if it exists
 
-def count_lines_within_method_block(line, lines_added, lines_deleted):
+def count_lines_within_code_block(line, lines_added, lines_deleted):
 	"""
-	Count the lines added and deleted based on the diff line content.
+	Count the lines added and deleted based on the diff line content inside a code block.
 
 	:param line: The current line from the diff file.
 	:param lines_added: The current count of lines added.
@@ -437,7 +437,7 @@ def get_code_churn_attributes(diff_file_path, class_name):
 				if inner_class_name and not in_class_block: # If an inner class is specified, skip lines outside the class block
 					continue # Skip the line if an inner class is specified and we are not in the class block
 
-				lines_added, lines_deleted = count_lines_within_method_block(line, lines_added, lines_deleted) # Count the lines added and deleted
+				lines_added, lines_deleted = count_lines_within_code_block(line, lines_added, lines_deleted) # Count the lines added and deleted
 
 		if last_capitalized_word is None: # If the last capitalized word is None
 			return lines_added, lines_deleted # Return the entire file counts
