@@ -170,7 +170,7 @@ def create_directories(repository_name):
 	create_directory(FULL_METRICS_PREDICTION_DIRECTORY_PATH, RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
 
-def generate_commit_modified_files_dict(repository_name):
+def generate_repository_commits_modified_files_dict(repository_name):
 	"""
 	Generates a dictionary of the modified files path list for each commit.
 
@@ -517,7 +517,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	metrics_track_record = {} # Dictionary containing the track record of the metrics of each method nor class. The key is the identifier and the value is a dictionary containing the metrics, commit hashes and the number of times the metrics changed.
 	file_count = 0 # Initialize the file count
 
-	commit_modified_files_dict = generate_commit_modified_files_dict(repository_name) # Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
+	commit_modified_files_dict = generate_repository_commits_modified_files_dict(repository_name) # Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
 	total_files = sum(file == CK_CSV_FILE for _, _, files in os.walk(repository_ck_metrics_path) for file in files) # Get the total number of files in the directory
 
 	# Iterate through each directory inside the repository_directory and call the process_csv_file function to get the methods metrics of each file
