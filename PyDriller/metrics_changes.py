@@ -280,9 +280,6 @@ def was_file_modified(ck_metrics, identifier, commit_number, metrics_track_recor
 	if identifier not in metrics_track_record.keys(): # If the identifier is not a key in the metrics_track_record dictionary
 		return True # Return True if the identifier is not in the dictionary
 	
-	if commit_number not in metrics_track_record[identifier]["commit_hashes"]: # If the commit number is not in the commit hashes list
-		return True # Return True if the commit number is not in the commit hashes list
-	
 	ck_metrics_history = metrics_track_record[identifier]["metrics"] # Get the metrics history of the class or method
 	commit_numbers_history = metrics_track_record[identifier]["commit_hashes"] # Get the commit numbers history of the class or method
 	
