@@ -773,8 +773,7 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 
 	csv_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
 
-	if verify_filepath_exists(csv_filename) and iteration == 1: # Verify if the CSV file exists and if it's the first iteration
-		add_substantial_decrease_csv_header(csv_filename, metric_name) # Add the header to the CSV file
+	add_substantial_decrease_csv_header(csv_filename, metric_name) if iteration == 1 else None # Add the header to the csv file if it does not exist
 
 	return csv_filename # Return the path to the substantial decrease file
 
@@ -1256,8 +1255,7 @@ def setup_write_metrics_statistics_to_csv(repository_name, class_name, variable_
 
 	unsorted_metrics_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted metrics filename
 
-	if verify_filepath_exists(unsorted_metrics_filename) and iteration == 1: # If the unsorted metrics filename exists and it is the first iteration
-		add_metrics_statistics_csv_header(unsorted_metrics_filename) # Add the metrics statistics csv header
+	add_metrics_statistics_csv_header(unsorted_metrics_filename) if iteration == 1 else None # Add the header to the metrics statistics CSV file if it is the first iteration
 
 	if record["changed"] >= MINIMUM_CHANGES: # If the number of changes is greater than or equal to the minimum changes
 		add_metrics_track_record_statistics(repository_name, class_name, variable_attribute, record, unsorted_metrics_filename) # Generate the metrics track record statistics
