@@ -28,8 +28,8 @@ from code_metrics import get_directories_size_in_gb, setup_process_repository, v
 VERBOSE = False # If True, then the program will output the progress of the execution
 MINIMUM_CHANGES = 1 # The minimum number of changes a class/method should have to be considered
 DESIRED_DECREASE = 0.00 # The desired decrease in the metric
-IGNORE_CLASS_NAME_KEYWORDS = ["test"] # The keywords to ignore in the class name
-IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["anonymous"] # The keywords to ignore in the variable attribute
+IGNORE_CLASS_NAME_KEYWORDS = [""] # The keywords to ignore in the class name
+IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = [""] # The keywords to ignore in the variable attribute
 METRICS_INDEXES = {"CBO": 0, "DIT": 1, "LCOM": 2, "LOC": 3, "NOC": 4, "RFC": 5, "WMC": 6} # The position of the metrics in the metrics list
 NUMBER_OF_METRICS = len(METRICS_INDEXES.keys()) # The number of metrics
 DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
