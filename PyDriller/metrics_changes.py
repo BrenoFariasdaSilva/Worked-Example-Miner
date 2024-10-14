@@ -1235,7 +1235,7 @@ def add_metrics_track_record_statistics(repository_name, class_name, variable_at
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the metrics in the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to calculate the minimum, maximum, average, and third quartile of each metric and writing it to a csv file...{Style.RESET_ALL}")
 	
-	with open(filename, "a") as csvfile: # Open the csv file in write mode
+	with open(filename, "a") as csvfile: # Open the csv file in append mode
 		writer = csv.writer(csvfile) # Create the csv writer
 		write_method_metrics_statistics(writer, class_name, variable_attribute, record, record["commit_hashes"][0], record["commit_hashes"][-1]) # Write the metrics statistics to the csv file
 
