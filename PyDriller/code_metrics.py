@@ -385,6 +385,35 @@ def read_progress_file(file_path):
 
    return lines # Return the list of dictionaries representing the commit information
 
+def copy_file(source, destination):
+   """
+   Copy the source file to the destination.
+
+   :param source: The source file to be copied.
+   :param destination: The destination file.
+   """
+
+   shutil.copyfile(source, destination) # Copy the file
+
+def get_last_execution_progress_filepath(repository_name):
+   """
+   Get the last execution progress file for the repository.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :return: The saved progress file.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the last execution progress file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+   saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
+
+   if not verify_filepath_exists(saved_progress_file): # Verify if the CK metrics directory exists
+      commits_list_file = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the commits list file
+      copy_file(commits_list_file, saved_progress_file) # Copy the progress file to the CK metrics directory
+      saved_progress_file = commits_list_file # The path to the saved progress file
+   
+   return saved_progress_file # Get the last execution progress
+
 def parse_commit_info(lines):
    """
    Parse commit information from the lines of the progress file.
@@ -450,16 +479,6 @@ def write_progress_file(file_path, commits_tuple_list):
       for commit_tuple in commits_tuple_list: # Loop through the commits tuple list
          writer.writerow(commit_tuple) # Write the current commit tuple to the CSV file
 
-def copy_file(source, destination):
-   """
-   Copy the source file to the destination.
-
-   :param source: The source file to be copied.
-   :param destination: The destination file.
-   """
-
-   shutil.copyfile(source, destination) # Copy the file
-
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
    Gets the last execution progress of the repository.
@@ -486,25 +505,6 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
       write_progress_file(saved_progress_file, commits_info) # Create the file if no progress exists
 
    return commits_info, last_execution_progress # Return the commits_info and last_commit_number
-
-def get_last_execution_progress_filepath(repository_name):
-   """
-   Get the last execution progress file for the repository.
-
-   :param repository_name: Name of the repository to be analyzed.
-   :return: The saved progress file.
-   """
-
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the last execution progress file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-
-   saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
-
-   if not verify_filepath_exists(saved_progress_file): # Verify if the CK metrics directory exists
-      commits_list_file = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the commits list file
-      copy_file(commits_list_file, saved_progress_file) # Copy the progress file to the CK metrics directory
-      saved_progress_file = commits_list_file # The path to the saved progress file
-   
-   return saved_progress_file # Get the last execution progress
 
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
