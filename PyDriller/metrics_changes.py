@@ -549,6 +549,10 @@ def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record
 
 		for row in reader: # For each row in the csv file
 			identifier = get_identifier(row) # Get the identifier of the class or method
+
+			if not identifier: # If the identifier is None, skip the row
+				continue # Skip the row if the identifier is None
+
 			ck_metrics = get_ck_metrics_tuple(row) # Get the metrics of the class or method
 			methods_invoked = get_methods_invoked(row) # Get the method invoked of the class or method
 			
