@@ -572,7 +572,6 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Traversing the directory and processing all the csv files for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
 	metrics_track_record = {} # Dictionary containing the track record of the metrics of each method nor class. The key is the identifier and the value is a dictionary containing the metrics, commit hashes and the number of times the metrics changed.
-	file_count = 0 # Initialize the file count
 
 	commit_modified_files_dict = generate_repository_commits_modified_files_dict(repository_name) # Generate the commit modified files dictionary, having the commit hashes as keys and the modified files list as values
 	total_files = sum(file == CK_CSV_FILE for _, _, files in os.walk(repository_ck_metrics_path) for file in files) # Get the total number of files in the directory
@@ -585,7 +584,6 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 					if file == CK_CSV_FILE: # If the file is the desired csv file
 						process_csv_file(os.path.join(root, os.path.join(dir, file)), commit_modified_files_dict, metrics_track_record) # Process the csv file
-						file_count += 1 # Increment the file count
 						progress_bar.update(1) # Update the progress bar
 
 	return metrics_track_record # Return the method metrics, which is a dictionary containing the metrics of each method
