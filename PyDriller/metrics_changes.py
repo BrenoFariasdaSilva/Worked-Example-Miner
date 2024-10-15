@@ -264,26 +264,24 @@ def get_methods_invoked(row):
 	
 	return methods_invoked # Return the methods_invoked of the class or method
 
-def was_file_modified(ck_metrics, identifier, commit_number, metrics_track_record):
+def was_file_modified(ck_metrics, identifier, metrics_track_record):
 	"""
 	Verifies if the file was modified.
 
 	:param ck_metrics: A tuple containing the CK metrics
 	param identifier: The identifier (class or method name) to be added or updated
-	:param commit_number: The commit number of the current row
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
 	:return: True if the file was modified, False otherwise
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the CK Metrics was modified since the last commit...{Style.RESET_ALL}")
 
-	if identifier not in metrics_track_record.keys(): # If the identifier is not a key in the metrics_track_record dictionary
+	if identifier not in metrics_track_record: # If the identifier is not a key in the metrics_track_record dictionary
 		return True # Return True if the identifier is not in the dictionary
 	
 	ck_metrics_history = metrics_track_record[identifier]["metrics"] # Get the metrics history of the class or method
-	commit_numbers_history = metrics_track_record[identifier]["commit_hashes"] # Get the commit numbers history of the class or method
 	
-	if ck_metrics != ck_metrics_history[-1] and commit_number != commit_numbers_history[-1]: # If the CK Metrics was modified since the last commit
+	if ck_metrics != ck_metrics_history[-1]: # If the CK Metrics was modified since the last commit
 		return True # Return True if the CK Metrics was modified since the last commit, otherwise return False
 
 	return False # Return False if the CK Metrics was not modified since the last commit
@@ -553,7 +551,7 @@ def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record
 			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number from the file path
 			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
 
-			if was_file_modified(ck_metrics, identifier, commit_number, metrics_track_record) and commit_modified_files_dict[commit_hash]: # If the file was modified, then update the metrics track record
+			if was_file_modified(ck_metrics, identifier, metrics_track_record) and commit_modified_files_dict[commit_hash]: # If the file was modified, then update the metrics track record
 				update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked) # Update the metrics track record
 				diff_filepath = get_diff_filepath(file_path, row["file"]) # Get the diff file path
 				class_name = convert_ck_classname_to_filename_format(diff_filepath, row["class"]) # Convert the CK class name to the filename format
