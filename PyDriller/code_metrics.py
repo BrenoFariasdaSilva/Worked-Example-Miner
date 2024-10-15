@@ -477,6 +477,25 @@ def get_last_execution_progress(repository_name, saved_progress_file, number_of_
 
    return commits_info, last_execution_progress # Return the commits_info and last_commit_number
 
+def get_last_execution_progress_filepath(repository_name):
+   """
+   Get the last execution progress file for the repository.
+
+   :param repository_name: Name of the repository to be analyzed.
+   :return: The saved progress file.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the last execution progress file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+   saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
+
+   if not verify_filepath_exists(saved_progress_file): # Verify if the CK metrics directory exists
+      commits_list_file = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the commits list file
+      copy_file(commits_list_file, saved_progress_file) # Copy the progress file to the CK metrics directory
+      saved_progress_file = commits_list_file # The path to the saved progress file
+   
+   return saved_progress_file # Get the last execution progress
+
 def get_repository_attributes(repository_name, number_of_commits, elapsed_time):
    """
    Retrieves repository attributes such as the number of classes, lines of code, and directory sizes.
@@ -725,8 +744,8 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
 
    start_time = time.time() # Start measuring time
    first_iteration_duration = 0 # Duration of the first iteration
-   saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
-
+   
+   saved_progress_file = get_last_execution_progress_filepath(repository_name) # Get the file path of the saved progress file
    commits_info, last_execution_progress = get_last_execution_progress(repository_name, saved_progress_file, number_of_commits) # Get the last execution progress of the repository
    commit_number = 1 if last_execution_progress[0] == 0 else last_execution_progress[0] + 1 # Set the commit number to 1 if the last commit number is 0, otherwise increment the last commit number
 
