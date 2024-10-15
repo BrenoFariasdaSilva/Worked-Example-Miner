@@ -450,6 +450,16 @@ def write_progress_file(file_path, commits_tuple_list):
       for commit_tuple in commits_tuple_list: # Loop through the commits tuple list
          writer.writerow(commit_tuple) # Write the current commit tuple to the CSV file
 
+def copy_file(source, destination):
+   """
+   Copy the source file to the destination.
+
+   :param source: The source file to be copied.
+   :param destination: The destination file.
+   """
+
+   shutil.copyfile(source, destination) # Copy the file
+
 def get_last_execution_progress(repository_name, saved_progress_file, number_of_commits):
    """
    Gets the last execution progress of the repository.
