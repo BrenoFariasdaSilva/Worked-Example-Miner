@@ -395,6 +395,28 @@ def copy_file(source, destination):
 
    shutil.copyfile(source, destination) # Copy the file
 
+def get_commit_count_from_file(file_path):
+   """
+   Reads the last two commit numbers from the CSV file.
+
+   :param file_path: Path to the CSV file.
+   :return: The commit number from the second-to-last row (the last one is always empty).
+   """
+
+   if not os.path.exists(file_path): # Verify if the file exists
+      return 0 # Return 0 if the file does not exist
+
+   with open(file_path, "r") as file: # Open the file to read
+      reader = csv.reader(file) # Create a CSV reader
+      next(reader) # Skip header
+
+      rows = list(reader) # Convert the reader object into a list
+      if len(rows) < 2: # If there are less than two rows
+         return 0 # Return 0 if there are less than two rows
+      
+      last_commit = rows[-2][0] # Get the commit number from the second-to-last row
+      return int(last_commit) if last_commit.isdigit() else 0 # Return the commit number as an integer if it is a digit, 0 otherwise
+
 def get_last_execution_progress_filepath(repository_name):
    """
    Get the last execution progress file for the repository by verifying which file has the number of commits closest to the total. If the saved progress file doesn't exist, return the commits list file.
