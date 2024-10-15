@@ -1327,9 +1327,11 @@ def sort_csv_by_percentual_variation(repository_name):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
 	for metric_name in METRICS_INDEXES.keys(): # For each metric name in the METRICS_INDEXES dictionary
-		data = pd.read_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}") # Read the csv file
-		data = data.sort_values(by=[f"Percentual Variation {metric_name}"], ascending=False) # Sort the csv file by the percentual variation of the metric
-		data.to_csv(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}", index=False) # Write the sorted csv file to a new csv file
+		filepath = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The file path for the csv file
+		if verify_filepath_exists(filepath): # Verify if the file path exists
+			data = pd.read_csv(filepath) # Read the csv file
+			data = data.sort_values(by=[f"Percentual Variation {metric_name}"], ascending=False) # Sort the csv file by the percentual variation of the metric
+			data.to_csv(filepath, index=False) # Write the sorted csv file to a new csv file
 
 def read_csv_as_dict(file_path):
 	"""
