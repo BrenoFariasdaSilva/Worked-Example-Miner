@@ -286,13 +286,13 @@ def was_file_modified(ck_metrics, identifier, metrics_track_record):
 
 	return False # Return False if the CK Metrics was not modified since the last commit
 
-def update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked):
+def update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_metrics, methods_invoked):
 	"""
 	Updates the metrics track record with new metrics information.
 
 	:param metrics_track_record: A dictionary containing the track record of the metrics of each class or method
 	:param identifier: The identifier (class or method name) to be added or updated
-	:param commit_number: The commit number of the current row
+	:param commit_id: The commit id which is the commit number and the commit hash
 	:param ck_metrics: A tuple containing the CK metrics
 	:param methods_invoked: The method invoked str or methodsInvokedQty int
 	:return: None
@@ -311,7 +311,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_number,
 		}
 
 	metrics_track_record[identifier]["metrics"].append(ck_metrics) # Append the metrics to the metrics list
-	metrics_track_record[identifier]["commit_hashes"].append(commit_number) # Append the commit number to the commit hashes list
+	metrics_track_record[identifier]["commit_hashes"].append(commit_id) # Append the commit id to the commit hashes list
 	metrics_track_record[identifier]["changed"] += 1 # Increment the change count
 
 def get_diff_filepath(ck_file_path, file_in_repository_path):
@@ -543,16 +543,17 @@ def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record
 
 	with open(file_path, "r") as csvfile: # Open the csv file
 		reader = csv.DictReader(csvfile) # Read the csv file
+		commit_number = file_path.split("/")[-2].split("-")[0] # Get the commit number from the file path
+		commit_hash = file_path.split("/")[-2].split("-")[1] # Get the commit hash from the commit number
+		commit_id = f"{commit_number}-{commit_hash}" # Get the commit id
+
 		for row in reader: # For each row in the csv file
 			identifier = get_identifier(row) # Get the identifier of the class or method
 			ck_metrics = get_ck_metrics_tuple(row) # Get the metrics of the class or method
 			methods_invoked = get_methods_invoked(row) # Get the method invoked of the class or method
 			
-			commit_number = file_path[file_path.rfind("/", 0, file_path.rfind("/")) + 1:file_path.rfind("/")] # Get the commit number from the file path
-			commit_hash = commit_number.split("-")[1] # Get the commit hash from the commit number
-
 			if was_file_modified(ck_metrics, identifier, metrics_track_record) and commit_modified_files_dict[commit_hash]: # If the file was modified, then update the metrics track record
-				update_metrics_track_record(metrics_track_record, identifier, commit_number, ck_metrics, methods_invoked) # Update the metrics track record
+				update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_metrics, methods_invoked) # Update the metrics track record
 				diff_filepath = get_diff_filepath(file_path, row["file"]) # Get the diff file path
 				class_name = convert_ck_classname_to_filename_format(diff_filepath, row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_filepath, class_name) # Get the code churn attributes
