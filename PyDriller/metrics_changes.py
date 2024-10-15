@@ -276,7 +276,7 @@ def was_file_modified(ck_metrics, identifier, metrics_track_record):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the CK Metrics was modified since the last commit...{Style.RESET_ALL}")
 
-	if identifier not in metrics_track_record: # If the identifier is not a key in the metrics_track_record dictionary
+	if identifier not in metrics_track_record.keys(): # If the identifier is not a key in the metrics_track_record dictionary
 		return True # Return True if the identifier is not in the dictionary
 	
 	ck_metrics_history = metrics_track_record[identifier]["metrics"] # Get the metrics history of the class or method
