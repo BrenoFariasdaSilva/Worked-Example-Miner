@@ -642,7 +642,7 @@ def write_metrics_track_record_to_txt(filename, repository_name, identifier, rec
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the metrics track record for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository to a txt file...{Style.RESET_ALL}")
 
 	with open(filename, "a") as file: # Open the txt file and write the metrics_track_record to it
-		file.write(f"{identifier}: \n") # Write the key
+		file.write(f"Identifier: {identifier}: \n") # Write the key
 		file.write(f"\tMetrics: {record['metrics']}\n") # Write the metrics
 		file.write(f"\tCommit Hashes: {record['commit_hashes']}\n") # Write the commit hashes
 		file.write(f"\tChanged: {record['changed']}\n") # Write the changed value
