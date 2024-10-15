@@ -397,22 +397,31 @@ def copy_file(source, destination):
 
 def get_last_execution_progress_filepath(repository_name):
    """
-   Get the last execution progress file for the repository.
+   Get the last execution progress file for the repository by verifying which file has the number of commits closest to the total. If the saved progress file doesn't exist, return the commits list file.
 
    :param repository_name: Name of the repository to be analyzed.
-   :return: The saved progress file.
+   :return: The file path with the most progressed commits.
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Setting up the last execution progress file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    saved_progress_file = FULL_REPOSITORY_PROGRESS_FILE_PATH.replace("REPOSITORY_NAME", repository_name) # The path to the saved progress file
+   commits_list_file = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the commits list file
 
-   if not verify_filepath_exists(saved_progress_file): # Verify if the CK metrics directory exists
-      commits_list_file = f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The path to the commits list file
-      copy_file(commits_list_file, saved_progress_file) # Copy the progress file to the CK metrics directory
-      saved_progress_file = commits_list_file # The path to the saved progress file
-   
-   return saved_progress_file # Get the last execution progress
+   if not os.path.exists(saved_progress_file): # If the saved progress file does not exist
+      if os.path.exists(commits_list_file): # If the commits list file exists
+         copy_file(commits_list_file, saved_progress_file) # If it doesn't exist, return the commits list file directly
+         return commits_list_file # Return the commits list file
+      else: # If the commits list file does not exist
+         return saved_progress_file # Return the saved progress file
+         
+   saved_progress_commits = get_commit_count_from_file(saved_progress_file) # Get the commit count from the saved progress file
+   commits_list_commits = get_commit_count_from_file(commits_list_file) # Get the commit count from the commits list file
+
+   if saved_progress_commits >= commits_list_commits: # If the saved progress file has more commits
+      return saved_progress_file # Return the saved progress file
+   else: # If the commits list file has more commits
+      return commits_list_file # Return the commits list file
 
 def parse_commit_info(lines):
    """
