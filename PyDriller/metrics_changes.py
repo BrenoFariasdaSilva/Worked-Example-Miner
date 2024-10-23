@@ -947,7 +947,7 @@ def find_biggest_decrease(metric_values, commit_hashes, repository_name, class_n
 	commit_data = ["", "", "", "", ""] # [Biggest Change Position (i), From Commit Number, From Commit Hash, To Commit Number, To Commit Hash]
 
 	for i in range(1, len(metric_values)): # For each metric value in the metric values list
-		if metric_values[i] >= metric_values[i - 1] or metric_values[i - 1] == 0: # If the current metric value is greater than or equal to the previous metric value or the previous metric value is 0
+		if metric_values[i] >= metric_values[i - 1]: # If the current metric value is greater than or equal to the previous metric value
 			continue # Skip the current iteration
 
 		current_percentual_variation = round((metric_values[i - 1] - metric_values[i]) / metric_values[i - 1], 3) # Calculate the current percentual variation
