@@ -7,6 +7,7 @@ import os # For walking through directories
 import pandas as pd # For the csv file operations
 import platform # For determining the system's null device to discard output
 import select # For waiting for input with a timeout
+import subprocess # For running the RefactoringMiner
 import sys # For reading the input
 import time # For measuring the time
 from colorama import Style # For coloring the terminal
@@ -832,11 +833,15 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 
 	if not verify_filepath_exists(refactoring_file_path) or os.path.getsize(refactoring_file_path) == 0: # If the refactoring file does not exist or is empty
 		null_device = "NUL" if platform.system() == "Windows" else "/dev/null" # Determine the system's null device to discard output
-
 		setup_repository(repository_name, DEFAULT_REPOSITORIES[repository_name]) # Setup the repository
-		
-		command = f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH} -c .{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name} {commit_hash} -json {refactoring_file_path} >{null_device} 2>&1" # Run RefactoringMiner to get the refactoring data, hiding its output
-		os.system(command) # Run the command to get the RefactoringMiner data
+		command = [f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}", "-c", f".{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}", commit_hash, "-json", refactoring_file_path] # RefactoringMiner command
+
+		with open(null_device, "w") as null_output: # Open the null device to discard output
+			result = subprocess.run(command, stdout=null_output, stderr=subprocess.STDOUT) # Run the command and wait for it to finish
+
+		if result.returncode != 0: # Verify if the command failed
+			print(f"{BackgroundColors.RED}RefactoringMiner failed to generate the refactoring file for {repository_name}.{Style.RESET_ALL}")
+			return None # Return None if command failed
 
 	is_valid, message = verify_refactoring_file(refactoring_file_path) # Verify if the refactoring file was properly generated
 
@@ -889,9 +894,6 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 		generate_refactoring_file(repository_name, commit_hash, refactoring_file_path) # Generate the refactoring file
 
 	refactorings_by_filepath = {} # Initialize the dictionary to hold file paths and their corresponding refactoring types
-
-	if not verify_filepath_exists(refactoring_file_path): # If the refactoring file does not exist
-		return refactorings_by_filepath # Return an empty dictionary
 
 	with open(refactoring_file_path, "r") as file: # Open and read the refactoring file
 		data = json.load(file) # Load the JSON data
