@@ -755,9 +755,9 @@ def add_substantial_decrease_csv_header(csv_filename, metric_name):
 
 	expected_header = [] # The expected header list
 	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}," + "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Method Invocations", "Refactoring Patterns"]
+		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Method Invocations", "Refactoring Patterns"]
 	else: # If the PROCESS_CLASSES constant is set to False
-		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}," + "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Methods Invoked Qty", "Refactoring Patterns"]
+		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Methods Invoked Qty", "Refactoring Patterns"]
 	
 	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
 		writer = csv.writer(csvfile) # Create the csv writer
