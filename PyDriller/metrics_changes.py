@@ -841,10 +841,10 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 				result = subprocess.run(command, stdout=null_output, stderr=subprocess.STDOUT, timeout=60) # Run the command and wait for it to finish
 
 			if result.returncode != 0: # Verify if the command failed
-				print(f"{BackgroundColors.RED}RefactoringMiner failed to generate the refactoring file for {repository_name}.{Style.RESET_ALL}")
+				verbose_output(true_string=f"{BackgroundColors.RED}RefactoringMiner failed to generate the refactoring file for {repository_name}.{Style.RESET_ALL}")
 				return None # Return None if command failed
 		except subprocess.TimeoutExpired: # Catch the TimeoutExpired exception
-			print(f"{BackgroundColors.RED}RefactoringMiner timed out for {repository_name}.{Style.RESET_ALL}")
+			verbose_output(true_string=f"{BackgroundColors.RED}RefactoringMiner timed out for {repository_name}.{Style.RESET_ALL}")
 			return None # Return None if command timed out
 
 	is_valid, message = verify_refactoring_file(refactoring_file_path) # Verify if the refactoring file was properly generated
