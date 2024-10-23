@@ -726,7 +726,7 @@ def setup_write_metrics_evolution_to_csv(repository_name, class_name, variable_a
 
 def found_ignore_keywords(source, keywords, entity_type):
 	"""
-	Verifies if the source of the specified entity type contains any of the ignore keywords.
+	Verifies if the source of the specified entity type contains any of the ignore keywords. Also, it filters out empty strings from the ignore keywords list.
 
 	:param source: The source of the entity
 	:param keywords: The ignore keywords
@@ -736,7 +736,9 @@ def found_ignore_keywords(source, keywords, entity_type):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying if the class name or variable attribute contains any of the ignore keywords...{Style.RESET_ALL}")
 
-	if any(keyword.lower() in source.lower() for keyword in keywords): # If any of the ignore keywords is in the source
+	filtered_keywords = [keyword for keyword in keywords if keyword.strip()] # Filter out empty strings from the ignore keywords list
+
+	if any(keyword.lower() in source.lower() for keyword in filtered_keywords): # If any of the ignore keywords is in the source
 		verbose_output(true_string=f"{BackgroundColors.YELLOW}Ignoring {entity_type} {source} as the name contains one of the ignore keywords: {keywords}{Style.RESET_ALL}")
 		return True # Return True if the source contains any of the ignore keywords
 	return False # Return False if the source does not contain any of the ignore keywords
