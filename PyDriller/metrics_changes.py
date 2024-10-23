@@ -1061,7 +1061,7 @@ def validate_metrics_structure(class_name, variable_attribute, metrics_array):
 
 def extract_column_values_from_array(array, column_position):
 	"""
-	Extract the 
+	Extract the values of a specified column from a NumPy array.
 
 	:param array: A NumPy array containing the metrics values
 	:param column_position: The position of the column to extract the metric values
