@@ -836,19 +836,23 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 		setup_repository(repository_name, DEFAULT_REPOSITORIES[repository_name]) # Setup the repository
 		command = [f"{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}", "-c", f".{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}", commit_hash, "-json", refactoring_file_path] # RefactoringMiner command
 
-		with open(null_device, "w") as null_output: # Open the null device to discard output
-			result = subprocess.run(command, stdout=null_output, stderr=subprocess.STDOUT) # Run the command and wait for it to finish
+		try: # Try to run the command
+			with open(null_device, "w") as null_output: # Open the null device to discard output
+				result = subprocess.run(command, stdout=null_output, stderr=subprocess.STDOUT, timeout=60) # Run the command and wait for it to finish
 
-		if result.returncode != 0: # Verify if the command failed
-			print(f"{BackgroundColors.RED}RefactoringMiner failed to generate the refactoring file for {repository_name}.{Style.RESET_ALL}")
-			return None # Return None if command failed
+			if result.returncode != 0: # Verify if the command failed
+				print(f"{BackgroundColors.RED}RefactoringMiner failed to generate the refactoring file for {repository_name}.{Style.RESET_ALL}")
+				return None # Return None if command failed
+		except subprocess.TimeoutExpired: # Catch the TimeoutExpired exception
+			print(f"{BackgroundColors.RED}RefactoringMiner timed out for {repository_name}.{Style.RESET_ALL}")
+			return None # Return None if command timed out
 
 	is_valid, message = verify_refactoring_file(refactoring_file_path) # Verify if the refactoring file was properly generated
 
 	if is_valid: # If the refactoring file was properly generated
 		return refactoring_file_path # Return the refactoring file path
 	else: # If the refactoring file was not properly generated
-		print(f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
+		verbose_output(true_string=f"{BackgroundColors.RED}The refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not generated: {BackgroundColors.YELLOW}{message}{Style.RESET_ALL}")
 		return None # Return None
 
 def process_refactorings(commit, class_name, refactorings_by_filepath):
@@ -895,11 +899,16 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 
 	refactorings_by_filepath = {} # Initialize the dictionary to hold file paths and their corresponding refactoring types
 
-	with open(refactoring_file_path, "r") as file: # Open and read the refactoring file
-		data = json.load(file) # Load the JSON data
-		for commit in data["commits"]: # Loop through the refactorings in the data
-			if commit["sha1"] == commit_hash: # Verify if the commit hash matches the specified one
-				process_refactorings(commit, class_name, refactorings_by_filepath) # Process the refactorings for the commit
+	try: # Try to open
+		with open(refactoring_file_path, "r") as file: # Open and read the refactoring file
+			data = json.load(file) # Load the JSON data
+			for commit in data["commits"]: # Loop through the refactorings in the data
+				if commit["sha1"] == commit_hash: # Verify if the commit hash matches the specified one
+					process_refactorings(commit, class_name, refactorings_by_filepath) # Process the refactorings for the commit
+	except json.JSONDecodeError: # Catch the JSONDecodeError exception
+		verbose_output(true_string=f"{BackgroundColors.RED}Error: The refactoring file contains invalid JSON.{Style.RESET_ALL}")
+	except Exception as e: # Catch any other exceptions
+		verbose_output(true_string=f"{BackgroundColors.RED}Error: An unexpected error occurred: {str(e)}{Style.RESET_ALL}")
 
 	return refactorings_by_filepath # Return the dictionary containing the file paths and their corresponding refactoring types and occurrences
 
