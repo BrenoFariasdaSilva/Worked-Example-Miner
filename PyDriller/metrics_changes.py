@@ -890,6 +890,9 @@ def get_refactoring_info(repository_name, commit_number, commit_hash, class_name
 
 	refactorings_by_filepath = {} # Initialize the dictionary to hold file paths and their corresponding refactoring types
 
+	if not verify_filepath_exists(refactoring_file_path): # If the refactoring file does not exist
+		return refactorings_by_filepath # Return an empty dictionary
+
 	with open(refactoring_file_path, "r") as file: # Open and read the refactoring file
 		data = json.load(file) # Load the JSON data
 		for commit in data["commits"]: # Loop through the refactorings in the data
