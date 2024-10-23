@@ -826,7 +826,7 @@ def generate_refactoring_file(repository_name, commit_hash, refactoring_file_pat
 	"""
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the refactoring file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
-	
+
 	relatively_refactorings_directory_path = f"{RELATIVE_REFACTORINGS_DIRECTORY_PATH}/{repository_name}" # Get the relatively refactorings directory path
 	full_refactorings_directory_path = f"{START_PATH}/{relatively_refactorings_directory_path}" # Get the full refactorings directory path
 	create_directory(full_refactorings_directory_path, relatively_refactorings_directory_path) # Create the refactorings directory
@@ -942,7 +942,7 @@ def convert_refactorings_dictionary_to_string(refactorings_info):
 	refactorings_summary = " ".join(
 		f"{filepath}: [{', '.join(f'{refactoring_type}({occurrences})' for refactoring_type, occurrences in sorted(types.items(), key=lambda item: item[1], reverse=True))}]"
 		for filepath, types in refactorings_info.items()
-    )
+   )
 
 	return refactorings_summary # Return the formatted string containing the refactorings information
 
