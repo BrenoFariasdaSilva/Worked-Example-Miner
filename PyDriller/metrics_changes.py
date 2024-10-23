@@ -1345,9 +1345,18 @@ def sort_csv_by_percentual_variation(repository_name):
 	for metric_name in METRICS_INDEXES.keys(): # For each metric name in the METRICS_INDEXES dictionary
 		filepath = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The file path for the csv file
 		if verify_filepath_exists(filepath): # Verify if the file path exists
-			data = pd.read_csv(filepath) # Read the csv file
-			data = data.sort_values(by=[f"Percentual Variation {metric_name}"], ascending=False) # Sort the csv file by the percentual variation of the metric
-			data.to_csv(filepath, index=False) # Write the sorted csv file to a new csv file
+			with open(filepath, "r", newline="", encoding="utf-8") as csvfile: # Read CSV file using csv.reader to handle raw data
+				reader = csv.reader(csvfile) # Create the csv reader
+				header = next(reader) # First row is the header
+				rows = list(reader) # Remaining rows are the data
+			
+			percentual_var_index = header.index(f"Percentual Variation {metric_name}") # Identify the correct index for "Percentual Variation"
+			rows_sorted = sorted(rows, key=lambda row: float(row[percentual_var_index]), reverse=True) # Sort the rows manually by the percentual variation (descending order)
+
+			with open(filepath, "w", newline="", encoding="utf-8") as csvfile: # Write the sorted rows back to the CSV file
+				writer = csv.writer(csvfile) # Create the csv writer
+				writer.writerow(header) # Write header
+				writer.writerows(rows_sorted) # Write sorted rows
 
 def read_csv_as_dict(file_path):
 	"""
