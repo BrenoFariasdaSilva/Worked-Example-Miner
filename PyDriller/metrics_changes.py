@@ -965,13 +965,13 @@ def find_biggest_decrease(metric_values, commit_hashes, repository_name, class_n
 
 	return biggest_change_data, commit_data # Return the biggest change and the corresponding commit data
 
-def add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attribute, biggest_change_data, commit_data, record):
+def add_substantial_decrease_to_csv(csv_filename, class_name, variable_attribute, biggest_change_data, commit_data, record):
 	"""
 	Writes the substantial decrease to the CSV file.
 
 	:param csv_filename: The name of the csv file
 	:param class_name: The class name
-	:param raw_variable_attribute: The raw variable attribute (class type or method name)
+	:param variable_attribute: The variable attribute (class type or method name) of the current metrics
 	:param biggest_change_data: The information of the biggest change in the metrics 
 	:param commit_data: The commit data
 	:param record: The record containing additional information for writing
@@ -981,15 +981,15 @@ def add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attri
 	with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 		writer = csv.writer(csvfile) # Create the csv writer
 		index = commit_data[0] # Get the metric position
-		writer.writerow([class_name, raw_variable_attribute] + [biggest_change_data[2]] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}", record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index]] + list(record["metrics"][index]) + [record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
+		writer.writerow([class_name, variable_attribute] + [biggest_change_data[2]] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}", record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index]] + list(record["metrics"][index]) + [record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
 
-def verify_substantial_metric_decrease(repository_name, class_name, raw_variable_attribute, record, metric_name, metric_position, iteration):
+def verify_substantial_metric_decrease(repository_name, class_name, variable_attribute, record, metric_name, metric_position, iteration):
 	"""
 	Verifies if the class or method has had a substantial decrease in the current metric, and writes the relevant data, including code churn, lines added, and lines deleted, to the CSV file.
 
 	:param repository_name: The name of the repository
-	:param class_name: The class name of the current linear regression
-	:param raw_variable_attribute: The raw variable attribute (class type or method name) of the current linear regression
+	:param class_name: The class name of the current metrics
+	:param variable_attribute: The variable attribute (class type or method name) of the current metrics
 	:param record: A dictionary containing commit information and metric history
 	:param metric_name: The name of the metric
 	:param metric_position: The position of the metric in the metrics list
@@ -1002,7 +1002,7 @@ def verify_substantial_metric_decrease(repository_name, class_name, raw_variable
 	if not len(record["metrics"]): # If the metrics values list is empty
 		return # If the metrics values list is empty, return
 
-	if found_ignore_keywords(class_name, IGNORE_CLASS_NAME_KEYWORDS, "class") or found_ignore_keywords(raw_variable_attribute, IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS, "variable attribute"): # If the class name or variable attribute contains ignore keywords,
+	if found_ignore_keywords(class_name, IGNORE_CLASS_NAME_KEYWORDS, "class") or found_ignore_keywords(variable_attribute, IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS, "variable attribute"): # If the class name or variable attribute contains ignore keywords,
 		return # If the class name or variable attribute contains ignore keywords, return
 	
 	csv_filename = setup_substantial_decrease_file(repository_name, metric_name, iteration) # Setup the substantial decrease file for the specified repository and metric name
@@ -1010,7 +1010,7 @@ def verify_substantial_metric_decrease(repository_name, class_name, raw_variable
 	biggest_change_data, commit_data = find_biggest_decrease([metric[metric_position] for metric in record["metrics"]], record["commit_hashes"], repository_name, class_name) # Find the biggest decrease in metrics values and corresponding commit data
 
 	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
-		add_substantial_decrease_to_csv(csv_filename, class_name, raw_variable_attribute, biggest_change_data, commit_data, record) # Write the substantial decrease to the CSV file
+		add_substantial_decrease_to_csv(csv_filename, class_name, variable_attribute, biggest_change_data, commit_data, record) # Write the substantial decrease to the CSV file
 
 def setup_substantial_metric_decrease_for_each_metric(repository_name, class_name, variable_attribute, record, iteration):
 	"""
