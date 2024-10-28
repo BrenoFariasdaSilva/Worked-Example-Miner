@@ -421,7 +421,7 @@ def count_lines_within_code_block(line, lines_added, lines_deleted):
 
 	return lines_added, lines_deleted # Return updated counts
 
-def process_diff_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted):
+def process_diff_file_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted):
 	"""
 	Iterate over the lines in the diff file and count lines added or deleted.
 
@@ -469,7 +469,7 @@ def process_diff_file(diff_file_path, last_capitalized_word, inner_class_name, l
 
 	try: # Try to open the diff file
 		with open(diff_file_path, "r") as java_file: # Open the diff file
-			return process_diff_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted) # Process the lines in the diff file
+			return  process_diff_file_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted) # Process the lines in the diff file
 
 	except FileNotFoundError: # Catch the FileNotFoundError exception
 		raise FileNotFoundError(f"{BackgroundColors.RED}Error: Diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED} not found{Style.RESET_ALL}") # Raise an error if the file is not found
