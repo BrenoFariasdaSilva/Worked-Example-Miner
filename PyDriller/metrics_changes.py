@@ -433,11 +433,13 @@ def process_diff_file_lines(java_file, class_base_name, inner_class_name, lines_
 	:return: A tuple of the updated lines added and deleted.
 	"""
 
-	in_class_block = False # Track if we are inside the last capitalized word class block
+	in_class_block = False # Track if we are inside the targeted class block
 	open_braces_count = 0 # Track braces to determine the start and end of a class
 
 	for line in java_file: # Iterate through the lines of the Java file
-		if class_base_name and f"class {class_base_name}" in line and "{" in line: # If the class is found
+		target_class_name = inner_class_name if inner_class_name else class_base_name # Determine which class to look for based on inner class presence
+
+		if target_class_name and f"class {target_class_name}" in line and "{" in line: # If the target class is found and the class block starts
 			in_class_block = True # Enter the class block
 			open_braces_count = 1 # Start counting braces
 
@@ -448,9 +450,7 @@ def process_diff_file_lines(java_file, class_base_name, inner_class_name, lines_
 			if open_braces_count == 0: # If braces balance out, exit the class block
 				in_class_block = False # Exit the class block
 
-			if inner_class_name and not in_class_block: # If an inner class is specified, skip lines outside the class block
-				continue # Skip the line if an inner class is specified and we are not in the class block
-
+		if in_class_block: # Count added and deleted lines only if we are in the target class block
 			lines_added, lines_deleted = count_lines_within_code_block(line, lines_added, lines_deleted) # Count the lines added and deleted
 
 	return lines_added, lines_deleted # Return the updated lines added and deleted
