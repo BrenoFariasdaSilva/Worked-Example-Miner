@@ -1209,13 +1209,15 @@ def calculate_metric_statistics(metric_values):
 	:return: A tuple containing (min, max, avg, Q3) rounded to 3 decimal places
 	"""
 
-	if not metric_values: # If the list is empty
+	filtered_values = [value for value in metric_values if value is not None] # Filter out None values from the metric_values list
+
+	if not filtered_values: # If the filtered list is empty
 		return (0, 0, 0, 0) # Return zeros if the list is empty
 
-	metric_min = round(float(min(metric_values)), 3) # The minimum metric value rounded to 3 decimal places
-	metric_max = round(float(max(metric_values)), 3) # The maximum metric value rounded to 3 decimal places
-	metric_avg = round(float(sum(metric_values)) / len(metric_values), 3) # The average metric value rounded to 3 decimal places
-	metric_q3 = round(float(np.percentile(metric_values, 75)), 3) # The third quartile metric value rounded to 3 decimal places
+	metric_min = round(float(min(filtered_values)), 3) # The minimum metric value rounded to 3 decimal places
+	metric_max = round(float(max(filtered_values)), 3) # The maximum metric value rounded to 3 decimal places
+	metric_avg = round(float(sum(filtered_values)) / len(filtered_values), 3) # The average metric value rounded to 3 decimal places
+	metric_q3 = round(float(np.percentile(filtered_values, 75)), 3) # The third quartile metric value rounded to 3 decimal places
 
 	return metric_min, metric_max, metric_avg, metric_q3 # Return the metric statistics
 
