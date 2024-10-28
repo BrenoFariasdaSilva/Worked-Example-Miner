@@ -424,6 +424,7 @@ def count_lines_within_code_block(line, lines_added, lines_deleted):
 def process_diff_file_lines(java_file, class_base_name, inner_class_name, lines_added=0, lines_deleted=0):
 	"""
 	Iterate over the lines in the diff file and count lines added or deleted.
+	@TODO: This functions doesn't handle anonymous inner classes properly. It will count the lines of the outer class if an anonymous inner class is present.
 
 	:param java_file: The opened diff file.
 	:param class_base_name: The base class name.
@@ -435,11 +436,13 @@ def process_diff_file_lines(java_file, class_base_name, inner_class_name, lines_
 
 	in_class_block = False # Track if we are inside the targeted class block
 	open_braces_count = 0 # Track braces to determine the start and end of a class
+	first_match_found = False # Track if the first match is found
 
 	for line in java_file: # Iterate through the lines of the Java file
-		target_class_name = inner_class_name if inner_class_name else class_base_name # Determine which class to look for based on inner class presence
+		target_class_name = inner_class_name if "Anonymous".lower() not in inner_class_name.lower() else class_base_name # Determine which class to look for based on inner class presence
 
-		if target_class_name and f"class {target_class_name}" in line and "{" in line: # If the target class is found and the class block starts
+		if not first_match_found and target_class_name and f"class {target_class_name}" in line and "{" in line: # If the target class is found and the class block starts
+			first_match_found = True # Set the first match found to True
 			in_class_block = True # Enter the class block
 			open_braces_count = 1 # Start counting braces
 
