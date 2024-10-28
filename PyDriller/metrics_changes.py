@@ -744,6 +744,17 @@ def found_ignore_keywords(source, keywords, entity_type):
 		return True # Return True if the source contains any of the ignore keywords
 	return False # Return False if the source does not contain any of the ignore keywords
 
+def get_ck_metrics_header():
+	"""
+	Gets the metrics header for the csv file.
+
+	:return: The metrics header for the csv file
+	"""
+
+	metric_names = list(METRICS_INDEXES.keys()) # Get the list of metric names
+	metric_header = [f"{prefix} {metric}" for metric in metric_names for prefix in ("From", "To")] # Generate the metric header
+	return metric_header # Return the metric header
+
 def add_substantial_decrease_csv_header(csv_filename, metric_name):
 	""""
 	Adds the header to the csv file, if it does not exist.
@@ -754,10 +765,12 @@ def add_substantial_decrease_csv_header(csv_filename, metric_name):
 	"""
 
 	expected_header = [] # The expected header list
+	ck_metrics_header = get_ck_metrics_header() # Get the metrics header
+		
 	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Method Invocations", "Refactoring Patterns"]
+		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Method Invocations", "Refactoring Patterns"]
 	else: # If the PROCESS_CLASSES constant is set to False
-		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + list(METRICS_INDEXES.keys()) + ["Methods Invoked Qty", "Refactoring Patterns"]
+		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Methods Invoked Qty", "Refactoring Patterns"]
 	
 	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
 		writer = csv.writer(csvfile) # Create the csv writer
