@@ -187,10 +187,10 @@ def generate_repository_commits_modified_files_dict(repository_name, commit_hash
 
 	if commit_hash: # Process only the given commit hash if it is provided
 		commit = next(Repository(repo_url, single=commit_hash).traverse_commits()) # Get the specific commit
-		commit_modified_files_dict[commit.hash] = [path for modified_file in commit.modified_files for path in (modified_file.old_path, modified_file.new_path) if path] # Get the modified files paths for the specific commit
+		commit_modified_files_dict[commit.hash] = list(set(path for modified_file in commit.modified_files for path in (modified_file.old_path, modified_file.new_path) if path)) # Get the modified files paths for the specific commit
 	else: # Process all commits if no specific commit hash is given
 		for commit in Repository(repo_url).traverse_commits(): # Traverse through all commits
-			commit_modified_files_dict[commit.hash] = [path for modified_file in commit.modified_files for path in (modified_file.old_path, modified_file.new_path) if path] # Get the modified files paths for each commit
+			commit_modified_files_dict[commit.hash] = list(set(path for modified_file in commit.modified_files for path in (modified_file.old_path, modified_file.new_path) if path)) # Get the modified files paths for each commit
 
 	return commit_modified_files_dict # Return the commit dictionary containing the modified files paths
 
