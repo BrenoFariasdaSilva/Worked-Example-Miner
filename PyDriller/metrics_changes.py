@@ -493,6 +493,7 @@ def get_code_churn_attributes(diff_file_path, class_name):
 	diff_file_path = find_diff_file_path(diff_file_path, class_base_name) # Find the diff file path for the class
 
 	if diff_file_path is None: # If no diff file is found, return 0 for added and deleted lines
+		lines_added, lines_deleted = None, None # Return None for added and deleted lines
 		return lines_added, lines_deleted # Return 0 for added and deleted lines
 
 	return process_diff_file(diff_file_path, last_capitalized_word, inner_class_name, lines_added, lines_deleted) # Process the diff file
