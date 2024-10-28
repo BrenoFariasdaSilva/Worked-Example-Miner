@@ -421,12 +421,12 @@ def count_lines_within_code_block(line, lines_added, lines_deleted):
 
 	return lines_added, lines_deleted # Return updated counts
 
-def process_diff_file_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted):
+def process_diff_file_lines(java_file, class_base_name, inner_class_name, lines_added=0, lines_deleted=0):
 	"""
 	Iterate over the lines in the diff file and count lines added or deleted.
 
 	:param java_file: The opened diff file.
-	:param last_capitalized_word: The last capitalized word of the class.
+	:param class_base_name: The base class name.
 	:param inner_class_name: The inner class name (if any).
 	:param lines_added: Current count of lines added.
 	:param lines_deleted: Current count of lines deleted.
@@ -437,7 +437,7 @@ def process_diff_file_lines(java_file, last_capitalized_word, inner_class_name, 
 	open_braces_count = 0 # Track braces to determine the start and end of a class
 
 	for line in java_file: # Iterate through the lines of the Java file
-		if last_capitalized_word and f"class {last_capitalized_word}" in line and "{" in line: # If the class is found
+		if class_base_name and f"class {class_base_name}" in line and "{" in line: # If the class is found
 			in_class_block = True # Enter the class block
 			open_braces_count = 1 # Start counting braces
 
@@ -455,12 +455,12 @@ def process_diff_file_lines(java_file, last_capitalized_word, inner_class_name, 
 
 	return lines_added, lines_deleted # Return the updated lines added and deleted
 
-def process_diff_file(diff_file_path, last_capitalized_word, inner_class_name, lines_added, lines_deleted):
+def process_diff_file(diff_file_path, class_base_name, inner_class_name, lines_added, lines_deleted):
 	"""
 	Process the diff file and count lines added and deleted.
 
 	:param diff_file_path: The path to the diff file.
-	:param last_capitalized_word: The last capitalized word of the class.
+	:param class_base_name: The base class name to search for the diff file.
 	:param inner_class_name: The inner class name (if any).
 	:param lines_added: Current count of lines added.
 	:param lines_deleted: Current count of lines deleted.
@@ -469,7 +469,7 @@ def process_diff_file(diff_file_path, last_capitalized_word, inner_class_name, l
 
 	try: # Try to open the diff file
 		with open(diff_file_path, "r") as java_file: # Open the diff file
-			return  process_diff_file_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted) # Process the lines in the diff file
+			return process_diff_file_lines(java_file, class_base_name, inner_class_name, lines_added, lines_deleted) # Process the lines in the diff file
 
 	except FileNotFoundError: # Catch the FileNotFoundError exception
 		raise FileNotFoundError(f"{BackgroundColors.RED}Error: Diff file {BackgroundColors.GREEN}{diff_file_path}{BackgroundColors.RED} not found{Style.RESET_ALL}") # Raise an error if the file is not found
@@ -494,7 +494,7 @@ def get_code_churn_attributes(diff_file_path, class_name):
 	if diff_file_path is None: # If no diff file is found, return 0 for added and deleted lines
 		return lines_added, lines_deleted # Return 0 for added and deleted lines
 
-	return process_diff_file(diff_file_path, last_capitalized_word, inner_class_name, lines_added, lines_deleted) # Process the diff file
+	return process_diff_file(diff_file_path, class_base_name, inner_class_name, lines_added, lines_deleted) # Process the diff file
 
 def get_code_churn(lines_added, lines_deleted):
 	"""
