@@ -449,10 +449,10 @@ def process_diff_lines(java_file, last_capitalized_word, inner_class_name, lines
 			if open_braces_count == 0: # If braces balance out, exit the class block
 				in_class_block = False # Exit the class block
 
-		if inner_class_name and not in_class_block: # If an inner class is specified, skip lines outside the class block
-			continue # Skip the line if an inner class is specified and we are not in the class block
+			if inner_class_name and not in_class_block: # If an inner class is specified, skip lines outside the class block
+				continue # Skip the line if an inner class is specified and we are not in the class block
 
-		lines_added, lines_deleted = count_lines_within_code_block(line, lines_added, lines_deleted) # Count the lines added and deleted
+			lines_added, lines_deleted = count_lines_within_code_block(line, lines_added, lines_deleted) # Count the lines added and deleted
 
 	return lines_added, lines_deleted # Return the updated lines added and deleted
 
