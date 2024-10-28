@@ -994,6 +994,23 @@ def find_biggest_decrease(metric_values, commit_hashes, repository_name, class_n
 
 	return biggest_change_data, commit_data # Return the biggest change and the corresponding commit data
 
+def get_metrics_values_from_record(record, index):
+	"""
+	Gets the metrics values from the record.
+
+	:param record: A dictionary containing commit information and metric history
+	:param index: The current index in the metrics list
+	:return: The old and new metrics values alternatively
+	"""
+
+	metric_header = get_ck_metrics_header() # Get the metrics header
+	len_metric_header = len(metric_header) # Get the length of the metric header
+	old_metrics_values = list(record["metrics"][index - 1]) if index > 0 else [0] * len_metric_header # Get the old metrics values
+	new_metrics_values = list(record["metrics"][index]) if index > 0 else [0] * len_metric_header # Get the new metrics values
+	metrics_values = [value for pair in zip(old_metrics_values, new_metrics_values) for value in pair] # Get the old and new metrics values alternatively
+
+	return metrics_values # Return the old and new metrics values alternatively
+
 def add_substantial_decrease_to_csv(csv_filename, class_name, variable_attribute, biggest_change_data, commit_data, record):
 	"""
 	Writes the substantial decrease to the CSV file.
@@ -1010,7 +1027,8 @@ def add_substantial_decrease_to_csv(csv_filename, class_name, variable_attribute
 	with open(f"{csv_filename}", "a") as csvfile: # Open the csv file
 		writer = csv.writer(csvfile) # Create the csv writer
 		index = commit_data[0] # Get the metric position
-		writer.writerow([class_name, variable_attribute] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}", record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index]] + list(record["metrics"][index]) + [record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
+		metrics_values = get_metrics_values_from_record(record, index) # Get the metrics values from the record
+		writer.writerow([class_name, variable_attribute] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}", record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index]] + metrics_values + [record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
 
 def verify_substantial_metric_decrease(repository_name, class_name, variable_attribute, record, metric_name, metric_position, iteration):
 	"""
