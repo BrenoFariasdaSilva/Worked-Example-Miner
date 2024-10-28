@@ -439,7 +439,7 @@ def process_diff_file_lines(java_file, class_base_name, inner_class_name, lines_
 	first_match_found = False # Track if the first match is found
 
 	for line in java_file: # Iterate through the lines of the Java file
-		target_class_name = inner_class_name if "Anonymous".lower() not in inner_class_name.lower() else class_base_name # Determine which class to look for based on inner class presence
+		target_class_name = inner_class_name if inner_class_name and "anonymous" not in inner_class_name.lower() else class_base_name # Determine which class to look for based on inner class presence
 
 		if not first_match_found and target_class_name and f"class {target_class_name}" in line and "{" in line: # If the target class is found and the class block starts
 			first_match_found = True # Set the first match found to True
