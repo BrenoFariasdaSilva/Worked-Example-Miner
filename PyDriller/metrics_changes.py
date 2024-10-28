@@ -357,17 +357,16 @@ def extract_inner_class_name(class_name):
 
 	return class_name.split("$")[1] if "$" in class_name else None # Return inner class name if it exists
 
-def prepare_class_base_name(class_name):
+def extract_class_base_name(class_name):
 	"""
-	Prepare the base class name and extract the last capitalized word.
+	Extract Base Class Name from the Class Name.
 
 	:param class_name: The full class name, possibly with inner classes.
-	:return: A tuple of the base class name and the last capitalized word.
+	:return: The base class name without inner classes.
 	"""
 
 	class_base_name = class_name.split("$")[0] # Extract the base class name (without inner class)
-	last_capitalized_word = next((class_base_name[i:] for i in range(len(class_base_name) - 1, -1, -1) if class_base_name[i].isupper()), None) # Find the last capitalized word
-	return class_base_name, last_capitalized_word # Return the base class name and last capitalized word
+	return class_base_name # Return the base class name
 
 def remove_last_capitalized_word(class_base_name):
 	"""
@@ -489,7 +488,7 @@ def get_code_churn_attributes(diff_file_path, class_name):
 
 	lines_added, lines_deleted = 0, 0 # Initialize the lines added and deleted
 	inner_class_name = extract_inner_class_name(class_name) # Extract the inner class name if it exists
-	class_base_name, last_capitalized_word = prepare_class_base_name(class_name) # Get base class name and last capitalized word
+	class_base_name = extract_class_base_name(class_name) # Extract the base class name
 	diff_file_path = find_diff_file_path(diff_file_path, class_base_name) # Find the diff file path for the class
 
 	if diff_file_path is None: # If no diff file is found, return 0 for added and deleted lines
