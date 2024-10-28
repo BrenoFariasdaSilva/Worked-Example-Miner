@@ -369,24 +369,6 @@ def prepare_class_base_name(class_name):
 	last_capitalized_word = next((class_base_name[i:] for i in range(len(class_base_name) - 1, -1, -1) if class_base_name[i].isupper()), None) # Find the last capitalized word
 	return class_base_name, last_capitalized_word # Return the base class name and last capitalized word
 
-def count_lines_within_code_block(line, lines_added, lines_deleted):
-	"""
-	Count the lines added and deleted based on the diff line content inside a code block.
-
-	:param line: The current line from the diff file.
-	:param lines_added: The current count of lines added.
-	:param lines_deleted: The current count of lines deleted.
-	:return: Updated counts of lines added and deleted.
-	"""
-
-	if line.startswith("+") and not line.startswith("+++"): # Count added lines (starting with "+", excluding diff file headers)
-		lines_added += 1 # Increment the lines added
-
-	elif line.startswith("-") and not line.startswith("---"): # Count deleted lines (starting with "-", excluding diff file headers)
-		lines_deleted += 1 # Increment the lines deleted
-
-	return lines_added, lines_deleted # Return updated counts
-
 def remove_last_capitalized_word(class_base_name):
 	"""
 	Remove the last capitalized word from the class base name.
@@ -421,6 +403,24 @@ def find_diff_file_path(diff_file_path, class_base_name, max_levels=2):
 		levels_up += 1 # Increment the levels up counter
 
 	return None # Return None if the diff file is not found within the max levels
+
+def count_lines_within_code_block(line, lines_added, lines_deleted):
+	"""
+	Count the lines added and deleted based on the diff line content inside a code block.
+
+	:param line: The current line from the diff file.
+	:param lines_added: The current count of lines added.
+	:param lines_deleted: The current count of lines deleted.
+	:return: Updated counts of lines added and deleted.
+	"""
+
+	if line.startswith("+") and not line.startswith("+++"): # Count added lines (starting with "+", excluding diff file headers)
+		lines_added += 1 # Increment the lines added
+
+	elif line.startswith("-") and not line.startswith("---"): # Count deleted lines (starting with "-", excluding diff file headers)
+		lines_deleted += 1 # Increment the lines deleted
+
+	return lines_added, lines_deleted # Return updated counts
 
 def process_diff_lines(java_file, last_capitalized_word, inner_class_name, lines_added, lines_deleted):
 	"""
