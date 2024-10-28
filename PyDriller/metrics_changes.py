@@ -347,16 +347,6 @@ def convert_ck_classname_to_filename_format(diff_filepath, ck_classname):
 	classname = ck_classname[ck_classname.find(filename):] # Get the classname from the CK classname
 	return classname.replace("/", ".") # Replace the dots with slashes
 
-def extract_inner_class_name(class_name):
-	"""
-	Extracts the inner class name from the class name, which starts with a "$".
-
-	:param class_name: The class name which may contain a method name.
-	:return: The extracted inner class name if it exists, otherwise None.
-	"""
-
-	return class_name.split("$")[1] if "$" in class_name else None # Return inner class name if it exists
-
 def extract_class_base_name(class_name):
 	"""
 	Extract Base Class Name from the Class Name.
@@ -367,6 +357,16 @@ def extract_class_base_name(class_name):
 
 	class_base_name = class_name.split("$")[0] # Extract the base class name (without inner class)
 	return class_base_name # Return the base class name
+
+def extract_inner_class_name(class_name):
+	"""
+	Extracts the inner class name from the class name, which starts with a "$".
+
+	:param class_name: The class name which may contain a method name.
+	:return: The extracted inner class name if it exists, otherwise None.
+	"""
+
+	return class_name.split("$")[1] if "$" in class_name else None # Return inner class name if it exists
 
 def remove_last_capitalized_word(class_base_name):
 	"""
@@ -487,8 +487,8 @@ def get_code_churn_attributes(diff_file_path, class_name):
 	"""
 
 	lines_added, lines_deleted = 0, 0 # Initialize the lines added and deleted
+	class_base_name = extract_class_base_name(class_name) # Get base class name and last capitalized word
 	inner_class_name = extract_inner_class_name(class_name) # Extract the inner class name if it exists
-	class_base_name = extract_class_base_name(class_name) # Extract the base class name
 	diff_file_path = find_diff_file_path(diff_file_path, class_base_name) # Find the diff file path for the class
 
 	if diff_file_path is None: # If no diff file is found, return 0 for added and deleted lines
