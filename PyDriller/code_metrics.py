@@ -581,6 +581,29 @@ def calculate_code_churn(commit):
    lines_removed = sum(file.deleted_lines for file in commit.modified_files) # Calculate the total number of lines removed
    return lines_added, lines_removed, lines_added + lines_removed # Return the lines added, lines removed, and total code churn
 
+def write_diff_if_different(diff_file_path, file_diff):
+   """
+   Writes the diff content to a file if it does not exist or if the content is different
+   from the existing file.
+
+   :param diff_file_path: Path to the diff file.
+   :param file_diff: Content of the diff to be written.
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the diff to the {BackgroundColors.CYAN}{diff_file_path}{BackgroundColors.GREEN} file...{Style.RESET_ALL}")
+
+   if verify_filepath_exists(diff_file_path): # Verify if the diff file exists
+      with open(diff_file_path, "r", encoding="utf-8", errors="ignore") as existing_file: # Read the existing content for comparison
+         existing_content = existing_file.read() # Read the existing content
+
+      if existing_content != file_diff: # Overwrite only if the existing content is different from the new diff content
+         with open(diff_file_path, "w", encoding="utf-8", errors="ignore") as diff_file: # Write the diff file
+            diff_file.write(file_diff) # Write the diff content
+   else: # Write the diff file if it doesn't exist
+      with open(diff_file_path, "w", encoding="utf-8", errors="ignore") as diff_file: # Open the diff file to write
+         diff_file.write(file_diff) # Write the diff content
+
 def generate_diffs(repository_name, commit, commit_number):
    """
    Generates the diffs for the commits of a repository.
@@ -596,14 +619,13 @@ def generate_diffs(repository_name, commit, commit_number):
    for modified_file in commit.modified_files: # Loop through the modified files of the commit
       file_diff = modified_file.diff # Get the diff of the modified file
 
-      diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit.hash}/" # Define the directory to save the diff file
+      diff_file_directory = f"{START_PATH}{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}/{commit_number}-{commit.hash}/" # Define the diff file directory
+      diff_file_path = f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}" # Define the diff file path
 
       if not verify_filepath_exists(diff_file_directory): # Verify if the directory does not exist
          os.makedirs(diff_file_directory, exist_ok=True) # Create the directory
 
-      if not verify_filepath_exists(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}"): # Verify if the diff file does not exist
-         with open(f"{diff_file_directory}{modified_file.filename}{DIFF_FILE_EXTENSION}", "w", encoding="utf-8", errors="ignore") as diff_file: # Open the diff file to write the diff
-            diff_file.write(file_diff) # Write the diff to the file
+      write_diff_if_different(diff_file_path, file_diff) # Call helper function to write the diff if it’s different
 
 def checkout_branch(branch_name):
    """
