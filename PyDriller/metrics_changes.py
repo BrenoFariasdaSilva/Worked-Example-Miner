@@ -1058,7 +1058,7 @@ def verify_substantial_metric_decrease(repository_name, class_name, variable_att
 
 	biggest_change_data, commit_data = find_biggest_decrease([metric[metric_position] for metric in record["metrics"]], record["commit_hashes"], repository_name, class_name) # Find the biggest decrease in metrics values and corresponding commit data
 
-	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty
+	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3] and record["methods_invoked"]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty and methods invoked is not empty
 		add_substantial_decrease_to_csv(csv_filename, class_name, variable_attribute, biggest_change_data, commit_data, record) # Write the substantial decrease to the CSV file
 
 def setup_substantial_metric_decrease_for_each_metric(repository_name, class_name, variable_attribute, record, iteration):
