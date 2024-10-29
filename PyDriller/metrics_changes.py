@@ -33,7 +33,7 @@ IGNORE_CLASS_NAME_KEYWORDS = [""] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = [""] # The keywords to ignore in the variable attribute
 METRICS_INDEXES = {"CBO": 0, "DIT": 1, "LCOM": 2, "LOC": 3, "NOC": 4, "RFC": 5, "WMC": 6} # The position of the metrics in the metrics list
 NUMBER_OF_METRICS = len(METRICS_INDEXES.keys()) # The number of metrics
-DESIRED_REFACTORINGS_ONLY = False # If True, then only the desired refactorings will be stored
+DESIRED_REFACTORINGS_ONLY = True # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
 WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
 
