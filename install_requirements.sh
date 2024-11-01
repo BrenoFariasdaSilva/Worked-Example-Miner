@@ -104,10 +104,26 @@ install_maven() {
    echo "Maven installation complete."
 }
 
+# Copy .env-example file to .env
+copy_env_example_file() {
+   if [[ -f ".env-example" ]]; then
+      echo "Copying .env-example to .env..."
+      cp .env-example .env
+      echo ".env file created. Please fill in your API keys and tokens."
+   else
+      echo ".env-example file not found. Creating .env file manually..."
+      touch .env-example
+      echo "GEMINI_API_KEY=" > .env-example
+      echo 'GITHUB_TOKEN=""' >> .env-example
+      copy_env_example_file
+   fi
+}
+
 # Run installation functions
 install_python_pip
 install_git
 install_make
 install_maven
+copy_env_example_file
 
 echo "All required dependencies have been installed (or instructions provided)."
