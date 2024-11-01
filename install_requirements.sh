@@ -6,11 +6,17 @@
 ## chmod +x install_requirements.sh
 ## ./install_requirements.sh
 
-echo "Starting installation of required dependencies..."
+echo "Welcome to the installation script for the project."
+echo "This script will install the required dependencies for the project, including Python, Pip, Git, Make, and Maven."
+echo "Please ensure you have the necessary permissions to install software on your system."
 
-# Step 1: Ensure Git submodules are initialized and updated
-echo "Initializing and updating Git submodules..."
+# Ensure the Project is up-to-date
+echo "Pulling the latest changes from the repository..."
 git pull
+echo "The project is up-to-date."
+
+# Ensure Git submodules are initialized and updated
+echo "Initializing and updating Git submodules..."
 git submodule init
 git submodule update
 echo "Git submodules are up-to-date."
@@ -117,6 +123,7 @@ setuo_env_file() {
       echo 'GITHUB_TOKEN=""' >> .env-example
       setuo_env_file
    fi
+   echo ".env file setup complete."
    echo "Read the .env file section in the README.md for more information on how to fill in the required API keys and Tokens."
 }
 
@@ -127,4 +134,5 @@ install_make
 install_maven
 setuo_env_file
 
-echo "All required dependencies have been installed (or instructions provided)."
+echo "Please, check for any errors in the installation process in the log messages above"
+echo "All required dependencies should now be installed."
