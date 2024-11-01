@@ -51,19 +51,18 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Linux](#linux)
     - [MacOS](#macos)
     - [Windows](#windows)
-  - [Additional Requirements](#additional-requirements)
-    - [Git](#git)
-      - [Linux](#linux-1)
-      - [MacOS](#macos-1)
-      - [Windows](#windows-1)
-    - [Make](#make)
-      - [Linux](#linux-2)
-      - [MacOS](#macos-2)
-      - [Windows](#windows-2)
-    - [Apache Maven](#apache-maven)
-      - [Linux](#linux-3)
-      - [MacOS](#macos-3)
-      - [Windows](#windows-3)
+  - [Git](#git)
+    - [Linux](#linux-1)
+    - [MacOS](#macos-1)
+    - [Windows](#windows-1)
+  - [Make](#make)
+    - [Linux](#linux-2)
+    - [MacOS](#macos-2)
+    - [Windows](#windows-2)
+  - [Apache Maven](#apache-maven)
+    - [Linux](#linux-3)
+    - [MacOS](#macos-3)
+    - [Windows](#windows-3)
 - [Paper Submissions](#paper-submissions)
   - [EduComp 2024 - Ideas Laboratory](#educomp-2024---ideas-laboratory)
 - [Goals](#goals)
@@ -158,15 +157,11 @@ Or just download the installer from the [official website](https://www.python.or
 
 Great, you now have python3 and pip installed. Now, we need to install the additional project requirements.
 
-### Additional Requirements
-
-In addition to Python and Pip, you will need to install some other tools to successfully run the project. These tools include `git`, `make` and `mvn` (Apache Maven).
-
-#### Git
+### Git
 
 `git` is a distributed version control system that is widely used for tracking changes in source code during software development. In this project, `git` is used to download and manage the analyzed repositories, as well as to clone the project and its submodules. To install `git`, follow the instructions below based on your operating system:
 
-##### Linux
+#### Linux
 
 To install `git` on Linux, run:
 
@@ -174,7 +169,7 @@ To install `git` on Linux, run:
 sudo apt install git -y
 ```
 
-##### MacOS
+#### MacOS
 
 To install `git` on MacOS, you can use Homebrew:
 
@@ -182,52 +177,58 @@ To install `git` on MacOS, you can use Homebrew:
 brew install git
 ```
 
-##### Windows
+#### Windows
 
 On Windows, you can download `git` from the official website [here](https://git-scm.com/downloads) and follow the installation instructions provided there.
 
-#### Make
+### Make
 
 `make` is a build automation tool that is commonly used to manage and maintain projects. In this project, `make` is used to automate the execution of tasks, such as running scripts and managing python/pip dependencies. To install `make`, you can use the following commands based on your operating system:
 
-##### Linux
+#### Linux
+
 To install `make` on Linux, run:
 
 ```bash
 sudo apt install make -y
 ```
 
-##### MacOS
+#### MacOS
+
 To install `make` on MacOS, you can install it via Homebrew:
 
 ```bash
 brew install make
 ```
 
-##### Windows
+#### Windows
+
 On Windows, you can install `make` as part of a Unix-like environment such as Cygwin or WSL (Windows Subsystem for Linux). If you are using WSL, you can follow the Linux instructions above.
 
 Or you can download it manually from the official GNU Make website [here](https://www.gnu.org/software/make/#download) and follow the installation instructions provided there.
 
-#### Apache Maven
+### Apache Maven
 
 Apache Maven is a project management tool that is primarily used for Java projects. In this project, Maven is used to manage dependencies and build the CK Java project JAR file, which is used to extract code metrics from Java repositories. It helps manage project dependencies and build processes. To install Maven, follow these instructions based on your operating system:
 
-##### Linux
+#### Linux
+
 To install Maven on Linux, use:
 
 ```bash
 sudo apt install maven -y
 ```
 
-##### MacOS
+#### MacOS
+
 To install Maven on MacOS, use Homebrew:
 
 ```bash
 brew install maven
 ```
 
-##### Windows
+#### Windows
+
 On Windows, you can use Chocolatey to install Maven:
 
 ```bash
