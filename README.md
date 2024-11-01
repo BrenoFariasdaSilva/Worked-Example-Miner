@@ -64,6 +64,7 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Linux](#linux-3)
     - [MacOS](#macos-3)
     - [Windows](#windows-3)
+  - [.env File](#env-file)
 - [Paper Submissions](#paper-submissions)
   - [EduComp 2024 - Ideas Laboratory](#educomp-2024---ideas-laboratory)
 - [Goals](#goals)
@@ -94,7 +95,7 @@ Within this repository, you'll find a wealth of resources, from detailed code an
 
 ## Setup
 
-This section provides instructions for installing Python, Pip, and all necessary project dependencies, including `git`, `make`, and `mvn` (Apache Maven).
+This section provides instructions for installing Python, Pip, and all necessary project dependencies, including `git`, `make`, and `mvn` (Apache Maven). Lastly, you must properlly fill the `.env` file with the necessary credentials to use the mentioned tools and APIs defined in the `.env-example` file.
 
 ### Installation Script
 
@@ -260,6 +261,10 @@ choco install maven
 ```
 
 Or you can download it manually from the official Maven website [here](https://maven.apache.org/download.cgi) and follow the installation instructions provided there.
+
+### .env File
+
+The `.env` file contains the necessary credentials and API keys to access the Google Gemini API. You must fill in the required fields with your credentials before running the scripts. If you ran the `install_requirements.sh` script, the `.env` file should have been created for you, and you must only fill in the necessary fields. If not, you can create the `.env` file and manually copying the content of the `.env-example` file and filling in the required fields.
 
 ## Paper Submissions
 
