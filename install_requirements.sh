@@ -117,6 +117,7 @@ setuo_env_file() {
       echo 'GITHUB_TOKEN=""' >> .env-example
       setuo_env_file
    fi
+   echo "Read the .env file section in the README.md for more information on how to fill in the required API keys and Tokens."
 }
 
 # Run installation functions
