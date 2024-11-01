@@ -132,7 +132,7 @@ In order to run the scripts, you must have python3 and pip installed in your mac
 
 In order to install python3 and pip in Linux, you can use the following commands:
 
-```
+```bash
 sudo apt install python3 -y
 sudo apt install python3-pip -y
 ```
@@ -141,7 +141,7 @@ sudo apt install python3-pip -y
 
 In order to install python3 and pip in MacOS, you can use the following commands:
 
-```
+```bash
 brew install python3
 ```
 
@@ -149,7 +149,7 @@ brew install python3
 
 In order to install python3 and pip in Windows, you can use the following commands in case you have `choco` installed:
 
-```
+```bash
 choco install python3
 ```
 
@@ -414,7 +414,7 @@ This research methodology, underpinned by detailed code metric analysis and tool
 
 If you use the Worked Example Miner (WEM) in your research, please cite it using the following BibTeX entry:
 
-```
+```bibtex
 @misc{softwareWEM:2023,
   title = {Worked Example Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories},
   author = {Breno Farias da Silva},
