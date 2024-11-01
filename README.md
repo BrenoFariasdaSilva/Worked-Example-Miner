@@ -43,6 +43,7 @@ This project is massive and complex, containing multiple integrated tools and ex
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Setup](#setup)
+  - [Installation Script](#installation-script)
   - [Clone the Repository](#clone-the-repository)
     - [Clone with Submodules](#clone-with-submodules)
     - [Clone without Submodules (Not Recommended)](#clone-without-submodules-not-recommended)
@@ -93,7 +94,30 @@ Within this repository, you'll find a wealth of resources, from detailed code an
 
 ## Setup
 
-This section provides instructions for installing the Python Language and Pip Python package manager and the project's requirements, such as `git`, `make` and `mvn`.
+This section provides instructions for installing Python, Pip, and all necessary project dependencies, including `git`, `make`, and `mvn` (Apache Maven).
+
+### Installation Script
+
+To simplify the setup process, we offer a shell script named `install_requirements.sh`. This script automatically detects your operating system and installs all the necessary dependencies. Before proceeding with the installations, it ensures that any Git submodules are initialized and updated.
+
+The script requires that you have the following package managers installed:
+- `choco` on Windows
+- `brew` on macOS
+- `apt` on Linux
+
+In order to run the script, you must have administrative privileges. You also must give execution permissions to the script before running it, using the following command:
+
+```bash
+chmod +x install_requirements.sh
+```
+
+Now, you can run the script to install all the necessary requirements:
+
+```bash
+./install_requirements.sh
+```
+
+If you encounter any issues during the installation, please continue reading the instructions below to install the dependencies manually.
 
 ### Clone the Repository
 
