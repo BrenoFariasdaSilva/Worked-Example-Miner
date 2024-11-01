@@ -43,9 +43,10 @@ This project is massive and complex, containing multiple integrated tools and ex
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Setup](#setup)
-  - [Clone with Submodules](#clone-with-submodules)
-  - [Clone without Submodules (Not Recommended)](#clone-without-submodules-not-recommended)
-  - [Clone Submodules](#clone-submodules)
+  - [Clone the Repository](#clone-the-repository)
+    - [Clone with Submodules](#clone-with-submodules)
+    - [Clone without Submodules (Not Recommended)](#clone-without-submodules-not-recommended)
+    - [Clone Submodules](#clone-submodules)
   - [Python and Pip](#python-and-pip)
     - [Linux](#linux)
     - [MacOS](#macos)
@@ -93,9 +94,13 @@ Within this repository, you'll find a wealth of resources, from detailed code an
 
 ## Setup
 
-This section provides instructions for installing the Python Language and Pip Python package manager and the project's requirements, such as `make` and `mvn`.
+This section provides instructions for installing the Python Language and Pip Python package manager and the project's requirements, such as `git`, `make` and `mvn`.
 
-### Clone with Submodules
+### Clone the Repository
+
+To clone this repository, follow the [Clone with Submodules](#clone-with-submodules) instructions below. This will ensure that you have all the necessary submodules (AutoMetric and CK) included in your local copy of the repository. In case you prefer to clone the repository without the submodules, you can follow the [Clone without Submodules (Not Recommended)](#clone-without-submodules-not-recommended) instructions, but please note that this is not recommended and before running the scripts, you will need to clone the submodules manually by following the [Clone Submodules](#clone-submodules) instructions.
+
+#### Clone with Submodules
 
 In order to clone this repository with the submodules (AutoMetric and CK), you can use the following command:
 
@@ -103,7 +108,7 @@ In order to clone this repository with the submodules (AutoMetric and CK), you c
 git clone --recurse-submodules https://github.com/BrenoFariasdaSilva/Worked-Example-Miner.git
 ```
 
-### Clone without Submodules (Not Recommended)
+#### Clone without Submodules (Not Recommended)
 
 In order to clone this repository without the submodules (AutoMetric and CK), you can use the following command:
 
@@ -111,7 +116,7 @@ In order to clone this repository without the submodules (AutoMetric and CK), yo
 git clone https://github.com/BrenoFariasdaSilva/Worked-Example-Miner
 ```
 
-### Clone Submodules
+#### Clone Submodules
 
 In case you have already cloned the repository and forgot to clone the submodules (AutoMetric and CK), you can use the following command to clone the submodule:
 
