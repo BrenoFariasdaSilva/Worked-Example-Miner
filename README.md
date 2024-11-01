@@ -50,6 +50,15 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Linux](#linux)
     - [MacOS](#macos)
     - [Windows](#windows)
+  - [Additional Requirements](#additional-requirements)
+    - [Make](#make)
+      - [Linux](#linux-1)
+      - [MacOS](#macos-1)
+      - [Windows](#windows-1)
+    - [Apache Maven](#apache-maven)
+      - [Linux](#linux-2)
+      - [MacOS](#macos-2)
+      - [Windows](#windows-2)
 - [Paper Submissions](#paper-submissions)
   - [EduComp 2024 - Ideas Laboratory](#educomp-2024---ideas-laboratory)
 - [Goals](#goals)
@@ -138,8 +147,61 @@ choco install python3
 
 Or just download the installer from the [official website](https://www.python.org/downloads/).
 
-Great, you now have python3 and pip installed. Now, we need to install the project requirements/dependencies.
+Great, you now have python3 and pip installed. Now, we need to install the additional project requirements.
 
+### Additional Requirements
+
+In addition to Python and Pip, you will need to install some other tools to successfully run the project. These tools include `make` and `mvn` (Apache Maven).
+
+#### Make
+
+`make` is a build automation tool that is commonly used to manage and maintain projects. In this project, `make` is used to automate the execution of tasks, such as running scripts and managing python/pip dependencies. To install `make`, you can use the following commands based on your operating system:
+
+##### Linux
+To install `make` on Linux, run:
+
+```bash
+sudo apt install make -y
+```
+
+##### MacOS
+To install `make` on MacOS, you can install it via Homebrew:
+
+```bash
+brew install make
+```
+
+##### Windows
+On Windows, you can install `make` as part of a Unix-like environment such as Cygwin or WSL (Windows Subsystem for Linux). If you are using WSL, you can follow the Linux instructions above.
+
+Or you can download it manually from the official GNU Make website [here](https://www.gnu.org/software/make/#download) and follow the installation instructions provided there.
+
+#### Apache Maven
+
+Apache Maven is a project management tool that is primarily used for Java projects. In this project, Maven is used to manage dependencies and build the CK Java project JAR file, which is used to extract code metrics from Java repositories. It helps manage project dependencies and build processes. To install Maven, follow these instructions based on your operating system:
+
+##### Linux
+To install Maven on Linux, use:
+
+```bash
+sudo apt install maven -y
+```
+
+##### MacOS
+To install Maven on MacOS, use Homebrew:
+
+```bash
+brew install maven
+```
+
+##### Windows
+On Windows, you can use Chocolatey to install Maven:
+
+```bash
+choco install maven
+```
+
+Or you can download it manually from the official Maven website [here](https://maven.apache.org/download.cgi) and follow the installation instructions provided there.
 
 ## Paper Submissions
 
