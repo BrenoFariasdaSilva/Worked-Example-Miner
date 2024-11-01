@@ -264,7 +264,31 @@ Or you can download it manually from the official Maven website [here](https://m
 
 ### .env File
 
-The `.env` file contains the necessary credentials and API keys to access the Google Gemini API. You must fill in the required fields with your credentials before running the scripts. If you ran the `install_requirements.sh` script, the `.env` file should have been created for you, and you must only fill in the necessary fields. If not, you can create the `.env` file and manually copying the content of the `.env-example` file and filling in the required fields.
+The `.env` file contains the necessary credentials and API keys required to access the Google Gemini API and interact with GitHub. Before running the scripts, you must fill in the required fields with your credentials. 
+
+1. **Creating the `.env` File**:
+   - If you ran the `install_requirements.sh` script, the `.env` file should have been automatically created for you. You only need to fill in the required fields.
+   - If the `.env` file was not created, you can manually create it by copying the content from the `.env-example` file. Make sure to fill in the required fields with your credentials.
+
+2. **Obtaining Your Gemini API Key**:
+   - To access the Google Gemini API, you need an API key. 
+   - Follow these steps to obtain your API key:
+     - Visit the [Google Gemini API documentation](https://ai.google.dev/gemini-api/docs/api-key).
+     - Sign in with your Google account.
+     - Navigate to the section for creating API keys and follow the instructions provided to generate your key.
+     - Copy your API key and paste it into the `GEMINI_API_KEY` field in the `.env` file.
+
+3. **Getting Your GitHub Token**:
+   - A GitHub token is required to authenticate your scripts with GitHub's API.
+   - To create a GitHub token, follow these steps:
+     - Go to your GitHub account settings and navigate to the [Personal access tokens section](https://github.com/settings/tokens).
+     - Click on **Generate new token**.
+     - Select the scopes or permissions you want to grant this token (for basic usage, `repo` permissions are often sufficient).
+     - Click **Generate token** at the bottom of the page.
+     - Make sure to copy your new token immediately, as it will not be shown again.
+     - Paste your token into the `GITHUB_TOKEN` field in the `.env` file.
+
+Once you have filled in the `GEMINI_API_KEY` and `GITHUB_TOKEN` fields, your `.env` file will be ready for use, and you can proceed to run the scripts.
 
 ## Paper Submissions
 
