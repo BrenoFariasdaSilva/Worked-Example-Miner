@@ -104,8 +104,8 @@ install_maven() {
    echo "Maven installation complete."
 }
 
-# Copy .env-example file to .env
-copy_env_example_file() {
+# Set up .env file
+setuo_env_file() {
    if [[ -f ".env-example" ]]; then
       echo "Copying .env-example to .env..."
       cp .env-example .env
@@ -115,7 +115,7 @@ copy_env_example_file() {
       touch .env-example
       echo "GEMINI_API_KEY=" > .env-example
       echo 'GITHUB_TOKEN=""' >> .env-example
-      copy_env_example_file
+      setuo_env_file
    fi
 }
 
@@ -124,6 +124,6 @@ install_python_pip
 install_git
 install_make
 install_maven
-copy_env_example_file
+setuo_env_file
 
 echo "All required dependencies have been installed (or instructions provided)."
