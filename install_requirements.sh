@@ -111,7 +111,12 @@ install_maven() {
 }
 
 # Set up .env file
-setuo_env_file() {
+setup_env_file() {
+   if [[ -f ".env" ]]; then
+      echo ".env file already exists. Please edit it to fill in your API keys and tokens."
+      return # Exit function as .env file already exists
+   fi
+
    if [[ -f ".env-example" ]]; then
       echo "Copying .env-example to .env..."
       cp .env-example .env
@@ -121,7 +126,7 @@ setuo_env_file() {
       touch .env-example
       echo "GEMINI_API_KEY=" > .env-example
       echo 'GITHUB_TOKEN=""' >> .env-example
-      setuo_env_file
+      setup_env_file
    fi
    echo ".env file setup complete."
    echo "Read the .env file section in the README.md for more information on how to fill in the required API keys and Tokens."
@@ -132,7 +137,7 @@ install_python_pip
 install_git
 install_make
 install_maven
-setuo_env_file
+setup_env_file
 
 echo "Please, check for any errors in the installation process in the log messages above"
 echo "All required dependencies should now be installed."
