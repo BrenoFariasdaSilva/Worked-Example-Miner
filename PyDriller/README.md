@@ -16,11 +16,6 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
 
 - [PyDriller.  ](#pydriller--)
   - [Important Notes](#important-notes)
-  - [Setup](#setup)
-    - [Python and Pip](#python-and-pip)
-      - [Linux](#linux)
-      - [MacOS](#macos)
-      - [Windows](#windows)
     - [Requirements](#requirements)
     - [Cleaning Up](#cleaning-up)
   - [How to use](#how-to-use)
@@ -84,43 +79,6 @@ Welcome to the PyDriller directory, in which you will find the scripts used to g
 - All of the Scripts usually output an estimated time of the script execution, based on things like the number of commits of the repository, the number of classes or methods to be analyzed, etc. But this is just an estimate, the actual time does vary a lot depending on the machine you're using, on what is running on the machine, and many other factors.
 - The execution of this scripts will take a long time and store a lot of data, so make sure you have enough space in your disk and be patient. Example: Running all the scrips only for `Apache Kafka` generates a total of 115 GB of data.
 - Why is `metrics_changes.py` isn't fully parallelized? Because, for example, for running for `Apache Kafka` it uses so much CPU and RAM that it crashed in my Ryzen 7 3800X with 32GB of RAM and there is also a lot of I/O to the disk. I tried creating a thread for process each repository, just like i did for `code_metrics.py`, but most of the times it just crashes after a minute running. Talking about the `code_metrics.py`, the most performance i could take from it was, as said, to create a thread to process each repository, therefore it isn't possible to parallelize inside the processing of the repository, as the result of the iteration number `x` depends on the result since the `first iteration until x-1`. If you want to parallelize something in order to improve performance, feel free to do it, i'll be glad aproving your pull request. Also, if the `code_metrics.py` crashes in the middle of the execution, you can just run it again, as it will verify if the ck metrics are already calculated and where it stopped, so it will continue from where it stopped.
-
-## Setup
-
-This section provides instructions for installing the Python Language and Pip Python package manager, as well as the project's dependencies. It also explains how to run the scripts using the provided `makefile`. The `makefile` automates the process of creating a virtual environment, installing dependencies, and running the scripts.
-
-### Python and Pip
-
-In order to run the scripts, you must have python3 and pip installed in your machine. If you don't have it installed, you can use the following commands to install it:
-
-#### Linux
-
-In order to install python3 and pip in Linux, you can use the following commands:
-
-```
-sudo apt install python3 -y
-sudo apt install python3-pip -y
-```
-
-#### MacOS
-
-In order to install python3 and pip in MacOS, you can use the following commands:
-
-```
-brew install python3
-```
-
-#### Windows
-
-In order to install python3 and pip in Windows, you can use the following commands in case you have `choco` installed:
-
-```
-choco install python3
-```
-
-Or just download the installer from the [official website](https://www.python.org/downloads/).
-
-Great, you now have python3 and pip installed. Now, we need to install the project requirements/dependencies.
 
 ### Requirements
 

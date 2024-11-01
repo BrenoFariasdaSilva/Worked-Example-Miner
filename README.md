@@ -46,6 +46,10 @@ This project is massive and complex, containing multiple integrated tools and ex
   - [Clone with Submodules](#clone-with-submodules)
   - [Clone without Submodules (Not Recommended)](#clone-without-submodules-not-recommended)
   - [Clone Submodules](#clone-submodules)
+  - [Python and Pip](#python-and-pip)
+    - [Linux](#linux)
+    - [MacOS](#macos)
+    - [Windows](#windows)
 - [Paper Submissions](#paper-submissions)
   - [EduComp 2024 - Ideas Laboratory](#educomp-2024---ideas-laboratory)
 - [Goals](#goals)
@@ -76,6 +80,8 @@ Within this repository, you'll find a wealth of resources, from detailed code an
 
 ## Setup
 
+This section provides instructions for installing the Python Language and Pip Python package manager and the project's requirements, such as `make` and `mvn`.
+
 ### Clone with Submodules
 
 In order to clone this repository with the submodules (AutoMetric and CK), you can use the following command:
@@ -100,6 +106,40 @@ In case you have already cloned the repository and forgot to clone the submodule
 git submodule init
 git submodule update
 ```
+
+### Python and Pip
+
+In order to run the scripts, you must have python3 and pip installed in your machine. If you don't have it installed, you can use the following commands to install it:
+
+#### Linux
+
+In order to install python3 and pip in Linux, you can use the following commands:
+
+```
+sudo apt install python3 -y
+sudo apt install python3-pip -y
+```
+
+#### MacOS
+
+In order to install python3 and pip in MacOS, you can use the following commands:
+
+```
+brew install python3
+```
+
+#### Windows
+
+In order to install python3 and pip in Windows, you can use the following commands in case you have `choco` installed:
+
+```
+choco install python3
+```
+
+Or just download the installer from the [official website](https://www.python.org/downloads/).
+
+Great, you now have python3 and pip installed. Now, we need to install the project requirements/dependencies.
+
 
 ## Paper Submissions
 
