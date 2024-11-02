@@ -133,6 +133,30 @@ install_python_pip() {
    fi
 }
 
+# Install Build Essentials
+install_build_essentials() {
+   if command_exists gcc && command_exists g++; then
+      echo "Build essentials are already installed."
+   else
+      echo "Installing build essentials..."
+      case "$OS" in
+         Linux)
+            sudo apt update
+            sudo apt install build-essential -y
+            ;;
+         MacOS)
+            echo "Build tools are included with Xcode Command Line Tools. Installing..."
+            xcode-select --install
+            ;;
+         Windows)
+            echo "Please install build tools manually or use Chocolatey to install a Unix-like environment."
+            echo "Example: choco install mingw"
+            ;;
+      esac
+      echo "Build essentials installation complete."
+   fi
+}
+
 # Install Git
 install_git() {
    if command_exists git; then
@@ -224,6 +248,7 @@ setup_env_file() {
 # Run installation functions
 setup_java_home
 install_python_pip
+install_build_essentials
 install_git
 install_make
 install_maven
