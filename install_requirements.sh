@@ -128,24 +128,62 @@ install_java() {
 setup_java_home() {
    if [[ -z "$JAVA_HOME" ]]; then
       echo "JAVA_HOME is not set. Attempting to configure it automatically..."
-      
-      # Get the Java version
       JAVA_VERSION=$(java -version 2>&1 | awk -F[\"._] '/version/ {print $2}')
       
-      # Get the path of the Java executable
-      JAVA_PATH=$(readlink -f "$(which java)")
-      
-      # Get the base directory (the one containing `bin`, e.g., /usr/lib/jvm/java-21-openjdk-amd64)
-      JAVA_HOME_CANDIDATE=$(dirname "$(dirname "$JAVA_PATH")")
-      
       case "$OS" in
-         Linux|MacOS)
-            if [[ -d "$JAVA_HOME_CANDIDATE" ]]; then
-               export JAVA_HOME="$JAVA_HOME_CANDIDATE"
+         Linux)
+            JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION" | head -n 1)
+            if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
+               export JAVA_HOME="/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
                echo "JAVA_HOME set to $JAVA_HOME"
+
+               # Add JAVA_HOME to .bashrc or .zshrc
+               SHELL_CONFIG="$HOME/.bashrc"
+               if [[ $SHELL == *"zsh"* ]]; then
+                  SHELL_CONFIG="$HOME/.zshrc"
+               fi
+
+               # Check if JAVA_HOME is already in the config file
+               if ! grep -q "export JAVA_HOME=" "$SHELL_CONFIG"; then
+                  echo "export JAVA_HOME=\"$JAVA_HOME\"" >> "$SHELL_CONFIG"
+                  echo "Added JAVA_HOME to $SHELL_CONFIG."
+               else
+                  echo "JAVA_HOME is already set in $SHELL_CONFIG."
+               fi
+
+               # Source the config file
+               source "$SHELL_CONFIG"
+               echo "Sourced $SHELL_CONFIG to apply changes."
             else
-               echo "No matching Java installation found for Java version $JAVA_VERSION."
+               echo "No matching Java installation found in /usr/lib/jvm for Java version $JAVA_VERSION."
                echo "Please set JAVA_HOME manually."
+            fi
+            ;;
+         MacOS)
+            JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION" 2>/dev/null)
+            if [[ -n "$JAVA_HOME" ]]; then
+               export JAVA_HOME
+               echo "JAVA_HOME set to $JAVA_HOME"
+
+               # Add JAVA_HOME to .bashrc or .zshrc
+               SHELL_CONFIG="$HOME/.bashrc"
+               if [[ $SHELL == *"zsh"* ]]; then
+                  SHELL_CONFIG="$HOME/.zshrc"
+               fi
+
+               # Check if JAVA_HOME is already in the config file
+               if ! grep -q "export JAVA_HOME=" "$SHELL_CONFIG"; then
+                  echo "export JAVA_HOME=\"$JAVA_HOME\"" >> "$SHELL_CONFIG"
+                  echo "Added JAVA_HOME to $SHELL_CONFIG."
+               else
+                  echo "JAVA_HOME is already set in $SHELL_CONFIG."
+               fi
+
+               # Source the config file
+               source "$SHELL_CONFIG"
+               echo "Sourced $SHELL_CONFIG to apply changes."
+            else
+               echo "No matching Java installation found. Please set JAVA_HOME manually."
             fi
             ;;
          Windows)
@@ -155,6 +193,8 @@ setup_java_home() {
                if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
                   export JAVA_HOME="$path\\$JAVA_HOME_CANDIDATE"
                   echo "JAVA_HOME set to $JAVA_HOME"
+                  echo "To make this change permanent, add the following line to your environment variables:"
+                  echo "JAVA_HOME=$JAVA_HOME"
                   break
                fi
             done
