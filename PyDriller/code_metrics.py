@@ -203,7 +203,7 @@ def load_repositories_from_json(file_path):
       verbose_output(true_string=f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
       return None # Return None if there is an error parsing the JSON file
 
-def get_repositories_list():
+def get_repositories_list_from_json():
    """
    Get the repositories list from the JSON file
    
@@ -237,16 +237,16 @@ def get_repositories_list():
    print(f"{BackgroundColors.RED}No valid JSON files found for any of the sorting attributes.{Style.RESET_ALL}")
    return False, {} # Return False if no valid JSON files were found
 
-def verify_repositories_execution_constants():
+def get_repositories_dictionary():
    """
-   Verify the constants used in the execution of the repositories.
+   Get the repositories dictionary from the JSON file.
    It will process the JSON repositories, if the PROCESS_JSON_REPOSITORIES constant is set to True or if the DEFAULT_REPOSITORIES dictionary is empty.
    
-   :return: The JSON repositories if the repositories list was successfully updated, None otherwise.
+   :return: The JSON repositories if the repositories dictionary was successfully updated, None otherwise.
    """
 
    if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES: # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
-      success, json_repositories = get_repositories_list() # Update the repositories list
+      success, json_repositories = get_repositories_list_from_json() # Update the repositories list
       if not success: # Update the repositories list
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script with the {BackgroundColors.CYAN}PROCESS_JSON_REPOSITORIES{BackgroundColors.RED} set to {BackgroundColors.CYAN}False{BackgroundColors.RED} or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
@@ -1053,7 +1053,7 @@ def main():
    if RUN_FUNCTIONS["CK Metrics"] and not ensure_ck_jar_file_exists(): # Verify and ensure that the CK JAR file exists
       return # Return if the CK JAR file does not exist
 
-   verify_repositories_execution_constants() # Verify the DEFAULT_REPOSITORIES constant
+   get_repositories_dictionary() # Get the list of repositories
    
    # Print the Welcome Messages
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")

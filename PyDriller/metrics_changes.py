@@ -25,7 +25,7 @@ from repositories_picker import create_directory, output_time, path_contains_whi
 
 # Imports from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, PROCESS_JSON_REPOSITORIES, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
-from code_metrics import get_directories_size_in_gb, setup_process_repository, verify_repositories_execution_constants # Importing Functions from the code_metrics.py file
+from code_metrics import get_directories_size_in_gb, setup_process_repository, get_repositories_dictionary # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
 VERBOSE = False # If True, then the program will output the progress of the execution
@@ -1539,7 +1539,7 @@ def main():
 		return # Exit the program
         
 	global DEFAULT_REPOSITORIES # Declare the DEFAULT_REPOSITORIES as a global variable
-	DEFAULT_REPOSITORIES = verify_repositories_execution_constants() # Verify the repositories execution constants
+	DEFAULT_REPOSITORIES = get_repositories_dictionary() # Get the repositories dictionary and load it into the DEFAULT_REPOSITORIES variable
 
 	# Print the Welcome Messages
 	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
