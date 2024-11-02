@@ -41,54 +41,70 @@ command_exists() {
    command -v "$1" &> /dev/null
 }
 
-# Setup JAVA_HOME if not set
+# Function to check if Java is installed and install it if not
+install_java() {
+   if ! command -v java &> /dev/null; then
+      echo "Java is not installed. Installing Java..."
+      case "$OS" in
+         Linux)
+            sudo apt install -y default-jdk
+            ;;
+         MacOS)
+            brew install openjdk
+            ;;
+         Windows)
+            echo "Please install Java manually on Windows from https://www.java.com/"
+            exit 1
+            ;;
+      esac
+      echo "Java installation complete."
+   else
+      echo "Java is already installed."
+   fi
+}
+
+# Function to set JAVA_HOME if not already set
 setup_java_home() {
    if [[ -z "$JAVA_HOME" ]]; then
       echo "JAVA_HOME is not set. Attempting to configure it automatically..."
-
-      # Check if Java is installed
-      if command_exists java; then
-         JAVA_VERSION=$(java -version 2>&1 | awk -F[\"._] '/version/ {print $2}')
-         case "$OS" in
-            Linux)
-               JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION" | head -n 1)
+      JAVA_VERSION=$(java -version 2>&1 | awk -F[\"._] '/version/ {print $2}')
+      
+      case "$OS" in
+         Linux)
+            JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION" | head -n 1)
+            if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
+               export JAVA_HOME="/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
+               echo "JAVA_HOME set to $JAVA_HOME"
+            else
+               echo "No matching Java installation found in /usr/lib/jvm for Java version $JAVA_VERSION."
+               echo "Please set JAVA_HOME manually."
+            fi
+            ;;
+         MacOS)
+            JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION" 2>/dev/null)
+            if [[ -n "$JAVA_HOME" ]]; then
+               export JAVA_HOME
+               echo "JAVA_HOME set to $JAVA_HOME"
+            else
+               echo "No matching Java installation found. Please set JAVA_HOME manually."
+            fi
+            ;;
+         Windows)
+            JAVA_PATHS=("C:\\Program Files\\Java" "C:\\Program Files (x86)\\Java")
+            for path in "${JAVA_PATHS[@]}"; do
+               JAVA_HOME_CANDIDATE=$(ls "$path" | grep -E "jdk-$JAVA_VERSION" | head -n 1)
                if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
-                  export JAVA_HOME="/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
+                  export JAVA_HOME="$path\\$JAVA_HOME_CANDIDATE"
                   echo "JAVA_HOME set to $JAVA_HOME"
-               else
-                  echo "No matching Java installation found in /usr/lib/jvm for Java version $JAVA_VERSION."
-                  echo "Please install the required version or set JAVA_HOME manually."
+                  break
                fi
-               ;;
-            MacOS)
-               JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION" 2>/dev/null)
-               if [[ -n "$JAVA_HOME" ]]; then
-                  export JAVA_HOME
-                  echo "JAVA_HOME set to $JAVA_HOME"
-               else
-                  echo "No matching Java installation found. Please install the required version or set JAVA_HOME manually."
-               fi
-               ;;
-            Windows)
-               JAVA_PATHS=("C:\\Program Files\\Java" "C:\\Program Files (x86)\\Java")
-               for path in "${JAVA_PATHS[@]}"; do
-                  JAVA_HOME_CANDIDATE=$(ls "$path" | grep -E "jdk-$JAVA_VERSION" | head -n 1)
-                  if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
-                     export JAVA_HOME="$path\\$JAVA_HOME_CANDIDATE"
-                     echo "JAVA_HOME set to $JAVA_HOME"
-                     break
-                  fi
-               done
-               if [[ -z "$JAVA_HOME" ]]; then
-                  echo "No matching Java installation found in standard paths on Windows."
-                  echo "Please install the required version or set JAVA_HOME manually."
-               fi
-               ;;
-         esac
-      else
-         echo "Java is not installed. Please install it before proceeding."
-         exit 1
-      fi
+            done
+            if [[ -z "$JAVA_HOME" ]]; then
+               echo "No matching Java installation found in standard paths on Windows."
+               echo "Please set JAVA_HOME manually."
+            fi
+            ;;
+      esac
    else
       echo "JAVA_HOME is already set to $JAVA_HOME."
    fi
@@ -244,6 +260,7 @@ setup_env_file() {
 }
 
 # Run installation functions
+install_java
 setup_java_home
 install_python_pip
 install_c_cpp_compiler
