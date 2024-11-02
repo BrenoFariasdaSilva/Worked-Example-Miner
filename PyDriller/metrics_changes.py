@@ -1,3 +1,5 @@
+# @TODO: Setup the usage of the METRICS_VALUES_MIN_MAX_THRESHOLDS values to filter the candidates that will be added to the Substantial Decrease File
+
 import atexit # For playing a sound when the program finishes
 import csv # For reading csv files
 import json # For reading the refactoring file from RefactoringMiner
