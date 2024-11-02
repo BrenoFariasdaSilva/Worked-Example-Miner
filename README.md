@@ -150,17 +150,16 @@ git submodule init
 git submodule update
 ```
 
-### Python and Pip
+### Python, Pip and Venv
 
-In order to run the scripts, you must have python3 and pip installed in your machine. If you don't have it installed, you can use the following commands to install it:
+In order to run the scripts, you must have python3, pip and venv installed in your machine. If you don't have it installed, you can use the following commands to install it:
 
 #### Linux
 
-In order to install python3 and pip in Linux, you can use the following commands:
+In order to install python3, pip and venv in Linux, you can use the following commands:
 
 ```bash
-sudo apt install python3 -y
-sudo apt install python3-pip -y
+sudo apt install python3 python3-pip python3-venv -y
 ```
 
 #### MacOS
