@@ -48,22 +48,26 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Clone with Submodules](#clone-with-submodules)
     - [Clone without Submodules (Not Recommended)](#clone-without-submodules-not-recommended)
     - [Clone Submodules](#clone-submodules)
-  - [Python and Pip](#python-and-pip)
+  - [Python, Pip and Venv](#python-pip-and-venv)
     - [Linux](#linux)
     - [MacOS](#macos)
     - [Windows](#windows)
-  - [Git](#git)
+  - [C/C++ Compiler](#cc-compiler)
     - [Linux](#linux-1)
     - [MacOS](#macos-1)
     - [Windows](#windows-1)
-  - [Make](#make)
+  - [Git](#git)
     - [Linux](#linux-2)
     - [MacOS](#macos-2)
     - [Windows](#windows-2)
-  - [Apache Maven](#apache-maven)
+  - [Make](#make)
     - [Linux](#linux-3)
     - [MacOS](#macos-3)
     - [Windows](#windows-3)
+  - [Apache Maven](#apache-maven)
+    - [Linux](#linux-4)
+    - [MacOS](#macos-4)
+    - [Windows](#windows-4)
   - [.env File](#env-file)
   - [Setting JAVA\_HOME](#setting-java_home)
 - [Paper Submissions](#paper-submissions)
@@ -181,6 +185,30 @@ choco install python3
 Or just download the installer from the [official website](https://www.python.org/downloads/).
 
 Great, you now have python3 and pip installed. Now, we need to install the additional project requirements.
+
+### C/C++ Compiler
+
+The C/C++ compiler is required, as many of the Python libraries used in this project have C/C++ extensions that need to be compiled during installation, such as `pandas`, `numpy`, and `scikit-learn`. In Linux and MacOS, the C/C++ compiler is usually installed by default. However, in Windows, you may need to install it manually.
+
+#### Linux
+
+In Linux, the C/C++ compiler is usually installed by default. If you encounter any issues during the installation of the Python libraries, you may need to install the `build-essential` package, which includes the necessary tools for compiling C/C++ code:
+
+```bash
+sudo apt install build-essential -y
+```
+
+#### MacOS
+
+In MacOS, the C/C++ compiler is also usually installed by default. If you encounter any issues during the installation of the Python libraries, you may need to install the Xcode Command Line Tools:
+
+```bash
+xcode-select --install
+```
+
+#### Windows
+
+On Windows, you may need to install the C/C++ compiler manually, using MinGW. You can download MinGW [here](https://sourceforge.net/projects/mingw/) and search any tutorial on how to install it, like this one from [dev.to](https://dev.to/gamegods3/how-to-install-gcc-in-windows-10-the-easier-way-422j).
 
 ### Git
 
