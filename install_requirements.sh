@@ -133,15 +133,14 @@ install_python_pip() {
    fi
 }
 
-# Install Build Essentials
-install_build_essentials() {
+# Install C/C++ Compiler
+install_c_cpp_compiler() {
    if command_exists gcc && command_exists g++; then
-      echo "Build essentials are already installed."
+      echo "C/C++ are already installed."
    else
-      echo "Installing build essentials..."
+      echo "Installing C/C++ Compiler..."
       case "$OS" in
          Linux)
-            sudo apt update
             sudo apt install build-essential -y
             ;;
          MacOS)
@@ -149,11 +148,10 @@ install_build_essentials() {
             xcode-select --install
             ;;
          Windows)
-            echo "Please install build tools manually or use Chocolatey to install a Unix-like environment."
-            echo "Example: choco install mingw"
+            echo "Please install build tools manually using MinGW from https://sourceforge.net/projects/mingw/." 
             ;;
       esac
-      echo "Build essentials installation complete."
+      echo "C/C++ Compiler installation complete."
    fi
 }
 
@@ -248,7 +246,7 @@ setup_env_file() {
 # Run installation functions
 setup_java_home
 install_python_pip
-install_build_essentials
+install_c_cpp_compiler
 install_git
 install_make
 install_maven
