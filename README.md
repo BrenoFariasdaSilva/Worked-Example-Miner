@@ -65,6 +65,7 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [MacOS](#macos-3)
     - [Windows](#windows-3)
   - [.env File](#env-file)
+  - [Setting JAVA\_HOME](#setting-java_home)
 - [Paper Submissions](#paper-submissions)
   - [EduComp 2024 - Ideas Laboratory](#educomp-2024---ideas-laboratory)
 - [Goals](#goals)
@@ -289,6 +290,66 @@ The `.env` file contains the necessary credentials and API keys required to acce
      - Paste your token into the `GITHUB_TOKEN` field in the `.env` file.
 
 Once you have filled in the `GEMINI_API_KEY` and `GITHUB_TOKEN` fields, your `.env` file will be ready for use, and you can proceed to run the scripts.
+
+### Setting JAVA_HOME
+
+The `JAVA_HOME` environment variable is crucial for the successful build and execution of the CK tool. Without it, the build process may fail due to the system's inability to locate the Java installation. Follow these steps to correctly set your `JAVA_HOME`:
+
+1. **Automatically Setting JAVA_HOME**:
+   - When you run the `install_requirements.sh` script, it attempts to automatically configure the `JAVA_HOME` variable based on your Java installation. 
+   - If you have Java installed and the script successfully detects it, `JAVA_HOME` will be set accordingly. You can check if it has been set by running:
+     ```bash
+     echo $JAVA_HOME
+     ```
+   - If the output shows a valid Java installation path, you can skip to the next section.
+
+2. **Manually Setting JAVA_HOME**:
+   - If the script fails to set `JAVA_HOME`, you will need to set it manually. Here's how to do that based on your operating system:
+
+   **For Linux**:
+   - Open your terminal and edit your shell profile file (e.g., `~/.bashrc`, `~/.bash_profile`, or `~/.profile`):
+     ```bash
+     nano ~/.bashrc
+     ```
+   - Add the following line, replacing `/path/to/java` with the actual path to your Java installation:
+     ```bash
+     export JAVA_HOME=/usr/lib/jvm/java-<version>
+     ```
+   - Save the file and reload it:
+     ```bash
+     source ~/.bashrc
+     ```
+
+   **For macOS**:
+   - Open your terminal and edit your shell profile file (e.g., `~/.bash_profile` or `~/.zshrc`):
+     ```bash
+     nano ~/.bash_profile
+     ```
+   - Add the following line, replacing `/path/to/java` with the actual path obtained from `/usr/libexec/java_home -v <version>`:
+     ```bash
+     export JAVA_HOME=$(/usr/libexec/java_home -v <version>)
+     ```
+   - Save the file and reload it:
+     ```bash
+     source ~/.bash_profile
+     ```
+
+   **For Windows**:
+   - Right-click on **This PC** or **Computer** and select **Properties**.
+   - Click on **Advanced system settings** and then on the **Environment Variables** button.
+   - In the **System variables** section, click on **New** and enter:
+     - **Variable name**: `JAVA_HOME`
+     - **Variable value**: `C:\Program Files\Java\jdk-<version>`
+   - Click **OK** to close all dialogs.
+
+3. **Verifying JAVA_HOME**:
+   - After setting the `JAVA_HOME` variable, verify that it has been set correctly by running:
+     ```bash
+     echo $JAVA_HOME
+     ```
+   - You should see the path to your Java installation.
+
+Once you have successfully set the `JAVA_HOME` variable, you can proceed with building the CK tool without any issues.
 
 ## Paper Submissions
 
