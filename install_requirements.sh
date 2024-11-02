@@ -128,26 +128,35 @@ install_java() {
 setup_java_home() {
    if [[ -z "$JAVA_HOME" ]]; then
       echo "JAVA_HOME is not set. Attempting to configure it automatically..."
-        JAVA_VERSION=$(java -version 2>&1 | awk -F[\"._] '/version/ {print $2}')
+      JAVA_VERSION=$(java -version 2>&1 | awk -F[\"._] '/version/ {print $2}')
         
-        case "$OS" in
-            Linux)
-               JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION" | head -n 1)
-               if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
-                  export JAVA_HOME="/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
+      case "$OS" in
+         Linux)
+            JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION" | head -n 1)
+            if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
+               JAVA_HOME="/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
+               
+               # Check if JAVA_HOME_CANDIDATE is a directory
+               if [[ -d "$JAVA_HOME" ]]; then
+                  export JAVA_HOME
                   echo "JAVA_HOME set to $JAVA_HOME"
                   echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc
 
-                  # Verify if JAVA_HOME is set correctly
+                  # Verify if JAVA_HOME is set correctly after export
                   if [[ -z "$JAVA_HOME" ]]; then
                      echo "WARNING: JAVA_HOME is not set correctly. Please run the following command to set it manually:"
-                     echo "export JAVA_HOME=/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
+                     echo "export JAVA_HOME=$JAVA_HOME"
+                  else
+                     echo "JAVA_HOME is set correctly."
                   fi
                else
-                  echo "No matching Java installation found in /usr/lib/jvm for Java version $JAVA_VERSION."
-                  echo "Please set JAVA_HOME manually."
+                  echo "WARNING: JAVA_HOME_CANDIDATE ($JAVA_HOME) is not a directory. Please set JAVA_HOME manually."
                fi
-               ;;
+            else
+               echo "No matching Java installation found in /usr/lib/jvm for Java version $JAVA_VERSION."
+               echo "Please set JAVA_HOME manually."
+            fi
+            ;;
          MacOS)
             JAVA_HOME=$(/usr/libexec/java_home -v "$JAVA_VERSION" 2>/dev/null)
             if [[ -n "$JAVA_HOME" ]]; then
