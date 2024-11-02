@@ -135,11 +135,11 @@ setup_java_home() {
             JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION-openjdk-" | head -n 1)
             if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
                JAVA_HOME="/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
-               
+
                # Check if JAVA_HOME_CANDIDATE is a directory
                if [[ -d "$JAVA_HOME" ]]; then
                   echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc
-                  export JAVA_HOME=$JAVA_HOME
+                  export JAVA_HOME="$JAVA_HOME"  # Export for current session
                   # Capture the output of echoing JAVA_HOME
                   CURRENT_JAVA_HOME=$(echo "$JAVA_HOME") 
                   echo "JAVA_HOME set to $CURRENT_JAVA_HOME"
@@ -151,12 +151,13 @@ setup_java_home() {
                   else
                      echo "JAVA_HOME is set correctly with the command 'export JAVA_HOME=$JAVA_HOME'."
                   fi
+                  echo "Note: To make this change permanent, please run 'source ~/.bashrc' or restart your terminal."
                else
                   echo "WARNING: JAVA_HOME_CANDIDATE ($JAVA_HOME) is not a directory. Please set JAVA_HOME manually."
                fi
-            else
-               echo "No matching Java installation found in /usr/lib/jvm for Java version $JAVA_VERSION."
-               echo "Please set JAVA_HOME manually."
+         else
+            echo "No matching Java installation found in /usr/lib/jvm for Java version $JAVA_VERSION."
+            echo "Please set JAVA_HOME manually."
             fi
             ;;
          MacOS)
