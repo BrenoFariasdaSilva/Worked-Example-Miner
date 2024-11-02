@@ -203,11 +203,11 @@ def load_repositories_from_json(file_path):
       verbose_output(true_string=f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
       return None # Return None if there is an error parsing the JSON file
 
-def update_repositories_dictionary():
+def get_repositories_list():
    """
-   Update the repositories list in the DEFAULT_REPOSITORIES dictionary.
+   Get the repositories list from the JSON file
    
-   :return: True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file, False otherwise.
+   :return: Tuple containing True if the repositories list was successfully updated with values from the JSON file, and the JSON repositories if the repositories list was successfully updated, False otherwise.
    """
    
    verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the repositories list file with the DEFAULT_REPOSITORIES dictionary...{Style.RESET_ALL}")
@@ -230,26 +230,28 @@ def update_repositories_dictionary():
          verbose_output(true_string=f"{BackgroundColors.RED}Failed to load JSON data from {filename}, checking next...{Style.RESET_ALL}")
          continue # Skip to the next attribute
 
-      DEFAULT_REPOSITORIES = json_repositories # Update DEFAULT_REPOSITORIES and return True if successful
       verbose_output(true_string=f"{BackgroundColors.GREEN}The {BackgroundColors.CLEAR_TERMINAL}DEFAULT_REPOSITORIES{BackgroundColors.GREEN} dictionary was successfully updated from {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
-      return True # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
+      return True, json_repositories # Return True if the DEFAULT_REPOSITORIES dictionary was successfully updated with values from the JSON file
    
    # If no valid files were found
    print(f"{BackgroundColors.RED}No valid JSON files found for any of the sorting attributes.{Style.RESET_ALL}")
-   return False # Return False if no valid JSON files were found
+   return False, {} # Return False if no valid JSON files were found
 
 def verify_repositories_execution_constants():
    """
    Verify the constants used in the execution of the repositories.
    It will process the JSON repositories, if the PROCESS_JSON_REPOSITORIES constant is set to True or if the DEFAULT_REPOSITORIES dictionary is empty.
    
-   :return: None
+   :return: The JSON repositories if the repositories list was successfully updated, None otherwise.
    """
 
    if PROCESS_JSON_REPOSITORIES or not DEFAULT_REPOSITORIES: # Verify if PROCESS_REPOSITORIES_LIST is set to True or if the DEFAULT_REPOSITORIES dictionary is empty
-      if not update_repositories_dictionary(): # Update the repositories list
+      success, json_repositories = get_repositories_list() # Update the repositories list
+      if not success: # Update the repositories list
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script with the {BackgroundColors.CYAN}PROCESS_JSON_REPOSITORIES{BackgroundColors.RED} set to {BackgroundColors.CYAN}False{BackgroundColors.RED} or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
+      else:
+         return json_repositories # Return the JSON repositories if the repositories list was successfully updated   
 
 def get_commit_filepaths(commit_file_path):
    """

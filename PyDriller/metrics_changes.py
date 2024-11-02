@@ -1538,7 +1538,8 @@ def main():
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
 		return # Exit the program
         
-	verify_repositories_execution_constants() # Verify the repositories execution constants
+	global DEFAULT_REPOSITORIES # Declare the DEFAULT_REPOSITORIES as a global variable
+	DEFAULT_REPOSITORIES = verify_repositories_execution_constants() # Verify the repositories execution constants
 
 	# Print the Welcome Messages
 	print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Metrics Changes Generator{BackgroundColors.GREEN}! This script is part of the {BackgroundColors.CYAN}Worked Example Miner (WEM){BackgroundColors.GREEN} project.{Style.RESET_ALL}")
