@@ -41,6 +41,67 @@ command_exists() {
    command -v "$1" &> /dev/null
 }
 
+# Install Python and Pip
+install_python_pip() {
+   if command_exists python3 && command_exists pip3; then
+      echo "Python and Pip are already installed."
+   else
+      echo "Installing Python and Pip..."
+      case "$OS" in
+         Linux)
+            sudo apt update
+            sudo apt install python3 python3-pip python3-venv -y
+            ;;
+         MacOS)
+            # Install Python 3 using Homebrew
+            brew install python
+            # Ensure pip and venv are also installed with Python
+            python3 -m ensurepip --upgrade
+            python3 -m pip install --upgrade pip
+            python3 -m pip install virtualenv
+            ;;
+         Windows)
+            # Check if Python is installed using Chocolatey
+            if ! command_exists python; then
+               echo "Installing Python using Chocolatey..."
+               echo "This requires Chocolatey to be installed."
+               choco install python --params "/InstallDir:C:\Python39" -y
+            fi
+            # Ensure pip is installed
+            if ! command_exists pip; then
+               echo "Installing pip..."
+               curl -sS https://bootstrap.pypa.io/get-pip.py | python
+            fi
+            # Install virtualenv
+            pip install --user virtualenv
+            ;;
+      esac
+      echo "Python and Pip installation complete."
+   fi
+}
+
+# Install C/C++ Compiler
+install_c_cpp_compiler() {
+   if command_exists gcc && command_exists g++; then
+      echo "C/C++ are already installed."
+   else
+      echo "Installing C/C++ Compiler..."
+      case "$OS" in
+         Linux)
+            sudo apt install build-essential -y
+            ;;
+         MacOS)
+            echo "Build tools are included with Xcode Command Line Tools. Installing..."
+            xcode-select --install
+            ;;
+         Windows)
+            echo "Please install build tools manually using MinGW from https://sourceforge.net/projects/mingw/." 
+            ;;
+      esac
+      echo "C/C++ Compiler installation complete."
+   fi
+}
+
 # Function to check if Java is installed and install it if not
 install_java() {
    if ! command -v java &> /dev/null; then
@@ -107,67 +168,6 @@ setup_java_home() {
       esac
    else
       echo "JAVA_HOME is already set to $JAVA_HOME."
-   fi
-}
-
-# Install Python and Pip
-install_python_pip() {
-   if command_exists python3 && command_exists pip3; then
-      echo "Python and Pip are already installed."
-   else
-      echo "Installing Python and Pip..."
-      case "$OS" in
-         Linux)
-            sudo apt update
-            sudo apt install python3 python3-pip python3-venv -y
-            ;;
-         MacOS)
-            # Install Python 3 using Homebrew
-            brew install python
-            # Ensure pip and venv are also installed with Python
-            python3 -m ensurepip --upgrade
-            python3 -m pip install --upgrade pip
-            python3 -m pip install virtualenv
-            ;;
-         Windows)
-            # Check if Python is installed using Chocolatey
-            if ! command_exists python; then
-               echo "Installing Python using Chocolatey..."
-               echo "This requires Chocolatey to be installed."
-               choco install python --params "/InstallDir:C:\Python39" -y
-            fi
-            # Ensure pip is installed
-            if ! command_exists pip; then
-               echo "Installing pip..."
-               curl -sS https://bootstrap.pypa.io/get-pip.py | python
-            fi
-            # Install virtualenv
-            pip install --user virtualenv
-            ;;
-      esac
-      echo "Python and Pip installation complete."
-   fi
-}
-
-# Install C/C++ Compiler
-install_c_cpp_compiler() {
-   if command_exists gcc && command_exists g++; then
-      echo "C/C++ are already installed."
-   else
-      echo "Installing C/C++ Compiler..."
-      case "$OS" in
-         Linux)
-            sudo apt install build-essential -y
-            ;;
-         MacOS)
-            echo "Build tools are included with Xcode Command Line Tools. Installing..."
-            xcode-select --install
-            ;;
-         Windows)
-            echo "Please install build tools manually using MinGW from https://sourceforge.net/projects/mingw/." 
-            ;;
-      esac
-      echo "C/C++ Compiler installation complete."
    fi
 }
 
@@ -260,10 +260,10 @@ setup_env_file() {
 }
 
 # Run installation functions
-install_java
-setup_java_home
 install_python_pip
 install_c_cpp_compiler
+install_java
+setup_java_home
 install_git
 install_make
 install_maven
