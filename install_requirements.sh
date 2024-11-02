@@ -103,14 +103,30 @@ install_python_pip() {
       case "$OS" in
          Linux)
             sudo apt update
-            sudo apt install python3 python3-pip -y
+            sudo apt install python3 python3-pip python3-venv -y
             ;;
          MacOS)
-            brew install python3
+            # Install Python 3 using Homebrew
+            brew install python
+            # Ensure pip and venv are also installed with Python
+            python3 -m ensurepip --upgrade
+            python3 -m pip install --upgrade pip
+            python3 -m pip install virtualenv
             ;;
          Windows)
-            echo "Please install Python manually from https://www.python.org/downloads/ or use Chocolatey:"
-            echo "choco install python3"
+            # Check if Python is installed using Chocolatey
+            if ! command_exists python; then
+               echo "Installing Python using Chocolatey..."
+               echo "This requires Chocolatey to be installed."
+               choco install python --params "/InstallDir:C:\Python39" -y
+            fi
+            # Ensure pip is installed
+            if ! command_exists pip; then
+               echo "Installing pip..."
+               curl -sS https://bootstrap.pypa.io/get-pip.py | python
+            fi
+            # Install virtualenv
+            pip install --user virtualenv
             ;;
       esac
       echo "Python and Pip installation complete."
