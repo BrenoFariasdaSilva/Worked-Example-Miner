@@ -36,99 +36,119 @@ fi
 
 echo "Detected OS: $OS"
 
+# Function to check if a command exists
+command_exists() {
+   command -v "$1" &> /dev/null
+}
+
 # Install Python and Pip
 install_python_pip() {
-   echo "Installing Python and Pip..."
-   case "$OS" in
-      Linux)
-         sudo apt update
-         sudo apt install python3 python3-pip -y
-         ;;
-      MacOS)
-         brew install python3
-         ;;
-      Windows)
-         echo "Please install Python manually from https://www.python.org/downloads/ or use Chocolatey:"
-         echo "choco install python3"
-         ;;
-   esac
-   echo "Python and Pip installation complete."
+   if command_exists python3 && command_exists pip3; then
+      echo "Python and Pip are already installed."
+   else
+      echo "Installing Python and Pip..."
+      case "$OS" in
+         Linux)
+            sudo apt update
+            sudo apt install python3 python3-pip -y
+            ;;
+         MacOS)
+            brew install python3
+            ;;
+         Windows)
+            echo "Please install Python manually from https://www.python.org/downloads/ or use Chocolatey:"
+            echo "choco install python3"
+            ;;
+      esac
+      echo "Python and Pip installation complete."
+   fi
 }
 
 # Install Git
 install_git() {
-   echo "Installing Git..."
-   case "$OS" in
-      Linux)
-         sudo apt update
-         sudo apt install git -y
-         ;;
-      MacOS)
-         brew install git
-         ;;
-      Windows)
-         echo "Please install Git manually from https://git-scm.com/downloads."
-         ;;
-   esac
-   echo "Git installation complete."
+   if command_exists git; then
+      echo "Git is already installed."
+   else
+      echo "Installing Git..."
+      case "$OS" in
+         Linux)
+            sudo apt update
+            sudo apt install git -y
+            ;;
+         MacOS)
+            brew install git
+            ;;
+         Windows)
+            echo "Please install Git manually from https://git-scm.com/downloads."
+            ;;
+      esac
+      echo "Git installation complete."
+   fi
 }
 
 # Install Make
 install_make() {
-   echo "Installing Make..."
-   case "$OS" in
-      Linux)
-         sudo apt update
-         sudo apt install make -y
-         ;;
-      MacOS)
-         brew install make
-         ;;
-      Windows)
-         echo "Please install Make as part of a Unix-like environment (e.g., Cygwin or WSL) or download from https://www.gnu.org/software/make/#download."
-         ;;
-   esac
-   echo "Make installation complete."
+   if command_exists make; then
+      echo "Make is already installed."
+   else
+      echo "Installing Make..."
+      case "$OS" in
+         Linux)
+            sudo apt update
+            sudo apt install make -y
+            ;;
+         MacOS)
+            brew install make
+            ;;
+         Windows)
+            echo "Please install Make as part of a Unix-like environment (e.g., Cygwin or WSL) or download from https://www.gnu.org/software/make/#download."
+            ;;
+      esac
+      echo "Make installation complete."
+   fi
 }
 
 # Install Maven
 install_maven() {
-   echo "Installing Apache Maven..."
-   case "$OS" in
-      Linux)
-         sudo apt update
-         sudo apt install maven -y
-         ;;
-      MacOS)
-         brew install maven
-         ;;
-      Windows)
-         echo "Please install Maven manually from https://maven.apache.org/download.cgi or use Chocolatey:"
-         echo "choco install maven"
-         ;;
-   esac
-   echo "Maven installation complete."
+   if command_exists mvn; then
+      echo "Maven is already installed."
+   else
+      echo "Installing Apache Maven..."
+      case "$OS" in
+         Linux)
+            sudo apt update
+            sudo apt install maven -y
+            ;;
+         MacOS)
+            brew install maven
+            ;;
+         Windows)
+            echo "Please install Maven manually from https://maven.apache.org/download.cgi or use Chocolatey:"
+            echo "choco install maven"
+            ;;
+      esac
+      echo "Maven installation complete."
+   fi
 }
 
 # Set up .env file
 setup_env_file() {
    if [[ -f ".env" ]]; then
       echo ".env file already exists. Please edit it to fill in your API keys and tokens."
-      return # Exit function as .env file already exists
-   fi
-
-   if [[ -f ".env-example" ]]; then
-      echo "Copying .env-example to .env..."
-      cp .env-example .env
-      echo ".env file created. Please fill in your API keys and tokens."
    else
-      echo ".env-example file not found. Creating .env file manually..."
-      touch .env-example
-      echo "GEMINI_API_KEY=" > .env-example
-      echo 'GITHUB_TOKEN=""' >> .env-example
-      setup_env_file
+      if [[ -f ".env-example" ]]; then
+         echo "Copying .env-example to .env..."
+         cp .env-example .env
+         echo ".env file created. Please fill in your API keys and tokens."
+      else
+         echo ".env-example file not found. Creating .env file manually..."
+         touch .env-example
+         echo "GEMINI_API_KEY=" > .env-example
+         echo 'GITHUB_TOKEN=""' >> .env-example
+         cp .env-example .env
+      fi
+      echo ".env file setup complete."
    fi
-   echo ".env file setup complete."
    echo "Read the .env file section in the README.md for more information on how to fill in the required API keys and Tokens."
 }
 
@@ -139,5 +159,5 @@ install_make
 install_maven
 setup_env_file
 
-echo "Please, check for any errors in the installation process in the log messages above"
+echo "Please, check for any errors in the installation process in the log messages above."
 echo "All required dependencies should now be installed."
