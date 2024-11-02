@@ -1053,7 +1053,8 @@ def main():
    if RUN_FUNCTIONS["CK Metrics"] and not ensure_ck_jar_file_exists(): # Verify and ensure that the CK JAR file exists
       return # Return if the CK JAR file does not exist
 
-   get_repositories_dictionary() # Get the list of repositories
+   global DEFAULT_REPOSITORIES # Declare the DEFAULT_REPOSITORIES as a global variable
+   DEFAULT_REPOSITORIES = get_repositories_dictionary() # Get the repositories dictionary and load it into the DEFAULT_REPOSITORIES variable
    
    # Print the Welcome Messages
    print(f"{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}CK Metrics Generator{BackgroundColors.GREEN}! This script is a key component of the {BackgroundColors.CYAN}Worked Example Miner (WEM) Project{BackgroundColors.GREEN}.{Style.RESET_ALL}")
