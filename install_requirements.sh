@@ -132,7 +132,7 @@ setup_java_home() {
         
       case "$OS" in
          Linux)
-            JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION" | head -n 1)
+            JAVA_HOME_CANDIDATE=$(ls /usr/lib/jvm | grep -E "java-?$JAVA_VERSION-" | head -n 1)
             if [[ -n "$JAVA_HOME_CANDIDATE" ]]; then
                JAVA_HOME="/usr/lib/jvm/$JAVA_HOME_CANDIDATE"
                
