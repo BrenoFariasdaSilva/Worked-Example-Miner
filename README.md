@@ -56,18 +56,22 @@ This project is massive and complex, containing multiple integrated tools and ex
     - [Linux](#linux-1)
     - [MacOS](#macos-1)
     - [Windows](#windows-1)
-  - [Git](#git)
+  - [Java Installation](#java-installation)
     - [Linux](#linux-2)
     - [MacOS](#macos-2)
     - [Windows](#windows-2)
-  - [Make](#make)
+  - [Git](#git)
     - [Linux](#linux-3)
     - [MacOS](#macos-3)
     - [Windows](#windows-3)
-  - [Apache Maven](#apache-maven)
+  - [Make](#make)
     - [Linux](#linux-4)
     - [MacOS](#macos-4)
     - [Windows](#windows-4)
+  - [Apache Maven](#apache-maven)
+    - [Linux](#linux-5)
+    - [MacOS](#macos-5)
+    - [Windows](#windows-5)
   - [.env File](#env-file)
   - [Setting JAVA\_HOME](#setting-java_home)
 - [Paper Submissions](#paper-submissions)
@@ -209,6 +213,37 @@ xcode-select --install
 #### Windows
 
 On Windows, you may need to install the C/C++ compiler manually, using MinGW. You can download MinGW [here](https://sourceforge.net/projects/mingw/) and search any tutorial on how to install it, like this one from [dev.to](https://dev.to/gamegods3/how-to-install-gcc-in-windows-10-the-easier-way-422j).
+
+### Java Installation
+
+To run certain scripts in this project, Java must be installed on your machine. If you don’t have it installed, use the following commands to install Java.
+
+#### Linux
+
+To install Java on Linux, use the following commands:
+
+```bash
+sudo apt update
+sudo apt install -y default-jdk
+```
+
+#### MacOS
+
+To install Java on MacOS, use the following command:
+
+```bash
+brew install openjdk
+```
+
+#### Windows
+
+For Windows, if you have choco installed, you can install Java with:
+
+```bash
+choco install openjdk
+```
+
+Alternatively, download the Java installer from the [official website](https://www.oracle.com/java/technologies/downloads/) and follow the installation instructions.
 
 ### Git
 
