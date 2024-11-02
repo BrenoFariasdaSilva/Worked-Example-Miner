@@ -138,12 +138,14 @@ setup_java_home() {
                
                # Check if JAVA_HOME_CANDIDATE is a directory
                if [[ -d "$JAVA_HOME" ]]; then
-                  export JAVA_HOME
-                  echo "JAVA_HOME set to $JAVA_HOME"
                   echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc
+                  export JAVA_HOME=$JAVA_HOME
+                  # Capture the output of echoing JAVA_HOME
+                  CURRENT_JAVA_HOME=$(echo "$JAVA_HOME") 
+                  echo "JAVA_HOME set to $CURRENT_JAVA_HOME"
 
                   # Verify if JAVA_HOME is set correctly after export
-                  if [[ -z "$JAVA_HOME" ]]; then
+                  if [[ -z "$CURRENT_JAVA_HOME" ]]; then
                      echo "WARNING: JAVA_HOME is not set correctly. Please run the following command to set it manually:"
                      echo "export JAVA_HOME=$JAVA_HOME"
                   else
