@@ -147,7 +147,7 @@ setup_java_home() {
                      echo "WARNING: JAVA_HOME is not set correctly. Please run the following command to set it manually:"
                      echo "export JAVA_HOME=$JAVA_HOME"
                   else
-                     echo "JAVA_HOME is set correctly."
+                     echo "JAVA_HOME is set correctly with the command 'export JAVA_HOME=$JAVA_HOME'."
                   fi
                else
                   echo "WARNING: JAVA_HOME_CANDIDATE ($JAVA_HOME) is not a directory. Please set JAVA_HOME manually."
