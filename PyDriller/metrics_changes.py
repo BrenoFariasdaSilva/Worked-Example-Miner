@@ -32,6 +32,7 @@ DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["Anonymous"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["Anonymous"] # The keywords to ignore in the variable attribute
 METRICS_INDEXES = {"CBO": 0, "DIT": 1, "LCOM": 2, "LOC": 3, "NOC": 4, "RFC": 5, "WMC": 6} # The position of the metrics in the metrics list
+METRICS_VALUES_MIN_MAX_THRESHOLDS = {"CBO": (0, 0), "DIT": (0, 0), "LCOM": (0, 0), "LOC": (0, 0), "NOC": (0, 0), "RFC": (0, 0), "WMC": (0, 0)} # The minimum and maximum values for each metric
 NUMBER_OF_METRICS = len(METRICS_INDEXES.keys()) # The number of metrics
 DESIRED_REFACTORINGS_ONLY = True # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
