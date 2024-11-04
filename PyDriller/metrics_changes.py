@@ -1,4 +1,9 @@
 # @TODO: Setup the usage of the METRICS_VALUES_MIN_MAX_THRESHOLDS values to filter the candidates that will be added to the Substantial Decrease File
+# Thresholds: 
+# # McCabe Complexity: 2 is good/commons and 4 is regular/casual.
+# # WMC: 11.
+# # DIT: 2.
+# # LCOM: 0.167 is good/commons and 0.725 is regular/casual.
 
 import atexit # For playing a sound when the program finishes
 import csv # For reading csv files
