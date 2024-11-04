@@ -813,7 +813,7 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 
 	return csv_filename # Return the path to the substantial decrease file
 
-def filter_metrics_by_threshold(metrics, metric_name, thresholds_dict=METRICS_VALUES_MAX_THRESHOLDS):
+def filter_metrics_by_threshold(metrics, metric_name=None, thresholds_dict=METRICS_VALUES_MAX_THRESHOLDS):
 	"""
 	Filters the metrics by the threshold values.
 
@@ -827,7 +827,7 @@ def filter_metrics_by_threshold(metrics, metric_name, thresholds_dict=METRICS_VA
 
 	filtered_metrics = [] # Initialize the empty list to store the filtered metrics
 
-	if thresholds_dict[metric_name] is None: # If the threshold is None
+	if metric_name is None or thresholds_dict[metric_name] is None: # If the threshold is None
 		filtered_metrics = metrics # Return all metrics if the threshold is None
 	else: # If the threshold is not None
 		maximum_metric_threshold = thresholds_dict[metric_name]
