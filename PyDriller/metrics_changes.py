@@ -42,11 +42,11 @@ DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format
 }
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
-	"Linear Regression": True, # Run the linear regression graphics
+	"Linear Regression": False, # Run the linear regression graphics
 	"Metrics Decrease": True, # Verify the substantial metric decrease
-	"Metrics Evolution": True, # Write the metrics evolution to a csv file
-	"Metrics Statistics": True, # Generate the metrics track record statistics
-	"Metrics Track Record": True, # Write the metrics track record to a txt file
+	"Metrics Evolution": False, # Write the metrics evolution to a csv file
+	"Metrics Statistics": False, # Generate the metrics track record statistics
+	"Metrics Track Record": False, # Write the metrics track record to a txt file
 	"Sort by Percentual Variation": True, # Sort the csv file by the percentual variation
 }
 
@@ -78,7 +78,7 @@ FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATIST
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
 OUTPUT_DIRECTORIES = [FULL_METRICS_DATA_DIRECTORY_PATH, FULL_METRICS_EVOLUTION_DIRECTORY_PATH, FULL_METRICS_STATISTICS_DIRECTORY_PATH, FULL_METRICS_PREDICTION_DIRECTORY_PATH] # The output directories list
 
-def generate_tasks_description(filter_list=None):
+def generate_tasks_description(filter_list=[]):
 	"""
 	Generates the description of the tasks/processing that will be executed in this run.
 
