@@ -1,10 +1,3 @@
-# @TODO: Setup the usage of the METRICS_VALUES_MIN_MAX_THRESHOLDS values to filter the candidates that will be added to the Substantial Decrease File
-# Thresholds: 
-# # McCabe Complexity: 2 is good/commons and 4 is regular/casual.
-# # WMC: 11.
-# # DIT: 2.
-# # LCOM: 0.167 is good/commons and 0.725 is regular/casual.
-
 import atexit # For playing a sound when the program finishes
 import csv # For reading csv files
 import json # For reading the refactoring file from RefactoringMiner
@@ -39,7 +32,7 @@ DESIRED_DECREASE = 0.00 # The desired decrease in the metric
 IGNORE_CLASS_NAME_KEYWORDS = ["Anonymous"] # The keywords to ignore in the class name
 IGNORE_VARIABLE_ATTRIBUTE_KEYWORDS = ["Anonymous"] # The keywords to ignore in the variable attribute
 METRICS_INDEXES = {"CBO": 0, "DIT": 1, "LCOM": 2, "LOC": 3, "NOC": 4, "RFC": 5, "WMC": 6} # The position of the metrics in the metrics list
-METRICS_VALUES_MIN_MAX_THRESHOLDS = {"CBO": (0, 0), "DIT": (0, 0), "LCOM": (0, 0), "LOC": (0, 0), "NOC": (0, 0), "RFC": (0, 0), "WMC": (0, 0)} # The minimum and maximum values for each metric
+METRICS_VALUES_MAX_THRESHOLDS = {"CBO": None, "DIT": 2, "LCOM": 0.167, "LOC": None, "NOC": None, "RFC": None, "WMC": 11} # The minimum and maximum values for each metric
 NUMBER_OF_METRICS = len(METRICS_INDEXES.keys()) # The number of metrics
 DESIRED_REFACTORINGS_ONLY = True # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
@@ -807,6 +800,28 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 
 	return csv_filename # Return the path to the substantial decrease file
 
+def filter_metrics_by_threshold(metrics, metric_name, thresholds_dict=METRICS_VALUES_MAX_THRESHOLDS):
+	"""
+	Filters the metrics by the threshold values.
+
+	:param metrics: The metrics to be filtered
+	:param metric_name: The name of the metric
+	:param thresholds_dict: The dictionary containing the threshold values
+	:return: The filtered metrics
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Filtering the metrics by the threshold values...{Style.RESET_ALL}")
+
+	filtered_metrics = [] # Initialize the empty list to store the filtered metrics
+
+	if thresholds_dict[metric_name] is None: # If the threshold is None
+		filtered_metrics = metrics # Return all metrics if the threshold is None
+	else: # If the threshold is not None
+		maximum_metric_threshold = thresholds_dict[metric_name]
+		filtered_metrics = [metric for metric in metrics if metric <= maximum_metric_threshold] # Filter metrics based on the maximum threshold
+
+	return filtered_metrics # Return the filtered metrics
+
 def extract_commit_data(commit_hashes, index):
 	"""
 	Extracts commit data from commit hashes.
@@ -1067,7 +1082,9 @@ def verify_substantial_metric_decrease(repository_name, class_name, variable_att
 	
 	csv_filename = setup_substantial_decrease_file(repository_name, metric_name, iteration) # Setup the substantial decrease file for the specified repository and metric name
 
-	biggest_change_data, commit_data = find_biggest_decrease([metric[metric_position] for metric in record["metrics"]], record["commit_hashes"], repository_name, class_name) # Find the biggest decrease in metrics values and corresponding commit data
+	current_metrics = [metric[metric_position] for metric in record["metrics"]] # Get the current metrics values for the specified metric name
+	threshold_metrics_filtered = filter_metrics_by_threshold(current_metrics, metric_name, METRICS_VALUES_MAX_THRESHOLDS) # Filter the current metrics values based on the maximum thresholds
+	biggest_change_data, commit_data = find_biggest_decrease(threshold_metrics_filtered, record["commit_hashes"], repository_name, class_name) # Find the biggest decrease in metrics values and corresponding commit data
 
 	if biggest_change_data[2] > DESIRED_DECREASE and biggest_change_data[3] and record["methods_invoked"]: # If the biggest change percentual variation is bigger than the desired decrease and the refactorings summary is not empty and methods invoked is not empty
 		add_substantial_decrease_to_csv(csv_filename, class_name, variable_attribute, biggest_change_data, commit_data, record) # Write the substantial decrease to the CSV file
