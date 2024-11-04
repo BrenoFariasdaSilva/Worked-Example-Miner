@@ -251,7 +251,9 @@ def get_repositories_dictionary():
          print(f"{BackgroundColors.RED}The repositories list could not be updated. Please execute the {BackgroundColors.CYAN}repositories_picker.py{BackgroundColors.RED} script with the {BackgroundColors.CYAN}PROCESS_JSON_REPOSITORIES{BackgroundColors.RED} set to {BackgroundColors.CYAN}False{BackgroundColors.RED} or manually fill the {BackgroundColors.CYAN}DEFAULT_REPOSITORIES{BackgroundColors.RED} dictionary.{Style.RESET_ALL}")
          exit() # Exit the program if the repositories list could not be updated
       else:
-         return json_repositories # Return the JSON repositories if the repositories list was successfully updated   
+         return json_repositories # Return the JSON repositories if the repositories list was successfully updated  
+   
+   return DEFAULT_REPOSITORIES # Return the DEFAULT_REPOSITORIES dictionary 
 
 def get_commit_filepaths(commit_file_path):
    """
