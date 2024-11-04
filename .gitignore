@@ -190,6 +190,7 @@ Jabref/.github/*
 !Jabref/Makefile
 
 # Ignore every file inside PyDriller specified folders
+/PyDriller/candidates
 /PyDriller/ck_metrics
 /PyDriller/compressed
 /PyDriller/diffs
