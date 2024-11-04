@@ -70,13 +70,15 @@ RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative 
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
 RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH = "/metrics_predictions" # The relative path to the directory containing the metrics prediction
 RELATIVE_REFACTORING_MINER_DIRECTORY_PATH = "../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner directory
+RELATIVE_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH = "/candidates"
 
 # Full Paths (Start Path + Relative Paths):
 FULL_METRICS_DATA_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_DATA_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
-OUTPUT_DIRECTORIES = [FULL_METRICS_DATA_DIRECTORY_PATH, FULL_METRICS_EVOLUTION_DIRECTORY_PATH, FULL_METRICS_STATISTICS_DIRECTORY_PATH, FULL_METRICS_PREDICTION_DIRECTORY_PATH] # The output directories list
+FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH}" # The full path to the directory containing the worked examples candidates
+OUTPUT_DIRECTORIES = [FULL_METRICS_DATA_DIRECTORY_PATH, FULL_METRICS_EVOLUTION_DIRECTORY_PATH, FULL_METRICS_STATISTICS_DIRECTORY_PATH, FULL_METRICS_PREDICTION_DIRECTORY_PATH, FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH] # The output directories list
 
 def generate_tasks_description(filter_list=[]):
 	"""
@@ -185,6 +187,10 @@ def create_directories(repository_name):
 	# Create the output RELATIVE_METRICS_PREDICTION directories if they does not exist
 	create_directory(FULL_METRICS_PREDICTION_DIRECTORY_PATH, RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH)
 	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
+
+	# Create the output RELATIVE_WORKED_EXAMPLES_CANDIDATES directories if they does not exist
+	create_directory(FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH, RELATIVE_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH)
+	create_directory(f"{FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH}/{repository_name}")
 
 def generate_repository_commits_modified_files_dict(repository_name, commit_hash=None):
 	"""
