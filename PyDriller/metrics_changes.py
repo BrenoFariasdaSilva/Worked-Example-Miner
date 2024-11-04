@@ -29,7 +29,7 @@ from repositories_picker import RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE
 from repositories_picker import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
-from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, DEFAULT_REPOSITORIES, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, PROCESS_JSON_REPOSITORIES, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
+from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, PROCESS_JSON_REPOSITORIES, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
 from code_metrics import get_directories_size_in_gb, setup_process_repository, get_repositories_dictionary # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
@@ -44,6 +44,9 @@ NUMBER_OF_METRICS = len(METRICS_INDEXES.keys()) # The number of metrics
 DESIRED_REFACTORINGS_ONLY = True # If True, then only the desired refactorings will be stored
 DESIRED_REFACTORINGS = ["Extract Method", "Extract Class", "Pull Up Method", "Push Down Method", "Extract Superclass", "Move Method"] # The desired refactorings to search for substantial changes
 WRITE_FULL_HISTORY = False # If True, then the metrics evolution will store all of the metrics history and not only the moments the metrics changed between commits
+
+DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
+}
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
 	"Linear Regression": True, # Run the linear regression graphics
@@ -1542,7 +1545,7 @@ def main():
 	if not verify_filepath_exists(RELATIVE_REFACTORING_MINER_DIRECTORY_PATH): # Verify if the refactoring miner tool exists in the specified path
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}RefactoringMiner{BackgroundColors.RED} tool was not found in the specified path: {BackgroundColors.GREEN}{RELATIVE_REFACTORING_MINER_DIRECTORY_PATH}{Style.RESET_ALL}")
 		return # Exit the program
-        
+
 	global DEFAULT_REPOSITORIES # Declare the DEFAULT_REPOSITORIES as a global variable
 	DEFAULT_REPOSITORIES = get_repositories_dictionary() # Get the repositories dictionary and load it into the DEFAULT_REPOSITORIES variable
 
