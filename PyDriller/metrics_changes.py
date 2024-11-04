@@ -1380,21 +1380,16 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 			
 			progress_bar.update(1) # Update the progress bar
 
-def sort_csv_by_changes(repository_name):
+def sort_csv_by_changes(repository_name, unsorted_csv_file_path):
 	"""
 	Sorts the csv file according to the number of changes.
 
 	:param repository_name: The name of the repository
+	:param unsorted_csv_file_path: The unsorted csv file path
 	:return: None
 	"""
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}metrics statistics files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}number of changes{BackgroundColors.GREEN}.{Style.RESET_ALL}")
-
-	unsorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted csv file path
-
-	if not verify_filepath_exists(unsorted_csv_file_path): # Verify if the unsorted csv file exists
-		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository does not exist.{Style.RESET_ALL}")
-		return # Return if the unsorted csv file does not exist
 
 	data = pd.read_csv(unsorted_csv_file_path) # Read the csv file
 	
@@ -1527,12 +1522,13 @@ def process_repository(repository_name, repository_url):
 
 	process_metrics_track_record(repository_name, sorted_metrics_track_record) # Process the metrics track record to generate outputs such as linear regression graphics, metrics evolution data, and verification of substantial metric decreases
 
-	sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
-
-	old_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The old csv file path
-	os.remove(old_csv_file_path) # Remove the old csv file
-
-	sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["Sort by Percentual Variation"] else None # Sort the interesting changes csv file by the percentual variation of the metric
+	unsorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{UNSORTED_CHANGED_METHODS_CSV_FILENAME}" # The unsorted csv file path
+	if not verify_filepath_exists(unsorted_csv_file_path): # Verify if the unsorted csv file exists
+		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository does not exist.{Style.RESET_ALL}")
+	else: # If the unsorted csv file exists
+		sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
+		os.remove(unsorted_csv_file_path) # Remove the old csv file
+		sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["Sort by Percentual Variation"] else None # Sort the interesting changes csv file by the percentual variation of the metric
 
 	repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
