@@ -1449,6 +1449,32 @@ def sort_csv_by_percentual_variation(repository_name):
 				writer.writerow(header) # Write header
 				writer.writerows(rows_sorted) # Write sorted rows
 
+def process_metric_file(csv_filename, metric_name, csv_header):
+	"""
+	Reads and processes a metric's CSV file, updating the header and rows.
+
+	:param csv_filename: Path to the metric's CSV file.
+	:param metric_name: The metric name.
+	:param csv_header: The CSV header (modified in place).
+	:return: Tuple of (header, unique rows for this metric).
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{metric_name}{BackgroundColors.GREEN} metric file...{Style.RESET_ALL}")
+
+	with open(csv_filename, "r") as csvfile: # Open the csv file
+		reader = csv.reader(csvfile) # Create the csv reader
+		header = next(reader) # First row is the header
+		
+		percentual_var_index = header.index(f"Percentual Variation {metric_name}") # Identify the correct index for "Percentual Variation"
+		to_metric_indexes = get_to_metric_indexes(header, percentual_var_index, metric_name) # Calculate the indexes of 'To {metric_name}' columns in the modified header
+
+		if not csv_header: # If the csv header is empty
+			csv_header.extend(col for i, col in enumerate(header) if i != percentual_var_index) # Extend the csv header with the columns except the Percentual Variation column
+
+		rows = process_rows(reader, percentual_var_index, to_metric_indexes, metric_name) # Process the rows and remove duplicates
+
+		return header, rows # Return the header and the unique rows for this metric
+
 def generate_worked_examples_candidates(repository_name):
 	"""
 	Processes CSV files for substantial changes and generates worked examples candidates.
