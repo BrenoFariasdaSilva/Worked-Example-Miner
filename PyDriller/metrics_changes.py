@@ -63,6 +63,7 @@ CLASSES_OR_METHODS = "classes" if PROCESS_CLASSES else "methods" # The name of t
 UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the top changed methods
 SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # The name of the csv file containing the sorted top changed methods
 SUBSTANTIAL_CHANGES_FILENAME = f"substantial_METRIC_NAME_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # The relative path to the directory containing the interesting changes
+WORKED_EXAMPLES_CANDIDATES_FILENAME = f"worked_examples_candidates{CSV_FILE_EXTENSION}" # The name of the csv file containing the worked examples candidates
 
 # Relative Paths:
 RELATIVE_METRICS_DATA_DIRECTORY_PATH = "/metrics_data" # The relative path to the directory containing the metrics evolution
