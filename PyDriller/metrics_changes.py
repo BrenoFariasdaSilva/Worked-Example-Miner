@@ -118,7 +118,10 @@ def update_global_variables_for_processing(process_classes):
 	:param process_classes: bool, if True, processes classes; if False, processes methods
 	"""
 
-	global PROCESS_CLASSES, CK_CSV_FILE, CLASSES_OR_METHODS, UNSORTED_CHANGED_METHODS_CSV_FILENAME, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME # Specify the global variables to update
+	global CK_CSV_FILE, CLASSES_OR_METHODS, METRICS_INDEXES, METRICS_VALUES_MAX_THRESHOLDS, NUMBER_OF_METRICS, PROCESS_CLASSES, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME, UNSORTED_CHANGED_METHODS_CSV_FILENAME  # Specify the global constants to update
+
+	CLASS_METRICS_LIST = ["CBO", "DIT", "LCOM", "LOC", "NOC", "RFC", "WMC", "tcc", "lcc", "totalMethodsQty", "staticMethodsQty", "abstractMethodsQty", "finalMethodsQty", "synchronizedMethodsQty"] # List of class metrics
+	METHOD_METRICS_LIST = ["CBO", "LOC", "RFC", "WMC", "returnsQty", "variablesQty", "parametersQty", "methodsInvokedQty", "loopQty", "comparisonsQty", "tryCatchQty", "logStatementsQty"] # List of method metrics
 	
 	PROCESS_CLASSES = process_classes # Update the PROCESS_CLASSES constant
 	CK_CSV_FILE = CK_METRICS_FILES[0] if PROCESS_CLASSES else CK_METRICS_FILES[1] # Update the CK_CSV_FILE constant
@@ -126,6 +129,16 @@ def update_global_variables_for_processing(process_classes):
 	UNSORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_unsorted_changes.{CK_CSV_FILE.split('.')[1]}" # Update the UNSORTED_CHANGED_METHODS_CSV_FILENAME constant
 	SORTED_CHANGED_METHODS_CSV_FILENAME = f"{CK_CSV_FILE.replace('.csv', '')}_changes.{CK_CSV_FILE.split('.')[1]}" # Update the SORTED_CHANGED_METHODS_CSV_FILENAME constant
 	SUBSTANTIAL_CHANGES_FILENAME = f"substantial_METRIC_NAME_{CLASSES_OR_METHODS}_changes{CSV_FILE_EXTENSION}" # Update the SUBSTANTIAL_CHANGES_FILENAME constant
+
+	if process_classes: # If processing classes
+		METRICS_INDEXES = {key: value for value, key in enumerate([metric for metric in METRICS_INDEXES.keys() if metric in CLASS_METRICS_LIST])} # Filter METRICS_INDEXES to only include class metrics
+	else: # If processing methods
+		METRICS_INDEXES = {key: value for value, key in enumerate([metric for metric in METRICS_INDEXES.keys() if metric in METHOD_METRICS_LIST])} # Filter METRICS_INDEXES to only include method metrics
+	
+	original_thresholds = METRICS_VALUES_MAX_THRESHOLDS.copy() # Copy the original thresholds
+	METRICS_VALUES_MAX_THRESHOLDS = {key: original_thresholds[key] for key in METRICS_INDEXES.keys()} # Update METRICS_VALUES_MAX_THRESHOLDS to match current METRICS_INDEXES
+
+	NUMBER_OF_METRICS = len(METRICS_INDEXES) # Update NUMBER_OF_METRICS to reflect the current number of metrics in METRICS_INDEXES
 
 def process_classes_and_methods():
 	"""
