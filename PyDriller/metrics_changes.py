@@ -1505,7 +1505,7 @@ def process_metric_file(csv_filename, metric_name, csv_header):
 		if not csv_header: # If the csv header is empty
 			csv_header.extend(col for i, col in enumerate(header) if i != percentual_var_index) # Extend the csv header with the columns except the Percentual Variation column
 
-		rows = process_rows(reader, percentual_var_index, to_metric_indexes, metric_name) # Process the rows and remove duplicates
+		rows = process_rows(reader, percentual_var_index) # Process the rows and remove duplicates
 
 		return header, rows # Return the header and the unique rows for this metric
 
