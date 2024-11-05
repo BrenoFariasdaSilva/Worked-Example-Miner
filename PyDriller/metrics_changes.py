@@ -1531,6 +1531,23 @@ def filter_rows_by_threshold(rows, metric_name, filtered_rows, header, percentua
 		if meets_threshold: # If the row meets the thresholds
 			filtered_rows.add(row) # Add the row to the filtered rows set
 
+def write_csv_file(filename, header, rows):
+	"""
+	Writes the given rows to a CSV file with the specified header.
+
+	:param filename: Path to the output CSV file.
+	:param header: CSV header to write.
+	:param rows: Rows to write in the CSV file.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the filtered rows to the {BackgroundColors.CYAN}{filename}{BackgroundColors.GREEN} CSV file...{Style.RESET_ALL}")
+
+	write_substantial_decrease_csv_header(filename, header) # Write the header to the CSV file
+
+	with open(filename, "a", newline="") as csvfile: # Open the csv file in append mode
+		writer = csv.writer(csvfile) # Create the csv writer
+		writer.writerows(rows) # Write the rows to the csv file
+
 def generate_worked_examples_candidates(repository_name):
 	"""
 	Processes CSV files for substantial changes and generates worked examples candidates.
