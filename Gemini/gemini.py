@@ -53,16 +53,13 @@ def play_sound():
 	:return: None
 	"""
 
-	if os.path.exists(SOUND_FILE):
+	if os.path.exists(SOUND_FILE): # If the sound file exists
 		if platform.system() in SOUND_COMMANDS: # If the platform.system() is in the SOUND_COMMANDS dictionary
 			os.system(f"{SOUND_COMMANDS[platform.system()]} {SOUND_FILE}")
 		else: # If the platform.system() is not in the SOUND_COMMANDS dictionary
 			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}platform.system(){BackgroundColors.RED} is not in the {BackgroundColors.CYAN}SOUND_COMMANDS dictionary{BackgroundColors.RED}. Please add it!{Style.RESET_ALL}")
 	else: # If the sound file does not exist
 		print(f"{BackgroundColors.RED}Sound file {BackgroundColors.CYAN}{SOUND_FILE}{BackgroundColors.RED} not found. Make sure the file exists.{Style.RESET_ALL}")
-
-# Register the function to play a sound when the program finishes
-atexit.register(play_sound)
 
 def verbose_output(true_string="", false_string=""):
    """
@@ -88,16 +85,14 @@ def get_env_token(env_path=ENV_PATH, key=ENV_VARIABLE):
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Verifying the .env file...{Style.RESET_ALL}")
 
-	# Verify if the .env file exists
-	if not os.path.exists(env_path):
+	if not os.path.exists(env_path): # Verify if the .env file exists
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}.env file{BackgroundColors.RED} not found at {BackgroundColors.CYAN}{env_path}{Style.RESET_ALL}")
 		sys.exit(1) # Exit the program
 
 	load_dotenv(env_path) # Load the .env file
 	api_key = os.getenv(key) # Get the value of the key
 
-	# Verify if the key exists
-	if not api_key:
+	if not api_key: # Verify if the key exists
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{key}{BackgroundColors.RED} key was not found in the .env file located at {BackgroundColors.CYAN}{env_path}{Style.RESET_ALL}")
 		sys.exit(1) # Exit the program
 
@@ -132,16 +127,14 @@ def configure_model(api_key):
 
 	genai.configure(api_key=api_key) # Configure the Google AI Python SDK
 
-	# Generation configuration
-	generation_config = {
+	generation_config = { # Generation configuration
 		"temperature": 0.1, # Controls the randomness of the output. Values can range from [0.0, 2.0].
 		"top_p": 0.95, # Optional. The maximum cumulative probability of tokens to consider when sampling.
 		"top_k": 64, # Optional. The maximum number of tokens to consider when sampling.
 		"max_output_tokens": 8192, # Set the maximum number of output tokens
 	}
 
-	# Create the model
-	model = genai.GenerativeModel(
+	model = genai.GenerativeModel( # Create the model
 		model_name="gemini-1.5-flash", # Set the model name
 		generation_config=generation_config, # Set the generation configuration
 	)
@@ -157,7 +150,7 @@ def load_csv_file(file_path):
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Loading the CSV file...{Style.RESET_ALL}")
 
-	if not os.path.exists(file_path):
+	if not os.path.exists(file_path): # Verify if the CSV file exists
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}CSV file{BackgroundColors.RED} not found at {BackgroundColors.CYAN}{file_path}{Style.RESET_ALL}")
 		sys.exit(1) # Exit the program
 
@@ -168,7 +161,6 @@ def load_csv_file(file_path):
 		print(f"{BackgroundColors.RED}The CSV file must contain {BackgroundColors.CYAN}{', '.join(missing_columns)}{BackgroundColors.RED} columns.{Style.RESET_ALL}")
 		sys.exit(1) # Exit the program
 
-	# Filter the data
 	filtered_data = df[DESIRED_HEADER].to_string(index=False) # Filter the data and convert it to a string
 	return filtered_data # Return the filtered data
 
@@ -201,7 +193,7 @@ def write_output_to_file(output, file_path=OUTPUT_FILE):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the output to the file...{Style.RESET_ALL}")
 
-	with open(file_path, "w") as file:
+	with open(file_path, "w") as file: # Open the file in write mode
 		file.write(output) # Write the output to the file
 
 def print_output(output):
@@ -226,8 +218,7 @@ def handle_output(run, output):
 	if VERBOSE: # If the VERBOSE constant is set to True
 		print_output(output) # Print the output
 	
-	# Write the output to a file
-	filename = f"{OUTPUT_FILE.split('.')[0]}.{OUTPUT_FILE.split('.')[1]}_{run+1}.{OUTPUT_FILE.split('.')[2]}"
+	filename = f"{OUTPUT_FILE.split('.')[0]}.{OUTPUT_FILE.split('.')[1]}_{run+1}.{OUTPUT_FILE.split('.')[2]}" # Write the output to a file
 	write_output_to_file(output, filename) # Write the output to a file
 
 def process_future_output(future, run, outputs):
@@ -257,11 +248,11 @@ def start_chat_session(model, initial_user_message):
  
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Starting the chat session...{Style.RESET_ALL}")
 
-	chat_session = model.start_chat(
-		history=[
+	chat_session = model.start_chat( # Start the chat session
+		history=[ # Set the history
 			{
-				"role": "user",
-				"parts": [
+				"role": "user", # Set the role to user
+				"parts": [ # Set the parts
 					initial_user_message,
 				],
 			}
@@ -297,7 +288,7 @@ def perform_run(model, context_message, run_number, retries=3, backoff_factor=0.
 
 	attempt = 0 # Set the attempt to 0
 	while attempt <= retries: # While the attempt is less than or equal to the number of retries
-		try:
+		try: # Try to perform the run
 			chat_session = start_chat_session(model, context_message) # Start the chat session
 			output = send_message(chat_session, "Please analyze the provided data.") # Send the message
 			return output.text # Return the output text
@@ -406,16 +397,13 @@ def main():
 
 	print(f"{BackgroundColors.CLEAR_TERMINAL}{BackgroundColors.BOLD}{BackgroundColors.GREEN}Welcome to the {BackgroundColors.CYAN}Google Gemini API Integration{BackgroundColors.GREEN}!{Style.RESET_ALL}", end="\n\n") # Output the Welcome message
 
-	# Verify .env file and load API key
-	api_key = get_env_token(ENV_PATH, ENV_VARIABLE)
+	api_key = get_env_token(ENV_PATH, ENV_VARIABLE) # Verify .env file and load API key
 
 	create_directory(os.path.abspath(OUTPUT_DIRECTORY), OUTPUT_DIRECTORY.replace(".", "")) # Create the output directory
 
-	# Configure the model
-	model = configure_model(api_key)
+	model = configure_model(api_key) # Configure the model
 
-	# Load and filter the CSV file
-	csv_data = load_csv_file(CSV_INPUT_FILE)
+	csv_data = load_csv_file(CSV_INPUT_FILE) # Load and filter the CSV file
 
 	context_message = prepare_context_message(csv_data) # Start chat session and send message
 	outputs = perform_runs_with_threading(model, context_message) # Perform the runs with threading
@@ -425,6 +413,8 @@ def main():
 		report_run_statistics(outputs) # Report the run statistics
 
 	print(f"{BackgroundColors.BOLD}{BackgroundColors.GREEN}Program finished.{Style.RESET_ALL}") # Output the end of the program message
+
+	atexit.register(play_sound) # Register the function to play a sound when the program finishes
 
 if __name__ == "__main__":
 	"""
