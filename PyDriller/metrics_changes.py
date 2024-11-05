@@ -1670,7 +1670,7 @@ def process_repository(repository_name, repository_url):
 	if not verify_filepath_exists(unsorted_csv_file_path): # Verify if the unsorted csv file exists
 		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository does not exist.{Style.RESET_ALL}")
 	else: # If the unsorted csv file exists
-		sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
+		sort_csv_by_changes(repository_name, unsorted_csv_file_path) # Sort the csv file by the number of changes
 		os.remove(unsorted_csv_file_path) # Remove the old csv file
 		sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["Sort by Percentual Variation"] else None # Sort the interesting changes csv file by the percentual variation of the metric
 
