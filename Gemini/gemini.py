@@ -45,7 +45,7 @@ OUTPUT_FILE = f"{OUTPUT_DIRECTORY}output.txt" # The path to the output file
 MOST_COMMON_OUTPUT_FILE = f"{OUTPUT_DIRECTORY}most_common_output.txt" # The path to the most common output file
 
 # Header Constants:
-DESIRED_HEADER = ["Class", "Method Invocations"] # The desired header of the CSV file
+DESIRED_HEADER = ["Class", "Method Invocations", "Refactoring Patterns"] # The desired header of the CSV file
 
 def play_sound():
 	"""
