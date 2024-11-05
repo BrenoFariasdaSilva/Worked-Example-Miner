@@ -1509,6 +1509,28 @@ def process_metric_file(csv_filename, metric_name, csv_header):
 
 		return header, rows # Return the header and the unique rows for this metric
 
+def filter_rows_by_threshold(rows, metric_name, filtered_rows, header, percentual_var_index):
+	"""
+	Filters rows based on metric thresholds and updates the filtered rows set.
+
+	:param rows: Set of rows to be filtered.
+	:param metric_name: The metric name for threshold checks.
+	:param filtered_rows: Set to store rows that meet the thresholds.
+	:param header: The CSV header.
+	:param percentual_var_index: Index of the Percentual Variation column.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Filtering rows based on metric thresholds...{Style.RESET_ALL}")
+	
+	for row in rows: # For each row in the rows set
+		meets_threshold = all( # Check if all values meet the thresholds
+			METRICS_VALUES_MAX_THRESHOLDS[metric_name] is None or float(row[idx]) < METRICS_VALUES_MAX_THRESHOLDS[metric_name]
+			for idx in get_to_metric_indexes(header, percentual_var_index, metric_name)
+		)
+
+		if meets_threshold: # If the row meets the thresholds
+			filtered_rows.add(row) # Add the row to the filtered rows set
+
 def generate_worked_examples_candidates(repository_name):
 	"""
 	Processes CSV files for substantial changes and generates worked examples candidates.
