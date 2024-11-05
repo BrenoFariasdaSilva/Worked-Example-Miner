@@ -780,13 +780,28 @@ def get_ck_metrics_header():
 	metric_header = [f"{prefix} {metric}" for metric in metric_names for prefix in ("From", "To")] # Generate the metric header
 	return metric_header # Return the metric header
 
-def add_substantial_decrease_csv_header(csv_filename, metric_name):
+def write_substantial_decrease_csv_header(csv_filename, expected_header):
+	"""
+	Writes the header to the csv file, if it does not exist.
+
+	:param csv_filename: The name of the csv file
+	:param expected_header: The expected header
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the header to the {BackgroundColors.CYAN}{csv_filename}{BackgroundColors.GREEN} csv file...{Style.RESET_ALL}")
+
+	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
+		writer = csv.writer(csvfile) # Create the csv writer
+		writer.writerow(expected_header) # Write the expected header
+
+def generate_substantial_decrease_csv_header(metric_name):
 	""""
-	Adds the header to the csv file, if it does not exist.
+	Generate the header of the substantial decrease csv file.
 
 	:param csv_filename: The name of the csv file
 	:param metric_name: The name of the metric
-	:return: None
+	:return: Expected header for the csv file
 	"""
 
 	expected_header = [] # The expected header list
@@ -796,10 +811,8 @@ def add_substantial_decrease_csv_header(csv_filename, metric_name):
 		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Method Invocations", "Refactoring Patterns"]
 	else: # If the PROCESS_CLASSES constant is set to False
 		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Methods Invoked Qty", "Refactoring Patterns"]
-	
-	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
-		writer = csv.writer(csvfile) # Create the csv writer
-		writer.writerow(expected_header) # Write the expected header
+
+	return expected_header # Return the expected header
 
 def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 	"""
@@ -815,7 +828,7 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 
 	csv_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
 
-	add_substantial_decrease_csv_header(csv_filename, metric_name) if iteration == 1 else None # Add the header to the csv file if it does not exist
+	write_substantial_decrease_csv_header(csv_filename, generate_substantial_decrease_csv_header(metric_name))  if iteration == 1 else None # Write the header to the csv file if it does not exist
 
 	return csv_filename # Return the path to the substantial decrease file
 
