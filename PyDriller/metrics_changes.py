@@ -1461,6 +1461,28 @@ def get_to_metric_indexes(header, percentual_var_index, metric_name):
 
 	return [i - 1 if i > percentual_var_index else i for i, col in enumerate(header) if col == f"To {metric_name}"] # Calculate the indexes of 'To {metric_name}' columns in the modified header
 
+def process_rows(reader, percentual_var_index):
+	"""
+	Processes and modifies each row from the reader, removing duplicates.
+
+	:param reader: CSV reader object.
+	:param percentual_var_index: Index of the Percentual Variation column to remove.
+	:return: Set of unique rows with the modified structure.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing rows and removing duplicates in the CSV file...{Style.RESET_ALL}")
+
+	rows, seen_rows = set(), set() # Initialize sets for rows and seen rows
+	
+	for row in reader: # For each row in the reader
+		modified_row = tuple(row[i] for i in range(len(row)) if i != percentual_var_index) # Remove the Percentual Variation column
+		
+		if modified_row not in seen_rows: # If the modified row is not in the seen rows set
+			seen_rows.add(modified_row) # Add the modified row to the seen rows set
+			rows.add(modified_row) # Add the modified row to the rows set
+	
+	return rows # Return the set of unique rows with the modified structure
+
 def process_metric_file(csv_filename, metric_name, csv_header):
 	"""
 	Reads and processes a metric's CSV file, updating the header and rows.
