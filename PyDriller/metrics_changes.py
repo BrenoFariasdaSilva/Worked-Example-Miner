@@ -1449,6 +1449,18 @@ def sort_csv_by_percentual_variation(repository_name):
 				writer.writerow(header) # Write header
 				writer.writerows(rows_sorted) # Write sorted rows
 
+def get_to_metric_indexes(header, percentual_var_index, metric_name):
+	"""
+	Calculates the indexes of 'To {metric_name}' columns in the modified header.
+
+	:param header: Original CSV header.
+	:param percentual_var_index: Index of the Percentual Variation column.
+	:param metric_name: The metric name.
+	:return: List of indexes for 'To {metric_name}' columns in the modified header.
+	"""
+
+	return [i - 1 if i > percentual_var_index else i for i, col in enumerate(header) if col == f"To {metric_name}"] # Calculate the indexes of 'To {metric_name}' columns in the modified header
+
 def process_metric_file(csv_filename, metric_name, csv_header):
 	"""
 	Reads and processes a metric's CSV file, updating the header and rows.
