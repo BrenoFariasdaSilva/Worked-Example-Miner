@@ -1449,6 +1449,31 @@ def sort_csv_by_percentual_variation(repository_name):
 				writer.writerow(header) # Write header
 				writer.writerows(rows_sorted) # Write sorted rows
 
+def generate_worked_examples_candidates(repository_name):
+	"""
+	Processes CSV files for substantial changes and generates worked examples candidates.
+	
+	:param repository_name: The repository name to process.
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Generating worked examples candidates for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
+	filtered_rows, csv_header = set(), [] # Initialize sets for all rows, filtered rows, and an empty list for the csv header
+	
+	# Iterate through all metric files and process each
+	for metric_name in METRICS_INDEXES.keys(): # For each metric name in the METRICS_INDEXES dictionary
+		csv_filename = os.path.join(FULL_METRICS_STATISTICS_DIRECTORY_PATH, repository_name, f"{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}") # The csv filename for the metric
+		
+		if not verify_filepath_exists(csv_filename): # Verify if the file path exists
+			verbose_output(true_string=f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{csv_filename}{BackgroundColors.RED} file does not exist.{Style.RESET_ALL}")
+			continue # Continue if the file does not exist
+		
+		header, rows = process_metric_file(csv_filename, metric_name, csv_header) # Process the metric file and get the header and rows
+		filter_rows_by_threshold(rows, metric_name, filtered_rows, header, header.index(f"Percentual Variation {metric_name}")) # Filter rows based on thresholds and update filtered_rows
+
+	write_csv_file(os.path.join(FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH, f"{repository_name}_{WORKED_EXAMPLES_CANDIDATES_FILENAME}"), csv_header, filtered_rows) # Write the worked examples candidates to a CSV file
+
 def read_csv_as_dict(file_path):
 	"""
 	Reads the CSV file into a dictionary format where the key is the repository name.
@@ -1549,6 +1574,8 @@ def process_repository(repository_name, repository_url):
 		sort_csv_by_changes(repository_name) # Sort the csv file by the number of changes
 		os.remove(unsorted_csv_file_path) # Remove the old csv file
 		sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["Sort by Percentual Variation"] else None # Sort the interesting changes csv file by the percentual variation of the metric
+
+	generate_worked_examples_candidates(repository_name) if RUN_FUNCTIONS["Worked Examples Candidates"] else None # Generate worked examples candidates
 
 	repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
