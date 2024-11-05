@@ -192,7 +192,6 @@ def create_directories(repository_name):
 
 	# Create the output RELATIVE_WORKED_EXAMPLES_CANDIDATES directories if they does not exist
 	create_directory(FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH, RELATIVE_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH)
-	create_directory(f"{FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH}/{repository_name}")
 
 def generate_repository_commits_modified_files_dict(repository_name, commit_hash=None):
 	"""
