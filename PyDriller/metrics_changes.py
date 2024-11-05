@@ -1584,7 +1584,7 @@ def generate_worked_examples_candidates(repository_name):
 		header, rows = process_metric_file(csv_filename, metric_name, csv_header) # Process the metric file and get the header and rows
 		filter_rows_by_threshold(rows, metric_name, filtered_rows, header, header.index(f"Percentual Variation {metric_name}")) # Filter rows based on thresholds and update filtered_rows
 
-	write_csv_file(os.path.join(FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH, f"{repository_name}_{WORKED_EXAMPLES_CANDIDATES_FILENAME}"), csv_header, filtered_rows) # Write the worked examples candidates to a CSV file
+	write_csv_file(os.path.join(FULL_WORKED_EXAMPLES_CANDIDATES_DIRECTORY_PATH, f"{repository_name}_{CLASSES_OR_METHODS}_{WORKED_EXAMPLES_CANDIDATES_FILENAME}"), csv_header, filtered_rows) # Write the worked examples candidates to a CSV file
 
 def read_csv_as_dict(file_path):
 	"""
