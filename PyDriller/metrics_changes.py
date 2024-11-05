@@ -48,6 +48,7 @@ RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective bo
 	"Metrics Statistics": True, # Generate the metrics track record statistics
 	"Metrics Track Record": True, # Write the metrics track record to a txt file
 	"Sort by Percentual Variation": True, # Sort the csv file by the percentual variation
+	"Worked Examples Candidates": True, # Generate the worked examples candidates
 }
 
 # Constants:
