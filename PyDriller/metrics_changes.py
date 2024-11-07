@@ -794,21 +794,6 @@ def get_ck_metrics_header():
 	metric_header = [f"{prefix} {metric}" for metric in metric_names for prefix in ("From", "To")] # Generate the metric header
 	return metric_header # Return the metric header
 
-def write_substantial_decrease_csv_header(csv_filename, expected_header):
-	"""
-	Writes the header to the csv file, if it does not exist.
-
-	:param csv_filename: The name of the csv file
-	:param expected_header: The expected header
-	:return: None
-	"""
-
-	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the header to the {BackgroundColors.CYAN}{csv_filename}{BackgroundColors.GREEN} csv file...{Style.RESET_ALL}")
-
-	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
-		writer = csv.writer(csvfile) # Create the csv writer
-		writer.writerow(expected_header) # Write the expected header
-
 def generate_substantial_decrease_csv_header(metric_name):
 	""""
 	Generate the header of the substantial decrease csv file.
@@ -827,6 +812,21 @@ def generate_substantial_decrease_csv_header(metric_name):
 		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Methods Invoked Qty", "Refactoring Patterns"]
 
 	return expected_header # Return the expected header
+
+def write_substantial_decrease_csv_header(csv_filename, expected_header):
+	"""
+	Writes the header to the csv file, if it does not exist.
+
+	:param csv_filename: The name of the csv file
+	:param expected_header: The expected header
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing the header to the {BackgroundColors.CYAN}{csv_filename}{BackgroundColors.GREEN} csv file...{Style.RESET_ALL}")
+
+	with open(csv_filename, "w") as csvfile: # Open the csv file in write mode
+		writer = csv.writer(csvfile) # Create the csv writer
+		writer.writerow(expected_header) # Write the expected header
 
 def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 	"""
