@@ -795,7 +795,7 @@ def get_ck_metrics_header():
 	return metric_header # Return the metric header
 
 def generate_substantial_decrease_csv_header(metric_name):
-	""""
+	"""
 	Generate the header of the substantial decrease csv file.
 
 	:param csv_filename: The name of the csv file
@@ -1537,7 +1537,7 @@ def filter_rows_by_threshold(rows, metric_name, filtered_rows, header, percentua
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Filtering rows based on metric thresholds...{Style.RESET_ALL}")
 	
 	for row in rows: # For each row in the rows set
-		meets_threshold = all( # Check if all values meet the thresholds
+		meets_threshold = all( # Verify if all values meet the thresholds
 			METRICS_VALUES_MAX_THRESHOLDS[metric_name] is None or float(row[idx]) < METRICS_VALUES_MAX_THRESHOLDS[metric_name]
 			for idx in get_to_metric_indexes(header, percentual_var_index, metric_name)
 		)
