@@ -118,7 +118,7 @@ def update_global_variables_for_processing(process_classes):
 	:param process_classes: bool, if True, processes classes; if False, processes methods
 	"""
 
-	global CK_CSV_FILE, CLASSES_OR_METHODS, METRICS_INDEXES, METRICS_VALUES_MAX_THRESHOLDS, NUMBER_OF_METRICS, PROCESS_CLASSES, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME, UNSORTED_CHANGED_METHODS_CSV_FILENAME  # Specify the global constants to update
+	global CK_CSV_FILE, CLASSES_OR_METHODS, METRICS_INDEXES, METRICS_VALUES_MAX_THRESHOLDS, NUMBER_OF_METRICS, PROCESS_CLASSES, SORTED_CHANGED_METHODS_CSV_FILENAME, SUBSTANTIAL_CHANGES_FILENAME, UNSORTED_CHANGED_METHODS_CSV_FILENAME # Specify the global constants to update
 
 	CLASS_METRICS_LIST = ["CBO", "DIT", "LCOM", "LOC", "NOC", "RFC", "WMC", "tcc", "lcc", "totalMethodsQty", "staticMethodsQty", "abstractMethodsQty", "finalMethodsQty", "synchronizedMethodsQty"] # List of class metrics
 	METHOD_METRICS_LIST = ["CBO", "LOC", "RFC", "WMC", "returnsQty", "variablesQty", "parametersQty", "methodsInvokedQty", "loopQty", "comparisonsQty", "tryCatchQty", "logStatementsQty"] # List of method metrics
@@ -842,7 +842,7 @@ def setup_substantial_decrease_file(repository_name, metric_name, iteration):
 
 	csv_filename = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The csv file name
 
-	write_substantial_decrease_csv_header(csv_filename, generate_substantial_decrease_csv_header(metric_name))  if iteration == 1 else None # Write the header to the csv file if it does not exist
+	write_substantial_decrease_csv_header(csv_filename, generate_substantial_decrease_csv_header(metric_name)) if iteration == 1 else None # Write the header to the csv file if it does not exist
 
 	return csv_filename # Return the path to the substantial decrease file
 
