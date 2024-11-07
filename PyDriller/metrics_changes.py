@@ -1233,6 +1233,7 @@ def plot_and_save_graph(repository_name, class_name, variable_attribute, commit_
 	:return: None
 	"""
 
+	plt.rcParams["font.family"] = "DejaVu Sans" # Set font to support a wide range of Unicode characters
 	plt.figure(figsize=(10, 6)) # Set the figure size
 	plt.plot(commit_number, metric_values, "o", label=f"{metric_name}") # Plot the metric values
 	plt.plot(commit_number, linear_fit, "-", label="Linear Regression Fit") # Plot the linear regression fit
