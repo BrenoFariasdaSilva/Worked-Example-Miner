@@ -1437,45 +1437,97 @@ def sort_csv_by_changes(repository_name, unsorted_csv_file_path):
 	
 	data.to_csv(sorted_csv_file_path, index=False) # Write the sorted csv file to a new csv file
 
+def read_csv(filepath):
+	"""
+	Read the CSV file and return the header and rows.
+
+	:param filepath: Path to the CSV file
+	:return: A tuple containing the header and rows
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Reading the {BackgroundColors.CYAN}{filepath}{BackgroundColors.GREEN} CSV file...{Style.RESET_ALL}")
+
+	with open(filepath, "r", newline="", encoding="utf-8") as csvfile: # Open the csv file
+		reader = csv.reader(csvfile) # Create the CSV reader
+		header = next(reader) # Read the header row
+		rows = list(reader) # Read the remaining rows
+	
+	return header, rows # Return the header and rows
+
+def write_csv(filepath, header, rows):
+	"""
+	Write data to a CSV file with a given header and rows.
+
+	:param filepath: Path to the CSV file
+	:param header: List of header columns
+	:param rows: List of rows to write to the file
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Writing data to the {BackgroundColors.CYAN}{filepath}{BackgroundColors.GREEN} CSV file...{Style.RESET_ALL}")
+
+	with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
+		writer = csv.writer(csvfile) # Create the CSV writer
+		writer.writerow(header) # Write the header row
+		writer.writerows(rows) # Write all data rows
+
+def handle_missing_column(header, rows, filepath, metric_name):
+	"""
+	Verify if the 'Percentual Variation' column exists in the header. If not, generate and write a new header, then re-read the file.
+
+	:param header: List of header columns
+	:param rows: List of rows from the CSV file
+	:param filepath: Path to the CSV file
+	:param metric_name: The name of the metric
+	:return: Updated header and rows, with missing 'Percentual Variation' column handled
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Handling missing column in the {BackgroundColors.CYAN}{filepath}{BackgroundColors.GREEN} CSV file...{Style.RESET_ALL}")
+
+	variation_column = f"Percentual Variation {metric_name}" # Column name for percentual variation
+
+	if variation_column not in header: # Verify if the column is missing
+		header = generate_substantial_decrease_csv_header(metric_name) # Generate a new header with the missing column
+		write_csv(filepath, header, rows) # Write the new header and existing rows to the file
+		header, rows = read_csv(filepath) # Re-read the file with the updated header
+
+	return header, rows # Return the updated header and rows
+
+def sort_rows_by_variation(rows, header, metric_name):
+	"""
+	Sort the rows by 'Percentual Variation' in descending order.
+
+	:param rows: List of rows from the CSV file
+	:param header: List of header columns
+	:param metric_name: The name of the metric
+	:return: List of rows sorted by percentual variation
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting rows by the {BackgroundColors.CYAN}percentual variation{BackgroundColors.GREEN} of the {BackgroundColors.CYAN}{metric_name}{BackgroundColors.GREEN} metric...{Style.RESET_ALL}")
+
+	variation_column = f"Percentual Variation {metric_name}" # Column name for percentual variation
+	index = header.index(variation_column) # Get the index of the percentual variation column
+
+	return sorted(rows, key=lambda row: float(row[index]), reverse=True) # Sort rows by percentual variation (descending)
+
 def sort_csv_by_percentual_variation(repository_name):
 	"""
-	Sorts the csv files according to the percentual variation of the metric.
+	Sorts the CSV files according to the percentual variation of each metric.
 
 	:param repository_name: The name of the repository
 	:return: None
 	"""
 	
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Sorting the {BackgroundColors.CYAN}interesting changes files{BackgroundColors.GREEN} by the {BackgroundColors.CYAN}percentual variation of the metric{BackgroundColors.GREEN}.{Style.RESET_ALL}")
-
-	for metric_name in METRICS_INDEXES.keys(): # For each metric name in the METRICS_INDEXES dictionary
-		filepath = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # The file path for the csv file
-		if verify_filepath_exists(filepath): # Verify if the file path exists
-			with open(filepath, "r", newline="", encoding="utf-8") as csvfile: # Read CSV file using csv.reader to handle raw data
-				reader = csv.reader(csvfile) # Create the csv reader
-				header = next(reader) # First row is the header
-				rows = list(reader) # Remaining rows are the data
-			
-			percentual_variation_column = f"Percentual Variation {metric_name}" # Identify the correct index for "Percentual Variation"
-			if percentual_variation_column not in header: # If the Percentual Variation column is not in the header
-				header = generate_substantial_decrease_csv_header(metric_name) # Generate the expected header and write it to the file if missing
-				
-				with open(filepath, "w", newline="", encoding="utf-8") as csvfile: # Write the new header and the current data (if any) to the file
-					writer = csv.writer(csvfile) # Create the csv writer
-					writer.writerow(header) # Write header
-					writer.writerows(rows_sorted) # Write sorted rows
-
-				with open(filepath, "r", newline="", encoding="utf-8") as csvfile: # Re-read the file after updating the header
-					reader = csv.reader(csvfile) # Create the csv reader
-					header = next(reader) # First row is the header
-					rows = list(reader) # Remaining rows are the data
-			
-			percentual_var_index = header.index(percentual_variation_column) # Sort the rows by Percentual Variation if it exists in the header
-			rows_sorted = sorted(rows, key=lambda row: float(row[percentual_var_index]), reverse=True) # Sort the rows manually by the percentual variation (descending order)
-
-			with open(filepath, "w", newline="", encoding="utf-8") as csvfile: # Write the sorted rows back to the CSV file
-				writer = csv.writer(csvfile) # Create the csv writer
-				writer.writerow(header) # Write header
-				writer.writerows(rows_sorted) # Write sorted rows
+	
+	for metric_name in METRICS_INDEXES.keys(): # Iterate over each metric in METRICS_INDEXES
+		filepath = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SUBSTANTIAL_CHANGES_FILENAME.replace('METRIC_NAME', metric_name)}" # Generate the file path for the metric
+		
+		if verify_filepath_exists(filepath): # Verify if the file exists
+			header, rows = read_csv(filepath) # Read the CSV file and get header and rows
+			header, rows = handle_missing_column(header, rows, filepath, metric_name) # Handle missing "Percentual Variation {metric_name}" column if needed
+			rows_sorted = sort_rows_by_variation(rows, header, metric_name) # Sort rows by the "Percentual Variation" column
+			write_csv(filepath, header, rows_sorted) # Use write_csv helper to write the sorted rows # Write sorted rows back to the CSV file
 
 def get_to_metric_indexes(header, percentual_var_index, metric_name):
 	"""
