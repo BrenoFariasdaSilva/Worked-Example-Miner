@@ -1455,7 +1455,21 @@ def sort_csv_by_percentual_variation(repository_name):
 				header = next(reader) # First row is the header
 				rows = list(reader) # Remaining rows are the data
 			
-			percentual_var_index = header.index(f"Percentual Variation {metric_name}") # Identify the correct index for "Percentual Variation"
+			percentual_variation_column = f"Percentual Variation {metric_name}" # Identify the correct index for "Percentual Variation"
+			if percentual_variation_column not in header: # If the Percentual Variation column is not in the header
+				header = generate_substantial_decrease_csv_header(metric_name) # Generate the expected header and write it to the file if missing
+				
+				with open(filepath, "w", newline="", encoding="utf-8") as csvfile: # Write the new header and the current data (if any) to the file
+					writer = csv.writer(csvfile) # Create the csv writer
+					writer.writerow(header) # Write header
+					writer.writerows(rows_sorted) # Write sorted rows
+
+				with open(filepath, "r", newline="", encoding="utf-8") as csvfile: # Re-read the file after updating the header
+					reader = csv.reader(csvfile) # Create the csv reader
+					header = next(reader) # First row is the header
+					rows = list(reader) # Remaining rows are the data
+			
+			percentual_var_index = header.index(percentual_variation_column) # Sort the rows by Percentual Variation if it exists in the header
 			rows_sorted = sorted(rows, key=lambda row: float(row[percentual_var_index]), reverse=True) # Sort the rows manually by the percentual variation (descending order)
 
 			with open(filepath, "w", newline="", encoding="utf-8") as csvfile: # Write the sorted rows back to the CSV file
