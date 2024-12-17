@@ -67,19 +67,19 @@ SUBSTANTIAL_CHANGES_FILENAME = f"substantial_METRIC_NAME_{CLASSES_OR_METHODS}_ch
 CANDIDATES_FILENAME = f"candidates{CSV_FILE_EXTENSION}" # The name of the csv file containing the worked examples candidates
 
 # Relative Paths:
+RELATIVE_CANDIDATES_DIRECTORY_PATH = "/candidates" # The relative path to the directory containing the worked examples candidates
 RELATIVE_METRICS_DATA_DIRECTORY_PATH = "/metrics_data" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH = "/metrics_evolution" # The relative path to the directory containing the metrics evolution
 RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH = "/metrics_statistics" # The relative path to the directory containing the metrics statistics
 RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH = "/metrics_predictions" # The relative path to the directory containing the metrics prediction
 RELATIVE_REFACTORING_MINER_DIRECTORY_PATH = "../RefactoringMiner/RefactoringMiner-2.4.0/bin/RefactoringMiner" # The relative path to the RefactoringMiner directory
-RELATIVE_CANDIDATES_DIRECTORY_PATH = "/candidates"
 
 # Full Paths (Start Path + Relative Paths):
+FULL_CANDIDATES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_CANDIDATES_DIRECTORY_PATH}" # The full path to the directory containing the worked examples candidates
 FULL_METRICS_DATA_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_DATA_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_EVOLUTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics evolution
 FULL_METRICS_STATISTICS_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}" # The full path to the directory containing the metrics statistics
 FULL_METRICS_PREDICTION_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}" # The full path to the directory containing the metrics prediction
-FULL_CANDIDATES_DIRECTORY_PATH = f"{START_PATH}{RELATIVE_CANDIDATES_DIRECTORY_PATH}" # The full path to the directory containing the worked examples candidates
 OUTPUT_DIRECTORIES = [FULL_METRICS_DATA_DIRECTORY_PATH, FULL_METRICS_EVOLUTION_DIRECTORY_PATH, FULL_METRICS_STATISTICS_DIRECTORY_PATH, FULL_METRICS_PREDICTION_DIRECTORY_PATH, FULL_CANDIDATES_DIRECTORY_PATH] # The output directories list
 
 def generate_tasks_description(filter_list=[]):
@@ -204,7 +204,7 @@ def create_directories(repository_name):
 	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
 
 	# Create the output RELATIVE_CANDIDATES directories if they does not exist
-	create_directory(FULL_CANDIDATES_DIRECTORY_PATH, RELATIVE_CANDIDATES_DIRECTORY_PATH)
+	create_directory(f"FULL_CANDIDATES_DIRECTORY_PATH/{repository_name}", f"RELATIVE_CANDIDATES_DIRECTORY_PATH/{repository_name}")
 
 def generate_repository_commits_modified_files_dict(repository_name, commit_hash=None):
 	"""
@@ -1651,7 +1651,7 @@ def generate_worked_examples_candidates(repository_name):
 		header, rows = process_metric_file(csv_filename, metric_name, csv_header) # Process the metric file and get the header and rows
 		filter_rows_by_threshold(rows, metric_name, filtered_rows, header, header.index(f"Percentual Variation {metric_name}")) # Filter rows based on thresholds and update filtered_rows
 
-	write_csv_file(os.path.join(FULL_CANDIDATES_DIRECTORY_PATH, f"{repository_name}_{CLASSES_OR_METHODS}_{CANDIDATES_FILENAME}"), csv_header, filtered_rows) # Write the worked examples candidates to a CSV file
+	write_csv_file(os.path.join(FULL_CANDIDATES_DIRECTORY_PATH, repository_name, f"{repository_name}_{CLASSES_OR_METHODS}_{CANDIDATES_FILENAME}"), csv_header, filtered_rows) # Write the worked examples candidates to a CSV file
 
 def read_csv_as_dict(file_path):
 	"""
