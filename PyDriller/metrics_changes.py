@@ -1671,6 +1671,45 @@ def generate_worked_examples_candidates(repository_name):
 
 	write_csv_file(os.path.join(FULL_CANDIDATES_DIRECTORY_PATH, repository_name, f"{repository_name}_{CLASSES_OR_METHODS}_{CANDIDATES_FILENAME}"), csv_header, filtered_rows) # Write the worked examples candidates to a CSV file
 
+def delete_repository_source_data(repository_name):
+	"""
+	Delete the source data for the specified repository. Please, read the comments before uncommenting the directories to delete in order to avoid important data loss.
+
+	:param repository_name: The name of the repository
+	:return: None
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Deleting the source data for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+	
+	directories_to_delete = [  
+		# (f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}"),  
+		# Not recommended: Contains CK metrics data. If you plan to regenerate metrics for new commits, avoid deleting this as it occupies the most space.  
+
+		# (f"{FULL_CANDIDATES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_CANDIDATES_DIRECTORY_PATH}/{repository_name}"),  
+		# Not recommended: Stores candidate data that is critical for analysis and conversion into worked examples.  
+
+		# (f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_PROGRESS_DIRECTORY_PATH}/{repository_name}"),  
+		# Not recommended: Tracks progress to prevent reprocessing CK metrics for already processed commits in each repository.  
+
+		# (f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"),  
+		# Not recommended: Contains repository data. If you plan to regenerate metrics for new commits, avoid deleting this.  
+
+		(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}"),  
+		# Can be deleted: Stores raw data from the 'metrics_track_record' dictionary, primarily for debugging.  
+
+		(f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}"),  
+		# Can be deleted: Contains summarized metrics evolution data for each class or method in the repository.  
+
+		(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}"),  
+		# Can be deleted: Stores statistical metrics data (e.g., average, min, max, quartiles) for each class or method.  
+
+		(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}"),  
+		# Can be deleted: Contains linear regression plots for each class or method in the repository.  
+	]
+
+	for full_path, relative_path in directories_to_delete: # Delete each directory in the directories_to_delete list
+		delete_directory(full_path, relative_path) # Delete the directory
+
 def read_csv_as_dict(file_path):
 	"""
 	Reads the CSV file into a dictionary format where the key is the repository name.
