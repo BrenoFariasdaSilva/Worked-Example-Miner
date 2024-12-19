@@ -20,10 +20,14 @@ from repositories_picker import create_directory, get_adjusted_number_of_threads
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
-PROCESS_JSON_REPOSITORIES = False # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
+PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
 
 DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
-   "Simple-Java-Calculator": "https://github.com/pH-7/Simple-Java-Calculator",
+   "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
+   "kafka": "https://github.com/apache/kafka",
+   "moleculer-java": "https://github.com/moleculer-java/moleculer-java",
+   "scalecube-services": "https://github.com/scalecube/scalecube-services",
+   "zookeeper": "https://github.com/apache/zookeeper",
 }
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
