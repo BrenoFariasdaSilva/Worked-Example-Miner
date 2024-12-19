@@ -22,7 +22,7 @@ from repositories_picker import RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE
 from repositories_picker import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
-from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_PROGRESS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
+from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_PROGRESS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_DIRECTORY_PATH, RELATIVE_CK_METRICS_DIRECTORY_PATH, RELATIVE_DIFFS_DIRECTORY_PATH, RELATIVE_PROGRESS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
 from code_metrics import get_directories_size_in_gb, setup_process_repository, get_repositories_dictionary # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
@@ -1707,18 +1707,15 @@ def delete_repository_source_data(repository_name):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Deleting the source data for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 	
-	directories_to_delete = [  
-		# (f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}"),  
-		# Not recommended: Contains CK metrics data. If you plan to regenerate metrics for new commits, avoid deleting this as it occupies the most space.  
-
+	directories_to_delete = [ # List of the output directories
 		# (f"{FULL_CANDIDATES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_CANDIDATES_DIRECTORY_PATH}/{repository_name}"),  
 		# Not recommended: Stores candidate data that is critical for analysis and conversion into worked examples.  
 
-		# (f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_PROGRESS_DIRECTORY_PATH}/{repository_name}"),  
-		# Not recommended: Tracks progress to prevent reprocessing CK metrics for already processed commits in each repository.  
+		# (f"{FULL_CK_METRICS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_CK_METRICS_DIRECTORY_PATH}/{repository_name}"),  
+		# Not recommended: Contains CK metrics data. If you plan to regenerate metrics for new commits, avoid deleting this as it occupies the most space.  
 
-		# (f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"),  
-		# Not recommended: Contains repository data. If you plan to regenerate metrics for new commits, avoid deleting this.  
+		(f"{FULL_DIFFS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_DIFFS_DIRECTORY_PATH}/{repository_name}"),  
+		# Can be deleted: Contains diff data for each commit and can be deleted, as the candidate CSV files have the "Diff URL" column, which links to the commit/diff.  
 
 		(f"{FULL_METRICS_DATA_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_DATA_DIRECTORY_PATH}/{repository_name}"),  
 		# Can be deleted: Stores raw data from the 'metrics_track_record' dictionary, primarily for debugging.  
@@ -1726,11 +1723,20 @@ def delete_repository_source_data(repository_name):
 		(f"{FULL_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_EVOLUTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}"),  
 		# Can be deleted: Contains summarized metrics evolution data for each class or method in the repository.  
 
+		(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}"),  
+		# Can be deleted: Contains linear regression plots for each class or method in the repository.  
+
 		(f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}"),  
 		# Can be deleted: Stores statistical metrics data (e.g., average, min, max, quartiles) for each class or method.  
 
-		(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}"),  
-		# Can be deleted: Contains linear regression plots for each class or method in the repository.  
+		# (f"{FULL_PROGRESS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_PROGRESS_DIRECTORY_PATH}/{repository_name}"),  
+		# Not recommended: Tracks progress to prevent reprocessing CK metrics for already processed commits in each repository.  
+
+		(f"{FULL_REFACTORINGS_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_REFACTORINGS_DIRECTORY_PATH}/{repository_name}"),  
+		# Can be deleted: Contains refactorings data for each commit in the repository.  
+
+		# (f"{FULL_REPOSITORIES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_REPOSITORIES_DIRECTORY_PATH}/{repository_name}"),  
+		# Not recommended: Contains repository data. If you plan to regenerate metrics for new commits, avoid deleting this.  
 	]
 
 	for full_path, relative_path in directories_to_delete: # Delete each directory in the directories_to_delete list
