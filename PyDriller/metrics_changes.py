@@ -322,6 +322,19 @@ def was_file_modified(ck_metrics, identifier, metrics_track_record):
 
 	return False # Return False if the CK Metrics was not modified since the last commit
 
+def generate_commit_url(repository_url, commit_hash):
+	"""
+	Generates the URL of the commit/diff.
+
+	:param repository_url: The URL of the repository
+	:param commit_hash: The hash of the commit
+	:return: The URL of the commit
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the URL of the commit...{Style.RESET_ALL}")
+
+	return f"{repository_url}/commit/{commit_hash}" # Return the URL of the commit
+
 def update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_metrics, methods_invoked, repository_url):
 	"""
 	Updates the metrics track record with new metrics information.
@@ -351,6 +364,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_
 	metrics_track_record[identifier]["metrics"].append(ck_metrics) # Append the metrics to the metrics list
 	metrics_track_record[identifier]["commit_hashes"].append(commit_id) # Append the commit id to the commit hashes list
 	metrics_track_record[identifier]["changed"] += 1 # Increment the change count
+	metrics_track_record[identifier]["diff_urls"].append(generate_commit_url(repository_url, commit_id.split("-")[1])) # Append the diff url to the diff urls list
 
 def get_diff_filepath(ck_file_path, file_in_repository_path):
 	"""
