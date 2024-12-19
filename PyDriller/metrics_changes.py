@@ -1671,6 +1671,31 @@ def generate_worked_examples_candidates(repository_name):
 
 	write_csv_file(os.path.join(FULL_CANDIDATES_DIRECTORY_PATH, repository_name, f"{repository_name}_{CLASSES_OR_METHODS}_{CANDIDATES_FILENAME}"), csv_header, filtered_rows) # Write the worked examples candidates to a CSV file
 
+def delete_directory(full_path, relative_path):
+   """
+   Deletes the specified directory and its contents.
+
+   :param full_path: The full path of the directory to delete
+   :param relative_path: The relative path of the directory to delete
+   :return: None
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Attempting to delete the directory: {BackgroundColors.CYAN}{relative_path}{Style.RESET_ALL}")
+
+   if os.path.isdir(full_path): # Verify if the directory exists
+      try: # Try to delete the directory and its contents
+         for root, dirs, files in os.walk(full_path, topdown=False): # Walk the directory tree
+            for file in files: # Iterate over the files
+               os.remove(os.path.join(root, file)) # Remove each file
+            for dir in dirs: # Iterate over the directories
+               os.rmdir(os.path.join(root, dir)) # Remove each subdirectory
+         os.rmdir(full_path) # Remove the main directory
+         verbose_output(true_string=f"{BackgroundColors.GREEN}Successfully deleted the directory: {BackgroundColors.CYAN}{relative_path}{Style.RESET_ALL}") # Print success message
+      except Exception as e: # Handle the exception if the directory deletion fails
+         verbose_output(false_string=f"{BackgroundColors.RED}Failed to delete directory: {BackgroundColors.CYAN}{relative_path}. Error: {str(e)}{Style.RESET_ALL}") # Print error message
+   else: # If the directory does not exist
+      verbose_output(false_string=f"{BackgroundColors.YELLOW}Directory not found: {BackgroundColors.CYAN}{relative_path}{Style.RESET_ALL}") # Print warning message
+
 def delete_repository_source_data(repository_name):
 	"""
 	Delete the source data for the specified repository. Please, read the comments before uncommenting the directories to delete in order to avoid important data loss.
