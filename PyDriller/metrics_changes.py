@@ -824,9 +824,9 @@ def generate_substantial_decrease_csv_header(metric_name):
 	ck_metrics_header = get_ck_metrics_header() # Get the metrics header
 		
 	if PROCESS_CLASSES: # If the PROCESS_CLASSES constant is set to True
-		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Method Invocations", "Refactoring Patterns"]
+		expected_header = ["Class", "Type", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Diff URL", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Method Invocations", "Refactoring Patterns"]
 	else: # If the PROCESS_CLASSES constant is set to False
-		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Methods Invoked Qty", "Refactoring Patterns"]
+		expected_header = ["Class", "Method", f"Percentual Variation {metric_name}", "Commit Number", "Commit Hash", "Diff URL", "Code Churn", "Lines Added", "Lines Deleted", "Modified Files"] + ck_metrics_header + ["Methods Invoked Qty", "Refactoring Patterns"]
 
 	return expected_header # Return the expected header
 
