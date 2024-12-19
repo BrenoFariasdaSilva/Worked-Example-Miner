@@ -322,7 +322,7 @@ def was_file_modified(ck_metrics, identifier, metrics_track_record):
 
 	return False # Return False if the CK Metrics was not modified since the last commit
 
-def update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_metrics, methods_invoked):
+def update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_metrics, methods_invoked, repository_url):
 	"""
 	Updates the metrics track record with new metrics information.
 
@@ -331,6 +331,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_
 	:param commit_id: The commit id which is the commit number and the commit hash
 	:param ck_metrics: A tuple containing the CK metrics
 	:param methods_invoked: The method invoked str or methodsInvokedQty int
+	:param repository_url: The URL of the repository
 	:return: None
 	"""
 
@@ -339,6 +340,7 @@ def update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_
 			"metrics": [], # The metrics list
 			"commit_hashes": [], # The commit hashes list
 			"changed": 0, # The number of times the metrics changed
+			"diff_urls": [], # The diff urls list
 			"code_churns": [], # The code churns values list
 			"lines_added": [], # The lines added list
 			"lines_deleted": [], # The lines deleted list
@@ -567,7 +569,7 @@ def update_code_churn_and_file_info(metrics_track_record, identifier, lines_adde
 	modified_files_count = len(commit_modified_files_dict[commit_hash]) # Get the number of modified files for the current commit hash
 	metrics_track_record[identifier]["modified_files_count"].append(modified_files_count) # Append the modified files count to the modified files count list
 
-def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record):
+def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record, repository_url):
 	"""
 	Processes a csv file containing the metrics of a class or method.
 
@@ -595,17 +597,18 @@ def process_csv_file(file_path, commit_modified_files_dict, metrics_track_record
 			methods_invoked = get_methods_invoked(row) # Get the method invoked of the class or method
 			
 			if was_file_modified(ck_metrics, identifier, metrics_track_record) and commit_modified_files_dict[commit_hash]: # If the file was modified, then update the metrics track record
-				update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_metrics, methods_invoked) # Update the metrics track record
+				update_metrics_track_record(metrics_track_record, identifier, commit_id, ck_metrics, methods_invoked, repository_url) # Update the metrics track record
 				diff_filepath = get_diff_filepath(file_path, row["file"]) # Get the diff file path
 				class_name = convert_ck_classname_to_filename_format(diff_filepath, row["class"]) # Convert the CK class name to the filename format
 				lines_added, lines_deleted = get_code_churn_attributes(diff_filepath, class_name) # Get the code churn attributes
 				update_code_churn_and_file_info(metrics_track_record, identifier, lines_added, lines_deleted, get_code_churn(lines_added, lines_deleted), commit_modified_files_dict, commit_hash) # Update the code churn and file info
 
-def traverse_directory(repository_name, repository_ck_metrics_path):
+def traverse_directory(repository_name, repository_url, repository_ck_metrics_path):
 	"""
 	Traverses a directory and processes all the csv files.
 
 	:param repository_name: The name of the repository
+	:param repository_url: The URL of the repository
 	:param repository_ck_metrics_path: The path to the directory
 	:return: A dictionary containing the metrics of each class and method combination
 	"""
@@ -624,7 +627,7 @@ def traverse_directory(repository_name, repository_ck_metrics_path):
 			for dir in subdirs: # For each subdirectory
 				for file in os.listdir(os.path.join(root, dir)): # For each file in the subdirectory
 					if file == CK_CSV_FILE: # If the file is the desired csv file
-						process_csv_file(os.path.join(root, os.path.join(dir, file)), commit_modified_files_dict, metrics_track_record) # Process the csv file
+						process_csv_file(os.path.join(root, os.path.join(dir, file)), commit_modified_files_dict, metrics_track_record, repository_url) # Process the csv file
 						progress_bar.update(1) # Update the progress bar
 
 	return metrics_track_record # Return the method metrics, which is a dictionary containing the metrics of each method
@@ -1740,7 +1743,7 @@ def process_repository(repository_name, repository_url):
 	
 	create_directories(repository_name) # Create the desired directory if it does not exist
 
-	metrics_track_record = traverse_directory(repository_name, repository_ck_metrics_path) # Traverse the directory and get the classes/methods metrics
+	metrics_track_record = traverse_directory(repository_name, repository_url, repository_ck_metrics_path) # Traverse the directory and get the classes/methods metrics
 
 	sorted_metrics_track_record = sort_commit_hashes_by_commit_number(metrics_track_record) # Sort the commit_hashes list for each entry in the metrics_track_record dictionary by the commit number
 
