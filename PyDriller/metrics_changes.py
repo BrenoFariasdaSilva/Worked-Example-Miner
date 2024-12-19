@@ -42,6 +42,7 @@ DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format
 }
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
+	"Delete Source Files": False, # Delete the source files
 	"Linear Regression": True, # Run the linear regression graphics
 	"Metrics Decrease": True, # Verify the substantial metric decrease
 	"Metrics Evolution": True, # Write the metrics evolution to a csv file
@@ -1772,6 +1773,8 @@ def process_repository(repository_name, repository_url):
 		sort_csv_by_percentual_variation(repository_name) if RUN_FUNCTIONS["Sort by Percentual Variation"] else None # Sort the interesting changes csv file by the percentual variation of the metric
 
 	generate_worked_examples_candidates(repository_name) if RUN_FUNCTIONS["Worked Examples Candidates"] else None # Generate worked examples candidates
+
+	delete_repository_source_data(repository_name) if RUN_FUNCTIONS["Delete Source Data"] else None # Delete the repository source data if the flag is set to True
 
 	repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
