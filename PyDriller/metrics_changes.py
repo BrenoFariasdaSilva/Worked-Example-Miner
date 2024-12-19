@@ -205,7 +205,8 @@ def create_directories(repository_name):
 	create_directory(f"{FULL_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}", f"{RELATIVE_METRICS_PREDICTION_DIRECTORY_PATH}/{repository_name}/{CLASSES_OR_METHODS}")
 
 	# Create the output RELATIVE_CANDIDATES directories if they does not exist
-	create_directory(f"FULL_CANDIDATES_DIRECTORY_PATH/{repository_name}", f"RELATIVE_CANDIDATES_DIRECTORY_PATH/{repository_name}")
+	create_directory(FULL_CANDIDATES_DIRECTORY_PATH, RELATIVE_CANDIDATES_DIRECTORY_PATH)
+	create_directory(f"{FULL_CANDIDATES_DIRECTORY_PATH}/{repository_name}", f"{RELATIVE_CANDIDATES_DIRECTORY_PATH}/{repository_name}")
 
 def generate_repository_commits_modified_files_dict(repository_name, commit_hash=None):
 	"""
