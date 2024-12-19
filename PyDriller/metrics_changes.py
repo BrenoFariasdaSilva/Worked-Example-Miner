@@ -1119,7 +1119,7 @@ def add_substantial_decrease_to_csv(csv_filename, class_name, variable_attribute
 		writer = csv.writer(csvfile) # Create the csv writer
 		index = commit_data[0] # Get the metric position
 		metrics_values = get_metrics_values_from_record(record, index) # Get the metrics values from the record
-		writer.writerow([class_name, variable_attribute] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}", record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index]] + metrics_values + [record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
+		writer.writerow([class_name, variable_attribute] + [round(biggest_change_data[2] * 100, 2)] + [f"{commit_data[1]} -> {commit_data[3]}", f"{commit_data[2]} -> {commit_data[4]}", record["diff_url"], record["code_churns"][index], record["lines_added"][index], record["lines_deleted"][index], record["modified_files_count"][index]] + metrics_values + [record["methods_invoked"], biggest_change_data[3]]) # Write the row to the csv file
 
 def verify_substantial_metric_decrease(repository_name, class_name, variable_attribute, record, metric_name, metric_position, iteration):
 	"""
