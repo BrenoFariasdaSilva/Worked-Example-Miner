@@ -18,11 +18,11 @@ from tqdm import tqdm # For progress bar
 
 # Imports from the repositories_picker.py file
 from repositories_picker import BackgroundColors # Import the BackgroundColors class
-from repositories_picker import RELATIVE_REPOSITORIES_DIRECTORY_PATH, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
+from repositories_picker import RELATIVE_REPOSITORIES_DIRECTORY_PATH, REPOSITORIES_SORTING_ATTRIBUTES, SOUND_FILE_PATH, START_PATH # Importing Constants from the repositories_picker.py file
 from repositories_picker import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
-from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, RELATIVE_DIFFS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
+from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_JSON_FILEPATH, RELATIVE_DIFFS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
 from code_metrics import get_directories_size_in_gb, setup_process_repository, get_repositories_dictionary # Importing Functions from the code_metrics.py file
 
 # Default values that can be changed:
