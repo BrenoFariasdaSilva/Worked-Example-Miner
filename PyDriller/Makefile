@@ -58,6 +58,7 @@ $(VENV): dependencies
 
 # Install the project dependencies in a virtual environment
 dependencies:
+	cd .. && git submodule update --init --recursive
 	python3 -m venv $(VENV)
 	$(PIP) install -r requirements.txt
 
