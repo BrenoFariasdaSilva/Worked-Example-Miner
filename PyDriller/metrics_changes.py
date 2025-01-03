@@ -1790,6 +1790,37 @@ def write_dict_to_csv(file_path, repositories_attributes):
 				round(attributes["size_in_gb"], 2) # Size in GB
 			])
 
+def update_json_repository_status(repository_name, file_path):
+	"""
+	Set the "candidates_generated" status to True for a specific repository in the JSON file, indicating that the candidates have been generated.
+
+	:param repository_name: The name of the repository to update.
+	:param file_path: The path to the JSON file.
+	:return: True if the update was successful, False otherwise.
+	"""
+
+	verbose_output(true_string=f"{BackgroundColors.GREEN}Updating the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository status in the {BackgroundColors.CYAN}{file_path}{BackgroundColors.GREEN} JSON file...{Style.RESET_ALL}")
+
+	try: # Try to update the repository status
+		with open(file_path, "r", encoding="utf-8") as json_file: # Open the JSON file
+			repositories = json.load(json_file) # Load the JSON data
+
+		for repo in repositories: # For each repository in the JSON data
+			if repo["name"] == repository_name: # If the repository name matches
+					repo["candidates_generated"] = True # Set the "candidates_generated" status to True
+					break # Break the loop
+		else: # If the repository was not found
+			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not found in the JSON file.{Style.RESET_ALL}") # Print a warning message
+			return False # Return False
+
+		with open(file_path, "w", encoding="utf-8") as json_file: # Open the JSON file in write mode
+			json.dump(repositories, json_file, indent=3) # Write the updated JSON data back to the file
+
+		return True # Return True if the update was successful
+	except (json.JSONDecodeError, KeyError, IOError) as e: # Handle exceptions
+		print(f"{BackgroundColors.RED}Failed to update the repository status in the JSON file. Error: {str(e)}{Style.RESET_ALL}") # Print an error message
+		return False # Return False if the update failed
+
 def update_repository_attributes(repository_name, elapsed_time):
 	"""
 	Updates the attributes for a specific repository.
@@ -1849,6 +1880,8 @@ def process_repository(repository_name, repository_url):
 
 	repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
+
+	update_json_repository_status(repository_name, FULL_REPOSITORIES_LIST_JSON_FILEPATH.replace("SORTING_ATTRIBUTE", REPOSITORIES_SORTING_ATTRIBUTES[0])) # Update the JSON repository status
 
 	elapsed_time = time.time() - start_time # Calculate the elapsed time
 	elapsed_time_string = f"Time taken to generate the {BackgroundColors.CYAN}metrics evolution records, metrics statistics and linear regression{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS.capitalize()}{BackgroundColors.GREEN} in {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}: "
