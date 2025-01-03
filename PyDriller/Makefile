@@ -56,7 +56,7 @@ track_files_script: $(VENV)
 # Setup Virtual Environment and Install Dependencies
 $(VENV): dependencies
 
-# Install the project dependencies in a virtual environment
+# Install the project dependencies in a virtual environment as well as initialize and update the submodules
 dependencies:
 	cd .. && git submodule update --init --recursive
 	python3 -m venv $(VENV)
