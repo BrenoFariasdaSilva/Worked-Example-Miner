@@ -698,15 +698,15 @@ def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_fi
       "topics": ", ".join(repo["topics"]), # Get the topics of the repository
       "commits": commits_count, # Get the number of commits
       "stars": repo["stargazers_count"], # Get the number of stars
-      "forks counter": repo["forks_count"], # Get the number of forks
-      "open issues counter": repo["open_issues_count"], # Get the number of open issues
+      "forks_counter": repo["forks_count"], # Get the number of forks
+      "open_issues_counter": repo["open_issues_count"], # Get the number of open issues
       "avg_code_churn": int(avg_code_churn), # Get the average code churn
       "avg_modified_files": int(avg_files_modified), # Get the average files modified
-      "Number of Contributors": autometric_metrics.get("Number of Contributors", "n/a"), # Get the number of contributors
-      "Inactive Period": autometric_metrics.get("Inactive Period", "n/a"), # Get the inactive period
-      "MTTU": autometric_metrics.get("MTTU", "n/a"), # Get the Mean Time to Update (MTTU)
-      "MTTC": autometric_metrics.get("MTTC", "n/a"), # Get the Mean Time to Close (MTTC)
-      "Branch Protection": autometric_metrics.get("Branch Protection", "n/a"), # Get the branch protection status
+      "number_of_contributors": autometric_metrics.get("Number of Contributors", "n/a"), # Get the number of contributors
+      "inactive_period": autometric_metrics.get("Inactive Period", "n/a"), # Get the inactive period
+      "mttu": autometric_metrics.get("MTTU", "n/a"), # Get the Mean Time to Update (MTTU)
+      "mttc": autometric_metrics.get("MTTC", "n/a"), # Get the Mean Time to Close (MTTC)
+      "branch_protection": autometric_metrics.get("Branch Protection", "n/a"), # Get the branch protection status
       "updated_at": repo["updated_at"], # Get the last update date
       # "pull_requests": repo.get("pulls_count", 0), # Get the number of pull requests (Apparently this endpoint aint working)
       "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
