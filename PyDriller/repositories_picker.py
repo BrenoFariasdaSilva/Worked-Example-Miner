@@ -710,6 +710,7 @@ def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_fi
       "updated_at": repo["updated_at"], # Get the last update date
       # "pull_requests": repo.get("pulls_count", 0), # Get the number of pull requests (Apparently this endpoint aint working)
       "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
+      "candidates_generated": False # Boolean to indicate if the repository's candidates have been generated
    }
 
 def process_repository(repo, token, date_filter=None, ignore_keywords=None):
@@ -736,7 +737,6 @@ def process_repository(repo, token, date_filter=None, ignore_keywords=None):
          if is_within_limit(avg_code_churn, MAXIMUM_AVG_CODE_CHURN, True) and is_within_limit(avg_files_modified, MAXIMUM_AVG_FILES_MODIFIED, True): # If the average code churn and files modified are within the limits
             autometric_metrics = get_autometric_metrics(repo["html_url"], token) # Get metrics from AutoMetric and integrate into repo_dict
             filled_repo_dict = fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
-            filled_repo_dict["candidates_generated"] = False # Boolean to indicate if the repository's candidates have been generated
             return filled_repo_dict # Return the filled repository dictionary
 
    return None # Return None if the repository is not valid
