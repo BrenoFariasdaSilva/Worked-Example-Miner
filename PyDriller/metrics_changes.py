@@ -1792,7 +1792,7 @@ def write_dict_to_csv(file_path, repositories_attributes):
 
 def update_json_repository_status(repository_name, file_path):
 	"""
-	Set the "candidates_generated" status to True for a specific repository in the JSON file, indicating that the candidates have been generated.
+	Set the "are_candidates_generated" status to True for a specific repository in the JSON file, indicating that the candidates have been generated.
 
 	:param repository_name: The name of the repository to update.
 	:param file_path: The path to the JSON file.
@@ -1807,7 +1807,7 @@ def update_json_repository_status(repository_name, file_path):
 
 		for repo in repositories: # For each repository in the JSON data
 			if repo["name"] == repository_name: # If the repository name matches
-					repo["candidates_generated"] = True # Set the "candidates_generated" status to True
+					repo["are_candidates_generated"] = True # Set the "are_candidates_generated" status to True
 					break # Break the loop
 		else: # If the repository was not found
 			print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not found in the JSON file.{Style.RESET_ALL}") # Print a warning message
