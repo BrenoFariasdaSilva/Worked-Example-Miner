@@ -4,3 +4,6 @@
 [submodule "AutoMetric"]
 	path = AutoMetric
 	url = https://github.com/BrenoFariasdaSilva/AutoMetric
+[submodule "Worked-Example-Miner-Candidates"]
+	path = Worked-Example-Miner-Candidates
+	url = https://github.com/BrenoFariasdaSilva/Worked-Example-Miner-Candidates
