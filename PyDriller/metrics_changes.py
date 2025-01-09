@@ -42,10 +42,10 @@ DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format
 }
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
-	"Delete Source Data": False, # Delete the source data
-	"Linear Regression": True, # Run the linear regression graphics
+	"Delete Source Data": True, # Delete the source data
+	"Linear Regression": False, # Run the linear regression graphics
 	"Metrics Decrease": True, # Verify the substantial metric decrease
-	"Metrics Evolution": True, # Write the metrics evolution to a csv file
+	"Metrics Evolution": False, # Write the metrics evolution to a csv file
 	"Metrics Statistics": True, # Generate the metrics track record statistics
 	"Metrics Track Record": True, # Write the metrics track record to a txt file
 	"Sort by Percentual Variation": True, # Sort the csv file by the percentual variation
