@@ -38,6 +38,7 @@ RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective bo
 	"Save to JSON": True, # Save the repositories to a JSON file
 	"Scatter Plot": True, # Generate a scatter plot for the code churn
 	"Show Candidate Repositories": False, # Randomly select repositories and print them
+   "Reprocess Processed Repositories": False, # Reprocess the processed repositories
 }
 
 # Default paths:
