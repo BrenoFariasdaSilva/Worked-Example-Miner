@@ -17,6 +17,7 @@ from colorama import Style # For coloring the terminal
 from datetime import datetime, timedelta # For date manipulation
 from dotenv import load_dotenv # For loading environment variables from .env file
 from fpdf import FPDF # For creating PDFs
+from glob import glob # For finding files matching a specified pattern
 
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function
@@ -420,6 +421,30 @@ def get_datetime_filter(days=DATETIME_FILTER):
       return datetime.min # Return the earliest possible datetime (since "forever")
    else:
       return datetime.now() - timedelta(days=days) # Return datetime "days" ago
+
+def get_processed_repositories_names():
+   """
+   Get the processed repositories names from the Worked-Example-Miner-Candidates directory.
+
+   :return: set - Unique names from both candidates and worked examples directories.
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Fetching processed repository names from the Worked-Example-Miner-Candidates Submodule directory...{Style.RESET_ALL}")
+
+   # Get first-level subdirectories inside candidates/*/
+   candidates_dirs = glob("../Worked-Example-Miner-Candidates/candidates/*/") # Candidate category directories
+   candidates_names = [] # Initialize the list of candidate names
+   
+   for dir_path in candidates_dirs: # Iterate over the candidate directories
+      # Fetch second-level directory names within each candidate subdirectory
+      subdir_paths = glob(os.path.join(dir_path, "*/")) # Second-level directories
+      candidates_names.extend([os.path.basename(os.path.normpath(subdir).lower()) for subdir in subdir_paths]) # Add the second-level directory names to the list
+
+   # Get the worked_examples/*/ directory names directly
+   worked_examples_dirs = glob("./Worked-Example-Miner-Candidates/worked_examples/*/") # Worked examples directories
+   worked_examples_names = [os.path.basename(os.path.normpath(path).lower()) for path in worked_examples_dirs] # Get the worked examples directory names
+
+   return set(candidates_names + worked_examples_names) # Combine and return unique names from both candidates and worked examples
 
 def contains_excluded_keywords(repo, ignore_keywords):
    """
@@ -887,7 +912,7 @@ def filter_repositories(repositories, token, ignore_keywords=EXCLUDE_REPOSITORIE
    filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
 
    global PROCESSED_REPOSITORIES # Global variable to store the processed repositories
-   PROCESSED_REPOSITORIES = set() # Get the processed repositories names
+   PROCESSED_REPOSITORIES = get_processed_repositories_names() # Get the processed repositories names
 
    with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor: # Create a ThreadPoolExecutor with the number of threads to use
       futures = [executor.submit(process_repository_task, repo, token, datetime_filter, ignore_keywords) for repo in repositories] # Submit the process_repository_task function to the executor for each repository
