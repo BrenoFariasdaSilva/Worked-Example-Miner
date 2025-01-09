@@ -739,7 +739,7 @@ def fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_fi
       "updated_at": repo["updated_at"], # Get the last update date
       # "pull_requests": repo.get("pulls_count", 0), # Get the number of pull requests (Apparently this endpoint aint working)
       "license": repo["license"]["name"] if repo.get("license") else "No license specified", # Get the license name or specify if there is no license
-      "are_candidates_generated": False # Boolean to indicate if the repository's candidates have been generated
+      "are_candidates_generated": repo["name"].lower() in PROCESSED_REPOSITORIES # Boolean to indicate if the repository's candidates have been generated
    }
 
 def process_repository(repo, token, date_filter=None, ignore_keywords=None):
