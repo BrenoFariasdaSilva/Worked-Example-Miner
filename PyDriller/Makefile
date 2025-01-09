@@ -22,6 +22,15 @@ repositories_picker_to_code_metrics: $(VENV)
 	$(MAKE) repositories_picker_script
 	$(MAKE) code_metrics_script
 
+repositories_picker_to_metrics_changes: $(VENV)
+	$(MAKE) repositories_picker_script
+	$(MAKE) code_metrics_script
+	$(MAKE) metrics_changes_script
+
+code_metrics_to_metrics_changes: $(VENV)
+	$(MAKE) code_metrics_script
+	$(MAKE) metrics_changes_script
+
 code_metrics_to_repositories_attributes_analyzer: $(VENV)
 	$(MAKE) code_metrics_script
 	$(MAKE) metrics_changes_script
