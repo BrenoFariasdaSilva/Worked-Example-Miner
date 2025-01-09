@@ -32,11 +32,11 @@ MAXIMUM_AVG_FILES_MODIFIED = None # The maximum average files modified allowed
 REPOSITORIES_SORTING_ATTRIBUTES = ["commits", "stars"] # The attribute to sort the repositories by
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
-   "CSV Files": True, # Create CSV files for the repositories
-	"Histograms": True, # Create histograms for the repositories
-	"Save to PDF": True, # Save the repositories to a PDF file
+   "CSV Files": False, # Create CSV files for the repositories
+	"Histograms": False, # Create histograms for the repositories
+	"Save to PDF": False, # Save the repositories to a PDF file
 	"Save to JSON": True, # Save the repositories to a JSON file
-	"Scatter Plot": True, # Generate a scatter plot for the code churn
+	"Scatter Plot": False, # Generate a scatter plot for the code churn
 	"Show Candidate Repositories": False, # Randomly select repositories and print them
    "Reprocess Processed Repositories": False, # Reprocess the processed repositories
 }
