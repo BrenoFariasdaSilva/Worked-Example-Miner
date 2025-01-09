@@ -539,11 +539,12 @@ def process_numstat_metrics(lines):
 
    return metrics # Return the list of metrics
 
-def calculate_average_metrics(repo_path, total_commits, lines=None):
+def calculate_average_metrics(repo_path, repo_name, total_commits, lines=None):
    """
    Calculates the average code churn and average files modified for all commits in a repository.
 
    :param repo_path: str
+   :param repo_name: str
    :param total_commits: int
    :param lines: list of numstat output lines (optional)
    :return: tuple containing:
@@ -551,7 +552,7 @@ def calculate_average_metrics(repo_path, total_commits, lines=None):
       - average files modified per commit (float)
    """
 
-   verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating average metrics for the {BackgroundColors.CYAN}{repo_path.split('/')[-1]}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Calculating average metrics for the {BackgroundColors.CYAN}{repo_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
    lines = run_git_log_numstat(repo_path) if not lines else lines # Get the numstat output if not provided
 
@@ -733,7 +734,7 @@ def process_repository(repo, token, date_filter=None, ignore_keywords=None):
       numstat_lines = run_git_log_numstat(repo_path) # Get numstat output
 
       if is_within_limit(commits_count, MINIMUM_COMMITS, False): # If the number of commits is greater than the minimum
-         avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, commits_count, numstat_lines) # Calculate the average code churn and files modified
+         avg_code_churn, avg_files_modified = calculate_average_metrics(repo_path, repo["name"], commits_count, numstat_lines) # Calculate the average code churn and files modified
          if is_within_limit(avg_code_churn, MAXIMUM_AVG_CODE_CHURN, True) and is_within_limit(avg_files_modified, MAXIMUM_AVG_FILES_MODIFIED, True): # If the average code churn and files modified are within the limits
             autometric_metrics = get_autometric_metrics(repo["html_url"], token) # Get metrics from AutoMetric and integrate into repo_dict
             filled_repo_dict = fill_repository_dict_fields(repo, autometric_metrics, avg_code_churn, avg_files_modified, commits_count) # Fill the repository dictionary with relevant metrics and information
