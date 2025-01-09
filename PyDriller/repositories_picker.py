@@ -52,6 +52,9 @@ PDF_FILE_EXTENSION = ".pdf" # The PDF file extension
 PNG_FILE_EXTENSION = ".png" # The PNG file extension
 JSON_FILE_EXTENSION = ".json" # The JSON file extension
 
+# Global Set for the Processed Repositories:
+PROCESSED_REPOSITORIES = set() # The set of processed repositories
+
 # Time units:
 TIME_UNITS = [60, 3600, 86400] # Seconds in a minute, seconds in an hour, seconds in a day
 
@@ -882,6 +885,9 @@ def filter_repositories(repositories, token, ignore_keywords=EXCLUDE_REPOSITORIE
    datetime_filter = get_datetime_filter() # Get the datetime filter for the repositories
 
    filtered_repositories = [] # The list of filtered repositories. Each repository is a dict
+
+   global PROCESSED_REPOSITORIES # Global variable to store the processed repositories
+   PROCESSED_REPOSITORIES = set() # Get the processed repositories names
 
    with concurrent.futures.ThreadPoolExecutor(max_workers=usable_threads) as executor: # Create a ThreadPoolExecutor with the number of threads to use
       futures = [executor.submit(process_repository_task, repo, token, datetime_filter, ignore_keywords) for repo in repositories] # Submit the process_repository_task function to the executor for each repository
