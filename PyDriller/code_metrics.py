@@ -23,18 +23,13 @@ VERBOSE = False # Verbose mode. If set to True, it will output messages at the s
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
 
 DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
-   "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
-   "kafka": "https://github.com/apache/kafka",
-   "moleculer-java": "https://github.com/moleculer-java/moleculer-java",
-   "scalecube-services": "https://github.com/scalecube/scalecube-services",
-   "zookeeper": "https://github.com/apache/zookeeper",
 }
 
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "CK Metrics": True, # Generate the CK metrics for the commits
    "Commits Information": True, # Write the commit information to a CSV file
    "Diffs": True, # Generate the diffs for the commits
-   "Repositories Attributes": True, # Write the repositories attributes to a CSV file
+   "Repositories Attributes": False, # Write the repositories attributes to a CSV file
    "Verify CK Metrics Directory": True, # Verify if the CK metrics directory is up to date
 }
 
