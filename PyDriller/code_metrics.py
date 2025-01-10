@@ -195,7 +195,9 @@ def load_repositories_from_json(file_path):
          repositories_list = json.load(json_file) # Load the JSON file
 
       if isinstance(repositories_list, list) and repositories_list: # Verify if the JSON file is a list and is not empty
-         return {repo["name"]: repo["url"] for repo in repositories_list if repo["are_candidates_generated"] is False} # Return the dictionary containing the repositories that haven't had their candidates generated
+         filtered_repositories = [repo for repo in repositories_list if repo["are_candidates_generated"] is False] # Filter repositories that haven't had their candidates generated
+         sorted_repositories = sorted(filtered_repositories, key=lambda repo: repo.get("commits", 0)) # Sort the filtered repositories by 'commits' in ascending order
+         return {repo["name"]: repo["url"] for repo in sorted_repositories} # Return a dictionary with names as keys and URLs as values
       else:
          print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
          return None # Return None if the JSON file is not in the correct format
