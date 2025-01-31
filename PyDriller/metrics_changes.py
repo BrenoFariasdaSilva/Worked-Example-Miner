@@ -1450,6 +1450,10 @@ def sort_csv_by_changes(repository_name, unsorted_csv_file_path):
 		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is empty after the header.{Style.RESET_ALL}")
 		return # Return if the file is empty after the header
 	
+	if "Changed" not in data.columns: # Verify if the "Changed" column exists
+		verbose_output(true_string=f"{BackgroundColors.RED}The \"Changed\" column is missing in the csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository.{Style.RESET_ALL}")
+		return # Return if the "Changed" column is missing
+
 	data = data.sort_values(by=["Changed"], ascending=False) # Sort the csv file by the number of changes
 	
 	sorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}" # The sorted csv file path
