@@ -257,11 +257,13 @@ def get_repositories_dictionary():
    
    return DEFAULT_REPOSITORIES # Return the DEFAULT_REPOSITORIES dictionary 
 
-def get_commit_filepaths(commit_file_path):
+def get_commit_filepaths(repository_name, commit_file_path, repo_path):
    """
    Read the commit information from a CSV file and return a list of file paths in the format '{Commit Number}-{Commit Hash}'.
 
+   :param repository_name: Name of the repository to be analyzed
    :param commit_file_path: Path to the CSV file containing commit details
+   :param repo_path: Path to the repository's CK metrics folder
    :return: List of file paths in the format '{Commit Number}-{Commit Hash}'
    """
    
@@ -351,7 +353,7 @@ def verify_ck_metrics_directory(repository_name, repository_url, number_of_commi
    commit_file = f"{repository_name}-commits_list{CSV_FILE_EXTENSION}" # The commit hashes file name
    commit_file_path = os.path.join(FULL_CK_METRICS_DIRECTORY_PATH, commit_file) # Full path to the commit hashes file
 
-   repository_ck_metrics_filepaths = get_commit_filepaths(commit_file_path) # Get the list of commit filepaths from the commit hashes file
+   repository_ck_metrics_filepaths = get_commit_filepaths(repository_name, commit_file_path, repo_path) # Get the list of commit filepaths from the commit hashes file
 
    if not repository_ck_metrics_filepaths: # If the list of commit filepaths is empty
       print(f"{BackgroundColors.RED}The list of commits for {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} is empty in the {BackgroundColors.CYAN}{commit_file}{BackgroundColors.RED} file.{Style.RESET_ALL}")
