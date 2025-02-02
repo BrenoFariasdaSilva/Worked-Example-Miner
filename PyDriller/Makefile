@@ -63,7 +63,7 @@ track_files_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/track_files.py
 
 batch_processing: $(VENV)
-	for i in $$(seq 1 30); do \
+	for i in $$(seq 1 100); do \
 		echo "Running $$i repo"; \
 		$(MAKE) code_metrics_script < /dev/null; \
 		$(MAKE) metrics_changes_script < /dev/null; \
