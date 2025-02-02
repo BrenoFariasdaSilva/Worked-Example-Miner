@@ -126,7 +126,12 @@ def build_ck_jar_file(repo_path):
    """
 
    verbose_output(true_string=f"{BackgroundColors.GREEN}Building the CK JAR file...{Style.RESET_ALL}")
+
+   if verify_filepath_exists(RELATIVE_CK_JAR_PATH): # Verify if the JAR file already exists
+      return True # Return True if the JAR file already exists
+   
    subprocess.run(["mvn", "clean", "package", "-DskipTests"], cwd=repo_path, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Build the CK JAR file
+   
    return verify_filepath_exists(RELATIVE_CK_JAR_PATH) # Return True if the JAR file exists, False otherwise
 
 def ensure_ck_jar_file_exists():
