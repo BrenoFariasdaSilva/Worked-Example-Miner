@@ -257,23 +257,59 @@ def get_repositories_dictionary():
    
    return DEFAULT_REPOSITORIES # Return the DEFAULT_REPOSITORIES dictionary 
 
+def read_commit_file(commit_file_path):
+   """
+   Reads the commit file and returns a DataFrame with the necessary columns.
+   
+   :param commit_file_path: Path to the CSV file containing commit details
+   :return: DataFrame with commit details or None if an error occurs
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Reading the {BackgroundColors.CYAN}{commit_file_path}{BackgroundColors.GREEN} file...{Style.RESET_ALL}")
+
+   try: # Try to read the commit file
+      return pd.read_csv(commit_file_path, sep=",", usecols=["Commit Number", "Commit Hash"], header=0) # Read the CSV file with the necessary columns
+   except ValueError: # Handle ValueError exceptions
+      return None # Return None if a ValueError occurs
+
+def handle_missing_commit_data(repo_path, commit_file_path):
+   """
+   Deletes the repository directory and commit file if the necessary columns are missing.
+   
+   :param repo_path: Path to the repository's CK metrics folder
+   :param commit_file_path: Path to the commit file
+   """
+
+   verbose_output(true_string=f"{BackgroundColors.RED}The necessary columns are missing in the {BackgroundColors.CYAN}{commit_file_path}{BackgroundColors.RED} file.{Style.RESET_ALL}")
+
+   if os.path.exists(repo_path): # If the repository directory exists
+      os.system(f"rm -rf {repo_path}") # Delete the repository directory
+   if os.path.exists(commit_file_path): # If the commit file exists
+      os.remove(commit_file_path) # Delete the commit file
+
 def get_commit_filepaths(repository_name, commit_file_path, repo_path):
    """
-   Read the commit information from a CSV file and return a list of file paths in the format '{Commit Number}-{Commit Hash}'.
-
+   Reads the commit information from a CSV file and returns a list of file paths in the format '{Commit Number}-{Commit Hash}'.
+   If the expected columns do not exist, it triggers repository cleanup and reprocessing.
+   
    :param repository_name: Name of the repository to be analyzed
    :param commit_file_path: Path to the CSV file containing commit details
    :param repo_path: Path to the repository's CK metrics folder
    :return: List of file paths in the format '{Commit Number}-{Commit Hash}'
    """
-   
+
+   verbose_output(true_string=f"{BackgroundColors.GREEN}Getting the commit filepaths for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+
    if not verify_filepath_exists(commit_file_path): # Verify if the file exists
       return [] # Return an empty list if the file does not exist
-
-   df = pd.read_csv(commit_file_path, sep=",", usecols=["Commit Number", "Commit Hash"], header=0) # Read the CSV file and get the necessary columns
-   filepaths = [f"{row['Commit Number']}-{row['Commit Hash']}" for _, row in df.iterrows()] # Create a list of file paths in the format '{Commit Number}-{Commit Hash}'
    
-   return filepaths # Return the list of file paths
+   df = read_commit_file(commit_file_path) # Read the commit file
+   
+   if df is None: # If the DataFrame is empty
+      handle_missing_commit_data(repo_path, commit_file_path) # Delete the repository directory and commit file
+      return [] # Return an empty list if the DataFrame is empty
+   
+   return [f"{row['Commit Number']}-{row['Commit Hash']}" for _, row in df.iterrows()]
 
 def verify_ck_metrics_files(folder_path, ck_metrics_files=CK_METRICS_FILES):
    """
