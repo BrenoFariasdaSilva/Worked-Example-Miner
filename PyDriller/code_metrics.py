@@ -28,7 +28,7 @@ DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format
 RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective booleans
    "CK Metrics": True, # Generate the CK metrics for the commits
    "Commits Information": True, # Write the commit information to a CSV file
-   "Diffs": True, # Generate the diffs for the commits
+   "Diffs": False, # Generate the diffs for the commits
    "Repositories Attributes": False, # Write the repositories attributes to a CSV file
    "Verify CK Metrics Directory": True, # Verify if the CK metrics directory is up to date
 }
