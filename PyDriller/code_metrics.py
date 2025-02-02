@@ -187,7 +187,7 @@ def load_repositories_from_json(file_path):
    Load repositories from a JSON file.
 
    :param file_path: The path to the JSON file.
-   :return: A dictionary containing the repositories if the JSON file is valid, None otherwise.   
+   :return: A dictionary containing all repositories or only the first repository if needed.
    """
 
    try: # Try to load the JSON file
@@ -197,7 +197,11 @@ def load_repositories_from_json(file_path):
       if isinstance(repositories_list, list) and repositories_list: # Verify if the JSON file is a list and is not empty
          filtered_repositories = [repo for repo in repositories_list if repo["are_candidates_generated"] is False] # Filter repositories that haven't had their candidates generated
          sorted_repositories = sorted(filtered_repositories, key=lambda repo: repo.get("commits", 0)) # Sort the filtered repositories by 'commits' in ascending order
-         return {repo["name"]: repo["url"] for repo in sorted_repositories} # Return a dictionary with names as keys and URLs as values
+
+         # Uncomment the line below to return only the first repository
+         return {sorted_repositories[0]["name"]: sorted_repositories[0]["url"]} # Return only the first repository
+         
+         # return sorted_repositories # Return all repositories sorted by 'commits' in ascending order
       else:
          print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
          return None # Return None if the JSON file is not in the correct format
