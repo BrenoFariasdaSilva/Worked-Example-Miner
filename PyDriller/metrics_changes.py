@@ -662,10 +662,11 @@ def sort_commit_hashes_by_commit_number(metrics_track_record):
 
 	return metrics_track_record # Return the sorted metrics_track_record
 
-def generate_progress_bar_description(processes):
+def generate_progress_bar_description(repository_name, processes):
 	"""
 	Generates the description for the progress bar.
 
+	:param repository_name: String containing the repository name
 	:param processes: A list containing the processes that will be executed in this run
 	:return: A string containing the description for the progress bar
 	"""
@@ -673,7 +674,7 @@ def generate_progress_bar_description(processes):
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Generating the description for the progress bar...{Style.RESET_ALL}")
 
 	metrics_description = ", ".join(processes) # Join the processes with a comma
-	progress_description = f"{BackgroundColors.GREEN}Generating {BackgroundColors.CYAN}{metrics_description}{BackgroundColors.GREEN}...{Style.RESET_ALL}" if processes else f"{BackgroundColors.GREEN}Processing Metrics..{Style.RESET_ALL}" # Generate the description for the progress bar
+	progress_description = f"{BackgroundColors.GREEN}Generating {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN}'s {BackgroundColors.CYAN}{metrics_description}{BackgroundColors.GREEN}...{Style.RESET_ALL}" if processes else f"{BackgroundColors.GREEN}Processing Metrics..{Style.RESET_ALL}" # Generate the description for the progress bar
 
 	return progress_description # Return the description for the progress bar
 
@@ -1417,7 +1418,7 @@ def process_metrics_track_record(repository_name, metrics_track_record):
 
 	verbose_output(true_string=f"{BackgroundColors.GREEN}Processing the Metrics Track Record Dictionary for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 
-	progress_description = generate_progress_bar_description(generate_tasks_description(["Sort by Percentual Variation"])) # Generate the progress bar description
+	progress_description = generate_progress_bar_description(repository_name, generate_tasks_description(["Sort by Percentual Variation"])) # Generate the progress bar description
 	with tqdm(total=len(metrics_track_record), unit=f" {progress_description}") as progress_bar: # For every identifier in the metrics_track_record, process the metrics
 		for iteration, (identifier, record) in enumerate(metrics_track_record.items(), start=1): # For each identifier and record in the metrics_track_record dictionary
 			metrics = record["metrics"] # Get the metrics list
@@ -1450,6 +1451,10 @@ def sort_csv_by_changes(repository_name, unsorted_csv_file_path):
 		verbose_output(true_string=f"{BackgroundColors.RED}The unsorted csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository is empty after the header.{Style.RESET_ALL}")
 		return # Return if the file is empty after the header
 	
+	if "Changed" not in data.columns: # Verify if the "Changed" column exists
+		verbose_output(true_string=f"{BackgroundColors.RED}The \"Changed\" column is missing in the csv file for the {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository.{Style.RESET_ALL}")
+		return # Return if the "Changed" column is missing
+
 	data = data.sort_values(by=["Changed"], ascending=False) # Sort the csv file by the number of changes
 	
 	sorted_csv_file_path = f"{FULL_METRICS_STATISTICS_DIRECTORY_PATH}/{repository_name}/{SORTED_CHANGED_METHODS_CSV_FILENAME}" # The sorted csv file path
