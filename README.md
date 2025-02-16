@@ -423,7 +423,7 @@ This research project aims to contribute to the field of Software Engineering (S
 
 We are excited to announce that our paper's submission to the [EduComp 2024](http://educompbrasil.org) conference was accepted! EduComp is a premier conference that focuses on educational computing, providing a platform for researchers, educators, and practitioners to share their insights and innovations in the field of educational technology. Our paper highlights the significance of worked examples in software engineering education, particularly within the domain of Distributed Systems, and discusses a novel approach for selecting these examples based on code quality metrics.
 
-The study introduces a heuristic based on metrics to examine the evolution of code quality in Distributed Systems, aiming to identify code examples that demonstrate significant improvements. Using software projects such as Apache Kafka and ZooKeeper, the research applies tools like CK (Java code metrics calculator) and RefactoringMiner integrated into the developed Worked Example Miner (WEM) tool. This approach allowed for the generation of statistical descriptions, linear regressions, and refactorings that aid in selecting code changes for worked examples.
+The study introduces a heuristic based on metrics to examine the evolution of code quality in Distributed Systems, aiming to identify code examples that demonstrate significant improvements. Using software projects such as Apache Kafka and ZooKeeper, the research applies tools like CK (Java code metrics calculator) and RefactoringMiner integrated into the developed Worked-Example-Miner (WEM) tool. This approach allowed for the generation of statistical descriptions, linear regressions, and refactorings that aid in selecting code changes for worked examples.
 
 Our findings reveal that this methodology can effectively contribute to the selection of worked examples for Distributed Systems, highlighting improvements in modularization, cohesion, and code reusability. Such examples are instrumental in enhancing learning and understanding in software engineering education.
 
@@ -485,18 +485,18 @@ Feel free to explore the code and data in this repository. If you have any quest
 
 Each directory in this repository has its own README.md file explaining its purpose. Please refer to individual README files for more details.
 
-- **PyDriller:** This Python library excels in mining software repositories. Within Worked Example Miner, PyDriller is harnessed to navigate through the commit tree of a repository, facilitating the execution of CK at every commit, thereby ensuring a comprehensive analysis across the development timeline.
+- **PyDriller:** This Python library excels in mining software repositories. Within Worked-Example-Miner, PyDriller is harnessed to navigate through the commit tree of a repository, facilitating the execution of CK at every commit, thereby ensuring a comprehensive analysis across the development timeline.
 This directory will contains two main files: `code_metrics.py` and `metrics_changes.py`. The `code_metrics.py` file is responsible for extracting the CK metrics from the Java repositories, as well as generating commit diff files and a commit hashes list file. In the other hand, the `metrics_changes.py` file is responsible for reading the generated ck metrics files and generate the metrics statistics, linear regressions, detecting substantial changes, and identifying refactoring types.
 
-- **RefactoringMiner:** This directory contains the RefactoringMiner tool, which specializes in detecting refactorings in Java repositories. By integrating RefactoringMiner into Worked Example Miner, we can identify and analyze refactorings that contribute to code evolution, highlighting changes that enhance code quality and maintainability. This directory will contains two main files: `metrics_evolution_refactorings.py` and `repositories_refactorings.py`. The `metrics_evolution_refactorings.py` file is responsible for generating the refactorings files for the selected files in the Java repositories. The `repositories_refactorings.py` file is responsible for generating the refactorings file for the selected repositories in the Java repositories.
+- **RefactoringMiner:** This directory contains the RefactoringMiner tool, which specializes in detecting refactorings in Java repositories. By integrating RefactoringMiner into Worked-Example-Miner, we can identify and analyze refactorings that contribute to code evolution, highlighting changes that enhance code quality and maintainability. This directory will contains two main files: `metrics_evolution_refactorings.py` and `repositories_refactorings.py`. The `metrics_evolution_refactorings.py` file is responsible for generating the refactorings files for the selected files in the Java repositories. The `repositories_refactorings.py` file is responsible for generating the refactorings file for the selected repositories in the Java repositories.
 
-- **Gemini:** This directory contains the `gemini.py` python code that interacts with the Google Gemini API. By integrating Gemini into Worked Example Miner, we can give some of the data and metadata generated by the CK tool and RefactoringMiner to the Google Gemini API in order to analyze, for example, if the given examples refined by our heuristic are good examples for educational purposes. Actually, this integration makes this a general purpose analysis tool, as the data and metadata generated by CK is only restricted by Java repositories, the analysis generated by Gemini only depends on the existance of the data and metadata generated by PyDriller (integrates CK) and/or RefactoringMiner. So, in order to expand the analysis of Gemini to other contexts other than Distributed Systems, all you need to do is change the context given in the `start_context` variable in the `Gemini/gemini.py` file.
+- **Gemini:** This directory contains the `gemini.py` python code that interacts with the Google Gemini API. By integrating Gemini into Worked-Example-Miner, we can give some of the data and metadata generated by the CK tool and RefactoringMiner to the Google Gemini API in order to analyze, for example, if the given examples refined by our heuristic are good examples for educational purposes. Actually, this integration makes this a general purpose analysis tool, as the data and metadata generated by CK is only restricted by Java repositories, the analysis generated by Gemini only depends on the existance of the data and metadata generated by PyDriller (integrates CK) and/or RefactoringMiner. So, in order to expand the analysis of Gemini to other contexts other than Distributed Systems, all you need to do is change the context given in the `start_context` variable in the `Gemini/gemini.py` file.
 
-By leveraging the combined strengths of these tools, Worked Example Miner emerges as a powerhouse for Java repository analysis. It not only facilitates the generation of differential analyses for each commit but also meticulously tracks the historical progression of selected CK metrics at each stage of code development. Furthermore, the tool is equipped to conduct linear regression analyses, detect substantial changes, and identify refactoring types cataloged by RefactoringMiner.
+By leveraging the combined strengths of these tools, Worked-Example-Miner emerges as a powerhouse for Java repository analysis. It not only facilitates the generation of differential analyses for each commit but also meticulously tracks the historical progression of selected CK metrics at each stage of code development. Furthermore, the tool is equipped to conduct linear regression analyses, detect substantial changes, and identify refactoring types cataloged by RefactoringMiner.
 
-The integration of these capabilities allows Worked Example Miner to produce an array of outputs, from detailed commit diffs to analyses of repository evolution and potential trends. Such comprehensive data is instrumental in pinpointing exemplary candidates for the creation of worked examples, thus enriching educational resources and facilitating a deeper understanding of Java repository dynamics.
+The integration of these capabilities allows Worked-Example-Miner to produce an array of outputs, from detailed commit diffs to analyses of repository evolution and potential trends. Such comprehensive data is instrumental in pinpointing exemplary candidates for the creation of worked examples, thus enriching educational resources and facilitating a deeper understanding of Java repository dynamics.
 
-In essence, Worked Example Miner stands as a testament to the synergy of combining specialized tools to achieve a greater understanding of software development practices by the code metrics evolution. Through its detailed analyses, educators, researchers, and developers are better equipped to study Java repositories, enabling the cultivation of rich, informative worked examples that highlight best practices and evolutionary insights in software development.
+In essence, Worked-Example-Miner stands as a testament to the synergy of combining specialized tools to achieve a greater understanding of software development practices by the code metrics evolution. Through its detailed analyses, educators, researchers, and developers are better equipped to study Java repositories, enabling the cultivation of rich, informative worked examples that highlight best practices and evolutionary insights in software development.
 
 ## Repositories
 
@@ -590,11 +590,11 @@ This research methodology, underpinned by detailed code metric analysis and tool
 
 ## How to Cite?
 
-If you use the Worked Example Miner (WEM) in your research, please cite it using the following BibTeX entry:
+If you use the Worked-Example-Miner (WEM) in your research, please cite it using the following BibTeX entry:
 
 ```bibtex
 @misc{softwareWEM:2023,
-  title = {Worked Example Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories},
+  title = {Worked-Example-Miner (WEM): A Comprehensive Tool for Analyzing Java Repositories},
   author = {Breno Farias da Silva},
   year = {2023},
   howpublished = {https://github.com/BrenoFariasdaSilva/Worked-Example-Miner},
@@ -602,7 +602,7 @@ If you use the Worked Example Miner (WEM) in your research, please cite it using
 }
 ```
 
-Additionally, a `main.bib` file is available in the root directory of this repository. It contains the BibTeX entry for this project, as well as papers and references related to the research and data made with the Worked Example Miner (WEM).
+Additionally, a `main.bib` file is available in the root directory of this repository. It contains the BibTeX entry for this project, as well as papers and references related to the research and data made with the Worked-Example-Miner (WEM).
 
 If you find this repository valuable, please don't forget to give it a ⭐ to show your support! Contributions are highly encouraged, whether by creating issues for feedback or submitting pull requests (PRs) to improve the project. For details on how to contribute, please refer to the [Contributing](#contributing) section below.
 
