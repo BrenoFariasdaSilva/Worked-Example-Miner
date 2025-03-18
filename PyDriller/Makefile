@@ -63,8 +63,9 @@ track_files_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/track_files.py
 
 batch_processing: $(VENV)
-	for i in $$(seq 1 100); do \
-		echo "Running $$i repo"; \
+	# for i in $(seq 1 100); do \
+	while true; do \
+		echo "Processing repository..."; \
 		$(MAKE) code_metrics_script < /dev/null; \
 		$(MAKE) metrics_changes_script < /dev/null; \
 	done
