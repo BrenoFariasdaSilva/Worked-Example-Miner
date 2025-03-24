@@ -1843,7 +1843,7 @@ def update_repository_attributes(repository_name, elapsed_time):
 		repositories_attributes[repository_name]["size_in_gb"] += get_directories_size_in_gb(repository_name, OUTPUT_DIRECTORIES) # Update the size in GB
 	else: # If the repository was not found in the repositories attributes file
 		print(f"{BackgroundColors.RED}The {BackgroundColors.CYAN}{repository_name}{BackgroundColors.RED} repository was not found in the {BackgroundColors.CYAN}repositories attributes{BackgroundColors.RED} file.{Style.RESET_ALL}")
-		return # Return if the repository was not found in the repositories attributes file
+		return {} # Return if the repository was not found in the repositories attributes file
 
 	return repositories_attributes # Return the updated repositories attributes
 
