@@ -62,6 +62,13 @@ move_extracted_files_script: $(VENV)
 track_files_script: $(VENV)
 	clear; time $(PYTHON) ./Scripts/track_files.py
 
+batch_processing: $(VENV)
+	while true; do \
+		echo "Running $$i repo"; \
+		$(MAKE) code_metrics_script < /dev/null; \
+		$(MAKE) metrics_changes_script < /dev/null; \
+	done
+
 # Setup Virtual Environment and Install Dependencies
 $(VENV): dependencies
 
