@@ -27,18 +27,20 @@ jobs:
           git config --global user.email "breno.vicio78@gmail.com"
           git config --global user.name "Breno Farias da Silva"
 
-      - name: Forcefully update Worked-Example-Miner-Candidates submodule to the latest version
+      - name: Fetch all branches
         run: |
-          cd Worked-Example-Miner-Candidates
-          git fetch origin main
-          git checkout main
-          git reset --hard origin/main
+          git fetch --all
 
-      - name: Return to main repository and check for changes
+      - name: Update Worked-Example-Miner-Candidates submodule on all branches
         run: |
-          git add Worked-Example-Miner-Candidates
-          git diff --cached --quiet || git commit -m "UPDATE: Automatically updated Worked-Example-Miner-Candidates submodule to the latest version."
-
-      - name: Push changes if any
-        run: |
-          git push origin main || echo "No changes to push."
+          for branch in $(git branch -r | grep -v '\->' | sed 's/origin\///'); do
+            git checkout $branch
+            cd Worked-Example-Miner-Candidates
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            cd ..
+            git add Worked-Example-Miner-Candidates
+            git diff --cached --quiet || git commit -m "UPDATE: Updated Worked-Example-Miner-Candidates submodule on branch $branch."
+            git push origin $branch || echo "No changes to push on branch $branch."
+          done
