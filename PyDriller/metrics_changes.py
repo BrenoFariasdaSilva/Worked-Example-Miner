@@ -273,7 +273,7 @@ def get_identifier(row):
 	if not valid_class_name(row["class"]): # If the class name is not valid (it is not a package name)
 		return None # Return None if the class name is not valid
 
-	identifier = f"{row["class"]} {row["type"] if PROCESS_CLASSES else row["method"]}" # The identifier of the class or method
+	identifier = f'{row["class"]} {row["type"] if PROCESS_CLASSES else row["method"]}' # The identifier of the class or method
 
 	return identifier # Return the identifier of the class or method
 

@@ -511,7 +511,7 @@ def parse_commit_info(lines):
          try: # Try to parse the line
             commit_number = int(line["Commit Number"]) # Read the commit number to an integer
             commit_hash = line["Commit Hash"] # Get the commit hash
-            commit_message = f'"{line["Commit Message"].split("\n")[0].strip()}"' # Format the commit message to only keep the first line, stripped of leading/trailing spaces
+            commit_message = '"{}"'.format(line["Commit Message"].split("\n")[0].strip()) # Format the commit message to only keep the first line, stripped of leading/trailing spaces
             commit_date = parser.parse(line["Commit Date"]) # Use dateutil.parser to handle the date with timezone
             lines_added = int(line["Lines Added"]) # Read the lines added to an integer
             lines_removed = int(line["Lines Removed"]) # Read the lines removed to an integer
@@ -870,7 +870,18 @@ def traverse_repository(repository_name, repository_url, number_of_commits):
          lines_added, lines_removed, code_churn = calculate_code_churn(commit) # Calculate the code churn for the commit
          modified_files_count = len(commit.modified_files) # Number of modified files
          code_churn_avg_per_file = code_churn / modified_files_count if modified_files_count > 0 else 0 # Code churn average per file
-         current_tuple = (commit_number, commit.hash, f'"{commit.msg.split("\n")[0].strip().replace("\"", "")}"', commit.committer_date, lines_added, lines_removed, code_churn, round(code_churn_avg_per_file, 2), modified_files_count, f'"{repository_url}/commit/{commit.hash}"') # Create a tuple with the commit information
+         current_tuple = (
+            commit_number,
+            commit.hash,
+            '"{}"'.format(commit.msg.split("\n")[0].strip().replace('"', '')),
+            commit.committer_date,
+            lines_added,
+            lines_removed,
+            code_churn,
+            round(code_churn_avg_per_file, 2),
+            modified_files_count,
+            '"{}/commit/{}"'.format(repository_url, commit.hash)
+         ) # Create a tuple with the commit information
          commits_info.append(current_tuple) # Append the current tuple to the commits_info list
 
          generate_diffs(repository_name, commit, commit_number) if RUN_FUNCTIONS["Diffs"] else None # Save the diff of the modified files of the current commit
