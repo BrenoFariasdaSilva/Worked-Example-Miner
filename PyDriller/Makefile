@@ -64,7 +64,7 @@ track_files_script: $(VENV)
 
 batch_processing: $(VENV)
 	# This is more recommended for low-performance machines, as it will run the scripts in a batch processing mode, waiting for each script to finish before starting the next one.
-	# Then to use it, update in the code_metrics.py the line "usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores)" to "usable_threads, max_threads = 1, 1"
+	# Then to use it, update in the code_metrics.py the line "usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores)" to "usable_threads, max_threads = get_adjusted_number_of_threads(1)"
 	while true; do \
 		echo "Running $$i repo"; \
 		$(MAKE) code_metrics_script < /dev/null; \
