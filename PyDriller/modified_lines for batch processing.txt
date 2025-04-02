@@ -1,0 +1,15 @@
+code_metrics.py:
+-         return {repo["name"]: repo["url"] for repo in sorted_repositories} # Return a dictionary with names as keys and URLs as values
++         return {sorted_repositories[0]["name"]: sorted_repositories[0]["url"]} if sorted_repositories else {} # Return the first instance of the sorted_repositories dictionary
+-   usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
++   usable_threads, max_threads = get_adjusted_number_of_threads(1) # Get the adjusted number of threads to use
+
+metrics_changes.py:
+-	"Linear Regression": True, # Run the linear regression graphics
++	"Linear Regression": False, # Run the linear regression graphics
+-	"Metrics Track Record": True, # Write the metrics track record to a txt file
++	"Metrics Track Record": False, # Write the metrics track record to a txt file
+-def input_with_timeout(prompt, timeout=60):
++def input_with_timeout(prompt, timeout=0):
+-	user_response = input_with_timeout(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}", 60) # Prompt the user with a timeout
++	user_response = input_with_timeout(f"{BackgroundColors.GREEN}Do you want to process the {BackgroundColors.CYAN}class.csv{BackgroundColors.GREEN} file {BackgroundColors.RED}(True/False){BackgroundColors.GREEN}? {Style.RESET_ALL}", 0) # Prompt the user with a timeout
