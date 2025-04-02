@@ -202,7 +202,7 @@ def load_repositories_from_json(file_path):
       if isinstance(repositories_list, list) and repositories_list: # Verify if the JSON file is a list and is not empty
          filtered_repositories = [repo for repo in repositories_list if repo["are_candidates_generated"] is False] # Filter repositories that haven't had their candidates generated
          sorted_repositories = sorted(filtered_repositories, key=lambda repo: repo.get("commits", 0)) # Sort the filtered repositories by 'commits' in ascending order
-         return {repo["name"]: repo["url"] for repo in sorted_repositories} # Return a dictionary with names as keys and URLs as values
+         return {sorted_repositories[0]["name"]: sorted_repositories[0]["url"]} if sorted_repositories else {} # Return the first instance of the sorted_repositories dictionary
       else:
          print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
          return None # Return None if the JSON file is not in the correct format
@@ -1066,7 +1066,7 @@ def process_repositories_in_parallel():
    print(f"{BackgroundColors.GREEN}Processing each of the repositories in parallel using a Thread Pool...{Style.RESET_ALL}")
 
    cpu_cores = get_threads() # Get the number of CPU cores
-   usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
+   usable_threads, max_threads = get_adjusted_number_of_threads(1) # Get the adjusted number of threads to use
 
    print(f"{BackgroundColors.GREEN}The number of usable threads is {BackgroundColors.CYAN}{usable_threads}{BackgroundColors.GREEN} out of {BackgroundColors.CYAN}{max_threads}{BackgroundColors.GREEN}.{Style.RESET_ALL}")
 
