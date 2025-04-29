@@ -34,7 +34,7 @@ RUN_FUNCTIONS = { # Dictionary with the functions to run and their respective bo
    "CK Metrics": True, # Generate the CK metrics for the commits
    "Commits Information": True, # Write the commit information to a CSV file
    "Diffs": True, # Generate the diffs for the commits
-   "Repositories Attributes": True, # Write the repositories attributes to a CSV file
+   "Repositories Attributes": False, # Write the repositories attributes to a CSV file
    "Verify CK Metrics Directory": False, # Verify if the CK metrics directory is up to date
 }
 
