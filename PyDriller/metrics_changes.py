@@ -1884,7 +1884,7 @@ def process_repository(repository_name, repository_url):
 	delete_repository_source_data(repository_name) if RUN_FUNCTIONS["Delete Source Data"] else None # Delete the repository source data if the flag is set to True
 
 	repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) if RUN_FUNCTIONS["Repositories Attributes"] else None # Update the attributes of the repositories file with the elapsed time and output data size in GB
-	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) if RRUN_FUNCTIONS["Repositories Attributes"] else None # Write the updated data back to the CSV file
+	write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) if RUN_FUNCTIONS["Repositories Attributes"] else None # Write the updated data back to the CSV file
 
 	update_json_repository_status(repository_name, FULL_REPOSITORIES_LIST_JSON_FILEPATH.replace("SORTING_ATTRIBUTE", REPOSITORIES_SORTING_ATTRIBUTES[0])) # Update the JSON repository status
 
