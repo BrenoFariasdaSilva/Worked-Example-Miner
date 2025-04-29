@@ -1,4 +1,6 @@
 code_metrics.py:
+-    "Verify CK Metrics Directory": True, # Verify if the CK metrics directory is up to date
++    "Verify CK Metrics Directory": False, # Verify if the CK metrics directory is up to date
 -         return {repo["name"]: repo["url"] for repo in sorted_repositories} # Return a dictionary with names as keys and URLs as values
 +         return {sorted_repositories[0]["name"]: sorted_repositories[0]["url"]} if sorted_repositories else {} # Return the first instance of the sorted_repositories dictionary
 -   usable_threads, max_threads = get_adjusted_number_of_threads(cpu_cores) # Get the adjusted number of threads to use
