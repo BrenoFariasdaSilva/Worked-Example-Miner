@@ -21,6 +21,7 @@ from repositories_picker import create_directory, get_adjusted_number_of_threads
 # Default values that can be changed:
 VERBOSE = False # Verbose mode. If set to True, it will output messages at the start/call of each function (Note: It will output a lot of messages).
 PROCESS_JSON_REPOSITORIES = True # Process the JSON repositories. If set to True, it will process the JSON repositories, otherwise it will pick the ones defined in the DEFAULT_REPOSITORIES dictionary.
+REPROCESS_CANDIDATES = True # Reprocess the candidates. If set to True, it will reprocess the candidates if there isn't any repository that hasn't been processed yet.
 
 DEFAULT_REPOSITORIES = { # The default repositories to be analyzed in the format: "repository_name": "repository_url"
    "CorfuDB": "https://github.com/CorfuDB/CorfuDB",
@@ -200,8 +201,12 @@ def load_repositories_from_json(file_path):
          repositories_list = json.load(json_file) # Load the JSON file
 
       if isinstance(repositories_list, list) and repositories_list: # Verify if the JSON file is a list and is not empty
-         filtered_repositories = [repo for repo in repositories_list if repo["are_candidates_generated"] is False] # Filter repositories that haven't had their candidates generated
-         sorted_repositories = sorted(filtered_repositories, key=lambda repo: repo.get("commits", 0)) # Sort the filtered repositories by 'commits' in ascending order
+         all_candidates_generated = all(repo.get("are_candidates_generated", False) for repo in repositories_list) # Check if all repositories have candidates generated
+
+         if not all_candidates_generated or (all_candidates_generated and not REPROCESS_CANDIDATES): # If all candidates are generated and reprocessing is not allowed, return an empty dictionary
+            repositories_list = [repo for repo in repositories_list if not repo.get("are_candidates_generated", False)] # Filter the repositories to only include those that have not generated candidates
+
+         sorted_repositories = sorted(repositories_list, key=lambda repo: repo.get("commits", 0)) # Sort the repositories by the number of commits
          return {repo["name"]: repo["url"] for repo in sorted_repositories} # Return a dictionary with names as keys and URLs as values
       else:
          print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
