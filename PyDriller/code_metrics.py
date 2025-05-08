@@ -196,20 +196,23 @@ def load_repositories_from_json(file_path):
    :return: A dictionary containing the repositories if the JSON file is valid, None otherwise.   
    """
 
-   try: # Try to load the JSON file
-      with open(file_path, "r", encoding="utf-8") as json_file: # Open the JSON file
-         repositories_list = json.load(json_file) # Load the JSON file
+   try: # Try to load and parse the JSON file
+      with open(file_path, "r", encoding="utf-8") as json_file: # Open the JSON file using UTF-8 encoding
+         repositories = json.load(json_file) # Load the content of the file as a Python object
 
-      if isinstance(repositories_list, list) and repositories_list: # Verify if the JSON file is a list and is not empty
-         all_candidates_generated = all(repo.get("are_candidates_generated", False) for repo in repositories_list) # Check if all repositories have candidates generated
+      if isinstance(repositories, list) and repositories: # Check if the loaded data is a non-empty list
+         filtered = [repo for repo in repositories if not repo.get("are_candidates_generated", False)] # Filter out repositories that have already generated candidates
 
-         if not all_candidates_generated or (all_candidates_generated and not REPROCESS_CANDIDATES): # If all candidates are generated and reprocessing is not allowed, return an empty dictionary
-            repositories_list = [repo for repo in repositories_list if not repo.get("are_candidates_generated", False)] # Filter the repositories to only include those that have not generated candidates
+         if REPROCESS_CANDIDATES and not filtered: # If reprocessing is allowed and all repositories were filtered out
+            filtered = repositories # Revert to using all repositories (reprocess everything)
+         elif not REPROCESS_CANDIDATES: # If reprocessing is not allowed
+            repositories = filtered # Use only the repositories that have not generated candidates
 
-         sorted_repositories = sorted(repositories_list, key=lambda repo: repo.get("commits", 0)) # Sort the repositories by the number of commits
-         return {repo["name"]: repo["url"] for repo in sorted_repositories} # Return a dictionary with names as keys and URLs as values
-      else:
-         print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}")
+         repositories.sort(key=lambda repo: repo.get("commits", 0)) # Sort the repositories by number of commits (default is 0)
+
+         return {repo["name"]: repo["url"] for repo in repositories} # Return a dictionary with repository names as keys and URLs as values
+      else: # If the loaded data is not a valid list or is empty
+         print(f"{BackgroundColors.RED}The repositories JSON file is not in the correct format.{Style.RESET_ALL}") # Print an error if the file is not a valid list
          return None # Return None if the JSON file is not in the correct format
    except (json.JSONDecodeError, KeyError) as e: # Handle the exception if there is an error parsing the JSON file
       verbose_output(true_string=f"{BackgroundColors.RED}Error parsing the repositories JSON file: {e}{Style.RESET_ALL}", is_error=True)
