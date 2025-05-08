@@ -82,9 +82,9 @@ def init_and_update_submodules():
 
       if not verify_filepath_exists(submodule_path): # If the submodule path does not exist
          subprocess.run(["git", "submodule", "init"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Initialize the Git submodule
-         subprocess.run(["git", "submodule", "update"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Update the Git submodule
+         subprocess.run(["git", "submodule", "update", "--", RELATIVE_CK_SUBMODULE_PATH], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Update the specific Git submodule
       else:
-         subprocess.run(["git", "submodule", "update", "--remote"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Update the Git submodule
+         subprocess.run(["git", "submodule", "update", "--remote", "--", RELATIVE_CK_SUBMODULE_PATH], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) # Update only the specific Git submodule
    except subprocess.CalledProcessError as e:
       print(f"{BackgroundColors.RED}An error occurred while initializing and updating the CK Git Submodule: {e}{Style.RESET_ALL}")
       return False # Return False if the Git submodules could not be initialized and updated
