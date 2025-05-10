@@ -22,6 +22,7 @@ from repositories_picker import RELATIVE_REPOSITORIES_DIRECTORY_PATH, REPOSITORI
 from repositories_picker import create_directory, output_time, path_contains_whitespaces, play_sound, setup_repository, update_sound_file_path, verbose_output, verify_filepath_exists # Importing Functions from the repositories_picker.py file
 
 # Imports from the code_metrics.py file
+from code_metrics import RUN_FUNCTIONS as CODE_METRICS_RUN_FUNCTIONS # Importing the RUN_FUNCTIONS dictionary from the code_metrics.py file
 from code_metrics import CK_METRICS_FILES, CSV_FILE_EXTENSION, FULL_CK_METRICS_DIRECTORY_PATH, FULL_DIFFS_DIRECTORY_PATH, FULL_REFACTORINGS_DIRECTORY_PATH, FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, FULL_REPOSITORIES_LIST_JSON_FILEPATH, RELATIVE_DIFFS_DIRECTORY_PATH, RELATIVE_REFACTORINGS_DIRECTORY_PATH # Importing Constants from the code_metrics.py file
 from code_metrics import get_directories_size_in_gb, setup_process_repository, get_repositories_dictionary # Importing Functions from the code_metrics.py file
 
@@ -94,7 +95,7 @@ def generate_tasks_description(filter_list=[]):
 	processes = [key.title() for key, value in sorted(RUN_FUNCTIONS.items()) if value and key not in filter_list] # Get the processes that are set to True
 	return processes # Return the processes that are set to True
 
-def input_with_timeout(prompt, timeout=60):
+def input_with_timeout(prompt, timeout=0):
 	"""
 	Prompts the user for input with a specified timeout on Unix-based systems.
 	
@@ -1883,7 +1884,7 @@ def process_repository(repository_name, repository_url):
 
 	delete_repository_source_data(repository_name) if RUN_FUNCTIONS["Delete Source Data"] else None # Delete the repository source data if the flag is set to True
 
-	if RUN_FUNCTIONS["Repositories Attributes"]: # If the flag is set to True
+	if CODE_METRICS_RUN_FUNCTIONS["Repositories Attributes"]: # If the flag is set to True
 		repositories_attributes = update_repository_attributes(repository_name, time.time() - start_time) # Update the attributes of the repositories file with the elapsed time and output data size in GB
 		write_dict_to_csv(FULL_REPOSITORIES_ATTRIBUTES_FILE_PATH, repositories_attributes) # Write the updated data back to the CSV file
 
