@@ -1903,7 +1903,7 @@ def process_all_repositories():
 
 	for index, (repository_name, repository_url) in enumerate(DEFAULT_REPOSITORIES.items(), start=1): # Loop through the DEFAULT_REPOSITORIES dictionary
 		print(f"") # Print an empty line
-		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{', '.join([process.title() for process in sorted(generate_tasks_description())[:-1]]) + (' and ' + sorted(generate_tasks_description())[-1].title() if len(sorted(generate_tasks_description())) > 1 else '')}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS.capitalize()}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{index}° {repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
+		print(f"{BackgroundColors.GREEN}Processing the {BackgroundColors.CYAN}{', '.join([f'{i}º {repo.title()}' for i, repo in enumerate(DEFAULT_REPOSITORIES.keys(), start=1)])}{BackgroundColors.GREEN} for the {BackgroundColors.CYAN}{CLASSES_OR_METHODS.capitalize()}{BackgroundColors.GREEN} from the {BackgroundColors.CYAN}{index}º {repository_name}{BackgroundColors.GREEN} repository...{Style.RESET_ALL}")
 		process_repository(repository_name, repository_url) # Process the current repository
 		print(f"\n------------------------------------------------------------") # Print a separator
 
