@@ -651,7 +651,7 @@ We thank the following people who contributed to this project:
     </td>
     <td align="center">
       <a href="#" title="Marco Aurélio Graciotto Silva">
-        <img src="https://github.com/BrenoFariasdaSilva/Worked-Example-Miner/blob/main/.assets/Images/Github.svg" width="100px;" alt="Profile Picture"/><br>
+        <img src="https://github.com/magsilva.png" width="100px;" alt="Profile Picture"/><br>
         <sub>
           <b><a href="https://github.com/MAGSilva">Marco Aurélio Graciotto Silva</a></b>
         </sub>
